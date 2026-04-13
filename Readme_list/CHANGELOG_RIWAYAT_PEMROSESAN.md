@@ -12,7 +12,7 @@
 
 **Kode Sebelumnya:**
 ```php
-// Surat terbaru
+// Surat terbarunya
 $suratTerbaru = Surat::with('user')
                      ->latest()
                      ->limit(5)
