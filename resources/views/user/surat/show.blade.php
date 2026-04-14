@@ -111,6 +111,55 @@
                         </a>
                     @endif
                 </div>
+
+                {{-- UPLOAD ULANG FILE PERBAIKAN (jika ditolak) --}}
+                @if($surat->status === 'ditolak')
+                <div class="mt-4 pt-3 border-top">
+                    <div class="alert alert-warning" style="font-size:13px;border-radius:8px;">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="bi bi-exclamation-triangle-fill" style="font-size:16px;"></i>
+                            <div class="flex-grow-1">
+                                <strong>Surat Ditolak - Upload Ulang File Perbaikan</strong>
+                                <p class="mb-0 mt-1" style="font-size:12px;">
+                                    Anda bisa mengupload ulang file Word dan/atau lampiran yang sudah diperbaiki.
+                                    @if($surat->revisi_count > 0)
+                                        <br><span class="text-muted">Sudah {{ $surat->revisi_count }}x revisi.</span>
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form action="{{ route('user.surat.reupload', $surat) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label" style="font-size:13px;font-weight:600;">
+                                    <i class="bi bi-file-earmark-word text-primary"></i> File Surat (.docx/.doc) <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" name="file_word" class="form-control" accept=".docx,.doc" required
+                                       style="font-size:13px;">
+                                <small class="text-muted">Upload file Word yang sudah diperbaiki (max 10MB)</small>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label" style="font-size:13px;font-weight:600;">
+                                    <i class="bi bi-paperclip text-secondary"></i> File Lampiran (opsional)
+                                </label>
+                                <input type="file" name="file_lampiran" class="form-control" accept=".pdf,.jpg,.jpeg,.png"
+                                       style="font-size:13px;">
+                                <small class="text-muted">PDF/JPG/PNG (max 20MB)</small>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary" style="font-size:13px;border-radius:8px;">
+                                    <i class="bi bi-upload"></i> Upload File Perbaikan
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                @endif
             </div>
         </div>
 
@@ -180,7 +229,12 @@
                             @if($tahapan->status === 'ditolak' && $loop->index === $surat->tahap_sekarang - 1)
                                 <div class="alert alert-danger py-2 px-3 mt-2 mb-0" style="font-size:12px;border-radius:8px;border:none;">
                                     <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                                    Surat ditolak pada tahap ini. Silakan perbaiki dan ajukan ulang.
+                                    Surat ditolak pada tahap ini.
+                                    @if($surat->status === 'ditolak')
+                                        Silakan upload ulang file perbaikan di bawah.
+                                    @elseif($surat->status === 'revisi')
+                                        File perbaikan sedang menunggu review admin.
+                                    @endif
                                 </div>
                             @endif
                         </div>
@@ -196,23 +250,47 @@
     <div class="col-12 col-lg-4">
 
         {{-- STATUS CARD --}}
+        @php
+            $statusCardBg = match($surat->status) {
+                'selesai' => 'linear-gradient(135deg,#15803d,#22c55e)',
+                'ditolak' => 'linear-gradient(135deg,#b91c1c,#ef4444)',
+                'revisi' => 'linear-gradient(135deg,#f59e0b,#fbbf24)',
+                default => 'linear-gradient(135deg,#1e3a5f,#2563eb)',
+            };
+            $statusIcon = match($surat->status) {
+                'selesai' => '✅',
+                'ditolak' => '❌',
+                'revisi' => '📝',
+                default => '⏳',
+            };
+            $statusTitle = match($surat->status) {
+                'selesai' => 'Surat Selesai',
+                'ditolak' => 'Surat Ditolak',
+                'revisi' => 'File Perbaikan Menunggu Review',
+                default => 'Tahap ' . $surat->tahap_sekarang . '/10',
+            };
+            $statusSubtitle = match($surat->status) {
+                'proses' => $surat->nama_tahap,
+                'selesai' => 'Semua tahapan selesai',
+                'revisi' => 'Menunggu admin approve file baru',
+                default => 'Perlu perbaikan',
+            };
+        @endphp
+
         <div class="card card-custom mb-3" style="
-            background:{{ $surat->status === 'selesai' ? 'linear-gradient(135deg,#15803d,#22c55e)' : ($surat->status === 'ditolak' ? 'linear-gradient(135deg,#b91c1c,#ef4444)' : 'linear-gradient(135deg,#1e3a5f,#2563eb)') }};
+            background:{{ $statusCardBg }};
             color:#fff;">
             <div class="card-body p-4 text-center">
                 <div style="font-size:42px;margin-bottom:8px;">
-                    {{ $surat->status === 'selesai' ? '✅' : ($surat->status === 'ditolak' ? '❌' : '⏳') }}
+                    {{ $statusIcon }}
                 </div>
                 <div style="font-size:16px;font-weight:700;">
-                    @if($surat->status === 'selesai') Surat Selesai
-                    @elseif($surat->status === 'ditolak') Surat Ditolak
-                    @else Tahap {{ $surat->tahap_sekarang }}/10
-                    @endif
+                    {{ $statusTitle }}
                 </div>
                 <div style="font-size:12px;opacity:0.8;margin-top:4px;">
-                    @if($surat->status === 'proses') {{ $surat->nama_tahap }}
-                    @elseif($surat->status === 'selesai') Semua tahapan selesai
-                    @else Perlu perbaikan
+                    {{ $statusSubtitle }}
+                    @if($surat->revisi_count > 0)
+                        <br>Revisi ke-{{ $surat->revisi_count }}
                     @endif
                 </div>
             </div>
