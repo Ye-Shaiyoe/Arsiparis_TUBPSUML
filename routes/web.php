@@ -31,6 +31,7 @@ Route::prefix('surat')->name('user.surat.')->group(function () {
     Route::get('/ajukan',    [UserSurat::class, 'create'])->name('create');
     Route::post('/ajukan',   [UserSurat::class, 'store'])->name('store');
     Route::get('/{surat}',   [UserSurat::class, 'show'])->name('show');
+    Route::post('/{surat}/reupload', [UserSurat::class, 'reuploadFile'])->name('reupload');
     Route::delete('/{surat}', [UserSurat::class, 'requestDelete'])->name('requestDelete');
 });
 
