@@ -6,7 +6,8 @@
       "Bash(dir *)",
       "Bash(mkdir *)",
       "Bash(npm run *)",
-      "Bash(composer *)"
+      "Bash(composer *)",
+      "Bash(curl *)"
     ]
   },
   "$version": 3
