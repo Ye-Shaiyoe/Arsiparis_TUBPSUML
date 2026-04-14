@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'admin.role.check' => \App\Http\Middleware\RedirectIfAdminRoleNotSelected::class,
         ]);
+
+        // Add HSTS header middleware to web group
+        $middleware->web(\App\Http\Middleware\AddHstsHeader::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
