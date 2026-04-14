@@ -6,316 +6,412 @@
 {{-- GREETING --}}
 <link rel="icon" href="{{ asset('images/BPSUML2.png') }}">
 
-<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-    <div>
-        <h4 class="fw-bold mb-1" style="color:#1e3a5f;">
-            👋 Halo, {{ Str::words(Auth::user()->name, 1, '') }}!
-        </h4>
-        <p class="text-muted mb-0" style="font-size:13px;">
-            {{ now()->translatedFormat('l, d F Y') }} · Selamat datang di Manajemen/Monitoring Surat BP SUML
-        </p>
+{{-- Custom Styles --}}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+        border-radius: 16px;
+        padding: 32px;
+        color: white;
+        margin-bottom: 32px;
+        box-shadow: 0 10px 40px rgba(30, 58, 95, 0.2);
+    }
+    
+    .stat-card-modern {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid #f1f5f9;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent-color), var(--accent-color-light));
+    }
+    
+    .stat-card-modern:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+    
+    .stat-icon-wrapper {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 16px;
+        background: var(--icon-bg);
+    }
+    
+    .stat-value-modern {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1;
+        margin-bottom: 6px;
+    }
+    
+    .stat-label-modern {
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 500;
+    }
+    
+    .card-modern {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .card-modern:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header-modern {
+        padding: 20px 24px;
+        border-bottom: 1px solid #f1f5f9;
+        background: #fafbfc;
+    }
+    
+    .card-body-modern {
+        padding: 24px;
+    }
+    
+    .surat-item {
+        padding: 16px 24px;
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .surat-item:hover {
+        background: #f8fafc;
+    }
+    
+    .surat-item:last-child {
+        border-bottom: none;
+    }
+    
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    
+    .btn-primary-modern {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(30, 58, 95, 0.3);
+    }
+    
+    .btn-primary-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(30, 58, 95, 0.4);
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 280px;
+    }
+    
+    .notification-item {
+        padding: 16px 24px;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.2s ease;
+    }
+    
+    .notification-item:hover {
+        background: #f8fafc;
+    }
+    
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-in {
+        animation: fadeInUp 0.5s ease-out;
+    }
+</style>
+
+{{-- HEADER --}}
+<div class="dashboard-header animate-in">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h2 class="fw-bold mb-2">
+                <i class="bi bi-hand-thumbs-up-fill me-2"></i>Halo, {{ Str::words(Auth::user()->name, 1, '') }}!
+            </h2>
+            <p class="mb-0" style="font-size:14px; opacity:0.9;">
+                {{ now()->translatedFormat('l, d F Y') }} · Selamat datang di Manajemen/Monitoring Surat BP SUML
+            </p>
+        </div>
+        <a href="{{ route('user.surat.create') }}" class="btn btn-primary-modern d-flex align-items-center gap-2">
+            <i class="bi bi-plus-circle-fill"></i> Ajukan Surat Baru
+        </a>
     </div>
-    <a href="{{ route('user.surat.create') }}" class="btn btn-primary d-flex align-items-center gap-2"
-       style="background:#1e3a5f; border-color:#1e3a5f; border-radius:9px; font-size:13px; font-weight:600;">
-        <i class="bi bi-plus-circle-fill"></i> Ajukan Surat Baru
-    </a>
 </div>
 
 {{-- STAT CARDS --}}
-<div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-        <div class="stat-card" style="background:linear-gradient(135deg,#1e3a5f,#2563eb); color:#fff;">
-            <div class="stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-mailbox-flag" viewBox="0 0 16 16">
-                <path d="M10.5 8.5V3.707l.854-.853A.5.5 0 0 0 11.5 2.5v-2A.5.5 0 0 0 11 0H9.5a.5.5 0 0 0-.5.5v8zM5 7c0 .334-.164.264-.415.157C4.42 7.087 4.218 7 4 7s-.42.086-.585.157C3.164 7.264 3 7.334 3 7a1 1 0 0 1 2 0"/>
-                <path d="M4 3h4v1H6.646A4 4 0 0 1 8 7v6h7V7a3 3 0 0 0-3-3V3a4 4 0 0 1 4 4v6a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V7a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v6h6V7a3 3 0 0 0-3-3"/>
-            </svg>
+<div class="row g-4 mb-4">
+    <div class="col-6 col-lg-3 animate-in" style="animation-delay: 0.1s;">
+        <div class="stat-card-modern" style="--accent-color: #1e3a5f; --accent-color-light: #2563eb; --icon-bg: #eff6ff;">
+            <div class="stat-icon-wrapper">
+                <i class="bi bi-envelope-paper-fill" style="color: #1e3a5f; font-size: 26px;"></i>
             </div>
-            <div class="stat-value">{{ $totalSurat }}</div>
-            <div class="stat-label">Total Surat Diajukan</div>
+            <div class="stat-value-modern">{{ $totalSurat }}</div>
+            <div class="stat-label-modern">Total Surat Diajukan</div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card" style="background:linear-gradient(135deg,#15803d,#22c55e); color:#fff;">
-            <div class="stat-icon">✅</div>
-            <div class="stat-value">{{ $suratSelesai }}</div>
-            <div class="stat-label">Surat Selesai</div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card" style="background:linear-gradient(135deg,#b45309,#f59e0b); color:#fff;">
-            <div class="stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="42" fill="currentColor" class="bi bi-hourglass-split" viewBox="0 0 16 16" style="display:block;">
-                <path d="M2.5 15a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1zm2-13v1c0 .537.12 1.045.337 1.5h6.326c.216-.455.337-.963.337-1.5V2zm3 6.35c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13s.866-1.299 3-1.48zm1 0v3.17c2.134.181 3 1.48 3 1.48a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351z"/>
-            </svg>
+    <div class="col-6 col-lg-3 animate-in" style="animation-delay: 0.2s;">
+        <div class="stat-card-modern" style="--accent-color: #15803d; --accent-color-light: #22c55e; --icon-bg: #f0fdf4;">
+            <div class="stat-icon-wrapper">
+                <i class="bi bi-check-circle-fill" style="color: #15803d; font-size: 26px;"></i>
             </div>
-            <div class="stat-value">{{ $suratProses }}</div>
-            <div class="stat-label">Sedang Diproses</div>
+            <div class="stat-value-modern">{{ $suratSelesai }}</div>
+            <div class="stat-label-modern">Surat Selesai</div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card" style="background:linear-gradient(135deg,#b91c1c,#ef4444); color:#fff;">
-            <div class="stat-icon">❌</div>
-            <div class="stat-value">{{ $suratDitolak }}</div>
-            <div class="stat-label">Surat Ditolak</div>
+    <div class="col-6 col-lg-3 animate-in" style="animation-delay: 0.3s;">
+        <div class="stat-card-modern" style="--accent-color: #b45309; --accent-color-light: #f59e0b; --icon-bg: #fffbeb;">
+            <div class="stat-icon-wrapper">
+                <i class="bi bi-hourglass-split" style="color: #b45309; font-size: 26px;"></i>
+            </div>
+            <div class="stat-value-modern">{{ $suratProses }}</div>
+            <div class="stat-label-modern">Sedang Diproses</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3 animate-in" style="animation-delay: 0.4s;">
+        <div class="stat-card-modern" style="--accent-color: #b91c1c; --accent-color-light: #ef4444; --icon-bg: #fef2f2;">
+            <div class="stat-icon-wrapper">
+                <i class="bi bi-x-octagon-fill" style="color: #b91c1c; font-size: 26px;"></i>
+            </div>
+            <div class="stat-value-modern">{{ $suratDitolak }}</div>
+            <div class="stat-label-modern">Surat Ditolak</div>
         </div>
     </div>
 </div>
 
-<div class="row g-3">
-
-    {{-- SURAT TERBARU + TRACKING --}}
+<div class="row g-4">
+    {{-- SURAT TERBARU --}}
     <div class="col-12 col-lg-7">
-        <div class="card card-custom h-100">
-            <div class="card-body p-0">
-                <div class="d-flex align-items-center justify-content-between px-4 pt-4 pb-3 border-bottom">
-                    <div>
-                        <h6 class="fw-bold mb-0" style="color:#1e3a5f;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-arrow-down-fill" viewBox="0 0 16 16">
-                            <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zm.192 8.159 6.57-4.027L8 9.586l1.239-.757.367.225A4.49 4.49 0 0 0 8 12.5c0 .526.09 1.03.256 1.5H2a2 2 0 0 1-1.808-1.144M16 4.697v4.974A4.5 4.5 0 0 0 12.5 8a4.5 4.5 0 0 0-1.965.45l-.338-.207z"/>
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.354-1.646a.5.5 0 0 1-.722-.016l-1.149-1.25a.5.5 0 1 1 .737-.676l.28.305V11a.5.5 0 0 1 1 0v1.793l.396-.397a.5.5 0 0 1 .708.708z"/>
-                        </svg> Surat Terbaru</h6>
-                        <small class="text-muted">Klik surat untuk lihat tracking lengkap</small>
-                    </div>
-                    <a href="{{ route('user.surat.index') }}" class="btn btn-sm btn-outline-primary"
-                       style="font-size:12px; border-radius:7px;">Lihat Semua</a>
+        <div class="card-modern h-100">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="fw-bold mb-1" style="color:#1e293b;">
+                        <i class="bi bi-envelope-paper me-2"></i>Surat Terbaru
+                    </h6>
+                    <small class="text-muted">Klik untuk lihat tracking lengkap</small>
                 </div>
+                <a href="{{ route('user.surat.index') }}" class="btn btn-sm btn-outline-primary" style="font-size:12px; border-radius:8px;">
+                    Lihat Semua →
+                </a>
+            </div>
 
-                @if($suratTerbaru->isEmpty())
-                    <div class="text-center py-5 text-muted">
-                        <i class="bi bi-envelope-open" style="font-size:36px; display:block; margin-bottom:10px;"></i>
-                        Belum ada surat yang diajukan.<br>
-                        <a href="{{ route('user.surat.create') }}" class="text-primary text-decoration-none fw-semibold">
-                            Ajukan sekarang →
-                        </a>
-                    </div>
-                @else
-                    {{-- Surat list dengan Alpine.js --}}
-                    <div x-data="{ expanded: {{ $suratTerbaru->first()->id ?? 'null' }} }">
-                    @foreach($suratTerbaru as $surat)
-                        <div class="border-bottom">
-                            {{-- Header surat --}}
-                            <button class="d-flex align-items-start gap-3 w-100 px-4 py-3 border-0 bg-transparent"
-                                    type="button"
-                                    @click="expanded = (expanded === {{ $surat->id }} ? null : {{ $surat->id }})"
-                                    style="cursor:pointer; transition:background 0.15s;"
-                                    onmouseover="this.style.background='#f9fafb'"
-                                    onmouseout="this.style.background='transparent'">
-                                {{-- Status dot --}}
-                                <div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;
-                                    background:{{ $surat->status === 'selesai' ? '#22c55e' : ($surat->status === 'ditolak' ? '#ef4444' : '#f59e0b') }}">
+            @if($suratTerbaru->isEmpty())
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox" style="font-size:48px; display:block; margin-bottom:12px;"></i>
+                    <p class="mb-0">Belum ada surat yang diajukan.</p>
+                    <a href="{{ route('user.surat.create') }}" class="text-primary text-decoration-none fw-semibold">
+                        Ajukan sekarang →
+                    </a>
+                </div>
+            @else
+                <div x-data="{ expanded: {{ $suratTerbaru->first()->id ?? 'null' }} }">
+                @foreach($suratTerbaru as $surat)
+                    <div class="surat-item" @click="expanded = (expanded === {{ $surat->id }} ? null : {{ $surat->id }})">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="status-dot" style="background:{{ $surat->status === 'selesai' ? '#22c55e' : ($surat->status === 'ditolak' ? '#ef4444' : ($surat->status === 'revisi' ? '#f59e0b' : '#f59e0b')) }}; margin-top:6px;"></div>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold mb-1" style="color:#1e293b; font-size:14px;">
+                                    {{ $surat->judul }}
                                 </div>
-                                <div class="flex-1 min-w-0 text-start">
-                                    <div class="fw-semibold" style="color:#111827;font-size:13px;">
-                                        {{ $surat->judul }}
-                                    </div>
-                                    <div class="d-flex gap-2 mt-1 flex-wrap">
-                                        <span class="badge rounded-pill" style="font-size:10px;background:#ede9fe;color:#6d28d9;">
-                                            {{ $surat->jenis_label }}
-                                        </span>
-                                        <span class="badge rounded-pill badge-{{ $surat->sifat }}" style="font-size:10px;">
-                                            {{ ucfirst($surat->sifat) }}
-                                        </span>
-                                        <span class="text-muted" style="font-size:11px;">
-                                            Tahap {{ $surat->tahap_sekarang }}/10
-                                        </span>
-                                    </div>
-                                </div>
-                                {{-- SLA Badge --}}
-                                <div class="flex-shrink-0">
-                                    @if($surat->status === 'selesai')
-                                        <span class="badge rounded-pill" style="background:#dcfce7;color:#15803d;font-size:10px;">✓ Selesai</span>
-                                    @elseif($surat->status === 'ditolak')
-                                        <span class="badge rounded-pill" style="background:#fee2e2;color:#b91c1c;font-size:10px;">✗ Ditolak</span>
-                                    @elseif($surat->sla_status === 'terlambat')
-                                        <span class="badge rounded-pill" style="background:#fee2e2;color:#b91c1c;font-size:10px;">⚠ SLA!</span>
-                                    @else
-                                        <span class="badge rounded-pill" style="background:#dbeafe;color:#1d4ed8;font-size:10px;">⏱ Proses</span>
-                                    @endif
-                                </div>
-                                {{-- Arrow icon --}}
-                                <div class="flex-shrink-0 text-muted"
-                                     x-bind:class="{ 'rotate-180': expanded === {{ $surat->id }} }"
-                                     style="transition:transform 0.2s;">
-                                    <i class="bi bi-chevron-down"></i>
-                                </div>
-                            </button>
-
-                            {{-- Tracking Panel --}}
-                            <div x-show="expanded === {{ $surat->id }}"
-                                 x-transition:enter="transition ease-out duration-200"
-                                 x-transition:enter-start="opacity-0 -translate-y-2"
-                                 x-transition:enter-end="opacity-100 translate-y-0"
-                                 x-transition:leave="transition ease-in duration-150"
-                                 x-transition:leave-start="opacity-100 translate-y-0"
-                                 x-transition:leave-end="opacity-0 -translate-y-2"
-                                 x-cloak
-                                 class="px-4 pb-3"
-                                 style="background:#fafbfc;">
-
-                                {{-- Progress bar --}}
-                                <div class="d-flex align-items-center gap-2 mb-3">
-                                    <div class="progress flex-1" style="height:6px;border-radius:99px;">
-                                        <div class="progress-bar"
-                                             style="width:{{ $surat->proses_persen }}%;background:#1e3a5f;border-radius:99px;">
-                                        </div>
-                                    </div>
-                                    <span style="font-size:11px;font-weight:600;color:#1e3a5f;">
-                                        {{ $surat->proses_persen }}%
+                                <div class="d-flex gap-2 flex-wrap align-items-center">
+                                    <span class="badge rounded-pill" style="font-size:11px; background:#ede9fe; color:#6d28d9; padding:4px 10px;">
+                                        {{ $surat->jenis_label }}
+                                    </span>
+                                    <span class="badge rounded-pill badge-{{ $surat->sifat }}" style="font-size:11px; padding:4px 10px;">
+                                        {{ ucfirst($surat->sifat) }}
+                                    </span>
+                                    <span class="text-muted" style="font-size:12px;">
+                                        Tahap {{ $surat->tahap_sekarang }}/10
                                     </span>
                                 </div>
-
-                                {{-- Tracking steps --}}
-                                <div class="tracking-steps">
-                                @foreach($surat->tahapans as $tahapan)
-                                    <div class="step-item {{ $tahapan->status === 'selesai' ? 'done' : '' }}">
-                                        <div style="position:relative;">
-                                            <div class="step-circle {{ $tahapan->status }}">
-                                                @if($tahapan->status === 'selesai') <i class="bi bi-check-lg"></i>
-                                                @elseif($tahapan->status === 'proses') <i class="bi bi-arrow-right"></i>
-                                                @elseif($tahapan->status === 'ditolak') <i class="bi bi-x-lg"></i>
-                                                @else {{ $tahapan->tahap }}
-                                                @endif
-                                            </div>
-                                            @if(!$loop->last)
-                                                <div class="step-line"></div>
-                                            @endif
-                                        </div>
-                                        <div class="step-content">
-                                            <div class="step-title {{ $tahapan->status }}">
-                                                {{ $tahapan->nama_tahap }}
-                                            </div>
-                                            @if($tahapan->selesai_pada)
-                                                <div class="step-meta">
-                                                    <i class="bi bi-clock me-1"></i>
-                                                    {{ $tahapan->selesai_pada->format('d M Y, H:i') }}
-                                                    @if($tahapan->diprosesByUser)
-                                                        · {{ $tahapan->diprosesByUser->name }}
-                                                    @endif
-                                                </div>
-                                            @elseif($tahapan->status === 'proses')
-                                                <div class="step-meta" style="color:#1d4ed8;">
-                                                    <i class="bi bi-hourglass-split me-1"></i> Sedang diproses...
-                                                </div>
-                                            @endif
-                                            @if($tahapan->catatan)
-                                                <div class="step-note">
-                                                    <i class="bi bi-chat-left-text me-1"></i>{{ $tahapan->catatan }}
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                                </div>
-
-                                {{-- Nomor surat --}}
-                                @if($surat->nomor_surat)
-                                    <div class="alert alert-success py-2 px-3 mt-2 mb-0" style="font-size:12px;border-radius:8px;">
-                                        <i class="bi bi-hash me-1"></i>
-                                        <strong>Nomor Surat:</strong> {{ $surat->nomor_surat }}
-                                        · {{ $surat->tanggal_surat?->format('d M Y') }}
-                                    </div>
+                            </div>
+                            <div class="flex-shrink-0">
+                                @if($surat->status === 'selesai')
+                                    <span class="badge rounded-pill" style="background:#dcfce7; color:#15803d; font-size:11px; padding:6px 12px;">✓ Selesai</span>
+                                @elseif($surat->status === 'ditolak')
+                                    <span class="badge rounded-pill" style="background:#fee2e2; color:#b91c1c; font-size:11px; padding:6px 12px;">✗ Ditolak</span>
+                                @elseif($surat->status === 'revisi')
+                                    <span class="badge rounded-pill" style="background:#fef3c7; color:#b45309; font-size:11px; padding:6px 12px;">📝 Revisi</span>
+                                @elseif($surat->sla_status === 'terlambat')
+                                    <span class="badge rounded-pill" style="background:#fee2e2; color:#b91c1c; font-size:11px; padding:6px 12px;">⚠ SLA!</span>
+                                @else
+                                    <span class="badge rounded-pill" style="background:#dbeafe; color:#1d4ed8; font-size:11px; padding:6px 12px;">⏱ Proses</span>
                                 @endif
-
-                                {{-- Surat ditolak --}}
-                                @if($surat->status === 'ditolak')
-                                    <div class="alert alert-danger py-2 px-3 mt-2 mb-0" style="font-size:12px;border-radius:8px;">
-                                        <i class="bi bi-x-circle me-1"></i>
-                                        <strong>Surat ditolak.</strong> Silakan ajukan ulang dengan perbaikan.
-                                    </div>
-                                @endif
-
-                                <div class="text-end mt-2">
-                                    <a href="{{ route('user.surat.show', $surat) }}"
-                                       class="btn btn-sm" style="font-size:11px;color:#1e3a5f;border:1px solid #e5e7eb;border-radius:7px;">
-                                        Detail lengkap →
-                                    </a>
-                                </div>
                             </div>
                         </div>
-                    @endforeach
+
+                        {{-- Tracking Panel --}}
+                        <div x-show="expanded === {{ $surat->id }}"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 -translate-y-2"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-cloak
+                             class="mt-3 p-3" style="background:#f8fafc; border-radius:10px;">
+
+                            {{-- Progress bar --}}
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div class="progress flex-grow-1" style="height:8px; border-radius:99px; background:#e2e8f0;">
+                                    <div class="progress-bar" style="width:{{ $surat->proses_persen }}%; background:linear-gradient(90deg, #1e3a5f, #2563eb); border-radius:99px;"></div>
+                                </div>
+                                <span class="fw-bold" style="font-size:13px; color:#1e3a5f;">{{ $surat->proses_persen }}%</span>
+                            </div>
+
+                            {{-- Tracking steps compact --}}
+                            <div class="d-flex gap-2 overflow-auto pb-2">
+                                @foreach($surat->tahapans->take($surat->tahap_sekarang) as $tahapan)
+                                    <div class="flex-shrink-0 text-center" style="min-width:80px;">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1"
+                                             style="width:32px; height:32px; background:{{ $tahapan->status === 'selesai' ? '#dcfce7' : ($tahapan->status === 'proses' ? '#dbeafe' : '#fee2e2') }};">
+                                            @if($tahapan->status === 'selesai')
+                                                <i class="bi bi-check-lg" style="color:#15803d; font-size:16px;"></i>
+                                            @elseif($tahapan->status === 'proses')
+                                                <i class="bi bi-hourglass-split" style="color:#1d4ed8; font-size:14px;"></i>
+                                            @else
+                                                <i class="bi bi-x-lg" style="color:#b91c1c; font-size:14px;"></i>
+                                            @endif
+                                        </div>
+                                        <div style="font-size:10px; color:#64748b;">{{ $tahapan->nama_tahap }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <div class="text-end mt-2">
+                                <a href="{{ route('user.surat.show', $surat) }}" class="btn btn-sm" style="font-size:12px; color:#1e3a5f; border:1px solid #e2e8f0; border-radius:8px;">
+                                    Detail lengkap →
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                @endif
-            </div>
+                @endforeach
+                </div>
+            @endif
         </div>
     </div>
 
     {{-- PANEL KANAN --}}
     <div class="col-12 col-lg-5">
-
-        {{-- NOTIFIKASI TERBARU --}}
-        <div class="card card-custom mb-3">
-            <div class="card-body p-0">
-                <div class="d-flex align-items-center justify-content-between px-4 pt-4 pb-3 border-bottom">
-                    <h6 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color:#1e3a5f;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
-                            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
-                        </svg>
-                        <span>Notifikasi Terbaru</span>
-                    </h6>
-                    @if(auth()->user()->unreadNotifications->count() > 0)
-                        <span class="badge rounded-pill bg-danger" style="font-size:10px;">
-                            {{ auth()->user()->unreadNotifications->count() }} baru
-                        </span>
-                    @endif
-                </div>
-                <div style="max-height:240px; overflow-y:auto;">
-                    @forelse(auth()->user()->notifications->take(6) as $notif)
-                        <a href="{{ route('notif.read', $notif->id) }}"
-                           class="d-flex align-items-start gap-3 px-4 py-3 text-decoration-none border-bottom
-                                  {{ $notif->read_at ? '' : 'bg-light' }}"
-                           style="transition:background 0.1s;">
-                            <div class="notif-icon {{ $notif->data['type'] ?? 'info' }}" style="margin-top:2px;">
+        {{-- NOTIFIKASI --}}
+        <div class="card-modern mb-4">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
+                <h6 class="fw-bold mb-0" style="color:#1e293b;">
+                    <i class="bi bi-bell-fill me-2"></i>Notifikasi Terbaru
+                </h6>
+                @if(auth()->user()->unreadNotifications->count() > 0)
+                    <span class="badge rounded-pill bg-danger" style="font-size:11px; padding:6px 10px;">
+                        {{ auth()->user()->unreadNotifications->count() }} baru
+                    </span>
+                @endif
+            </div>
+            <div style="max-height:280px; overflow-y:auto;">
+                @forelse(auth()->user()->notifications->take(6) as $notif)
+                    <a href="{{ route('notif.read', $notif->id) }}" class="notification-item d-block text-decoration-none">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                 style="width:36px; height:36px; background:{{ match($notif->data['type'] ?? 'info') {
+                                     'success' => '#dcfce7',
+                                     'warning' => '#fef3c7',
+                                     'danger' => '#fee2e2',
+                                     default => '#dbeafe'
+                                 } }};">
                                 @switch($notif->data['type'] ?? 'info')
-                                    @case('success') <i class="bi bi-check-circle-fill"></i> @break
-                                    @case('warning') <i class="bi bi-exclamation-triangle-fill"></i> @break
-                                    @case('danger')  <i class="bi bi-x-circle-fill"></i> @break
-                                    @default         <i class="bi bi-info-circle-fill"></i>
+                                    @case('success') <i class="bi bi-check-circle-fill" style="color:#15803d;"></i> @break
+                                    @case('warning') <i class="bi bi-exclamation-triangle-fill" style="color:#b45309;"></i> @break
+                                    @case('danger')  <i class="bi bi-x-circle-fill" style="color:#b91c1c;"></i> @break
+                                    @default         <i class="bi bi-info-circle-fill" style="color:#1d4ed8;"></i>
                                 @endswitch
                             </div>
-                            <div style="flex:1; min-width:0;">
-                                <div style="font-size:12px; font-weight:{{ $notif->read_at ? '400' : '600' }}; color:#111827;">
+                            <div class="flex-grow-1 min-w-0">
+                                <div class="fw-semibold mb-1" style="color:#1e293b; font-size:13px;">
                                     {{ $notif->data['title'] ?? 'Notifikasi' }}
                                 </div>
-                                <div style="font-size:11px; color:#6b7280;">
-                                    {{ Str::limit($notif->data['message'] ?? '', 50) }}
+                                <div class="text-muted" style="font-size:12px;">
+                                    {{ Str::limit($notif->data['message'] ?? '', 60) }}
                                 </div>
-                                <div style="font-size:10px; color:#9ca3af; margin-top:2px;">
+                                <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
                                     {{ $notif->created_at->diffForHumans() }}
                                 </div>
                             </div>
                             @if(!$notif->read_at)
-                                <div style="width:7px;height:7px;border-radius:50%;background:#3b82f6;flex-shrink:0;margin-top:5px;"></div>
+                                <div class="flex-shrink-0">
+                                    <span class="badge rounded-circle" style="width:8px; height:8px; background:#3b82f6; padding:0;"></span>
+                                </div>
                             @endif
-                        </a>
-                    @empty
-                        <div class="text-center py-4 text-muted" style="font-size:13px;">
-                            <i class="bi bi-bell-slash" style="font-size:24px; display:block; margin-bottom:6px;"></i>
-                            Belum ada notifikasi
                         </div>
-                    @endforelse
-                </div>
+                    </a>
+                @empty
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-bell-slash-fill" style="font-size:40px; display:block; margin-bottom:8px;"></i>
+                        <p class="mb-0" style="font-size:13px;">Belum ada notifikasi</p>
+                    </div>
+                @endforelse
             </div>
         </div>
 
-        {{-- INFO SLA AKTIF --}}
+        {{-- SLA AKTIF --}}
         @if($suratProses > 0)
-        <div class="card card-custom mb-3">
-            <div class="card-body px-4 py-3">
-                <h6 class="fw-bold mb-3" style="color:#1e3a5f; font-size:13px;">⏱ Status SLA Surat Aktif</h6>
+        <div class="card-modern mb-4">
+            <div class="card-header-modern">
+                <h6 class="fw-bold mb-0" style="color:#1e293b;">
+                    <i class="bi bi-speedometer2 me-2"></i>Status SLA Surat Aktif
+                </h6>
+            </div>
+            <div class="card-body-modern">
                 @foreach($suratAktif as $surat)
                     <div class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span style="font-size:12px; font-weight:500; color:#374151;">
-                                {{ Str::limit($surat->judul, 28) }}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold" style="font-size:13px; color:#1e293b;">
+                                {{ Str::limit($surat->judul, 30) }}
                             </span>
                             @if($surat->sla_status === 'terlambat')
-                                <span style="font-size:10px; font-weight:600; color:#b91c1c;">⚠ Terlambat</span>
+                                <span class="badge" style="font-size:11px; background:#fee2e2; color:#b91c1c; padding:4px 10px;">⚠ Terlambat</span>
                             @else
-                                <span style="font-size:10px; color:#6b7280;">{{ $surat->sisa_jam }}</span>
+                                <span style="font-size:12px; color:#64748b;">{{ $surat->sisa_jam }}</span>
                             @endif
                         </div>
-                        <div class="sla-bar">
+                        <div class="progress" style="height:8px; background:#e2e8f0; border-radius:99px;">
                             @php
                                 $pct = $surat->deadline_sla
                                     ? min(100, now()->diffInMinutes($surat->created_at) /
@@ -323,9 +419,9 @@
                                     : 50;
                                 $color = $pct >= 90 ? '#ef4444' : ($pct >= 60 ? '#f59e0b' : '#22c55e');
                             @endphp
-                            <div class="sla-fill" style="width:{{ $pct }}%; background:{{ $color }};"></div>
+                            <div class="progress-bar" style="width:{{ $pct }}%; background:{{ $color }}; border-radius:99px;"></div>
                         </div>
-                        <div style="font-size:10px; color:#9ca3af; margin-top:2px;">
+                        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
                             Tahap {{ $surat->tahap_sekarang }}/10 · {{ $surat->nama_tahap }}
                         </div>
                     </div>
@@ -334,31 +430,155 @@
         </div>
         @endif
 
-        {{-- DOWNLOAD TEMPLATE --}}
-        <div class="card card-custom">
-            <div class="card-body px-4 py-3">
-                <h6 class="fw-bold mb-3" style="color:#1e3a5f; font-size:13px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-check" viewBox="0 0 16 16">
-                    <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2zm3.708 6.208L1 11.105V5.383zM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2z"/>
-                    <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0m-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686"/>
-                </svg> Template Surat
+        {{-- TEMPLATE --}}
+        <div class="card-modern">
+            <div class="card-header-modern">
+                <h6 class="fw-bold mb-0" style="color:#1e293b;">
+                    <i class="bi bi-file-earmark-richtext-fill me-2"></i>Template Surat
                 </h6>
+            </div>
+            <div class="card-body-modern">
                 @forelse($templates as $tpl)
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <i class="bi bi-file-earmark-word" style="color:#2563eb; font-size:18px;"></i>
-                        <span style="font-size:12px; flex:1; color:#374151;">{{ $tpl['nama'] }}</span>
-                        <a href="{{ $tpl['url'] }}" target="_blank"
-                           class="btn btn-sm" style="font-size:11px; padding:3px 10px; border:1px solid #e5e7eb; border-radius:6px; color:#1e3a5f;">
-                            <i class="bi bi-download"></i>
+                    <div class="d-flex align-items-center gap-3 mb-3 p-2 rounded" style="background:#f8fafc;">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px; height:36px; background:#dbeafe;">
+                            <i class="bi bi-file-earmark-word-fill" style="color:#2563eb; font-size:16px;"></i>
+                        </div>
+                        <span class="flex-grow-1" style="font-size:13px; color:#1e293b; font-weight:500;">{{ $tpl['nama'] }}</span>
+                        <a href="{{ $tpl['url'] }}" target="_blank" class="btn btn-sm" style="font-size:12px; background:#eff6ff; color:#1d4ed8; border:none; padding:6px 12px; border-radius:8px;">
+                            <i class="bi bi-download me-1"></i> Unduh
                         </a>
                     </div>
                 @empty
-                    <div class="text-muted" style="font-size:12px;">Belum ada template tersedia.</div>
+                    <div class="text-center text-muted py-3">
+                        <p class="mb-0" style="font-size:13px;">Belum ada template tersedia.</p>
+                    </div>
                 @endforelse
             </div>
         </div>
-
     </div>
 </div>
+
+{{-- CHARTS SECTION --}}
+<div class="row g-4 mt-2">
+    <div class="col-12 col-lg-6 animate-in" style="animation-delay: 0.5s;">
+        <div class="card-modern h-100">
+            <div class="card-header-modern">
+                <h6 class="fw-bold mb-1" style="color:#1e293b;">
+                    <i class="bi bi-pie-chart-fill me-2"></i>Distribusi Jenis Surat
+                </h6>
+                <small class="text-muted">Persentase setiap jenis surat yang diajukan</small>
+            </div>
+            <div class="card-body-modern">
+                <div class="chart-container">
+                    <canvas id="jenisChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6 animate-in" style="animation-delay: 0.6s;">
+        <div class="card-modern h-100">
+            <div class="card-header-modern">
+                <h6 class="fw-bold mb-1" style="color:#1e293b;">
+                    <i class="bi bi-graph-up-arrow me-2"></i>Tren Pengajuan Surat
+                </h6>
+                <small class="text-muted">6 bulan terakhir</small>
+            </div>
+            <div class="card-body-modern">
+                <div class="chart-container">
+                    <canvas id="trenChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Chart.js CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Chart: Distribusi Jenis Surat
+    const jenisCtx = document.getElementById('jenisChart');
+    if (jenisCtx) {
+        const jenisData = @json($jenisSurat);
+        const jenisLabels = @json(\App\Models\Surat::JENIS_LABEL);
+        
+        const labels = Object.keys(jenisData).map(key => jenisLabels[key] || key);
+        const data = Object.values(jenisData);
+        const colors = ['#1e3a5f', '#2563eb', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+        
+        new Chart(jenisCtx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors.slice(0, data.length),
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 16,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: { size: 12 }
+                        }
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+    }
+
+    // Chart: Tren Bulanan
+    const trenCtx = document.getElementById('trenChart');
+    if (trenCtx) {
+        const trenData = @json($trenBulanan);
+        const labels = Object.keys(trenData);
+        const data = Object.values(trenData);
+        
+        new Chart(trenCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Jumlah Surat',
+                    data: data,
+                    backgroundColor: 'rgba(30, 58, 95, 0.8)',
+                    borderColor: '#1e3a5f',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 },
+                        grid: { color: '#f1f5f9' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
 
 @endsection
