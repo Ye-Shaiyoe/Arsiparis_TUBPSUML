@@ -12,6 +12,7 @@ class Surat extends Model
         'file_word', 'file_lampiran', 'nomor_surat', 'tanggal_surat',
         'tahap_sekarang', 'status', 'perlu_follow_up', 'catatan_follow_up',
         'deadline_sla', 'disetujui_pada', 'file_dihapus_pada', 'file_expires_at',
+        'status_revisi', 'revisi_count', 'revisi_uploaded_at',
     ];
 
     protected $casts = [
@@ -21,6 +22,8 @@ class Surat extends Model
         'disetujui_pada' => 'datetime',
         'file_dihapus_pada' => 'datetime',
         'file_expires_at' => 'datetime',
+        'status_revisi' => 'boolean',
+        'revisi_uploaded_at' => 'datetime',
     ];
 
     // Label tampilan
@@ -89,23 +92,32 @@ class Surat extends Model
     {
         if (!$this->deadline_sla) return '-';
         if (now()->gt($this->deadline_sla)) {
-            $diff = now()->diffInHours($this->deadline_sla);
+            $diff = round(now()->diffInHours($this->deadline_sla), 1);
             return 'Terlambat ' . $diff . 'j';
         }
         $diff = now()->diff($this->deadline_sla);
         return $diff->h . 'j ' . $diff->i . 'm';
     }
 
-    public function getJamTerlambatAttribute(): int
+    public function getJamTerlambatAttribute(): float
     {
         if (!$this->deadline_sla || $this->status === 'selesai') return 0;
         if (now()->gt($this->deadline_sla)) {
-            return (int) now()->diffInHours($this->deadline_sla);
+            return round(now()->diffInHours($this->deadline_sla), 1);
         }
         return 0;
     }
 
-    // Inisialisasi semua tahapan saat surat dibuat
+    public function bisaRevisi(): bool
+    {
+        return $this->status === 'ditolak';
+    }
+
+    public function sedangRevisi(): bool
+    {
+        return $this->status === 'revisi';
+    }
+
     public function initTahapan(): void
     {
         foreach (self::NAMA_TAHAP as $tahap => $nama) {
