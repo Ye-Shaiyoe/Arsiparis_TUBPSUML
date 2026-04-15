@@ -340,6 +340,7 @@
             color: rgb(0, 0, 0);
         }
     </style>
+    @stack('styles')
 </head>
 <body>
 
@@ -369,6 +370,10 @@
         <a href="{{ route('admin.laporan.index') }}"
            class="menu-item {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
             <span class="menu-icon"><i class="bi bi-file-earmark-text"></i></span> Rekap Bulanan
+        </a>
+        <a href="{{ route('admin.riwayat.index') }}"
+           class="menu-item {{ request()->routeIs('admin.riwayat.*') ? 'active' : '' }}">
+            <span class="menu-icon"><i class="bi bi-clock-history"></i></span> Riwayat Pemrosesan
         </a>
 
         <div class="menu-label">Komunikasi</div>
@@ -533,5 +538,6 @@
 })();
 </script>
 
+@stack('scripts')
 </body>
 </html>
