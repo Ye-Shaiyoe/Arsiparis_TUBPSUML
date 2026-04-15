@@ -9,6 +9,7 @@ use App\Models\SuratDeleteRequest;
 use App\Models\User;
 use App\Notifications\SuratStatusNotification;
 use App\Notifications\SuratDiprosesNotification;
+use App\Notifications\FileRevisiNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -42,7 +43,9 @@ class SuratController extends Controller
         if ($request->filled('tahap'))  $query->where('tahap_sekarang', $request->tahap);
         if ($request->filled('search')) $query->where('judul', 'like', '%'.$request->search.'%');
 
-        $surats = $query->paginate(15)->withQueryString();
+        // Tampilkan surat dengan status 'revisi' di paling atas (prioritas)
+        $surats = $query->orderByRaw("CASE WHEN status = 'revisi' THEN 0 ELSE 1 END")
+                        ->paginate(15)->withQueryString();
 
         return view('admin.surat.index', compact('surats'));
     }
@@ -64,6 +67,11 @@ class SuratController extends Controller
         $admin = Auth::user();
         if (!$admin->canApproveTahap($surat->tahap_sekarang)) {
             return back()->with('error', 'Anda tidak memiliki wewenang untuk approve tahap ini.');
+        }
+
+        // Jika status revisi, set jadi 'proses' lagi
+        if ($surat->status === 'revisi') {
+            $surat->update(['status' => 'proses']);
         }
 
         // Tandai tahap sekarang selesai
@@ -133,6 +141,9 @@ class SuratController extends Controller
             'catatan' => 'required|string|max:500',
         ]);
 
+        // Jika sudah status revisi, set kembali ke ditolak
+        $statusSebelumnya = $surat->status;
+        
         SuratTahapan::where('surat_id', $surat->id)
             ->where('tahap', $surat->tahap_sekarang)
             ->update([
@@ -148,16 +159,16 @@ class SuratController extends Controller
         $surat->user->notify(new SuratStatusNotification(
             surat  : $surat,
             type   : 'danger',
-            title  : '❌ Surat ditolak',
-            message: "Surat \"{$surat->judul}\" ditolak. Alasan: {$request->catatan}",
+            title  : $statusSebelumnya === 'revisi' ? '❌ File revisi ditolak' : '❌ Surat ditolak',
+            message: "Surat \"{$surat->judul}\" " . ($statusSebelumnya === 'revisi' ? 'file revisinya tetap' : 'ditolak') . ". Alasan: {$request->catatan}",
             url    :route('user.surat.show', $surat->id),
         ));
 
         // Notif ke admin lain
-        $this->notifAdminLain($surat, Auth::user(), 'ditolak');
+        $this->notifAdminLain($surat, Auth::user(), $statusSebelumnya === 'revisi' ? 'revisi ditolak' : 'ditolak');
 
         return redirect()->route('admin.surat.index')
-                         ->with('success', 'Surat telah ditolak.');
+                         ->with('success', $statusSebelumnya === 'revisi' ? 'File revisi ditolak. User bisa upload ulang.' : 'Surat telah ditolak.');
     }
 
     // Kirim notif ke semua admin kecuali yang sedang login
@@ -371,7 +382,6 @@ class SuratController extends Controller
             'admin_catatan' => 'required|string|max:500',
         ]);
 
-        // Update status request
         $deleteRequest->update([
             'admin_id'          => Auth::id(),
             'status'            => 'ditolak',
@@ -379,7 +389,6 @@ class SuratController extends Controller
             'admin_approved_at' => now(),
         ]);
 
-        // Notifikasi ke user bahwa request ditolak
         $surat = $deleteRequest->surat;
         $surat->user->notify(new SuratStatusNotification(
             surat: $surat,
@@ -392,9 +401,6 @@ class SuratController extends Controller
         return back()->with('info', 'Permintaan hapus ditolak.');
     }
 
-    /**
-     * Hapus surat beserta file-nya
-     */
     private function hapusSurat(Surat $surat)
     {
         // Hapus file word
@@ -413,7 +419,6 @@ class SuratController extends Controller
             }
         }
 
-        // Hapus surat (tahapans akan terhapus otomatis karena cascade)
         $surat->delete();
     }
 }
