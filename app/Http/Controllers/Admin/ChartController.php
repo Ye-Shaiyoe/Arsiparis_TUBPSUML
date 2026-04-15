@@ -33,6 +33,7 @@ class ChartController extends Controller
                 'suratPerTahap'  => $this->suratPerTahap(),
                 'trendHarian'    => $this->trendHarian(),
                 'topPengusul'    => $this->topPengusul($tahun),
+                'topAdmin'       => $this->topAdmin($tahun),
             ];
         });
 
@@ -234,6 +235,25 @@ class ChartController extends Controller
             ->groupBy('u.id', 'u.name')
             ->orderByDesc('total')
             ->limit(5)
+            ->get();
+
+        return [
+            'labels' => $rows->pluck('name')->toArray(),
+            'data'   => $rows->pluck('total')->map(fn($v) => (int) $v)->toArray(),
+        ];
+    }
+
+    // ── Top 10 admin pemroses terbanyak (bar) ──────────────────────────────────
+    private function topAdmin(int $tahun): array
+    {
+        $rows = DB::table('surat_tahapans as st')
+            ->join('users as u', 'st.diproses_oleh', '=', 'u.id')
+            ->whereYear('st.created_at', $tahun)
+            ->whereNotNull('st.diproses_oleh')
+            ->selectRaw('u.name, COUNT(*) as total')
+            ->groupBy('u.id', 'u.name')
+            ->orderByDesc('total')
+            ->limit(10)
             ->get();
 
         return [
