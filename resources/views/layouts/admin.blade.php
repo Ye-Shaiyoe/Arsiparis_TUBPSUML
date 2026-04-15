@@ -396,7 +396,6 @@
         </a>
     </nav>
 
-    
     <div class="sidebar-user">
         <strong>{{ Auth::user()->name }}</strong>
         {{ Auth::user()->getRoleLabel() }}
