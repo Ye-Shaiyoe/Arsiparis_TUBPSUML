@@ -638,4 +638,13 @@ document.addEventListener('keydown', function(e) {
 {{-- Include partial untuk delete requests --}}
 @include('admin.surat._delete-requests')
 
+{{-- SISTEM KOMENTAR / DISKUSI --}}
+<x-komentar-section :surat="$surat" />
+
+{{-- Pass user ID to JavaScript --}}
+<script>
+    window.currentUserId = {{ auth()->id() }};
+    window.isAdmin = true;
+</script>
+
 @endsection

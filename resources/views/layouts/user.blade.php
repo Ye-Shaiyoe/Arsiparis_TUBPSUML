@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Dashboard' }} — Surat Balai Pengelola SUML</title>
     <link rel="icon" href="{{ asset('images/BPSUML2.png') }}">
 

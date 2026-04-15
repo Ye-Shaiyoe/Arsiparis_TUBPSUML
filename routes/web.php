@@ -10,6 +10,7 @@ use App\Http\Controllers\User\TemplateController as UserTemplateController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationApiController;
+use App\Http\Controllers\KomentarController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,6 +34,12 @@ Route::prefix('surat')->name('user.surat.')->group(function () {
     Route::get('/{surat}',   [UserSurat::class, 'show'])->name('show');
     Route::post('/{surat}/reupload', [UserSurat::class, 'reuploadFile'])->name('reupload');
     Route::delete('/{surat}', [UserSurat::class, 'requestDelete'])->name('requestDelete');
+
+    // Komentar routes
+    Route::get('/{surat}/komentar', [KomentarController::class, 'index'])->name('komentar.index');
+    Route::post('/{surat}/komentar', [KomentarController::class, 'store'])->name('komentar.store');
+    Route::post('/{surat}/komentar/{komentar}/reply', [KomentarController::class, 'reply'])->name('komentar.reply');
+    Route::delete('/{surat}/komentar/{komentar}', [KomentarController::class, 'destroy'])->name('komentar.destroy');
 });
 
 
@@ -58,6 +65,12 @@ Route::prefix('Admin')->middleware(['auth', 'verified', 'admin'])->name('admin.'
         Route::post('/Surat/{surat}/tolak', [SuratController::class, 'tolak'])->name('surat.tolak');
         Route::post('/Surat/delete-request/{deleteRequest}/approve', [SuratController::class, 'approveDelete'])->name('surat.approveDelete');
         Route::post('/Surat/delete-request/{deleteRequest}/reject', [SuratController::class, 'rejectDelete'])->name('surat.rejectDelete');
+
+        // Admin Komentar routes
+        Route::get('/Surat/{surat}/komentar', [KomentarController::class, 'index'])->name('surat.komentar.index');
+        Route::post('/Surat/{surat}/komentar', [KomentarController::class, 'store'])->name('surat.komentar.store');
+        Route::post('/Surat/{surat}/komentar/{komentar}/reply', [KomentarController::class, 'reply'])->name('surat.komentar.reply');
+        Route::delete('/Surat/{surat}/komentar/{komentar}', [KomentarController::class, 'destroy'])->name('surat.komentar.destroy');
 
         Route::get('/Laporan', [LaporanController::class, 'index'])->name('laporan.index');
         Route::get('/Laporan/export', [LaporanController::class, 'export'])->name('laporan.export');

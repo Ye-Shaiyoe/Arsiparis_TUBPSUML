@@ -66,6 +66,11 @@ class Surat extends Model
         return $this->hasOne(SuratTahapan::class)->where('tahap', $this->tahap_sekarang);
     }
 
+    public function komentars()
+    {
+        return $this->hasMany(Komentar::class)->root()->with(['user', 'replies.user'])->orderBy('created_at');
+    }
+
     // Helpers
     public function getJenisLabelAttribute(): string
     {
