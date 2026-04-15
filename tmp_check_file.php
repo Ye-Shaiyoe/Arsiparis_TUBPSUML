@@ -19,7 +19,6 @@ if ($disk->exists($path)) {
     echo "size       : " . filesize($fullPath) . " bytes\n";
     echo "ext        : " . strtolower(pathinfo($fullPath, PATHINFO_EXTENSION)) . "\n";
 
-    // Baca 8 bytes pertama
     $fp = fopen($fullPath, 'rb');
     $bytes = fread($fp, 8);
     fclose($fp);
