@@ -10,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit" async defer></script>
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -127,6 +128,7 @@
             display: flex; align-items: center; justify-content: center;
             position: relative;
             box-shadow: 0 0 0 8px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.2);
+            margin: 0 auto 20px;
         }
         .logo-outer::before {
             content: ''; position: absolute; inset: -8px; border-radius: 50%;
@@ -143,7 +145,11 @@
             background: rgba(255,255,255,0.08);
             display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
-        .logo-inner img { width: 100%; height: 100%; object-fit: contain; }
+        .logo-inner img { 
+            width: 100%; height: 100%; 
+            object-fit: contain;
+            display: block;
+        }
 
         .brand-title {
             font-family: 'Sora', sans-serif;
@@ -393,6 +399,93 @@
             .fields-grid { grid-template-columns: 1fr; }
             .field-full { grid-column: 1; }
         }
+
+        /* ── CAPTCHA Modal ── */
+        .captcha-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(5, 15, 30, 0.75);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity .3s ease;
+        }
+        .captcha-overlay.show { opacity: 1; pointer-events: all; }
+        .captcha-card {
+            background: linear-gradient(145deg, rgba(16,50,98,0.97) 0%, rgba(10,37,64,0.99) 100%);
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 24px;
+            padding: 36px 32px 28px;
+            width: min(92vw, 420px);
+            box-shadow: 0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(99,179,237,0.1);
+            transform: translateY(28px) scale(0.96);
+            transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+            opacity: 0;
+            position: relative;
+        }
+        .captcha-overlay.show .captcha-card {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        .captcha-close {
+            position: absolute; top: 14px; right: 16px;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%; width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--muted); cursor: pointer; font-size: 14px;
+            transition: background .2s, color .2s;
+        }
+        .captcha-close:hover { background: rgba(255,255,255,0.13); color: white; }
+        .captcha-icon {
+            width: 56px; height: 56px; border-radius: 16px;
+            background: linear-gradient(135deg, rgba(26,86,219,0.35), rgba(56,189,248,0.15));
+            border: 1px solid rgba(56,189,248,0.25);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; margin: 0 auto 16px;
+            box-shadow: 0 0 28px rgba(56,189,248,0.12);
+        }
+        .captcha-title {
+            font-family: 'Sora', sans-serif; color: white;
+            font-size: 18px; font-weight: 800;
+            text-align: center; letter-spacing: -0.02em; margin-bottom: 6px;
+        }
+        .captcha-subtitle {
+            color: var(--muted); font-size: 12px;
+            text-align: center; margin-bottom: 22px; line-height: 1.65;
+        }
+        .captcha-widget-wrap {
+            display: flex; justify-content: center;
+            margin-bottom: 20px; min-height: 78px;
+            align-items: center;
+        }
+        .captcha-loading {
+            color: var(--muted); font-size: 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .captcha-loading .spin {
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-top-color: #38bdf8;
+            animation: spinAnim .7s linear infinite; display: inline-block;
+        }
+        @keyframes spinAnim { to { transform: rotate(360deg); } }
+        .captcha-error-msg {
+            background: rgba(253,100,116,0.1); border: 1px solid rgba(253,100,116,0.25);
+            border-radius: 10px; color: #fca5a5;
+            font-size: 11.5px; padding: 10px 14px;
+            display: none; align-items: center; gap: 8px;
+            margin-bottom: 14px;
+        }
+        .captcha-error-msg.show { display: flex; }
+        .captcha-divider {
+            width: 100%; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            margin: 18px 0 16px;
+        }
+        .captcha-footer {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            color: rgba(255,255,255,0.25); font-size: 10.5px;
+        }
+        .captcha-footer img { height: 14px; opacity: 0.35; }
     </style>
 </head>
 <body>
@@ -577,7 +670,16 @@
 
                 </div>
 
-                <button type="submit" class="btn-submit">
+                {{-- Error reCAPTCHA --}}
+                @error('recaptcha')
+                    <div class="captcha-error-msg show" style="margin-top:8px;">
+                        <i class="bi bi-exclamation-triangle-fill"></i> {{ $message }}
+                    </div>
+                @enderror
+
+                {{-- Tombol buka modal reCAPTCHA --}}
+                <button type="button" class="btn-submit" id="btnDaftar" onclick="openCaptchaModal()">
+                    <i class="bi bi-shield-check me-1"></i>
                     Daftar Sekarang
                     <span class="arrow">→</span>
                 </button>
@@ -595,7 +697,48 @@
         </div>
     </div>
 
+    <!-- ══ CAPTCHA Modal ══ -->
+    <div class="captcha-overlay" id="captchaOverlay" role="dialog" aria-modal="true">
+        <div class="captcha-card">
+
+            <button class="captcha-close" onclick="closeCaptchaModal()" aria-label="Tutup">
+                <i class="bi bi-x"></i>
+            </button>
+
+            <div class="logo-outer">
+                <div class="logo-inner">
+                    <img src="{{ asset('images/BPSUML2.png') }}" alt="Logo Dinas">
+                </div>
+            </div>
+            <div class="captcha-title">Verifikasi Keamanan</div>
+            <div class="captcha-subtitle">
+                Centang kotak di bawah untuk membuktikan<br>bahwa Anda bukan robot
+            </div>
+
+            <div class="captcha-error-msg" id="captchaErrMsg">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span id="captchaErrText">Harap selesaikan verifikasi terlebih dahulu.</span>
+            </div>
+
+            <div class="captcha-widget-wrap">
+                <div id="recaptcha-box">
+                    <div class="captcha-loading">
+                        <span class="spin"></span> Memuat verifikasi...
+                    </div>
+                </div>
+            </div>
+
+            <div class="captcha-divider"></div>
+            <div class="captcha-footer">
+                <span>Dilindungi oleh</span>
+                <strong style="color:rgba(255,255,255,0.4);">Google reCAPTCHA</strong>
+            </div>
+
+        </div>
+    </div>
+
     <script>
+        /* ── Password toggle ── */
         function togglePw(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon  = document.getElementById(iconId);
@@ -604,6 +747,7 @@
             icon.className = shown ? 'bi bi-eye' : 'bi bi-eye-slash';
         }
 
+        /* ── Password strength ── */
         function checkStrength(val) {
             const segs = [document.getElementById('s1'), document.getElementById('s2'),
                           document.getElementById('s3'), document.getElementById('s4')];
@@ -617,10 +761,106 @@
             if (/[0-9]/.test(val)) score++;
             if (/[^A-Za-z0-9]/.test(val)) score++;
 
-            const cls = score <= 1 ? 'weak' : score <= 2 ? 'weak' : score === 3 ? 'medium' : 'strong';
             const colors = score <= 1 ? ['weak'] : score === 2 ? ['weak','weak'] : score === 3 ? ['medium','medium','medium'] : ['strong','strong','strong','strong'];
             colors.forEach((c, i) => segs[i].classList.add(c));
         }
+
+        /* ── reCAPTCHA Modal ── */
+        let recaptchaWidgetId = null;
+        let captchaReady = false;
+
+        // Dipanggil otomatis oleh Google setelah script reCAPTCHA load
+        function onRecaptchaLoad() {
+            captchaReady = true;
+            renderWidget();
+        }
+
+        function renderWidget() {
+            if (!captchaReady) return;
+            const box = document.getElementById('recaptcha-box');
+            if (!box) return;
+            // Hapus loading indicator
+            box.innerHTML = '';
+            try {
+                recaptchaWidgetId = grecaptcha.render(box, {
+                    sitekey  : '{{ config("services.recaptcha.site_key") }}',
+                    callback : onCaptchaSuccess,
+                    theme    : 'light',   // 'light' | 'dark' (kotak google selalu terang)
+                    size     : 'normal',
+                });
+            } catch(e) {
+                // Widget sudah dirender sebelumnya — reset saja
+                grecaptcha.reset(recaptchaWidgetId);
+            }
+        }
+
+        function openCaptchaModal() {
+            // Validasi HTML5 native dulu
+            const form = document.querySelector('form');
+            if (!form.checkValidity()) { form.reportValidity(); return; }
+
+            hideCaptchaError();
+            document.getElementById('captchaOverlay').classList.add('show');
+
+            if (captchaReady && recaptchaWidgetId === null) {
+                renderWidget();
+            } else if (captchaReady && recaptchaWidgetId !== null) {
+                grecaptcha.reset(recaptchaWidgetId);
+            }
+        }
+
+        function closeCaptchaModal() {
+            document.getElementById('captchaOverlay').classList.remove('show');
+        }
+
+        function showCaptchaError(msg) {
+            const el = document.getElementById('captchaErrMsg');
+            document.getElementById('captchaErrText').textContent = msg;
+            el.classList.add('show');
+        }
+
+        function hideCaptchaError() {
+            document.getElementById('captchaErrMsg').classList.remove('show');
+        }
+
+        // Callback dari Google setelah reCAPTCHA berhasil diisi
+        function onCaptchaSuccess(token) {
+            hideCaptchaError();
+
+            // ✅ Inject token ke dalam form secara manual
+            // (widget ada di luar <form>, jadi hidden input Google tidak ikut submit)
+            let tokenInput = document.getElementById('g-recaptcha-token');
+            if (!tokenInput) {
+                tokenInput = document.createElement('input');
+                tokenInput.type  = 'hidden';
+                tokenInput.name  = 'g-recaptcha-response';
+                tokenInput.id    = 'g-recaptcha-token';
+                document.querySelector('form').appendChild(tokenInput);
+            }
+            tokenInput.value = token;
+
+            // Ubah tampilan tombol submit utama
+            const btn = document.getElementById('btnDaftar');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Terverifikasi! Mendaftarkan...';
+            btn.style.background = 'linear-gradient(135deg,#059669,#34d399)';
+
+            // Tutup modal & submit form
+            setTimeout(() => {
+                closeCaptchaModal();
+                document.querySelector('form').submit();
+            }, 600);
+        }
+
+        // Tutup modal jika klik backdrop
+        document.getElementById('captchaOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeCaptchaModal();
+        });
+
+        // Tutup dengan Escape
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeCaptchaModal();
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
