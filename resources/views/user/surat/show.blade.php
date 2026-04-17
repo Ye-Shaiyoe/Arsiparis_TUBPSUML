@@ -4,11 +4,11 @@
 @section('content')
 
 <div class="d-flex align-items-center gap-2 mb-4">
-    <a href="{{ route('user.surat.index') }}" class="btn btn-sm btn-light" style="border-radius:8px;">
+    <a href="{{ route('user.surat.index') }}" class="btn btn-sm btn-light" style="border-radius:8px;background:var(--bg-tertiary);color:var(--text-primary);border-color:var(--border-color);">
         <i class="bi bi-arrow-left"></i>
     </a>
     <div class="flex-grow-1">
-        <h5 class="fw-bold mb-0" style="color:#1e3a5f;">Detail & Tracking Surat</h5>
+        <h5 class="fw-bold mb-0" style="color:var(--text-primary);">Detail & Tracking Surat</h5>
         <small class="text-muted">Pantau progress pengajuan surat kamu</small>
     </div>
     {{-- Tombol Hapus --}}
@@ -31,7 +31,7 @@
             <div class="card-body p-4">
                 <div class="d-flex align-items-start justify-content-between gap-2 mb-3">
                     <div>
-                        <h5 class="fw-bold mb-2" style="color:#111827;">{{ $surat->judul }}</h5>
+                        <h5 class="fw-bold mb-2" style="color:var(--text-primary);">{{ $surat->judul }}</h5>
                         <div class="d-flex gap-2 flex-wrap">
                             <span class="badge rounded-pill" style="background:#ede9fe;color:#6d28d9;font-size:11px;">
                                 {{ $surat->jenis_label }}
@@ -52,26 +52,26 @@
 
                 <div class="row g-3" style="font-size:13px;">
                     <div class="col-sm-6">
-                        <div style="color:#6b7280;font-size:11px;font-weight:600;margin-bottom:3px;">TUJUAN SURAT</div>
-                        <div style="color:#111827;">{{ $surat->tujuan }}</div>
+                        <div style="color:var(--text-secondary);font-size:11px;font-weight:600;margin-bottom:3px;">TUJUAN SURAT</div>
+                        <div style="color:var(--text-primary);">{{ $surat->tujuan }}</div>
                     </div>
                     <div class="col-sm-6">
-                        <div style="color:#6b7280;font-size:11px;font-weight:600;margin-bottom:3px;">TANGGAL PENGAJUAN</div>
-                        <div>{{ $surat->created_at->Format('d F Y, H:i') }}</div>
+                        <div style="color:var(--text-secondary);font-size:11px;font-weight:600;margin-bottom:3px;">TANGGAL PENGAJUAN</div>
+                        <div style="color:var(--text-primary);">{{ $surat->created_at->Format('d F Y, H:i') }}</div>
                     </div>
                     @if($surat->nomor_surat)
                     <div class="col-sm-6">
-                        <div style="color:#6b7280;font-size:11px;font-weight:600;margin-bottom:3px;">NOMOR SURAT</div>
+                        <div style="color:var(--text-secondary);font-size:11px;font-weight:600;margin-bottom:3px;">NOMOR SURAT</div>
                         <div class="fw-semibold" style="color:#1e3a5f;">{{ $surat->nomor_surat }}</div>
                     </div>
                     <div class="col-sm-6">
-                        <div style="color:#6b7280;font-size:11px;font-weight:600;margin-bottom:3px;">TANGGAL SURAT</div>
-                        <div>{{ $surat->tanggal_surat?->format('d M Y') ?? '—' }}</div>
+                        <div style="color:var(--text-secondary);font-size:11px;font-weight:600;margin-bottom:3px;">TANGGAL SURAT</div>
+                        <div style="color:var(--text-primary);">{{ $surat->tanggal_surat?->format('d M Y') ?? '—' }}</div>
                     </div>
                     @endif
                     <div class="col-sm-6">
-                        <div style="color:#6b7280;font-size:11px;font-weight:600;margin-bottom:3px;">DEADLINE SLA</div>
-                        <div style="color:{{ $surat->sla_status === 'terlambat' ? '#b91c1c' : '#374151' }};font-weight:500;">
+                        <div style="color:var(--text-secondary);font-size:11px;font-weight:600;margin-bottom:3px;">DEADLINE SLA</div>
+                        <div style="color:{{ $surat->sla_status === 'terlambat' ? '#b91c1c' : 'var(--text-primary)' }};font-weight:500;">
                             {{ $surat->deadline_sla?->format('d M Y, H:i') ?? '—' }}
                             @if($surat->sla_status === 'terlambat')
                                 <span class="badge bg-danger ms-1" style="font-size:10px;">Terlambat</span>
@@ -83,31 +83,31 @@
                 {{-- Progress overall --}}
                 <div class="mt-4">
                     <div class="d-flex justify-content-between mb-1">
-                        <span style="font-size:12px;font-weight:600;color:#374151;">Progress Keseluruhan</span>
+                        <span style="font-size:12px;font-weight:600;color:var(--text-primary);">Progress Keseluruhan</span>
                         <span style="font-size:12px;font-weight:700;color:#1e3a5f;">{{ $surat->proses_persen }}%</span>
                     </div>
-                    <div class="progress" style="height:8px;border-radius:99px;">
+                    <div class="progress" style="height:8px;border-radius:99px;background:var(--border-color);">
                         <div class="progress-bar" role="progressbar"
                              style="width:{{ $surat->proses_persen }}%;background:#1e3a5f;border-radius:99px;">
                         </div>
                     </div>
-                    <div style="font-size:11px;color:#6b7280;margin-top:4px;">
+                    <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">
                         Tahap {{ $surat->tahap_sekarang }} dari 10 · {{ $surat->nama_tahap }}
                     </div>
                 </div>
 
                 {{-- Lampiran --}}
                 <div class="mt-4 pt-3 border-top d-flex gap-2 flex-wrap">
-                    <a href="{{ Storage::url($surat->file_word) }}" target="_blank"
+                    <a href="{{ route('user.surat.preview', [$surat, 'word']) }}"
                        class="btn btn-sm d-flex align-items-center gap-2"
-                       style="font-size:12px;border:1px solid #e5e7eb;border-radius:8px;color:#1e3a5f;">
-                        <i class="bi bi-file-earmark-word" style="color:#2563eb;"></i> Unduh File Surat
+                       style="font-size:12px;border:1px solid var(--border-color);border-radius:8px;color:#1e3a5f;background:var(--bg-secondary);">
+                        <i class="bi bi-file-earmark-word" style="color:#2563eb;"></i> Preview / Unduh Surat
                     </a>
                     @if($surat->file_lampiran)
-                        <a href="{{ Storage::url($surat->file_lampiran) }}" target="_blank"
+                        <a href="{{ route('user.surat.preview', [$surat, 'lampiran']) }}"
                            class="btn btn-sm d-flex align-items-center gap-2"
-                           style="font-size:12px;border:1px solid #e5e7eb;border-radius:8px;color:#1e3a5f;">
-                            <i class="bi bi-paperclip"></i> Unduh Lampiran
+                           style="font-size:12px;border:1px solid var(--border-color);border-radius:8px;color:#1e3a5f;background:var(--bg-secondary);">
+                            <i class="bi bi-paperclip"></i> Preview / Unduh Lampiran
                         </a>
                     @endif
                 </div>
@@ -134,20 +134,20 @@
                         @csrf
                         <div class="row g-3">
                             <div class="col-12">
-                                <label class="form-label" style="font-size:13px;font-weight:600;">
+                                <label class="form-label" style="font-size:13px;font-weight:600;color:var(--text-primary);">
                                     <i class="bi bi-file-earmark-word text-primary"></i> File Surat (.docx/.doc) <span class="text-danger">*</span>
                                 </label>
                                 <input type="file" name="file_word" class="form-control" accept=".docx,.doc" required
-                                       style="font-size:13px;">
+                                       style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);">
                                 <small class="text-muted">Upload file Word yang sudah diperbaiki (max 10MB)</small>
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label" style="font-size:13px;font-weight:600;">
+                                <label class="form-label" style="font-size:13px;font-weight:600;color:var(--text-primary);">
                                     <i class="bi bi-paperclip text-secondary"></i> File Lampiran (opsional)
                                 </label>
                                 <input type="file" name="file_lampiran" class="form-control" accept=".pdf,.jpg,.jpeg,.png"
-                                       style="font-size:13px;">
+                                       style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);">
                                 <small class="text-muted">PDF/JPG/PNG (max 20MB)</small>
                             </div>
 
@@ -166,7 +166,7 @@
         {{-- TRACKING TIMELINE --}}
         <div class="card card-custom">
             <div class="card-body p-4">
-                <h6 class="fw-bold mb-4" style="color:#1e3a5f;">
+                <h6 class="fw-bold mb-4" style="color:var(--text-primary);">
                     <i class="bi bi-map me-2"></i>Timeline Proses Surat
                 </h6>
 
@@ -195,14 +195,14 @@
 
                         <div class="step-content" style="padding-bottom:{{ $loop->last ? '0' : '24px' }};">
                             <div class="d-flex align-items-start justify-content-between gap-2">
-                                <div class="step-title {{ $tahapan->status }}" style="font-size:14px;">
+                                <div class="step-title {{ $tahapan->status }}" style="font-size:14px;color:var(--text-primary);">
                                     {{ $tahapan->nama_tahap }}
                                     @if($tahapan->status === 'proses')
                                         <span class="badge rounded-pill ms-1" style="background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:500;">Sedang diproses</span>
                                     @endif
                                 </div>
                                 @if($tahapan->selesai_pada)
-                                    <span style="font-size:11px;color:#9ca3af;white-space:nowrap;flex-shrink:0;">
+                                    <span style="font-size:11px;color:var(--text-secondary);white-space:nowrap;flex-shrink:0;">
                                         {{ $tahapan->selesai_pada->format('d M Y, H:i') }}
                                     </span>
                                 @endif
@@ -299,7 +299,7 @@
         {{-- RINGKASAN TAHAPAN --}}
         <div class="card card-custom mb-3">
             <div class="card-body p-4">
-                <h6 class="fw-bold mb-3" style="color:#1e3a5f;font-size:13px;">📋 Ringkasan Tahapan</h6>
+                <h6 class="fw-bold mb-3" style="color:var(--text-primary);font-size:13px;">📋 Ringkasan Tahapan</h6>
                 @foreach($surat->tahapans as $tahapan)
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <div style="
@@ -315,7 +315,7 @@
                             @endif
                         </div>
                         <div style="font-size:11px;
-                            color:{{ $tahapan->status === 'menunggu' ? '#9ca3af' : '#374151' }};
+                            color:{{ $tahapan->status === 'menunggu' ? 'var(--text-secondary)' : 'var(--text-primary)' }};
                             font-weight:{{ $tahapan->status === 'proses' ? '600' : '400' }};">
                             {{ $tahapan->nama_tahap }}
                         </div>
@@ -338,11 +338,11 @@
                         ⏱ SLA 1 Hari Kerja
                     @endif
                 </div>
-                <div style="font-size:12px;color:#374151;">
+                <div style="font-size:12px;color:var(--text-primary);">
                     Deadline: <strong>{{ $surat->deadline_sla?->Format('d M Y, H:i') ?? '—' }}</strong>
                 </div>
                 @if($surat->sla_status !== 'terlambat' && $surat->deadline_sla)
-                    <div style="font-size:11px;color:#6b7280;margin-top:2px;">
+                    <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">
                         Sisa: <strong>{{ $surat->sisa_jam }}</strong>
                     </div>
                 @endif
@@ -367,10 +367,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p style="font-size:14px;color:#374151;">
+                    <p style="font-size:14px;color:var(--text-primary);">
                         Apakah Anda yakin ingin menghapus surat:
                     </p>
-                    <div class="alert alert-light" style="border-left:4px solid #1e3a5f;font-size:13px;">
+                    <div class="alert alert-light" style="border-left:4px solid #1e3a5f;font-size:13px;background:var(--bg-tertiary);color:var(--text-primary);border-color:var(--border-color);">
                         <strong>{{ $surat->judul }}</strong><br>
                         <span class="text-muted">{{ $surat->jenis_label }} · {{ $surat->created_at->format('d M Y') }}</span>
                     </div>
@@ -386,12 +386,12 @@
                             Surat ini akan <strong>langsung dihapus</strong> tanpa perlu persetujuan admin.
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" style="font-size:13px;font-weight:600;">
+                            <label class="form-label" style="font-size:13px;font-weight:600;color:var(--text-primary);">
                                 Alasan Penghapusan <span class="text-muted">(Opsional)</span>
                             </label>
                             <textarea name="alasan" class="form-control" rows="2" 
                                       placeholder="Jelaskan alasan penghapusan surat..." 
-                                      style="font-size:13px;"></textarea>
+                                      style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);"></textarea>
                         </div>
                     @elseif($existingRequest)
                         <div class="alert alert-info" style="font-size:13px;">
@@ -400,13 +400,13 @@
                         </div>
                     @else
                         <div class="mb-3">
-                            <label class="form-label" style="font-size:13px;font-weight:600;">
+                            <label class="form-label" style="font-size:13px;font-weight:600;color:var(--text-primary);">
                                 Alasan Penghapusan <span class="text-danger">*</span>
                             </label>
                             <textarea name="alasan" class="form-control" rows="3" 
                                       placeholder="Jelaskan alasan penghapusan surat..." 
                                       required 
-                                      style="font-size:13px;"></textarea>
+                                      style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);"></textarea>
                             <small class="text-muted">Permintaan akan dikirim ke admin untuk disetujui.</small>
                         </div>
                     @endif
