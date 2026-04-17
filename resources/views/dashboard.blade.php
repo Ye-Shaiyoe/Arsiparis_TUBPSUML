@@ -163,18 +163,85 @@
     .animate-in {
         animation: fadeInUp 0.5s ease-out;
     }
+
+    /* MOBILE RESPONSIVE TWEAKS */
+    @media (max-width: 768px) {
+        .dashboard-header {
+            padding: 20px;
+            text-align: center;
+        }
+        .dashboard-header .d-flex {
+            flex-direction: column;
+            align-items: stretch !important;
+            justify-content: center;
+        }
+        .dashboard-header h2 {
+            font-size: 22px;
+        }
+        .btn-primary-modern {
+            justify-content: center;
+            width: 100%;
+        }
+        .stat-card-modern {
+            padding: 16px;
+        }
+        .stat-icon-wrapper {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+        .stat-value-modern {
+            font-size: 22px;
+        }
+        .stat-label-modern {
+            font-size: 11px;
+        }
+        .card-header-modern {
+            padding: 16px;
+        }
+        .card-body-modern {
+            padding: 16px;
+        }
+        .surat-item {
+            padding: 16px;
+        }
+        .notification-item {
+            padding: 12px 16px;
+        }
+        .chart-container {
+            height: 240px;
+        }
+        .d-flex.align-items-start.gap-3 {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .surat-item .d-flex.align-items-start.gap-3 > .flex-shrink-0 {
+            align-self: flex-start;
+            margin-top: 5px;
+        }
+        .surat-item .status-dot {
+            display: none;
+        }
+    }
 </style>
 
 {{-- HEADER --}}
 <div class="dashboard-header animate-in">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-        <div>
-            <h2 class="fw-bold mb-2">
-                <i class="bi bi-hand-thumbs-up-fill me-2"></i>Halo, {{ Str::words(Auth::user()->name, 1, '') }}!
-            </h2>
-            <p class="mb-0" style="font-size:14px; opacity:0.9;">
-                {{ now()->translatedFormat('l, d F Y') }} · Selamat datang di Manajemen/Monitoring Surat BP SUML
-            </p>
+        <div class="d-flex align-items-center gap-3">
+            @if(Auth::user()->profile_photo)
+                <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile Photo" class="rounded-circle border border-white border-2" style="width: 60px; height: 60px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            @endif
+            <div>
+                <h2 class="fw-bold mb-2">
+                    <i class="bi bi-hand-thumbs-up-fill me-2"></i>Halo, {{ Str::words(Auth::user()->name, 1, '') }}!
+                </h2>
+                <p class="mb-0" style="font-size:14px; opacity:0.9;">
+                    {{ now()->translatedFormat('l, d F Y') }} · Selamat datang di Manajemen/Monitoring Surat BP SUML
+                </p>
+            </div>
         </div>
         <a href="{{ route('user.surat.create') }}" class="btn btn-primary-modern d-flex align-items-center gap-2">
             <i class="bi bi-plus-circle-fill"></i> Ajukan Surat Baru
@@ -247,9 +314,9 @@
                     </a>
                 </div>
             @else
-                <div x-data="{ expanded: {{ $suratTerbaru->first()->id ?? 'null' }} }">
+                <div>
                 @foreach($suratTerbaru as $surat)
-                    <div class="surat-item" @click="expanded = (expanded === {{ $surat->id }} ? null : {{ $surat->id }})">
+                    <div class="surat-item">
                         <div class="d-flex align-items-start gap-3">
                             <div class="status-dot" style="background:{{ $surat->status === 'selesai' ? '#22c55e' : ($surat->status === 'ditolak' ? '#ef4444' : ($surat->status === 'revisi' ? '#f59e0b' : '#f59e0b')) }}; margin-top:6px;"></div>
                             <div class="flex-grow-1">
@@ -284,12 +351,7 @@
                         </div>
 
                         {{-- Tracking Panel --}}
-                        <div x-show="expanded === {{ $surat->id }}"
-                             x-transition:enter="transition ease-out duration-200"
-                             x-transition:enter-start="opacity-0 -translate-y-2"
-                             x-transition:enter-end="opacity-100 translate-y-0"
-                             x-cloak
-                             class="mt-3 p-3" style="background:#f8fafc; border-radius:10px;">
+                        <div class="mt-3 p-3" style="background:#f8fafc; border-radius:10px;">
 
                             {{-- Progress bar --}}
                             <div class="d-flex align-items-center gap-2 mb-3">
