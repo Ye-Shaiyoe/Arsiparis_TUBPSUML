@@ -21,18 +21,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
 
     Route::get('/template', [UserTemplateController::class, 'index'])->name('user.template.index');
+    Route::get('/template/download/{nama}', [UserSurat::class, 'templateDownload'])->name('user.template.download');
     Route::get('/about', function () {
         return view('user.about.index', ['title' => 'Tentang Aplikasi']);
     })->name('user.about.index');
-});
 
-Route::prefix('surat')->name('user.surat.')->group(function () {
-    Route::get('/',          [UserSurat::class, 'index'])->name('index');
-    Route::get('/ajukan',    [UserSurat::class, 'create'])->name('create');
-    Route::post('/ajukan',   [UserSurat::class, 'store'])->name('store');
-    Route::get('/{surat}',   [UserSurat::class, 'show'])->name('show');
-    Route::post('/{surat}/reupload', [UserSurat::class, 'reuploadFile'])->name('reupload');
-    Route::delete('/{surat}', [UserSurat::class, 'requestDelete'])->name('requestDelete');
+    Route::prefix('surat')->name('user.surat.')->group(function () {
+        Route::get('/',          [UserSurat::class, 'index'])->name('index');
+        Route::get('/ajukan',    [UserSurat::class, 'create'])->name('create');
+        Route::post('/ajukan',   [UserSurat::class, 'store'])->name('store');
+        Route::get('/{surat}',   [UserSurat::class, 'show'])->name('show');
+        Route::get('/{surat}/preview/{tipe}', [UserSurat::class, 'preview'])->name('preview');
+        Route::get('/{surat}/download/{tipe}', [UserSurat::class, 'download'])->name('download');
+        Route::post('/{surat}/reupload', [UserSurat::class, 'reuploadFile'])->name('reupload');
+        Route::delete('/{surat}', [UserSurat::class, 'requestDelete'])->name('requestDelete');
+    });
 });
 
 
@@ -69,6 +72,7 @@ Route::prefix('Admin')->middleware(['auth', 'verified', 'admin'])->name('admin.'
         Route::get('/Riwayat', [\App\Http\Controllers\Admin\RiwayatController::class, 'index'])->name('riwayat.index');
 
         Route::get('/Template', [TemplateSuratController::class, 'index'])->name('template.index');
+        Route::get('/Template/download/{nama}', [TemplateSuratController::class, 'download'])->name('template.download');
         Route::post('/Template', [TemplateSuratController::class, 'store'])->name('template.store');
         Route::delete('/Template', [TemplateSuratController::class, 'destroy'])->name('template.destroy');
 
