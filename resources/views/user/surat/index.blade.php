@@ -21,7 +21,7 @@
               class="d-flex gap-3 align-items-end flex-wrap">
             <div>
                 <label class="form-label mb-1" style="font-size:11px;color:#6b7280;font-weight:600;">STATUS</label>
-                <select name="status" class="form-select form-select-sm" style="font-size:13px;border-radius:7px;width:130px;">
+                <select name="status" class="form-select form-select-sm" style="font-size:13px;border-radius:7px;width:130px;background:#ffffff;color:#111827;border-color:#e5e7eb;">
                     <option value="">Semua</option>
                     <option value="proses"  {{ request('status')==='proses'  ? 'selected':'' }}>Proses</option>
                     <option value="selesai" {{ request('status')==='selesai' ? 'selected':'' }}>Selesai</option>
@@ -30,7 +30,7 @@
             </div>
             <div>
                 <label class="form-label mb-1" style="font-size:11px;color:#6b7280;font-weight:600;">JENIS</label>
-                <select name="jenis" class="form-select form-select-sm" style="font-size:13px;border-radius:7px;width:160px;">
+                <select name="jenis" class="form-select form-select-sm" style="font-size:13px;border-radius:7px;width:160px;background:#ffffff;color:#111827;border-color:#e5e7eb;">
                     <option value="">Semua Jenis</option>
                     @foreach(\App\Models\Surat::JENIS_LABEL as $val => $label)
                         <option value="{{ $val }}" {{ request('jenis')===$val ? 'selected':'' }}>{{ $label }}</option>
@@ -41,7 +41,7 @@
                 <button type="submit" class="btn btn-sm btn-primary" style="background:#1e3a5f;border-color:#1e3a5f;border-radius:7px;font-size:12px;">
                     <i class="bi bi-search me-1"></i>Filter
                 </button>
-                <a href="{{ route('user.surat.index') }}" class="btn btn-sm btn-light" style="border-radius:7px;font-size:12px;">Reset</a>
+                <a href="{{ route('user.surat.index') }}" class="btn btn-sm btn-light" style="border-radius:7px;font-size:12px;background:#f9fafb;color:#111827;border-color:#e5e7eb;">Reset</a>
             </div>
         </form>
     </div>
@@ -102,7 +102,7 @@
                                     <span class="badge rounded-pill" style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:4px 10px;">⏱ Proses</span>
                                 @endif
                                 <a href="{{ route('user.surat.show', $surat) }}"
-                                   class="btn btn-sm" style="font-size:12px;border:1px solid #e5e7eb;border-radius:7px;color:#1e3a5f;font-weight:500;">
+                                   class="btn btn-sm" style="font-size:12px;border:1px solid #e5e7eb;border-radius:7px;color:#1e3a5f;font-weight:500;background:#ffffff;">
                                     Detail <i class="bi bi-arrow-right ms-1"></i>
                                 </a>
                                 {{-- Tombol Hapus --}}
@@ -118,7 +118,7 @@
 
                         {{-- Mini progress --}}
                         <div class="d-flex align-items-center gap-2 mt-2">
-                            <div class="progress flex-1" style="height:4px;border-radius:99px;">
+                            <div class="progress flex-1" style="height:4px;border-radius:99px;background:#e5e7eb;">
                                 <div class="progress-bar" style="width:{{ $surat->proses_persen }}%;background:#1e3a5f;border-radius:99px;"></div>
                             </div>
                             <span style="font-size:10px;color:#6b7280;white-space:nowrap;">
@@ -157,10 +157,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p style="font-size:14px;color:#374151;">
+                    <p style="font-size:14px;color:#111827;">
                         Apakah Anda yakin ingin menghapus surat:
                     </p>
-                    <div class="alert alert-light" style="border-left:4px solid #1e3a5f;font-size:13px;">
+                    <div class="alert alert-light" style="border-left:4px solid #1e3a5f;font-size:13px;background:#f9fafb;color:#111827;border-color:#e5e7eb;">
                         <strong>{{ $surat->judul }}</strong><br>
                         <span class="text-muted">{{ $surat->jenis_label }} · {{ $surat->created_at->format('d M Y') }}</span>
                     </div>
@@ -176,12 +176,12 @@
                             Surat ini akan <strong>langsung dihapus</strong> tanpa perlu persetujuan admin.
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" style="font-size:13px;font-weight:600;">
+                            <label class="form-label" style="font-size:13px;font-weight:600;color:#111827;">
                                 Alasan Penghapusan <span class="text-muted">(Opsional)</span>
                             </label>
                             <textarea name="alasan" class="form-control" rows="2" 
                                       placeholder="Jelaskan alasan penghapusan surat..." 
-                                      style="font-size:13px;"></textarea>
+                                      style="font-size:13px;background:#ffffff;color:#111827;border-color:#e5e7eb;"></textarea>
                         </div>
                     @elseif($existingRequest)
                         <div class="alert alert-info" style="font-size:13px;">
@@ -190,13 +190,13 @@
                         </div>
                     @else
                         <div class="mb-3">
-                            <label class="form-label" style="font-size:13px;font-weight:600;">
+                            <label class="form-label" style="font-size:13px;font-weight:600;color:#111827;">
                                 Alasan Penghapusan <span class="text-danger">*</span>
                             </label>
                             <textarea name="alasan" class="form-control" rows="3" 
                                       placeholder="Jelaskan alasan penghapusan surat..." 
                                       required 
-                                      style="font-size:13px;"></textarea>
+                                      style="font-size:13px;background:#ffffff;color:#111827;border-color:#e5e7eb;"></textarea>
                             <small class="text-muted">Permintaan akan dikirim ke admin untuk disetujui.</small>
                         </div>
                     @endif
