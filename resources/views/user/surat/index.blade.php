@@ -26,6 +26,7 @@
                     <option value="proses"  {{ request('status')==='proses'  ? 'selected':'' }}>Proses</option>
                     <option value="selesai" {{ request('status')==='selesai' ? 'selected':'' }}>Selesai</option>
                     <option value="ditolak" {{ request('status')==='ditolak' ? 'selected':'' }}>Ditolak</option>
+                    <option value="draft"   {{ request('status')==='draft'   ? 'selected':'' }}>Draf</option>
                 </select>
             </div>
             <div>
@@ -69,8 +70,8 @@
                     <div style="
                         width:42px;height:42px;border-radius:10px;flex-shrink:0;
                         display:flex;align-items:center;justify-content:center;font-size:18px;
-                        background:{{ $surat->status==='selesai' ? '#dcfce7' : ($surat->status==='ditolak' ? '#fee2e2' : '#dbeafe') }}">
-                        {{ $surat->status==='selesai' ? '✅' : ($surat->status==='ditolak' ? '❌' : '⏳') }}
+                        background:{{ $surat->status==='selesai' ? '#dcfce7' : ($surat->status==='ditolak' ? '#fee2e2' : ($surat->status==='draft' ? '#f1f5f9' : '#dbeafe')) }}">
+                        {{ $surat->status==='selesai' ? '✅' : ($surat->status==='ditolak' ? '❌' : ($surat->status==='draft' ? '📝' : '⏳')) }}
                     </div>
 
                     <div class="flex-1 min-w-0" style="flex:1;">
@@ -96,15 +97,24 @@
                                     <span class="badge rounded-pill" style="background:#dcfce7;color:#15803d;font-size:11px;padding:4px 10px;">✓ Selesai</span>
                                 @elseif($surat->status==='ditolak')
                                     <span class="badge rounded-pill" style="background:#fee2e2;color:#b91c1c;font-size:11px;padding:4px 10px;">✗ Ditolak</span>
+                                @elseif($surat->status==='draft')
+                                    <span class="badge rounded-pill" style="background:#f1f5f9;color:#64748b;font-size:11px;padding:4px 10px;">📄 Draf</span>
                                 @elseif($surat->sla_status==='terlambat')
                                     <span class="badge rounded-pill" style="background:#fee2e2;color:#b91c1c;font-size:11px;padding:4px 10px;">⚠ SLA Terlambat</span>
                                 @else
                                     <span class="badge rounded-pill" style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:4px 10px;">⏱ Proses</span>
                                 @endif
-                                <a href="{{ route('user.surat.show', $surat) }}"
-                                   class="btn btn-sm" style="font-size:12px;border:1px solid #e5e7eb;border-radius:7px;color:#1e3a5f;font-weight:500;background:#ffffff;">
-                                    Detail <i class="bi bi-arrow-right ms-1"></i>
-                                </a>
+                                @if($surat->status==='draft')
+                                    <a href="{{ route('user.surat.edit', $surat) }}"
+                                       class="btn btn-sm" style="font-size:12px;border:1px solid #e5e7eb;border-radius:7px;color:#2563eb;font-weight:500;background:#ffffff;">
+                                        Edit Draf <i class="bi bi-pencil-square ms-1"></i>
+                                    </a>
+                                @else
+                                    <a href="{{ route('user.surat.show', $surat) }}"
+                                       class="btn btn-sm" style="font-size:12px;border:1px solid #e5e7eb;border-radius:7px;color:#1e3a5f;font-weight:500;background:#ffffff;">
+                                        Detail <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                @endif
                                 {{-- Tombol Hapus --}}
                                 <button type="button" 
                                         class="btn btn-sm btn-danger" 
