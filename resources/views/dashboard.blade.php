@@ -258,7 +258,7 @@
         <div>
             <h6 class="fw-bold mb-1">Layanan Sedang Tutup</h6>
             <p class="mb-0" style="font-size:13px; opacity:0.9;">
-                Saat ini pukul <strong>{{ now()->format('H:i') }} WIB</strong>. Pengajuan surat baru hanya tersedia pada hari kerja <strong>(Senin-Jumat)</strong> pukul <strong>07:00 - 17:00 WIB</strong>.
+                Saat ini pukul <strong>{{ now()->format('H:i') }} WIB</strong>. Pengajuan surat baru hanya tersedia pada hari kerja <strong>(Senin-Jumat)</strong> pukul <strong>08.00 - 16.00 WIB</strong>.
             </p>
         </div>
     </div>
