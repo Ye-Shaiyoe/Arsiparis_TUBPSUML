@@ -245,7 +245,7 @@
         </div>
         <a href="{{ $isLibur ? 'javascript:void(0)' : route('user.surat.create') }}" 
            class="btn btn-primary-modern d-flex align-items-center gap-2 {{ $isLibur ? 'disabled' : '' }}"
-           @if($isLibur) onclick="Swal.fire({icon: 'info', title: 'Layanan Tutup', text: 'Pengajuan surat baru hanya tersedia pada hari kerja (Senin - Jumat) pukul 07:00 - 17:00 WIB.', confirmButtonColor: '#1e3a5f'})" @endif>
+           @if($isLibur) onclick="Swal.fire({icon: 'info', title: 'Layanan Tutup', text: 'Pengajuan surat baru hanya tersedia pada hari kerja (Senin - Jumat) pukul 08.00 - 16.00 WIB.', confirmButtonColor: '#1e3a5f'})" @endif>
             <i class="bi bi-plus-circle-fill"></i> Ajukan Surat Baru
         </a>
     </div>
