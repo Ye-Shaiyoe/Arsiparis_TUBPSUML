@@ -47,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{surat}/preview/{tipe}', [UserSurat::class, 'preview'])->name('preview');
         Route::get('/{surat}/download/{tipe}', [UserSurat::class, 'download'])->name('download');
         Route::post('/{surat}/reupload', [UserSurat::class, 'reuploadFile'])->name('reupload');
+        Route::post('/{surat}/purge-files', [UserSurat::class, 'purgeFiles'])->name('purgeFiles');
         Route::delete('/{surat}', [UserSurat::class, 'requestDelete'])->name('requestDelete');
     });
 });
