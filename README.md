@@ -435,8 +435,9 @@ Surat-Metrologi/
 
 ## 📝 License
 
-Sistem ini menggunakan [MIT License](https://opensource.org/licenses/MIT).
+Sistem ini menggunakan [Apache 2.0]
 
+Copyright © 2026 Akrom. All rights reserved.
 ---
 
 ## 📞 Support
