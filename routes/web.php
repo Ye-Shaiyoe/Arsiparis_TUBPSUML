@@ -12,8 +12,17 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationApiController;
 
 Route::get('/', function () {
+    if (auth()->check()) {
+        if (auth()->user()->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('dashboard');
+    }
     return view('welcome');
 });
+
+// Verifikasi Surat (Public)
+Route::get('/v/{uuid}', [\App\Http\Controllers\VerifikasiSuratController::class, 'index'])->name('surat.verifikasi');
 
 
 // ===== USER =====
@@ -26,11 +35,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return view('user.about.index', ['title' => 'Tentang Aplikasi']);
     })->name('user.about.index');
 
+    Route::get('/faq', [UserDashboard::class, 'faq'])->name('user.faq.index');
+
     Route::prefix('surat')->name('user.surat.')->group(function () {
         Route::get('/',          [UserSurat::class, 'index'])->name('index');
         Route::get('/ajukan',    [UserSurat::class, 'create'])->name('create');
         Route::post('/ajukan',   [UserSurat::class, 'store'])->name('store');
         Route::get('/{surat}',   [UserSurat::class, 'show'])->name('show');
+        Route::get('/{surat}/edit', [UserSurat::class, 'edit'])->name('edit');
+        Route::patch('/{surat}', [UserSurat::class, 'update'])->name('update');
         Route::get('/{surat}/preview/{tipe}', [UserSurat::class, 'preview'])->name('preview');
         Route::get('/{surat}/download/{tipe}', [UserSurat::class, 'download'])->name('download');
         Route::post('/{surat}/reupload', [UserSurat::class, 'reuploadFile'])->name('reupload');
