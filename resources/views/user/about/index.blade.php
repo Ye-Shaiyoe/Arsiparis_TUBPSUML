@@ -11,13 +11,13 @@
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="rounded-2 bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
                             style="width: 52px; height: 52px; font-size: 24px; flex-shrink: 0;">
-                            <img src="{{ asset('images/BPSUML2.png') }}" alt="">
+                            <img src="{{ asset('images/metrologi.png') }}" alt="">
                         </div>
                         <div>
                             <span class="badge bg-primary bg-opacity-10 text-primary fw-normal mb-1" style="font-size: 11px;">
                                 Kementerian Perdagangan RI
                             </span>
-                            <h5 class="fw-bold mb-0" style="color:#111827;">Balai Pengelola SUML</h5>
+                            <h5 class="fw-bold mb-0" style="color:#111827;">Balai Pengelolaanan SUML</h5>
                             <small class="text-muted">Direktorat Metrologi</small>
                         </div>
                     </div>
@@ -29,7 +29,7 @@
                     </p>
 
                     <p class="text-muted" style="font-size: 14px; line-height: 1.7;">
-                        Aplikasi <strong>Surat Balai Pengelola SUML</strong> hadir sebagai solusi digital untuk pengelolaan
+                        Aplikasi <strong>Surat Balai Pengelolaan SUML</strong> hadir sebagai solusi digital untuk pengelolaan
                         korespondensi kedinasan di lingkungan BP SUML Legal, mempermudah proses administrasi
                         surat-menyurat secara transparan dan efisien.
                     </p>
@@ -140,7 +140,7 @@
             {{-- Footer --}}
             <div class="mt-3 pb-2 text-center">
                 <small class="text-muted">
-                    &copy; {{ date('Y') }} Balai Pengelola SUML — RI. All rights reserved.
+                    &copy; {{ date('Y') }} Balai Pengelolaanan SUML — RI. All rights reserved.
                 </small>
             </div>
 
