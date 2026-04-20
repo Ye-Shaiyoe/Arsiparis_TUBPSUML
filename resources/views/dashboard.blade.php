@@ -4,7 +4,7 @@
 @section('content')
 
 {{-- GREETING --}}
-<link rel="icon" href="{{ asset('images/BPSUML2.png') }}">
+<link rel="icon" href="{{ asset('images/metrologi.png') }}">
 
 {{-- Custom Styles --}}
 <style>
