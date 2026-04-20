@@ -1,4 +1,5 @@
 <x-app-layout>
+    <x-slot name="title">Profile BP SUML</x-slot>
     <x-slot name="header">
         <div class="flex items-center gap-3">
             <div class="p-2 bg-indigo-50 border border-indigo-100 rounded-lg">
