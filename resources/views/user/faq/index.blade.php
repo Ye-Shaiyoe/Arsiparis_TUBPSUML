@@ -23,7 +23,7 @@
                     </h2>
                     <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                         <div class="accordion-body border-top" style="font-size: 14px; line-height: 1.7; color: #111827 !important; background: #ffffff !important;">
-                            Klik tombol <strong>"Ajukan Surat Baru"</strong> di dashboard. Unggah file dokumen dalam format <strong>.docx</strong> (Word) dan lampiran pendukung jika ada (PDF/Gambar). Isi judul, jenis, dan sifat surat, lalu klik submit. Pastikan pengajuan dilakukan di jam operasional (07:00 - 17:00 WIB).
+                            Klik tombol <strong>"Ajukan Surat Baru"</strong> di dashboard. Unggah file dokumen dalam format <strong>.docx</strong> (Word) dan lampiran pendukung jika ada (PDF/Gambar). Isi judul, jenis, dan sifat surat, lalu klik submit. Pastikan pengajuan dilakukan di jam operasional (08.00 - 16.00 WIB).
                         </div>
                     </div>
                 </div>
