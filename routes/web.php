@@ -73,6 +73,7 @@ Route::prefix('Admin')->middleware(['auth', 'verified', 'admin'])->name('admin.'
         Route::get('/Surat/{surat}', [SuratController::class, 'show'])->name('surat.show');
         Route::post('/Surat/{surat}/setujui', [SuratController::class, 'setujui'])->name('surat.setujui');
         Route::post('/Surat/{surat}/tolak', [SuratController::class, 'tolak'])->name('surat.tolak');
+        Route::post('/Surat/{surat}/upload-file-admin', [SuratController::class, 'uploadFileAdmin'])->name('surat.uploadFileAdmin');
         Route::post('/Surat/delete-request/{deleteRequest}/approve', [SuratController::class, 'approveDelete'])->name('surat.approveDelete');
         Route::post('/Surat/delete-request/{deleteRequest}/reject', [SuratController::class, 'rejectDelete'])->name('surat.rejectDelete');
 
@@ -101,6 +102,12 @@ Route::prefix('Admin')->middleware(['auth', 'verified', 'admin'])->name('admin.'
         Route::post('/Notifikasi/read-all', [\App\Http\Controllers\Admin\NotifikasiController::class, 'markAllAsRead'])->name('notifikasi.readAll');
         Route::delete('/Notifikasi/{id}', [\App\Http\Controllers\Admin\NotifikasiController::class, 'destroy'])->name('notifikasi.delete');
         Route::delete('/Notifikasi', [\App\Http\Controllers\Admin\NotifikasiController::class, 'destroyAll'])->name('notifikasi.deleteAll');
+
+        // Logs
+        Route::get('/Logs', [\App\Http\Controllers\Admin\LogController::class, 'index'])->name('logs.index');
+        Route::get('/Logs/download/{file}', [\App\Http\Controllers\Admin\LogController::class, 'download'])->name('logs.download');
+        Route::post('/Logs/clear/{file}', [\App\Http\Controllers\Admin\LogController::class, 'clear'])->name('logs.clear');
+        Route::delete('/Logs/delete/{file}', [\App\Http\Controllers\Admin\LogController::class, 'delete'])->name('logs.delete');
     });
 });
 
