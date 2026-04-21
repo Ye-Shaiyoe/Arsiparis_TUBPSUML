@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atur Ulang Kata Sandi - Sistem Surat Metrologi</title>
-    <link rel="icon" href="{{ asset('images/BPSUML2.png') }}">
+    <link rel="icon" href="{{ asset('images/metrologi.png') }}">
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -52,7 +52,7 @@
     <div class="header-logo">
         <div class="logo-circle">
             <div class="logo-inner">
-                <img src="{{ asset('images/BPSUML2.png') }}" alt="Logo" style="width:42px;height:42px;object-fit:contain;">
+                <img src="{{ asset('images/metrologi.png') }}" alt="Logo" style="width:42px;height:42px;object-fit:contain;">
             </div>
         </div>
         <div class="header-title">Dinas Perdagangan dan Perindustrian</div>
