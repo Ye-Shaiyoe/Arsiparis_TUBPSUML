@@ -237,7 +237,7 @@
                             @if($tahapan->diprosesByUser)
                                 <div class="step-meta">
                                     <i class="bi bi-person-check me-1"></i>
-                                    Diproses oleh <strong>{{ $tahapan->diprosesByUser->name }}</strong>
+                                    Diproses oleh <strong>{{ $tahapan->diprosesByUser->getRoleLabel() }}</strong>
                                 </div>
                             @endif
 
