@@ -112,6 +112,20 @@
                     </div>
                 </div>
 
+                <div class="accordion-item mb-3 shadow-sm border" style="border-radius: 12px !important;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" 
+                                style="font-size: 14px; background: #fff; color: #1e3a5f; border-radius: 12px !important;">
+                            Apa yang terjadi jika pemrosesan surat sudah selesai?
+                        </button>
+                    </h2>
+                    <div id="collapseEight" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body border-top" style="font-size: 14px; line-height: 1.7; color: #111827 !important; background: #ffffff !important;">
+                            Layanan administrasi akan mengurus surat surat anda dan mengirimkannya ke pihak yang bersangkutan. setelah mencapai tahap 10(selesai) anda dapat menghapus surat fisik anda tanpa menghapus tracking nya. atau jika status udah lebih dari 3 hari(jika udah selesai) tidak dihapus surat nya akan terhapus secara otomatis dan tidak bisa di download lagi, untuk keamanan.
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
              {{-- Contact Support Section --}}
