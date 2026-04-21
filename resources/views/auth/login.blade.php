@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — Sistem Surat Metrologi</title>
-    <link rel="icon" href="{{ asset('images/BPSUML2.png') }}">
+    <link rel="icon" href="{{ asset('images/metrologi.png') }}">
 
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -602,13 +602,13 @@
 
             <div class="logo-outer">
                 <div class="logo-inner">
-                    <img src="{{ asset('images/BPSUML2.png') }}" alt="Logo Dinas">
+                    <img src="{{ asset('images/metrologi.png') }}" alt="Logo Dinas">
                 </div>
             </div>
 
-            <div class="brand-title">Balai Pengelola SUML<br>dan Perindustrian</div>
+            <div class="brand-title">Balai Pengelolaan SUML</div>
             <div class="divider-line"></div>
-            <div class="brand-sub">Sistem Informasi<br>Manajemen/Monitoring Surat<br>Balai Pengelola SUML</div>
+            <div class="brand-sub">Sistem Informasi<br>Monitoring Surat<br>Balai Pengelolaan SUML</div>
 
             <div class="divider-line"></div>
 
@@ -652,13 +652,13 @@
 
                <!-- Bagian Email/NIP -->
                 <div class="field-group">
-                    <label class="field-label" for="email">Email atau NIP</label>
+                    <label class="field-label" for="email">Email, Username, atau NIP</label>
                     <div class="input-wrap">
                         <input
                             class="field-input"
                             id="email" type="text" name="email"
                             value="{{ old('email') }}"
-                            placeholder="Masukkan email atau NIP"
+                            placeholder="Email, username, atau NIP"
                             required autofocus autocomplete="username">
                         <i class="bi bi-person input-icon"></i>
                     </div>
@@ -674,7 +674,7 @@
                         <input
                             class="field-input"
                             id="password" type="password" name="password"
-                            placeholder="••••••••"
+                            placeholder="Masukkan kata sandi Anda"
                             required autocomplete="current-password"
                             style="padding-right: 40px;">
                         <i class="bi bi-lock input-icon"></i>
@@ -719,7 +719,7 @@
 
         <!-- Footer bar -->
         <div class="footer-bar">
-            <span>&copy; {{ date('Y') }} Balai Pengelola SUML &mdash; Hak cipta dilindungi undang-undang</span>
+            <span>&copy; {{ date('Y') }} Balai Pengelolaan SUML &mdash; Hak cipta dilindungi undang-undang</span>
         </div>
     </div>
 
@@ -732,6 +732,20 @@
             const shown = pwInput.type === 'text';
             pwInput.type = shown ? 'password' : 'text';
             pwIcon.className = shown ? 'bi bi-eye' : 'bi bi-eye-slash';
+        });
+
+        // Mencegah double click login
+        const loginForm = document.querySelector('form');
+        const submitBtn = document.querySelector('.btn-submit');
+
+        loginForm.addEventListener('submit', function() {
+            submitBtn.disabled = true;
+            submitBtn.style.cursor = 'not-allowed';
+            submitBtn.style.opacity = '0.8';
+            submitBtn.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Mohon Tunggu...
+            `;
         });
     </script>
 
