@@ -222,6 +222,22 @@
                     </div>
                 </div>
 
+                <div class="accordion-item mb-3 shadow-sm border" style="border-radius: 12px !important;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFifteen" 
+                                style="font-size: 14px; background: #fff; color: #1e3a5f; border-radius: 12px !important;">
+                            Ini Yang terjadi saat ditolak dan anda revisi di tracking nya seperti ini!
+                        </button>
+                    </h2>
+                    <div id="collapseFifteen" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body border-top" style="font-size: 14px; line-height: 1.7; color: #111827 !important; background: #ffffff !important;">
+                           <img src="{{ asset('images/tracking.png') }}" alt="FAQ 15">
+                           <br>
+                           ini yang terjadi saat anda di tolak dan melakukan revisi, tampilan di tracking nya seperti ini. saat di revisi akan otomatis kembali ke Aspirasi. anda fokus aja ke garis hijau yang di sebelah centang itu(yang usulan di ajukan)? itu berarti revisi berhasil dan sudah kembali ke aspirasi, hiraukan centang yang di atas asprasi itu.  
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
              {{-- Contact Support Section --}}
