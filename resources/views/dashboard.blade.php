@@ -475,7 +475,7 @@
                     <i class="bi bi-hand-thumbs-up-fill me-2"></i>Halo, {{ Str::words(Auth::user()->name, 1, '') }}!
                 </h2>
                 <p class="mb-0" style="font-size:14px; opacity:0.9;">
-                    {{ now()->translatedFormat('l, d F Y') }} · Selamat datang di Manajemen/Monitoring Surat BP SUML
+                    {{ now()->translatedFormat('l, d F Y') }} · Selamat datang di Monitoring Surat BP SUML
                 </p>
             </div>
         </div>
@@ -848,16 +848,25 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const labels = Object.keys(jenisData).map(key => jenisLabels[key] || key);
         const data = Object.values(jenisData);
-        const colors = ['#1e3a5f', '#2563eb', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+        const colors = [
+            'rgba(30, 58, 95, 0.8)', 
+            'rgba(37, 99, 235, 0.8)', 
+            'rgba(34, 197, 94, 0.8)', 
+            'rgba(245, 158, 11, 0.8)', 
+            'rgba(239, 68, 68, 0.8)', 
+            'rgba(139, 92, 246, 0.8)', 
+            'rgba(236, 72, 153, 0.8)'
+        ];
         
         new Chart(jenisCtx.getContext('2d'), {
-            type: 'doughnut',
+            type: 'polarArea',
             data: {
                 labels: labels,
                 datasets: [{
                     data: data,
                     backgroundColor: colors.slice(0, data.length),
-                    borderWidth: 0,
+                    borderWidth: 1,
+                    borderColor: '#ffffff',
                     hoverOffset: 8
                 }]
             },
@@ -875,7 +884,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 },
-                cutout: '65%'
+                scales: {
+                    r: {
+                        ticks: { display: false }
+                    }
+                }
             }
         });
     }
@@ -969,6 +982,39 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    // Auto-refresh at 08:00 and 16:00
+    function scheduleRefresh() {
+        const now = new Date();
+        const currentHour = now.getHours();
+        
+        let targetHour = 0;
+        let targetDate = new Date(now);
+        
+        if (currentHour < 8) {
+            targetHour = 8;
+        } else if (currentHour >= 8 && currentHour < 16) {
+            targetHour = 16;
+        } else {
+            // Next day at 8 AM
+            targetHour = 8;
+            targetDate.setDate(targetDate.getDate() + 1);
+        }
+        
+        // Set exact target time (e.g. 08:00:00 or 16:00:00)
+        targetDate.setHours(targetHour, 0, 0, 0);
+        
+        // Calculate difference in milliseconds
+        const timeToWait = targetDate.getTime() - now.getTime();
+        
+        if (timeToWait > 0) {
+            // Refresh with 2 seconds buffer so server definitely sees the new hour
+            setTimeout(() => {
+                window.location.reload();
+            }, timeToWait + 2000);
+        }
+    }
+    
+    scheduleRefresh();
 });
 </script>
 
