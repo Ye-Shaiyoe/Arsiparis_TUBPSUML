@@ -59,6 +59,15 @@
             top: 0;
             overflow-y: auto;
             transition: width 0.2s, background 0.3s;
+            /* Hide scrollbar for Firefox */
+            scrollbar-width: none;
+            /* Hide scrollbar for IE and Edge */
+            -ms-overflow-style: none;
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        #sidebar::-webkit-scrollbar {
+            display: none;
         }
 
         .sidebar-logo {
@@ -122,6 +131,41 @@
             width: 18px;
             text-align: center;
             font-size: 15px;
+        }
+
+        /* SIDEBAR DROPDOWN */
+        .menu-dropdown-btn {
+            width: 100%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .dropdown-chevron {
+            margin-left: auto;
+            transition: transform 0.2s;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .menu-dropdown.is-active .menu-dropdown-btn .dropdown-chevron {
+            transform: rotate(180deg);
+        }
+
+        .menu-dropdown-list {
+            display: none;
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .menu-dropdown.is-active .menu-dropdown-list {
+            display: block;
+        }
+
+        .menu-dropdown-list .menu-item {
+            padding-left: 44px;
+            font-size: 12.5px;
         }
 
         .sidebar-user {
@@ -818,15 +862,24 @@
                 @endif
             </a>
 
-            <div class="menu-label">Laporan</div>
-            <a href="{{ route('admin.laporan.index') }}"
-                class="menu-item {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
-                <span class="menu-icon"><i class="bi bi-file-earmark-text"></i></span> Rekap Bulanan
-            </a>
-            <a href="{{ route('admin.riwayat.index') }}"
-                class="menu-item {{ request()->routeIs('admin.riwayat.*') ? 'active' : '' }}">
-                <span class="menu-icon"><i class="bi bi-clock-history"></i></span> Riwayat Pemrosesan
-            </a>
+            <div class="menu-dropdown {{ request()->routeIs('admin.laporan.*') || request()->routeIs('admin.riwayat.*') ? 'is-active' : '' }}">
+                <button type="button" class="menu-item menu-dropdown-btn" onclick="this.parentElement.classList.toggle('is-active')">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="menu-icon"><i class="bi bi-folder2-open"></i></span> Laporan
+                    </div>
+                    <span class="dropdown-chevron"><i class="bi bi-chevron-down"></i></span>
+                </button>
+                <div class="menu-dropdown-list">
+                    <a href="{{ route('admin.laporan.index') }}"
+                        class="menu-item {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
+                        <span class="menu-icon"><i class="bi bi-file-earmark-text"></i></span> Rekap Bulanan
+                    </a>
+                    <a href="{{ route('admin.riwayat.index') }}"
+                        class="menu-item {{ request()->routeIs('admin.riwayat.*') ? 'active' : '' }}">
+                        <span class="menu-icon"><i class="bi bi-clock-history"></i></span> Riwayat Pemrosesan
+                    </a>
+                </div>
+            </div> 
 
             <div class="menu-label">Komunikasi</div>
             <a href="{{ route('admin.notifikasi.index') }}"
@@ -838,19 +891,28 @@
                 @endif
             </a>
 
-            <div class="menu-label">Pengaturan</div>
-            <a href="{{ route('admin.template.index') }}"
-                class="menu-item {{ request()->routeIs('admin.template.*') ? 'active' : '' }}">
-                <span class="menu-icon"><i class="bi bi-file-earmark-text"></i></span> Template Surat
-            </a>
-            <a href="{{ route('admin.users.index') }}"
-                class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                <span class="menu-icon"><i class="bi bi-people"></i></span> Data Pegawai
-            </a>
-            <a href="{{ route('admin.logs.index') }}"
-                class="menu-item {{ request()->routeIs('admin.logs.*') ? 'active' : '' }}">
-                <span class="menu-icon"><i class="bi bi-journal-text"></i></span> System Logs
-            </a>            
+            <div class="menu-dropdown {{ request()->routeIs('admin.template.*') || request()->routeIs('admin.users.*') || request()->routeIs('admin.logs.*') ? 'is-active' : '' }}">
+                <button type="button" class="menu-item menu-dropdown-btn" onclick="this.parentElement.classList.toggle('is-active')">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="menu-icon"><i class="bi bi-gear"></i></span> Pengaturan
+                    </div>
+                    <span class="dropdown-chevron"><i class="bi bi-chevron-down"></i></span>
+                </button>
+                <div class="menu-dropdown-list">
+                    <a href="{{ route('admin.template.index') }}"
+                        class="menu-item {{ request()->routeIs('admin.template.*') ? 'active' : '' }}">
+                        <span class="menu-icon"><i class="bi bi-file-earmark-text"></i></span> Template Surat
+                    </a>
+                    <a href="{{ route('admin.users.index') }}"
+                        class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                        <span class="menu-icon"><i class="bi bi-people"></i></span> Data Pegawai
+                    </a>
+                    <a href="{{ route('admin.logs.index') }}"
+                        class="menu-item {{ request()->routeIs('admin.logs.*') ? 'active' : '' }}">
+                        <span class="menu-icon"><i class="bi bi-journal-text"></i></span> System Logs
+                    </a>
+                </div>
+            </div>            
             <div class="menu-label">Chart</div>
             <a href="{{ route('admin.chart.index') }}"
                 class="menu-item {{ request()->routeIs('admin.chart.*') ? 'active' : '' }}">
@@ -887,9 +949,8 @@
                         <span class="notif-dot"></span>
                     @endif
                 </a>
-                <div class="dropdown" id="user-menu-dropdown">
-                    <button type="button" class="topbar-avatar" id="user-menu-btn" aria-expanded="false"
-                        aria-haspopup="true" aria-controls="user-menu-panel" style="padding: 0; overflow: hidden;">
+                <div class="dropdown ms-2">
+                    <button class="topbar-avatar" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="padding: 0; overflow: hidden; border: none; background: transparent;">
                         @if(Auth::user()->profile_photo)
                             <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile"
                                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
@@ -897,14 +958,37 @@
                             {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                         @endif
                     </button>
-                    <div class="dropdown-menu" id="user-menu-panel" role="menu">
-                        <a href="{{ route('profile.edit') }}" role="menuitem">👤 Profil</a>
-                        <hr>
-                        <a href="{{ route('logout') }}" role="menuitem"
-                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            🚪 Logout
-                        </a>
-                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 8px 0; min-width: 240px; z-index: 1050; margin-top: 10px;">
+                        <li class="px-3 py-2 mb-1 border-bottom" style="border-color: var(--border-color) !important;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="topbar-avatar" style="width: 40px; height: 40px; min-width: 40px; font-size: 14px; background: var(--sidebar-bg); padding: 0;">
+                                    @if(Auth::user()->profile_photo)
+                                        <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                    @else
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                                    @endif
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h6 class="mb-0 fw-bold text-truncate" style="color: var(--text-primary); font-size: 14px;">{{ Auth::user()->name }}</h6>
+                                    <small class="text-truncate d-block" style="color: var(--text-secondary); font-size: 12px;">{{ Auth::user()->email ?? 'Admin' }}</small>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2 mt-1 px-3" href="{{ route('profile.edit') }}" style="color: var(--text-primary); font-size: 14px; transition: 0.2s; background-color: transparent;" onmouseover="this.style.backgroundColor='var(--bg-tertiary)'" onmouseout="this.style.backgroundColor='transparent'">
+                                <i class="bi bi-person-circle fs-5" style="color: var(--text-secondary);"></i> Profil Saya
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider my-1" style="border-color: var(--border-color);">
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 py-2 px-3 text-danger" href="{{ route('logout') }}"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="font-size: 14px; transition: 0.2s; background-color: transparent;" onmouseover="this.style.backgroundColor='var(--bg-tertiary)'" onmouseout="this.style.backgroundColor='transparent'">
+                                <i class="bi bi-box-arrow-right fs-5"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </header>
