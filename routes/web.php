@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\TemplateSuratController;
 use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\User\SuratController as UserSurat;
 use App\Http\Controllers\User\TemplateController as UserTemplateController;
+use App\Http\Controllers\User\StatistikController as UserStatistik;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationApiController;
@@ -36,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('user.about.index');
 
     Route::get('/faq', [UserDashboard::class, 'faq'])->name('user.faq.index');
+    Route::get('/statistik', [UserStatistik::class, 'index'])->name('user.statistik.index');
 
     Route::prefix('surat')->name('user.surat.')->group(function () {
         Route::get('/',          [UserSurat::class, 'index'])->name('index');
