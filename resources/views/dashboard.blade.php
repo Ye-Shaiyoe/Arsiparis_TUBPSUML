@@ -787,7 +787,7 @@
                         Butuh bantuan atau mengalami kendala? Tim dukungan kami siap membantu Anda.
                     </p>
                     <div class="d-flex flex-wrap gap-2">
-                        <a href="https://wa.me/6281321098877" target="_blank" class="btn-glass-primary">
+                        <a href="https://wa.me/6212345678900" target="_blank" class="btn-glass-primary">
                             <i class="bi bi-whatsapp"></i> Chat Admin
                         </a>
                         <a href="{{ route('user.faq.index') }}" class="btn-glass-primary" style="background: rgba(255, 255, 255, 0.7); color: #1e3a5f !important; border-color: rgba(30, 58, 95, 0.1); box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
