@@ -3,7 +3,7 @@
 @section('title', 'Data Pegawai')
 
 @section('content')
-<div class="space-y-24">
+<div style="display: flex; flex-direction: column; gap: 24px;">
 
     {{-- STATISTICS --}}
     <div class="stat-grid">
@@ -31,7 +31,7 @@
 
     {{-- FILTERS & SEARCH --}}
     <div class="card">
-        <form method="GET" class="space-y-12">
+        <form method="GET" style="display: flex; flex-direction: column; gap: 12px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; align-items: end;">
                 {{-- Search --}}
                 <div>
@@ -51,7 +51,10 @@
                     <select name="role" style="width: 100%; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 13px;">
                         <option value="">Semua Role</option>
                         <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>User</option>
-                        <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="admin_aspirasi" {{ request('role') === 'admin_aspirasi' ? 'selected' : '' }}>Admin_Arsiparis</option>
+                        <option value="admin_kasubbag_tu" {{ request('role') === 'admin_kasubbag_tu' ? 'selected' : '' }}>Admin_Kasubbag_TU</option>
+                        <option value="admin_kepala_balai" {{ request('role') === 'admin_kepala_balai' ? 'selected' : '' }}>Admin_Kepala_Balai</option>
+                        <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin (Lama)</option>
                     </select>
                 </div>
 
@@ -97,18 +100,27 @@
                 <table>
                     <thead>
                         <tr>
+                            <th style="width: 10%; text-align: center;">Profile</th>
                             <th style="width: 25%;">Nama</th>
-                            <th style="width: 20%;">Email</th>
-                            <th style="width: 12%;">Role</th>
+                            <th style="width: 20%;">Role</th>
                             <th style="width: 12%; text-align: center;">Total Surat</th>
-                            <th style="width: 10%; text-align: center;">Selesai</th>
-                            <th style="width: 10%; text-align: center;">Ditolak</th>
+                            <th style="width: 11%; text-align: center;">Selesai</th>
+                            <th style="width: 11%; text-align: center;">Ditolak</th>
                             <th style="width: 11%; text-align: center;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($users as $user)
                             <tr>
+                                <td style="text-align: center;">
+                                    @if($user->profile_photo)
+                                        <img src="{{ Storage::url($user->profile_photo) }}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: auto;">
+                                    @else
+                                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #1e3a5f; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin: auto;">
+                                            {{ strtoupper(substr($user->name, 0, 2)) }}
+                                        </div>
+                                    @endif
+                                </td>
                                 <td>
                                     <strong>{{ $user->name }}</strong>
                                     <div style="font-size: 11px; color: #9ca3af; margin-top: 2px;">
@@ -116,11 +128,8 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span style="font-size: 12px; color: #6b7280;">{{ $user->email }}</span>
-                                </td>
-                                <td>
-                                    <span class="badge {{ $user->role === 'admin' ? 'badge-blue' : 'badge-gray' }}">
-                                        {{ ucfirst($user->role) }}
+                                    <span class="badge {{ $user->role !== 'user' ? 'badge-blue' : 'badge-gray' }}">
+                                        {{ $user->getRoleLabel() }}
                                     </span>
                                 </td>
                                 <td style="text-align: center;">
@@ -134,11 +143,11 @@
                                 </td>
                                 <td style="text-align: center;">
                                     <div style="display: flex; gap: 6px; justify-content: center;">
-                                        <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm" title="Lihat detail">
+                                        <a href="{{ route('admin.users.show', $user) }}" class="btn btn-sm" title="Lihat detail">
                                             👁️
                                         </a>
                                         @if($user->id !== auth()->id())
-                                            <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}" 
+                                            <form method="POST" action="{{ route('admin.users.destroy', $user) }}" 
                                                   style="display: inline;" 
                                                   onsubmit="return confirm('Yakin hapus user ini?');">
                                                 @csrf
