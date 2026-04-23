@@ -14,29 +14,30 @@
     .notif-header h5 {
         font-size: 16px;
         font-weight: 700;
-        color: #1e3a5f;
+        color: var(--text-primary);
         margin: 0;
+        transition: color 0.3s;
     }
     .notif-actions { display: flex; gap: 6px; }
     .action-btn {
         width: 32px;
         height: 32px;
         border-radius: 8px;
-        border: 1px solid #e5e7eb;
-        background: #fff;
+        border: 1px solid var(--border-color);
+        background: var(--bg-secondary);
         display: inline-flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: all 0.2s;
-        color: #6b7280;
+        transition: all 0.2s, background 0.3s, border-color 0.3s;
+        color: var(--text-secondary);
         font-size: 14px;
         padding: 0;
         text-decoration: none;
     }
     .action-btn:hover {
-        background: #f3f4f6;
-        border-color: #d1d5db;
+        background: var(--bg-tertiary);
+        border-color: var(--border-color);
         transform: translateY(-1px);
     }
     .action-btn.read-all:hover { background: #eff6ff; border-color: #93c5fd; color: #2563eb; }
@@ -57,12 +58,12 @@
         font-size: 12px;
         font-weight: 500;
         text-decoration: none;
-        border: 1.5px solid #e5e7eb;
-        color: #6b7280;
-        transition: all 0.2s;
-        background: #fff;
+        border: 1.5px solid var(--border-color);
+        color: var(--text-secondary);
+        transition: all 0.2s, background 0.3s, border-color 0.3s;
+        background: var(--bg-secondary);
     }
-    .filter-pill:hover { border-color: #cbd5e1; color: #374151; text-decoration: none; transform: translateY(-1px); }
+    .filter-pill:hover { border-color: var(--border-color); color: var(--text-primary); text-decoration: none; transform: translateY(-1px); }
     .filter-pill.active { background: #1e3a5f; color: #fff; border-color: #1e3a5f; }
     .filter-pill.unread { background: #fffbeb; color: #92400e; border-color: #fbbf24; }
     .filter-pill.unread.active { background: #f59e0b; color: #fff; border-color: #f59e0b; }
@@ -71,11 +72,11 @@
 
     .notif-list { display: flex; flex-direction: column; gap: 8px; }
     .notif-item {
-        background: #fff;
-        border: 1px solid #e5e7eb;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
         border-radius: 10px;
         padding: 12px 16px;
-        transition: all 0.2s;
+        transition: all 0.2s, background 0.3s, border-color 0.3s;
         position: relative;
         overflow: hidden;
     }
@@ -86,16 +87,16 @@
         top: 0;
         bottom: 0;
         width: 4px;
-        background: #e5e7eb;
+        background: var(--border-color);
         transition: all 0.2s;
     }
     .notif-item:hover {
-        border-color: #d1d5db;
+        border-color: var(--border-color);
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         transform: translateX(2px);
     }
     .notif-item.unread::before { background: #3b82f6; }
-    .notif-item.unread { background: #f8fafc; }
+    .notif-item.unread { background: rgba(59, 130, 246, 0.05); }
     .notif-item.type-success::before { background: #22c55e; }
     .notif-item.type-danger::before { background: #ef4444; }
     .notif-item.type-warning::before { background: #f59e0b; }
@@ -124,14 +125,16 @@
     .notif-content { flex: 1; min-width: 0; }
     .notif-message {
         font-size: 12px;
-        color: #374151;
+        color: var(--text-primary);
         line-height: 1.4;
         margin: 0;
+        transition: color 0.3s;
     }
     .notif-time {
         font-size: 10px;
-        color: #9ca3af;
+        color: var(--text-secondary);
         margin-top: 2px;
+        transition: color 0.3s;
     }
     .notif-time i { margin-right: 2px; }
 
@@ -145,14 +148,14 @@
         width: 30px;
         height: 30px;
         border-radius: 8px;
-        border: 1.5px solid #e5e7eb;
-        background: #fff;
+        border: 1.5px solid var(--border-color);
+        background: var(--bg-secondary);
         display: inline-flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: all 0.2s;
-        color: #6b7280;
+        transition: all 0.2s, background 0.3s, border-color 0.3s;
+        color: var(--text-secondary);
         font-size: 13px;
         padding: 0;
         text-decoration: none;
@@ -160,8 +163,8 @@
     .notif-btn:hover { transform: translateY(-2px); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
     .notif-btn.read { color: #3b82f6; border-color: #93c5fd; }
     .notif-btn.read:hover { background: #eff6ff; border-color: #3b82f6; }
-    .notif-btn.view { color: #6b7280; }
-    .notif-btn.view:hover { background: #f3f4f6; border-color: #9ca3af; }
+    .notif-btn.view { color: var(--text-secondary); }
+    .notif-btn.view:hover { background: var(--bg-tertiary); border-color: var(--text-secondary); }
     .notif-btn.delete { color: #ef4444; border-color: #fca5a5; }
     .notif-btn.delete:hover { background: #fef2f2; border-color: #ef4444; }
 
@@ -180,7 +183,8 @@
     .empty-state {
         text-align: center;
         padding: 48px 20px;
-        color: #9ca3af;
+        color: var(--text-secondary);
+        transition: color 0.3s;
     }
     .empty-state i { font-size: 40px; opacity: 0.4; margin-bottom: 12px; display: block; }
 </style>
@@ -276,7 +280,7 @@
                     <a href="{{ $notif->data['url'] ?? route('admin.dashboard') }}" class="notif-btn view" title="Lihat Detail">
                         <i class="bi bi-eye"></i>
                     </a>
-                    <form action="{{ route('admin.notifikasi.delete', $notif->id) }}" method="POST" onsubmit="return confirm('Hapus notifikasi?')">
+                    <form action="{{ route('admin.notifikasi.delete', $notif->id) }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="notif-btn delete" title="Hapus">
