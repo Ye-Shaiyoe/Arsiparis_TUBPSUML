@@ -137,13 +137,6 @@
                 </div>
             </div>
 
-            {{-- Footer --}}
-            <div class="mt-3 pb-2 text-center">
-                <small class="text-muted">
-                    &copy; {{ date('Y') }} Balai Pengelolaanan SUML — RI. All rights reserved.
-                </small>
-            </div>
-
         </div>
     </div>
 </div>
