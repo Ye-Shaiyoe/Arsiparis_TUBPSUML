@@ -49,7 +49,7 @@
     </div>
 
     <!-- Charts Row -->
-    <div class="row g-4">
+    <div class="row g-4 animate-in" style="animation-delay: 0.2s;">
         <!-- Line Chart -->
         <div class="col-md-8">
             <div class="card-custom p-4 h-100">
@@ -71,7 +71,7 @@
     </div>
 
     <!-- Additional Charts Row -->
-    <div class="row g-4 mt-1">
+    <div class="row g-4 mt-1 animate-in" style="animation-delay: 0.3s;">
         <!-- Distribusi Jenis Surat -->
         <div class="col-md-6">
             <div class="card-custom p-4 h-100">
