@@ -3,7 +3,7 @@
 
 @section('content')
 
-<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+<div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2 animate-in">
     <div>
         <h5 class="fw-bold mb-0" style="color:#1e3a5f;">📬 Surat Saya</h5>
         <small class="text-muted">Semua surat yang pernah kamu ajukan</small>
@@ -15,7 +15,7 @@
 </div>
 
 {{-- FILTER --}}
-<div class="card card-custom mb-3">
+<div class="card card-custom mb-3 animate-in" style="animation-delay: 0.1s;">
     <div class="card-body py-3 px-4">
         <form method="GET" action="{{ route('user.surat.index') }}"
               class="d-flex gap-3 align-items-end flex-wrap">
@@ -50,7 +50,7 @@
 
 {{-- LIST SURAT --}}
 @if($surats->isEmpty())
-    <div class="card card-custom">
+    <div class="card card-custom animate-in" style="animation-delay: 0.2s;">
         <div class="card-body text-center py-5 text-muted">
             <i class="bi bi-envelope-open" style="font-size:42px;display:block;margin-bottom:12px;color:#cbd5e1;"></i>
             <div style="font-size:14px;font-weight:500;">Belum ada surat yang ditemukan</div>
@@ -61,8 +61,8 @@
     </div>
 @else
     <div class="d-flex flex-column gap-3">
-    @foreach($surats as $surat)
-        <div class="card card-custom">
+    @foreach($surats as $index => $surat)
+        <div class="card card-custom animate-in" style="animation-delay: {{ 0.2 + ($index * 0.05) }}s;">
             <div class="card-body px-4 py-3">
                 <div class="d-flex align-items-start gap-3">
 
