@@ -1,64 +1,56 @@
-@extends('layouts.admin')
-@section('title', 'Preview Dokumen')
-
-@section('content')
-<div class="card">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-        <div>
-            <h2 style="font-size:18px; font-weight:700; color:#111827;">
-                📄 Preview Dokumen - {{ $surat->judul }}
-            </h2>
-            <p style="font-size:13px; color:#6b7280; margin-top:4px;">
-                File: <strong>{{ $fileName ?? '—' }}</strong>
-            </p>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Preview Surat</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .toolbar { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        #editor { padding: 20px; border: 1px solid #ccc; min-height: 500px; background: white; }
+        #editor[contenteditable="true"] { border: 2px solid #3b82f6; }
+        .btn { padding: 8px 16px; border-radius: 4px; cursor: pointer; text-decoration: none; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-success { background: #10b981; color: white; }
+    </style>
+</head>
+<body>
+    @if(Auth::user()->isAdmin() && $surat->tahap_sekarang == 2)
+        <div class="toolbar">
+            <button id="btn-edit" class="btn btn-warning">Edit Dokumen</button>
+            <button id="btn-save" class="btn btn-success" style="display:none;">Simpan Perubahan</button>
         </div>
-        <div style="display:flex; gap:8px;">
-            <a href="{{ route('admin.surat.show', $surat) }}" class="btn btn-sm">
-                ← Kembali ke Detail
-            </a>
-            @if($tipe === 'word')
-                <a href="{{ route('admin.surat.download', [$surat, 'word']) }}" class="btn btn-sm btn-primary">
-                    ⬇ Download .docx
-                </a>
-            @else
-                <a href="{{ route('admin.surat.download', [$surat, 'lampiran']) }}" class="btn btn-sm btn-primary">
-                    ⬇ Download Lampiran
-                </a>
-            @endif
-        </div>
-    </div>
-
-    {{-- Word Document HTML Preview --}}
-    @if(isset($htmlContent))
-        <div style="width:100; background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:32px; overflow:auto; max-height:calc(100vh - 280px); min-height:400px;">
-            <div style="max-width:800px; margin:0 auto; font-family: 'Times New Roman', serif; font-size:14pt; line-height:1.6; color:#000;">
-                {!! $htmlContent !!}
-            </div>
+        <div id="editor" contenteditable="false">
+            {!! $htmlContent !!}
         </div>
 
-    {{-- PDF Preview --}}
-    @elseif(isset($pdfUrl))
-        <div style="width:100%; height:calc(100vh - 280px); min-height:600px; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden;">
-            <iframe src="{{ $pdfUrl }}" width="100%" height="100%" frameborder="0" style="border:none;"></iframe>
-        </div>
+        <script>
+            document.getElementById('btn-edit').addEventListener('click', function() {
+                document.getElementById('editor').contentEditable = "true";
+                this.style.display = 'none';
+                document.getElementById('btn-save').style.display = 'inline-block';
+            });
 
-    {{-- Image Preview --}}
-    @elseif(isset($imageUrl))
-        <div style="width:100%; text-align:center; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:20px;">
-            <img src="{{ $imageUrl }}" alt="Preview" style="max-width:100%; max-height:calc(100vh - 320px); border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-        </div>
-
-    {{-- Fallback --}}
+            document.getElementById('btn-save').addEventListener('click', function() {
+                let content = document.getElementById('editor').innerHTML;
+                fetch("{{ route('admin.surat.updateContent', [$surat, $tipe]) }}", {
+                    method: 'PATCH',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({content: content})
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Dokumen berhasil diperbarui');
+                        location.reload();
+                    } else {
+                        alert('Gagal menyimpan dokumen');
+                    }
+                });
+            });
+        </script>
     @else
-        <div style="padding:40px; text-align:center; color:#6b7280;">
-            <div style="font-size:48px; margin-bottom:16px;">📄</div>
-            <div style="font-size:14px; margin-bottom:16px;">Preview tidak tersedia untuk format ini.</div>
-            @if($tipe === 'word')
-                <a href="{{ route('admin.surat.download', [$surat, 'word']) }}" class="btn btn-primary">⬇ Download File</a>
-            @else
-                <a href="{{ route('admin.surat.download', [$surat, 'lampiran']) }}" class="btn btn-primary">⬇ Download Lampiran</a>
-            @endif
-        </div>
+        <div>{!! $htmlContent !!}</div>
     @endif
-</div>
-@endsection
+</body>
+</html>
