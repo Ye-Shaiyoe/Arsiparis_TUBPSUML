@@ -264,7 +264,7 @@
                 <h5 class="fw-bold mb-2" style="color: #1e3a5f;">Masih punya pertanyaan lain?</h5>
                 <p class="text-muted mb-4" style="font-size: 14px;">Jika Anda tidak menemukan jawaban yang Anda cari, jangan ragu untuk menghubungi tim IT/Admin kami.</p>
                 <div class="d-flex justify-content-center gap-3 flex-wrap">
-                    <a href="https://wa.me/6281321098877" class="btn btn-success rounded-pill px-4 d-flex align-items-center gap-2" style="font-size: 13px;">
+                    <a href="https://wa.me/{{ config('services.whatsapp.number') }}" class="btn btn-success rounded-pill px-4 d-flex align-items-center gap-2" style="font-size: 13px;">
                         <i class="bi bi-whatsapp"></i> WhatsApp Helpdesk
                     </a>
                     <a href="mailto:metrologi@kemendag.go.id" class="btn btn-outline-primary rounded-pill px-4 d-flex align-items-center gap-2" style="font-size: 13px;">
