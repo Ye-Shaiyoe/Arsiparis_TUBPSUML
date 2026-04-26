@@ -68,7 +68,7 @@
                         <div>
                             <div class="typing-badge">
                                 <span class="badge bg-primary bg-opacity-10 text-primary fw-normal mb-1" style="font-size: 11px;">
-                                    Kementerian Perdagangan RI
+                                    Manajemen persuratan BP SUML
                                 </span>
                             </div>
                             <h5 class="fw-bold mb-0 animate-gradient-text">Balai Pengelolaanan SUML</h5>
@@ -155,6 +155,11 @@
                                     ['icon' => 'bi-file-earmark-text', 'text' => 'Manajemen template surat kedinasan'],
                                     ['icon' => 'bi-download', 'text' => 'Download berkas dalam format Word & PDF'],
                                     ['icon' => 'bi-bell', 'text' => 'Notifikasi otomatis perkembangan surat'],
+                                    ['icon' => 'bi-qr-code', 'text' => 'QR Code Verifikasi'],
+                                    ['icon'=> 'bi-graph-up','text'=> 'Chart perkembangan surat keluar & masuk'],
+                                    ['icon' => 'bi-clock-history', 'text' => 'Tracking realtime sebanyak 10 Tahapan'],
+                                    ['icon' => 'bi-chat', 'text'=> 'Chat admin via Aplikasi, WhatsApp & Email']
+
                                 ] as $fitur)
                                 <li class="d-flex align-items-start gap-2 py-2 border-bottom" style="font-size: 13px;border-color:#e5e7eb;">
                                     <i class="bi {{ $fitur['icon'] }} text-primary mt-1" style="flex-shrink:0;"></i>
@@ -203,10 +208,13 @@
                         </div>
                         <div>
                             <p class="mb-1 text-muted" style="font-size: 13.5px; line-height: 1.6;">
-                                Aplikasi <strong>Manajemen Surat BP SUML</strong> ini dirancang dan dikembangkan secara independen oleh 1 orang untuk memodernisasi serta mendigitalisasi proses persuratan instansi. Dibuat dengan dedikasi tinggi menggunakan framework modern dan standar UI/UX estetis (berbasis prinsip Glassmorphism) demi memastikan pengalaman pengguna yang cepat, intuitif, dan seamless.
+                                Aplikasi Tugas PKL <strong>Manajemen persuratan BP SUML</strong> ini dirancang dan dikembangkan oleh 2 Developer dan dibantu oleh AI agar pengerjaan lebih cepat, efisien, dan rapi. Dibuat dengan dedikasi tinggi menggunakan framework modern dan standar UI/UX estetis (berbasis prinsip Glassmorphism) demi memastikan pengalaman pengguna yang cepat, intuitif, dan seamless.
                             </p>
                             <span style="font-size: 12px; font-weight: 500; color: #3b82f6;">
-                                <i class="bi bi-laptop me-1"></i> Developed with ❤️ for BP SUML
+                                <i class="bi bi-github me-1"></i> <a href="https://github.com/Ye-Shaiyoe/Surat-Laravel" target="_blank">GitHub Repository - Ye-Shaiyoe </a> <br>
+                            </span>
+                            <span style="font-size: 12px; font-weight: 500; color: #3b82f6;">
+                                <i class="bi bi-laptop me-1"></i> Developed for BP SUML
                             </span>
                         </div>
                     </div>
