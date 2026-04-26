@@ -58,7 +58,29 @@
             position: sticky;
             top: 0;
             z-index: 1050;
-            transition: all 0.3s ease;
+            transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Loading Bar */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa, #3b82f6);
+            background-size: 200% 100%;
+            z-index: 9999;
+            animation: loadingBar 2s linear infinite, fadeOutLoader 0.5s ease 0.8s forwards;
+            transform-origin: left;
+        }
+        @keyframes loadingBar {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+        @keyframes fadeOutLoader {
+            from { opacity: 1; transform: scaleY(1); }
+            to { opacity: 0; transform: scaleY(0); visibility: hidden; }
         }
         .navbar-brand-text {
             font-size: 15px;
@@ -77,17 +99,69 @@
             color: #475569 !important;
             font-size: 13px;
             font-weight: 600;
-            padding: 6px 14px !important;
-            border-radius: 8px;
-            transition: all 0.2s ease;
+            padding: 8px 16px !important;
+            border-radius: 12px;
+            /* Avoid 'all' to prevent transition from browser defaults on load */
+            transition: 
+                background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none !important;
+            outline: none !important;
+            border: none !important;
+            box-shadow: none;
+            -webkit-tap-highlight-color: transparent;
+            /* Rendering optimization */
+            backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-font-smoothing: antialiased;
         }
-        .nav-link-item:hover,
-        .nav-link-item.active {
-            color: #1e3a5f !important;
+        /* Ensure no bootstrap focus ring */
+        .nav-link-item:focus, 
+        .nav-link-item:active,
+        .nav-link-item:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
             background: rgba(255,255,255,0.6);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        .nav-link-item i { margin-right: 5px; }
+        .nav-link-item:hover {
+            color: #2563eb !important;
+            background: rgba(255,255,255,0.7);
+            transform: translateY(-1px);
+        }
+        .nav-link-item.active {
+            color: #2563eb !important;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 4px 12px rgba(31, 38, 135, 0.05);
+        }
+        .nav-link-item::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #2563eb;
+            transition: width 0.3s ease;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        .nav-link-item.active::after {
+            width: 16px;
+        }
+        .nav-link-item i { 
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        .nav-link-item:hover i {
+            transform: scale(1.1);
+        }
 
         /* ===== NOTIF BELL ===== */
         .notif-btn {
@@ -205,14 +279,32 @@
 
         /* General Dropdown */
         .dropdown-menu {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.8) !important;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            box-shadow: var(--glass-shadow);
+            border: 1px solid var(--border-color) !important;
+            box-shadow: var(--glass-shadow) !important;
+            border-radius: 12px !important;
+            padding: 8px !important;
+        }
+        .dropdown-item {
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
         }
         .dropdown-item:hover {
-            background: rgba(255,255,255,0.5);
+            background: rgba(37, 99, 235, 0.1);
+            color: #2563eb;
+        }
+        .dropdown-item.active {
+            background: #2563eb !important;
+            color: #fff !important;
+        }
+        .dropdown-item i {
+            font-size: 1.1rem;
         }
 
         /* ===== MAIN CONTENT ===== */
@@ -229,7 +321,13 @@
             background: var(--bg-secondary);
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
+            transition: all 0.4s ease;
         }
+        .card-custom:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+        }
+
         .stat-card {
             border: 1px solid var(--border-color);
             border-radius: 16px;
@@ -240,10 +338,35 @@
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
             box-shadow: var(--glass-shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+        .stat-card:hover::before {
+            transform: scaleX(1);
         }
         .stat-card .stat-icon {
             font-size: 28px;
             margin-bottom: 8px;
+            display: inline-block;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .stat-card:hover .stat-icon {
+            transform: scale(1.2) rotate(10deg);
         }
         .stat-card .stat-value {
             font-size: 28px;
@@ -254,6 +377,21 @@
             font-size: 12px;
             opacity: 0.75;
             margin-top: 4px;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .animate-in {
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
         }
 
         /* ===== TRACKING STEPS ===== */
@@ -407,7 +545,7 @@
         }
 
         /* ===== MOBILE RESPONSIVE ===== */
-        @media (max-width: 768px) {
+        @media (max-width: 991px) {
             .navbar-brand-text img { height: 35px !important; }
             .main-content {
                 padding: 16px 12px;
@@ -441,6 +579,13 @@
             }
         }
 
+        /* Scrolled Navbar */
+        .navbar-main.scrolled {
+            height: 55px;
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
         /* ===== MOBILE BOTTOM NAV ===== */
         .mobile-bottom-nav {
             position: fixed;
@@ -468,25 +613,38 @@
             text-decoration: none;
             font-size: 10px;
             font-weight: 600;
-            gap: 4px;
+            gap: 2px;
             flex: 1;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
         .mobile-nav-item i {
             font-size: 20px;
-            transition: transform 0.2s ease, color 0.2s ease;
+            width: 40px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            transition: all 0.3s ease;
         }
         .mobile-nav-item.active {
             color: #2563eb;
         }
         .mobile-nav-item.active i {
-            transform: translateY(-2px);
+            background: rgba(37, 99, 235, 0.1);
             color: #2563eb;
+            transform: translateY(-2px);
+        }
+        .mobile-nav-item:active {
+            transform: scale(0.9);
         }
         .mobile-nav-item:hover { color: #3b82f6; }
     </style>
 </head>
 <body>
+    {{-- Page Loader --}}
+    <div class="page-loader"></div>
 
 {{-- ===== NAVBAR ===== --}}
 <nav class="navbar navbar-main d-flex align-items-center justify-content-between">
@@ -496,16 +654,31 @@
     </a>
 
     {{-- Nav Links --}}
-    <div class="d-flex align-items-center gap-1 d-none d-md-flex">
+    <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
         <a href="{{ route('dashboard') }}"
            class="nav-link-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <i class="bi bi-house"></i> Dashboard
         </a>
 
-        <a href="{{ route('user.surat.index') }}"
-           class="nav-link-item {{ request()->routeIs('user.surat.*') ? 'active' : '' }}">
-            <i class="bi bi-envelope"></i> Surat Saya
-        </a>
+        {{-- Dropdown Surat Saya --}}
+        <div class="dropdown">
+            <button class="nav-link-item border-0 bg-transparent dropdown-toggle {{ request()->routeIs('user.surat.*') && !request()->routeIs('user.surat.create') ? 'active' : '' }}" 
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-envelope"></i> Surat Saya
+            </button>
+            <ul class="dropdown-menu border-0 shadow-sm">
+                <li>
+                    <a class="dropdown-item {{ request()->routeIs('user.surat.index') ? 'active' : '' }}" href="{{ route('user.surat.index') }}">
+                        <i class="bi bi-envelope-open me-2"></i> Surat Saya (Card)
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {{ request()->routeIs('user.surat.table') ? 'active' : '' }}" href="{{ route('user.surat.table') }}">
+                        <i class="bi bi-table me-2"></i> Tabel Surat (Detail)
+                    </a>
+                </li>
+            </ul>
+        </div>
         <a href="{{ route('user.surat.create') }}"
            class="nav-link-item {{ request()->routeIs('user.surat.create') ? 'active' : '' }}">
             <i class="bi bi-plus-circle"></i> Ajukan Surat
@@ -518,14 +691,27 @@
            class="nav-link-item {{ request()->routeIs('user.template.*') ? 'active' : '' }}">
             <i class="bi bi-file-earmark-word"></i> Template
         </a>
-        <a href="{{ route('user.faq.index') }}"
-           class="nav-link-item {{ request()->routeIs('user.faq.*') ? 'active' : '' }}">
-            <i class="bi bi-question-circle"></i> FAQ
-        </a>
-        <a href="{{ route('user.about.index') }}"
-           class="nav-link-item {{ request()->routeIs('user.about.*') ? 'active' : '' }}">
-            <i class="bi bi-info-circle"></i> About
-        </a>
+        
+        {{-- Lainnya Dropdown --}}
+        <div class="dropdown">
+            <button class="nav-link-item border-0 bg-transparent dropdown-toggle {{ request()->routeIs('user.faq.*') || request()->routeIs('user.about.*') ? 'active' : '' }}" 
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-grid"></i> Lainnya
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0">
+
+                <li>
+                    <a class="dropdown-item {{ request()->routeIs('user.faq.*') ? 'active' : '' }}" href="{{ route('user.faq.index') }}">
+                        <i class="bi bi-question-circle me-2"></i> FAQ
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {{ request()->routeIs('user.about.*') ? 'active' : '' }}" href="{{ route('user.about.index') }}">
+                        <i class="bi bi-info-circle me-2"></i> About
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 
     {{-- Right: notif + avatar --}}
@@ -639,20 +825,36 @@
 </div>
 
 {{-- Main --}}
-<main class="main-content">
+<main class="main-content animate-in">
     @yield('content')
 </main>
 
 {{-- ===== MOBILE BOTTOM NAV ===== --}}
-<div class="mobile-bottom-nav d-md-none">
+<div class="mobile-bottom-nav d-lg-none">
     <a href="{{ route('dashboard') }}" class="mobile-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
         <i class="bi bi-house"></i>
         <span>Home</span>
     </a>
-    <a href="{{ route('user.surat.index') }}" class="mobile-nav-item {{ request()->routeIs('user.surat.*') && !request()->routeIs('user.surat.create') ? 'active' : '' }}">
-        <i class="bi bi-envelope"></i>
-        <span>Surat Saya</span>
-    </a>
+    {{-- Dropup Surat Saya untuk Mobile --}}
+    <div class="dropup" style="flex: 1;">
+        <button class="mobile-nav-item border-0 bg-transparent w-100 {{ request()->routeIs('user.surat.*') && !request()->routeIs('user.surat.create') ? 'active' : '' }}" 
+                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-envelope"></i>
+            <span>Surat Saya</span>
+        </button>
+        <ul class="dropdown-menu border-0 shadow-lg" style="margin-bottom: 20px; border-radius: 15px; min-width: 160px;">
+            <li>
+                <a class="dropdown-item py-3 {{ request()->routeIs('user.surat.index') ? 'active' : '' }}" href="{{ route('user.surat.index') }}">
+                    <i class="bi bi-envelope-open me-2"></i> Surat Saya (Card)
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item py-3 {{ request()->routeIs('user.surat.table') ? 'active' : '' }}" href="{{ route('user.surat.table') }}">
+                    <i class="bi bi-table me-2"></i> Tabel Surat (Detail)
+                </a>
+            </li>
+        </ul>
+    </div>
     <a href="{{ route('user.surat.create') }}" class="mobile-nav-item {{ request()->routeIs('user.surat.create') ? 'active' : '' }}">
         <i class="bi bi-plus-circle"></i>
         <span>Ajukan</span>
@@ -662,10 +864,33 @@
         <i class="bi bi-bar-chart-line"></i>
         <span>Statistik</span>
     </a>
-    <a href="{{ route('user.template.index') }}" class="mobile-nav-item {{ request()->routeIs('user.template.*') ? 'active' : '' }}">
-        <i class="bi bi-file-earmark-word"></i>
-        <span>Template</span>
-    </a>
+
+    {{-- Dropup Lainnya untuk Mobile --}}
+    <div class="dropup" style="flex: 1;">
+        <button class="mobile-nav-item border-0 bg-transparent w-100 {{ request()->routeIs('user.faq.*') || request()->routeIs('user.about.*') || request()->routeIs('user.template.*') ? 'active' : '' }}" 
+                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-grid"></i>
+            <span>Lainnya</span>
+        </button>
+        <ul class="dropdown-menu border-0 shadow-lg" style="margin-bottom: 20px; border-radius: 15px; min-width: 160px;">
+
+            <li>
+                <a class="dropdown-item py-3 {{ request()->routeIs('user.template.*') ? 'active' : '' }}" href="{{ route('user.template.index') }}">
+                    <i class="bi bi-file-earmark-word me-2"></i> Template
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item py-3 {{ request()->routeIs('user.faq.*') ? 'active' : '' }}" href="{{ route('user.faq.index') }}">
+                    <i class="bi bi-question-circle me-2"></i> FAQ
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item py-3 {{ request()->routeIs('user.about.*') ? 'active' : '' }}" href="{{ route('user.about.index') }}">
+                    <i class="bi bi-info-circle me-2"></i> Tentang
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
 
 {{-- ===== FOOTER ===== --}}
@@ -697,6 +922,16 @@
             new bootstrap.Alert(el).close();
         });
     }, 4000);
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('.navbar-main');
+        if (window.scrollY > 20) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
 </script>
 @stack('scripts')
 </body>
