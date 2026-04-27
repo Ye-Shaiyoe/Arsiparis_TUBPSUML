@@ -883,7 +883,7 @@
                     @forelse($templates->take(4) as $tpl)
                         <div class="doc-preview-card" onclick="window.open('{{ $tpl['url'] }}', '_blank')">
                             <div class="doc-preview-top">
-                                <img src="{{ asset('images/template_preview.png') }}" alt="Preview">
+                                <img src="{{ asset('images/template_previewss.png') }}" alt="Preview">
                                 <div style="position:absolute; top:10px; right:10px;">
                                     <span class="badge bg-white text-dark shadow-sm" style="font-size:9px; border-radius:6px; opacity:0.9;">
                                         {{ strtoupper($tpl['ext']) }}
@@ -1156,8 +1156,66 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // FAQ Welcome Popup - Gunakan ID user agar tidak bentrok antar akun di browser yang sama
+    const faqPopupKey = 'hideFaqPopup_{{ Auth::id() }}';
+    const hasSeenFaqPopup = localStorage.getItem(faqPopupKey);
+    if (!hasSeenFaqPopup) {
+        setTimeout(() => {
+            Swal.fire({
+                title: '<span style="font-weight: 800; color: #1e3a5f;">Butuh Bantuan?</span>',
+                html: `
+                    <div class="text-center p-2">
+                        <div style="background: #eff6ff; border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                            <i class="bi bi-lightbulb-fill text-primary" style="font-size: 40px;"></i>
+                        </div>
+                        <p style="font-size: 15px; color: #4b5563; line-height: 1.6;">
+                            Selamat datang di Dashboard! Jika ini pertama kali Anda menggunakan aplikasi, kami menyarankan untuk membaca <strong>Panduan & FAQ</strong> terlebih dahulu.
+                        </p>
+                        <div class="form-check d-inline-block mt-3">
+                            <input class="form-check-input" type="checkbox" id="dontShowAgain" style="cursor: pointer;">
+                            <label class="form-check-label text-muted" for="dontShowAgain" style="font-size: 13px; cursor: pointer;">
+                                Jangan tampilkan pesan ini lagi
+                            </label>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="bi bi-book-half me-2"></i>Ke Halaman FAQ',
+                cancelButtonText: 'Nanti Saja',
+                confirmButtonColor: '#1e3a5f',
+                cancelButtonColor: '#94a3b8',
+                padding: '2rem',
+                background: '#fff',
+                borderRadius: '24px',
+                showClass: {
+                    popup: 'animate__animated animate__zoomIn'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOut'
+                },
+                preConfirm: () => {
+                    const checkbox = document.getElementById('dontShowAgain');
+                    if (checkbox && checkbox.checked) {
+                        localStorage.setItem(faqPopupKey, 'true');
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('user.faq.index') }}";
+                } else {
+                    // Check checkbox state even if cancelled
+                    const checkbox = document.getElementById('dontShowAgain');
+                    if (checkbox && checkbox.checked) {
+                        localStorage.setItem(faqPopupKey, 'true');
+                    }
+                }
+            });
+        }, 1000); // Muncul setelah 1 detik dashboard terbuka
+    }
+
     scheduleRefresh();
 });
 </script>
+
 
 @endsection
