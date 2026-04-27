@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Admin') — Surat Metrologi</title>
+    <title>@yield('title', 'Admin') — Persuratan BP SUML</title>
     <link rel="icon" href="{{ asset('images/metrologi.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -57,22 +57,14 @@
             flex-shrink: 0;
             position: sticky;
             top: 0;
-            overflow-y: auto;
             transition: width 0.2s, background 0.3s;
-            /* Hide scrollbar for Firefox */
-            scrollbar-width: none;
-            /* Hide scrollbar for IE and Edge */
-            -ms-overflow-style: none;
-        }
-
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        #sidebar::-webkit-scrollbar {
-            display: none;
+            overflow: hidden;
         }
 
         .sidebar-logo {
             padding: 20px 16px 16px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
         }
 
         .sidebar-logo span {
@@ -92,6 +84,16 @@
         .sidebar-menu {
             flex: 1;
             padding: 12px 0;
+            overflow-y: auto;
+            /* Hide scrollbar for Firefox */
+            scrollbar-width: none;
+            /* Hide scrollbar for IE and Edge */
+            -ms-overflow-style: none;
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .sidebar-menu::-webkit-scrollbar {
+            display: none;
         }
 
         .menu-label {
@@ -173,6 +175,8 @@
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             font-size: 12px;
             color: rgba(255, 255, 255, 0.55);
+            flex-shrink: 0;
+            background: var(--sidebar-bg);
         }
 
         .sidebar-user strong {
@@ -855,12 +859,41 @@
                 <span class="menu-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
             </a>
             <a href="{{ route('admin.surat.index') }}"
-                class="menu-item {{ request()->routeIs('admin.surat.*') ? 'active' : '' }}">
+                class="menu-item {{ request()->routeIs('admin.surat.index') ? 'active' : '' }}">
                 <span class="menu-icon"><i class="bi bi-envelope"></i></span> Antrian Surat
                 @if($antrianCount ?? 0)
                     <span class="badge badge-red" style="margin-left:auto;font-size:10px;">{{ $antrianCount }}</span>
                 @endif
             </a>
+
+            <div class="menu-label">Data Surat</div>
+
+            <div class="menu-dropdown {{ request()->routeIs('admin.surat.*') || request()->routeIs('admin.surat.*') ? 'is-active' : '' }}">
+                <button type="button" class="menu-item menu-dropdown-btn" onclick="this.parentElement.classList.toggle('is-active')">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="menu-icon"><i class="bi bi-folder2-open"></i></span> Tabel Data Surat
+                    </div>
+                    <span class="dropdown-chevron"><i class="bi bi-chevron-down"></i></span>
+                </button>
+                <div class="menu-dropdown-list">
+                    <a href="{{ route('admin.surat.masuk') }}"
+                        class="menu-item {{ request()->routeIs('admin.surat.masuk') ? 'active' : '' }}">
+                        <span class="menu-icon"><i class="bi bi-inbox"></i></span> Surat Masuk
+                    </a>
+                    <a href="{{ route('admin.surat.proses') }}"
+                        class="menu-item {{ request()->routeIs('admin.surat.proses') ? 'active' : '' }}">
+                        <span class="menu-icon"><i class="bi bi-arrow-repeat"></i></span> Surat Diproses
+                    </a>
+                    <a href="{{ route('admin.surat.selesai') }}"
+                        class="menu-item {{ request()->routeIs('admin.surat.selesai') ? 'active' : '' }}">
+                        <span class="menu-icon"><i class="bi bi-check-circle"></i></span> Surat Selesai
+                    </a>
+                    <a href="{{ route('admin.surat.revisi') }}"
+                        class="menu-item {{ request()->routeIs('admin.surat.revisi') ? 'active' : '' }}">
+                        <span class="menu-icon"><i class="bi bi-exclamation-triangle"></i></span> Surat Perlu Revisi
+                    </a>
+                </div>
+            </div> 
 
             <div class="menu-dropdown {{ request()->routeIs('admin.laporan.*') || request()->routeIs('admin.riwayat.*') ? 'is-active' : '' }}">
                 <button type="button" class="menu-item menu-dropdown-btn" onclick="this.parentElement.classList.toggle('is-active')">
@@ -891,7 +924,7 @@
                 @endif
             </a>
 
-            <div class="menu-dropdown {{ request()->routeIs('admin.template.*') || request()->routeIs('admin.users.*') || request()->routeIs('admin.logs.*') ? 'is-active' : '' }}">
+            <div class="menu-dropdown {{ request()->routeIs('admin.template.*') || request()->routeIs('admin.users.*') || request()->routeIs('admin.file.*') || request()->routeIs('admin.logs.*') ? 'is-active' : '' }}">
                 <button type="button" class="menu-item menu-dropdown-btn" onclick="this.parentElement.classList.toggle('is-active')">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <span class="menu-icon"><i class="bi bi-gear"></i></span> Pengaturan
@@ -907,13 +940,17 @@
                         class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                         <span class="menu-icon"><i class="bi bi-people"></i></span> Data Pegawai
                     </a>
+                    <a href="{{ route('admin.file.index') }}"
+                        class="menu-item {{ request()->routeIs('admin.file.*') ? 'active' : '' }}">
+                        <span class="menu-icon"><i class="bi bi-hdd"></i></span> File Surat
+                    </a>
                     <a href="{{ route('admin.logs.index') }}"
                         class="menu-item {{ request()->routeIs('admin.logs.*') ? 'active' : '' }}">
                         <span class="menu-icon"><i class="bi bi-journal-text"></i></span> System Logs
                     </a>
                 </div>
             </div>            
-            <div class="menu-label">Chart</div>
+            <div class="menu-label">Chart Dan Data Tabel</div>
             <a href="{{ route('admin.chart.index') }}"
                 class="menu-item {{ request()->routeIs('admin.chart.*') ? 'active' : '' }}">
                 <span class="menu-icon"><i class="bi bi-bar-chart"></i></span> Statistik & Grafik
@@ -1122,6 +1159,72 @@
                 }
             });
         })();
+
+        // ===== PERSISTENT DROPDOWNS =====
+        (function () {
+            const activeDropdownsKey = 'persistentSidebarDropdowns';
+            const dropdowns = document.querySelectorAll('.menu-dropdown');
+
+            // Function to get stored active dropdown IDs
+            function getActiveDropdownIds() {
+                const stored = localStorage.getItem(activeDropdownsKey);
+                try {
+                    return stored ? JSON.parse(stored) : [];
+                } catch (e) {
+                    console.error("Error parsing localStorage for active dropdowns:", e);
+                    return [];
+                }
+            }
+
+            // Function to save active dropdown IDs
+            function saveActiveDropdownIds(ids) {
+                localStorage.setItem(activeDropdownsKey, JSON.stringify(ids));
+            }
+
+            // Initialize dropdown states on page load
+            function initializeDropdownStates() {
+                const activeIds = getActiveDropdownIds();
+                dropdowns.forEach(dropdown => {
+                    const dropdownId = dropdown.dataset.dropdownId;
+                    if (dropdownId && activeIds.includes(dropdownId)) {
+                        dropdown.classList.add('is-active');
+                    }
+                });
+            }
+
+            // Handle click events on dropdown buttons
+            function handleDropdownToggle(event) {
+                const btn = event.currentTarget;
+                const dropdown = btn.closest('.menu-dropdown');
+                if (!dropdown) return;
+
+                const dropdownId = dropdown.dataset.dropdownId;
+                if (!dropdownId) return; // Skip if no ID
+
+                const isActive = dropdown.classList.contains('is-active');
+                let activeIds = getActiveDropdownIds();
+
+                if (isActive) {
+                    // If it was active, it's about to be removed
+                    dropdown.classList.remove('is-active');
+                    activeIds = activeIds.filter(id => id !== dropdownId);
+                } else {
+                    // If it was not active, it's about to be added
+                    dropdown.classList.add('is-active');
+                    if (!activeIds.includes(dropdownId)) {
+                        activeIds.push(dropdownId);
+                    }
+                }
+                saveActiveDropdownIds(activeIds);
+            }
+
+            initializeDropdownStates();
+
+            document.querySelectorAll('.menu-dropdown-btn').forEach(btn => {
+                btn.addEventListener('click', handleDropdownToggle);
+            });
+        })();
+
     </script>
 
     @stack('scripts')
