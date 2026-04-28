@@ -10,6 +10,16 @@
             </h2>
             <p class="text-secondary mb-0" style="font-size: 13px;">Ringkasan dan visualisasi data pengajuan surat Anda.</p>
         </div>
+        <div>
+            <form action="{{ route('user.statistik.index') }}" method="GET" id="yearForm">
+                <select name="tahun" class="form-select" onchange="document.getElementById('yearForm').submit()" style="width: 140px; border-radius: 10px; font-weight: 600; border-color: #e5e7eb;">
+                    @php $startYear = 2024; $currentYear = date('Y'); @endphp
+                    @for($y = $currentYear; $y >= $startYear; $y--)
+                        <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>Tahun {{ $y }}</option>
+                    @endfor
+                </select>
+            </form>
+        </div>
     </div>
 
     <!-- Cards Row -->
@@ -38,7 +48,7 @@
                 <div class="stat-label">Diproses</div>
             </div>
         </div>
-        <!-- Ditolak -->
+        <!-- Ditolak </> -->
         <div class="col-6 col-md-3">
             <div class="stat-card">
                 <div class="stat-icon text-danger"><i class="bi bi-x-circle"></i></div>
