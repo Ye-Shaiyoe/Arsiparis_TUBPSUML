@@ -923,6 +923,10 @@
                     <span class="badge badge-red" style="margin-left:auto;font-size:10px;">{{ $notifCount }}</span>
                 @endif
             </a>
+            <a href="{{ route('admin.aspirasi.index') }}"
+                class="menu-item {{ request()->routeIs('admin.aspirasi.*') ? 'active' : '' }}">
+                <span class="menu-icon"><i class="bi bi-chat-right-heart"></i></span> Kotak Aspirasi
+            </a>
 
             <div class="menu-dropdown {{ request()->routeIs('admin.template.*') || request()->routeIs('admin.users.*') || request()->routeIs('admin.file.*') || request()->routeIs('admin.logs.*') ? 'is-active' : '' }}">
                 <button type="button" class="menu-item menu-dropdown-btn" onclick="this.parentElement.classList.toggle('is-active')">
@@ -1053,7 +1057,7 @@
         <footer class="pb-4 mt-auto">
             <div class="container-fluid text-center">
                 <p class="mb-0" style="font-size: 13px; color: var(--text-secondary); opacity: 0.8;">
-                    {{ date('Y') }} &copy; 2026 Balai Pengelolaan SUML &mdash; RI. All rights reserved.
+                    &copy; {{ date('Y') }} Balai Pengelolaan SUML &mdash; RI. All rights reserved.
                 </p>
             </div>
         </footer>
