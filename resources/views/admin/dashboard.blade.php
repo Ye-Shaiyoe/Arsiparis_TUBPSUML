@@ -4,6 +4,31 @@
 
 @section('content')
 
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:16px;">
+        <div>
+            <h1 style="font-size:1.8rem; font-weight:800; color:var(--text-primary); margin:0;">Dashboard Overview</h1>
+            <p style="font-size:13px; color:var(--text-secondary); margin:4px 0 0 0;">Monitoring aktivitas persuratan {{ \Carbon\Carbon::create()->month($bulanSelected)->translatedFormat('F') }} {{ $tahunSelected }}</p>
+        </div>
+        <form action="{{ route('admin.dashboard') }}" method="GET" style="display:flex; gap:10px; align-items:center; background:var(--bg-secondary); padding:8px 12px; border-radius:12px; border:1px solid var(--border-color);">
+            <div style="font-size:12px; font-weight:600; color:var(--text-secondary); margin-right:4px;">FILTER:</div>
+            <select name="bulan" class="form-select" onchange="this.form.submit()" style="width:140px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); font-size:13px; padding:5px 10px;">
+                @foreach(range(1, 12) as $m)
+                    <option value="{{ $m }}" {{ $bulanSelected == $m ? 'selected' : '' }}>
+                        {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+                    </option>
+                @endforeach
+            </select>
+            <select name="tahun" class="form-select" onchange="this.form.submit()" style="width:110px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); font-size:13px; padding:5px 10px;">
+                @php $startYear = 2024; $currentYear = date('Y'); @endphp
+                @for($y = $currentYear; $y >= $startYear; $y--)
+                    <option value="{{ $y }}" {{ $tahunSelected == $y ? 'selected' : '' }}>
+                        {{ $y }}
+                    </option>
+                @endfor
+            </select>
+        </form>
+    </div>
+
     <div x-data="dashboardData()" x-init="initDashboard()" style="position:relative;">
 
         {{-- LOADING INDICATOR --}}
@@ -15,9 +40,9 @@
 
         <div class="stat-grid">
             <div class="stat-card blue">
-                <div class="stat-label">Total Surat Bulan Ini</div>
+                <div class="stat-label">Total Surat</div>
                 <div class="stat-value" x-text="stats.totalBulanIni">{{ $totalBulanIni }}</div>
-                <div class="stat-sub">{{ now()->translatedFormat('F Y') }}</div>
+                <div class="stat-sub">{{ \Carbon\Carbon::create()->month($bulanSelected)->translatedFormat('F') }} {{ $tahunSelected }}</div>
             </div>
             <div class="stat-card green">
                 <div class="stat-label">Selesai</div>
@@ -108,6 +133,7 @@
             <div class="card">
                 <div class="section-header">
                     <h2>📊 Rekap Per Jenis</h2>
+                    <small style="color:var(--text-secondary);">Periode {{ \Carbon\Carbon::create()->month($bulanSelected)->translatedFormat('M') }} {{ $tahunSelected }}</small>
                 </div>
                 @forelse($rekapJenis as $jenis => $jumlah)
                     <div
@@ -161,7 +187,7 @@
                 <div class="section-header">
                     <div>
                         <h2>👥 Riwayat Pemrosesan Surat</h2>
-                        <small style="color:var(--text-secondary);">Siapa saja yang telah memproses tiap surat bulan ini</small>
+                        <small style="color:var(--text-secondary);">Aktivitas pengolahan periode {{ \Carbon\Carbon::create()->month($bulanSelected)->translatedFormat('F') }} {{ $tahunSelected }}</small>
                     </div>
                 </div>
 
