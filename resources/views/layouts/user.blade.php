@@ -668,8 +668,13 @@
             </button>
             <ul class="dropdown-menu border-0 shadow-sm">
                 <li>
-                    <a class="dropdown-item {{ request()->routeIs('user.surat.index') ? 'active' : '' }}" href="{{ route('user.surat.index') }}">
+                    <a class="dropdown-item {{ request()->routeIs('user.surat.index') && request('status') !== 'draft' ? 'active' : '' }}" href="{{ route('user.surat.index') }}">
                         <i class="bi bi-envelope-open me-2"></i> Surat Saya (Card)
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {{ request('status') === 'draft' ? 'active' : '' }}" href="{{ route('user.surat.index', ['status' => 'draft']) }}">
+                        <i class="bi bi-pencil-square me-2"></i> Draft Saya
                     </a>
                 </li>
                 <li>
@@ -694,12 +699,23 @@
         
         {{-- Lainnya Dropdown --}}
         <div class="dropdown">
-            <button class="nav-link-item border-0 bg-transparent dropdown-toggle {{ request()->routeIs('user.faq.*') || request()->routeIs('user.about.*') ? 'active' : '' }}" 
+            <button class="nav-link-item border-0 bg-transparent dropdown-toggle {{ request()->routeIs('user.faq.*', 'user.about.*', 'user.notifikasi.index', 'user.aspirasi.index') ? 'active' : '' }}" 
                     type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-grid"></i> Lainnya
             </button>
             <ul class="dropdown-menu dropdown-menu-end border-0">
 
+                <li>
+                    <a class="dropdown-item {{ request()->routeIs('user.notifikasi.index') ? 'active' : '' }}" href="{{ route('user.notifikasi.index') }}">
+                        <i class="bi bi-bell me-2"></i> Notifikasi
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item {{ request()->routeIs('user.aspirasi.index') ? 'active' : '' }}" href="{{ route('user.aspirasi.index') }}">
+                        <i class="bi bi-chat-right-heart me-2"></i> Kotak Aspirasi
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
                 <li>
                     <a class="dropdown-item {{ request()->routeIs('user.faq.*') ? 'active' : '' }}" href="{{ route('user.faq.index') }}">
                         <i class="bi bi-question-circle me-2"></i> FAQ
@@ -796,6 +812,9 @@
                 <li><a class="dropdown-item py-2" href="{{ route('user.surat.index') }}">
                     <i class="bi bi-envelope me-2"></i> Surat Saya
                 </a></li>
+                <li><a class="dropdown-item py-2" href="{{ route('user.surat.index', ['status' => 'draft']) }}">
+                    <i class="bi bi-pencil-square me-2"></i> Draft Saya
+                </a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                     <a class="dropdown-item py-2 text-danger" href="#"
@@ -844,8 +863,13 @@
         </button>
         <ul class="dropdown-menu border-0 shadow-lg" style="margin-bottom: 20px; border-radius: 15px; min-width: 160px;">
             <li>
-                <a class="dropdown-item py-3 {{ request()->routeIs('user.surat.index') ? 'active' : '' }}" href="{{ route('user.surat.index') }}">
+                <a class="dropdown-item py-3 {{ request()->routeIs('user.surat.index') && request('status') !== 'draft' ? 'active' : '' }}" href="{{ route('user.surat.index') }}">
                     <i class="bi bi-envelope-open me-2"></i> Surat Saya (Card)
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item py-3 {{ request('status') === 'draft' ? 'active' : '' }}" href="{{ route('user.surat.index', ['status' => 'draft']) }}">
+                    <i class="bi bi-pencil-square me-2"></i> Draft Saya
                 </a>
             </li>
             <li>
@@ -867,13 +891,23 @@
 
     {{-- Dropup Lainnya untuk Mobile --}}
     <div class="dropup" style="flex: 1;">
-        <button class="mobile-nav-item border-0 bg-transparent w-100 {{ request()->routeIs('user.faq.*') || request()->routeIs('user.about.*') || request()->routeIs('user.template.*') ? 'active' : '' }}" 
+        <button class="mobile-nav-item border-0 bg-transparent w-100 {{ request()->routeIs('user.faq.*') || request()->routeIs('user.about.*') || request()->routeIs('user.template.*') || request()->routeIs('user.notifikasi.index') || request()->routeIs('user.aspirasi.index') ? 'active' : '' }}" 
                 type="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-grid"></i>
             <span>Lainnya</span>
         </button>
-        <ul class="dropdown-menu border-0 shadow-lg" style="margin-bottom: 20px; border-radius: 15px; min-width: 160px;">
-
+        <ul class="dropdown-menu border-0 shadow-lg" style="margin-bottom: 20px; border-radius: 15px; min-width: 180px;">
+            <li>
+                <a class="dropdown-item py-3 {{ request()->routeIs('user.notifikasi.index') ? 'active' : '' }}" href="{{ route('user.notifikasi.index') }}">
+                    <i class="bi bi-bell me-2"></i> Notifikasi
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item py-3 {{ request()->routeIs('user.aspirasi.index') ? 'active' : '' }}" href="{{ route('user.aspirasi.index') }}">
+                    <i class="bi bi-chat-right-heart me-2"></i> Kotak Aspirasi
+                </a>
+            </li>
+            <li><hr class="dropdown-divider mx-3"></li>
             <li>
                 <a class="dropdown-item py-3 {{ request()->routeIs('user.template.*') ? 'active' : '' }}" href="{{ route('user.template.index') }}">
                     <i class="bi bi-file-earmark-word me-2"></i> Template
