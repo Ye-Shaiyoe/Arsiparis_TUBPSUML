@@ -126,7 +126,7 @@
                                 <div class="fw-bold" style="color: #1e3a5f; font-size: 14px;">{{ $surat->judul }}</div>
                                 <div class="d-flex gap-1 mt-1">
                                     <span class="badge badge-{{ $surat->sifat }}" style="font-size: 9px; padding: 3px 6px;">{{ ucfirst($surat->sifat) }}</span>
-                                    @if($surat->status === 'revisi')
+                                    @if(in_array($surat->status, ['revisi', 'revisi_admin']))
                                         <span class="badge bg-warning text-dark" style="font-size: 9px; padding: 3px 6px;"><i class="bi bi-pencil-square"></i> Perlu Revisi</span>
                                     @endif
                                 </div>
@@ -148,6 +148,8 @@
                                         <span class="badge rounded-pill" style="background:#dcfce7; color:#15803d; font-size:10px;">✓ Selesai</span>
                                     @elseif($surat->status === 'ditolak')
                                         <span class="badge rounded-pill" style="background:#fee2e2; color:#b91c1c; font-size:10px;">✗ Ditolak</span>
+                                    @elseif(in_array($surat->status, ['revisi', 'revisi_admin']))
+                                        <span class="badge rounded-pill" style="background:#fef3c7; color:#b45309; font-size:10px;">📝 Revisi</span>
                                     @elseif($surat->status === 'draft')
                                         <span class="badge rounded-pill" style="background:#f1f5f9; color:#64748b; font-size:10px;">📄 Draf</span>
                                     @else
