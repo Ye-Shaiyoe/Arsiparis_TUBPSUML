@@ -62,8 +62,8 @@
                 <img src="{{ asset('images/metrologi.png') }}" alt="Logo" style="width:42px;height:42px;object-fit:contain;">
             </div>
         </div>
-        <div class="header-title">Dinas Perdagangan dan Perindustrian</div>
-        <div class="header-sub">Sistem Informasi Surat Metrologi</div>
+        <div class="header-title">Balai Pengelolaan SUML</div>
+        <div class="header-sub">Sistem Manajemen Persuratan BP SUML</div>
     </div>
 
     <div class="glass-card">
@@ -92,7 +92,7 @@
     </div>
 
     <div class="footer-text">
-        &copy; {{ date('Y') }} Dinas Perdagangan<br>
+        &copy; {{ date('Y') }} Balai Pengelolaan SUML<br>
         Hak cipta dilindungi undang-undang
     </div>
 </body>
