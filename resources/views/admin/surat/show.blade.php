@@ -135,7 +135,7 @@
                         <span style="color:var(--text-secondary);">{{ $hist->selesai_pada?->format('d M, H:i') ?? '-' }}</span>
                     </div>
                     <p style="font-size:13px; margin:0; color:var(--text-primary); line-height:1.5;">"{{ $hist->catatan }}"</p>
-                    <div style="font-size:11px; color:var(--text-secondary); margin-top:6px; font-weight:500;">Oleh: {{ $hist->diprosesByUser->getRoleLabel() ?? 'Admin' }}</div>
+                    <div style="font-size:11px; color:var(--text-secondary); margin-top:6px; font-weight:500;">Oleh: {{ $hist->diprosesByUser?->getRoleLabel() ?? 'Admin' }}</div>
                 </div>
             @empty
                 <p class="text-muted small mb-0">Belum ada catatan pemrosesan.</p>
@@ -196,9 +196,6 @@
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode(route('surat.verifikasi', $surat->uuid)) }}" 
                      alt="QR" style="width:140px; height:140px; display:block;">
             </div>
-            <a href="{{ route('surat.verifikasi', $surat->uuid) }}" target="_blank" style="font-size:12px; font-weight:700; text-decoration:none; color:#3b82f6; display: inline-block;">
-                Buka Link Verifikasi <i class="bi bi-box-arrow-up-right ms-1" style="font-size: 10px;"></i>
-            </a>
         </div>
 
         {{-- AKSI --}}
