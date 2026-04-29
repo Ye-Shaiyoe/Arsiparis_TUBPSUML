@@ -584,7 +584,7 @@
         </div>
         <a href="{{ $isLibur ? 'javascript:void(0)' : route('user.surat.create') }}" 
            class="btn btn-primary-modern d-flex align-items-center gap-2 {{ $isLibur ? 'disabled' : '' }}"
-           @if($isLibur) onclick="Swal.fire({icon: 'info', title: 'Layanan Tutup', text: 'Pengajuan surat baru hanya tersedia pada hari kerja (Senin - Jumat) pukul 08.00 - 16.00 WIB.', confirmButtonColor: '#1e3a5f'})" @endif>
+           @if($isLibur) onclick="Swal.fire({icon: 'info', title: 'Layanan Tutup', text: 'Pengajuan surat baru hanya tersedia pada hari kerja. Senin–Kamis pukul 07.30–16.00 WIB, Jumat pukul 07.30–16.30 WIB.', confirmButtonColor: '#1e3a5f'})" @endif>
             <i class="bi bi-plus-circle-fill"></i> Ajukan Surat Baru
         </a>
     </div>
@@ -597,7 +597,8 @@
         <div>
             <h6 class="fw-bold mb-1">Layanan Sedang Tutup</h6>
             <p class="mb-0" style="font-size:13px; opacity:0.9;">
-                Saat ini pukul <strong>{{ now()->format('H:i') }} WIB</strong>. Pengajuan surat baru hanya tersedia pada hari kerja <strong>(Senin-Jumat)</strong> pukul <strong>08.00 - 16.00 WIB</strong>.
+                Saat ini pukul <strong>{{ now()->format('H:i') }} WIB</strong>. Pengajuan surat baru hanya tersedia pada hari kerja:<br>
+                <strong>Senin–Kamis</strong> pukul <strong>07.30–16.00 WIB</strong> &nbsp;|&nbsp; <strong>Jumat</strong> pukul <strong>07.30–16.30 WIB</strong>.
             </p>
         </div>
     </div>
@@ -736,20 +737,24 @@
 
                             {{-- Tracking steps compact --}}
                             <div class="d-flex gap-2 overflow-auto pb-2">
-                                @foreach($surat->tahapans->take($surat->tahap_sekarang) as $tahapan)
+                                @foreach($surat->tahapans as $tahapan)
+                                    @if($tahapan->status === 'selesai' || $tahapan->tahap === $surat->tahap_sekarang || $tahapan->status === 'proses')
                                     <div class="flex-shrink-0 text-center" style="min-width:80px;">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1"
-                                             style="width:32px; height:32px; background:{{ $tahapan->status === 'selesai' ? '#dcfce7' : ($tahapan->status === 'proses' ? '#dbeafe' : '#fee2e2') }};">
+                                             style="width:32px; height:32px; background:{{ $tahapan->status === 'selesai' ? '#dcfce7' : ($tahapan->status === 'proses' ? '#dbeafe' : ($tahapan->status === 'ditolak' ? '#fee2e2' : '#f3f4f6')) }};">
                                             @if($tahapan->status === 'selesai')
                                                 <i class="bi bi-check-lg" style="color:#15803d; font-size:16px;"></i>
                                             @elseif($tahapan->status === 'proses')
                                                 <i class="bi bi-hourglass-split" style="color:#1d4ed8; font-size:14px;"></i>
-                                            @else
+                                            @elseif($tahapan->status === 'ditolak')
                                                 <i class="bi bi-x-lg" style="color:#b91c1c; font-size:14px;"></i>
+                                            @else
+                                                <i class="bi bi-hourglass-split" style="color:#9ca3af; font-size:14px;"></i>
                                             @endif
                                         </div>
                                         <div style="font-size:10px; color:#64748b;">{{ $tahapan->nama_tahap }}</div>
                                     </div>
+                                    @endif
                                 @endforeach
                             </div>
 
