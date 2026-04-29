@@ -311,22 +311,17 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="rounded-2 bg-light p-3" style="background:#f9fafb!important; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                                        <small class="text-muted d-block mb-1">Telepon</small>
-                                        <span style="font-size: 13px; font-weight: 500;color:#111827;">(022) 6032720</span>
-                                    </div>
-                                </div>
-                                <div class="col-6">
+
+                                <div class="col-12">
                                     <div class="rounded-2 bg-light p-3" style="background:#f9fafb!important; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                                         <small class="text-muted d-block mb-1">Jam Operasional</small>
-                                        <span style="font-size: 13px; font-weight: 500;color:#111827;">Senin – Jumat<br>08.00 – 16.00 WIB</span>
+                                        <span style="font-size: 13px; font-weight: 500;color:#111827;">Senin – Kamis<br>07.30 – 16.00 WIB<br>Jum’at<br>07.30 – 16.30 WIB</span>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="rounded-2 bg-light p-3" style="background:#f9fafb!important; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                                         <small class="text-muted d-block mb-1">Email</small>
-                                        <span style="font-size: 13px; font-weight: 500;color:#111827;">metrologi@kemendag.go.id</span>
+                                        <span style="font-size: 13px; font-weight: 500;color:#111827;">tubpsuml@gmail.com</span>
                                     </div>
                                 </div>
                                 <div class="col-6">
@@ -334,7 +329,7 @@
                                         <small class="text-muted d-block mb-1">Website</small>
                                         <a href="https://metrologi.kemendag.go.id" target="_blank"
                                            style="font-size: 13px; font-weight: 500;color:#111827;">
-                                            metrologi.kemendag.go.id
+                                            metrologi.kemendag.go.id 
                                         </a>
                                     </div>
                                 </div>
