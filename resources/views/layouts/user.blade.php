@@ -848,6 +848,9 @@
     @yield('content')
 </main>
 
+{{-- Modals stack: dirender di luar <main> agar tidak terjebak stacking context dari transform animation --}}
+@stack('modals')
+
 {{-- ===== MOBILE BOTTOM NAV ===== --}}
 <div class="mobile-bottom-nav d-lg-none">
     <a href="{{ route('dashboard') }}" class="mobile-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
