@@ -195,21 +195,13 @@
         <h5>🔔 Notifikasi</h5>
         <div class="notif-actions">
             @if($unreadCount > 0)
-            <form action="{{ route('admin.notifikasi.readAll') }}" method="POST" class="d-inline">
-                @csrf
-                <button type="submit" class="action-btn read-all" title="Tandai Semua Dibaca">
-                    <i class="bi bi-check-all"></i>
-                </button>
-            </form>
+            <button type="button" class="action-btn read-all" title="Tandai Semua Dibaca" data-action="mark-all-read">
+                <i class="bi bi-check-all"></i>
+            </button>
             @endif
-            <form action="{{ route('admin.notifikasi.deleteAll') }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus semua notifikasi?')">
-                @csrf
-                @method('DELETE')
-                <input type="hidden" name="filter" value="{{ $filter }}">
-                <button type="submit" class="action-btn delete-all" title="Hapus Semua">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </form>
+            <button type="button" class="action-btn delete-all" title="Hapus Semua" data-action="delete-all">
+                <i class="bi bi-trash"></i>
+            </button>
         </div>
     </div>
 
@@ -270,23 +262,18 @@
                 {{-- Buttons - Horizontal --}}
                 <div class="notif-buttons">
                     @if($isUnread)
-                    <form action="{{ route('admin.notifikasi.read', $notif->id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="notif-btn read" title="Tandai Dibaca">
-                            <i class="bi bi-check-lg"></i>
-                        </button>
-                    </form>
+                    <button type="button" class="notif-btn read" title="Tandai Dibaca" 
+                            data-action="mark-read" data-notif-id="{{ $notif->id }}">
+                        <i class="bi bi-check-lg"></i>
+                    </button>
                     @endif
                     <a href="{{ $notif->data['url'] ?? route('admin.dashboard') }}" class="notif-btn view" title="Lihat Detail">
                         <i class="bi bi-eye"></i>
                     </a>
-                    <form action="{{ route('admin.notifikasi.delete', $notif->id) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="notif-btn delete" title="Hapus">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                    </form>
+                    <button type="button" class="notif-btn delete" title="Hapus" 
+                            data-action="delete" data-notif-id="{{ $notif->id }}">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -300,5 +287,209 @@
     @endif
 </div>
 
-@endsection
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle Mark as Read
+    document.querySelectorAll('[data-action="mark-read"]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const notifId = this.getAttribute('data-notif-id');
+            markAsRead(notifId);
+        });
+    });
+
+    // Handle Delete
+    document.querySelectorAll('[data-action="delete"]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const notifId = this.getAttribute('data-notif-id');
+            deleteNotif(notifId);
+        });
+    });
+
+    // Handle Mark All as Read
+    const markAllBtn = document.querySelector('[data-action="mark-all-read"]');
+    if (markAllBtn) {
+        markAllBtn.addEventListener('click', function() {
+            if (confirm('Tandai semua notifikasi sebagai sudah dibaca?')) {
+                markAllAsRead();
+            }
+        });
+    }
+
+    // Handle Delete All
+    const deleteAllBtn = document.querySelector('[data-action="delete-all"]');
+    if (deleteAllBtn) {
+        deleteAllBtn.addEventListener('click', function() {
+            if (confirm('Hapus semua notifikasi?')) {
+                deleteAll();
+            }
+        });
+    }
+});
+
+function markAsRead(notifId) {
+    const url = `/Admin/Notifikasi/read/${notifId}`;
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+            'Accept': 'application/json',
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const notifItem = document.querySelector(`[data-notif-id="${notifId}"]`).closest('.notif-item');
+            notifItem.classList.remove('unread');
+            
+            // Remove "BARU" badge
+            const badge = notifItem.querySelector('.unread-badge');
+            if (badge) badge.remove();
+            
+            // Remove mark-read button
+            const markBtn = notifItem.querySelector('[data-action="mark-read"]');
+            if (markBtn) markBtn.remove();
+            
+            updateUnreadCount(data.unreadCount);
+            showToast('Notifikasi ditandai dibaca', 'success');
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        showToast('Gagal menandai notifikasi', 'error');
+    });
+}
+
+function deleteNotif(notifId) {
+    const url = `/Admin/Notifikasi/${notifId}`;
+    fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+            'Accept': 'application/json',
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const notifItem = document.querySelector(`[data-notif-id="${notifId}"]`).closest('.notif-item');
+            notifItem.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => notifItem.remove(), 300);
+            
+            updateUnreadCount(data.unreadCount);
+            showToast('Notifikasi dihapus', 'danger');
+            
+            // Reload jika list kosong
+            setTimeout(() => {
+                if (document.querySelectorAll('.notif-item').length === 0) {
+                    location.reload();
+                }
+            }, 500);
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        showToast('Gagal menghapus notifikasi', 'error');
+    });
+}
+
+function markAllAsRead() {
+    const url = "{{ route('admin.notifikasi.readAll') }}";
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+            'Accept': 'application/json',
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        showToast('Gagal menandai semua notifikasi', 'error');
+    });
+}
+
+function deleteAll() {
+    const url = "{{ route('admin.notifikasi.deleteAll') }}";
+    fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify({
+            filter: '{{ $filter }}'
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        showToast('Gagal menghapus semua notifikasi', 'error');
+    });
+}
+
+function updateUnreadCount(count) {
+    const badge = document.querySelector('.filter-pill .badge');
+    const markAllBtn = document.querySelector('[data-action="mark-all-read"]');
+    
+    if (count === 0) {
+        if (badge) badge.remove();
+        if (markAllBtn) markAllBtn.style.display = 'none';
+    } else if (badge) {
+        badge.textContent = count;
+    }
+}
+
+function showToast(message, type = 'info') {
+    // Simple toast notification
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+        z-index: 9999;
+        animation: slideInUp 0.3s ease;
+        background: ${type === 'success' ? '#22c55e' : '#ef4444'};
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOutDown 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 2500);
+}
+
+// Add fade animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeOut {
+        to { opacity: 0; transform: translateX(-10px); }
+    }
+    @keyframes slideInUp {
+        from { transform: translateY(100px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes slideOutDown {
+        to { transform: translateY(100px); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+</script>
 
