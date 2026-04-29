@@ -249,9 +249,9 @@
                     <img src="{{ asset('images/metrologi.png') }}" alt="Logo Dinas">
                 </div>
             </div>
-            <div class="brand-title">Balai Pengelola SUML</div>
+            <div class="brand-title">Balai Pengelolaan SUML</div>
             <div class="divider-line"></div>
-            <div class="brand-sub">Sistem Informasi<br>Monitoring Surat<br>Balai Pengelola SUML</div>
+            <div class="brand-sub">Sistem Informasi<br>Monitoring Surat<br>Balai Pengelolaan SUML</div>
             <div class="divider-line"></div>
             <div class="info-badge">
                 <div class="badge-label">Tahun Anggaran</div>
@@ -330,7 +330,7 @@
 
         <!-- Footer bar -->
         <div class="footer-bar">
-            <span>&copy; {{ date('Y') }} Balai Pengelola SUML &mdash; Hak cipta dilindungi undang-undang</span>
+            <span>&copy; {{ date('Y') }} Balai Pengelolaan SUML &mdash; Hak cipta dilindungi undang-undang</span>
         </div>
     </div>
 
