@@ -202,7 +202,10 @@
     <div class="mt-3">{{ $surats->links() }}</div>
 @endif
 
-{{-- Modal Hapus Surat --}}
+@endsection
+
+{{-- Modal Hapus Surat — dirender di luar <main> via @stack('modals') --}}
+@push('modals')
 @foreach($surats as $surat)
 <div class="modal fade" id="deleteModal{{ $surat->id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ $surat->id }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -226,7 +229,7 @@
                     </div>
                     
                     @php
-                        $bisaLangsungHapus = in_array($surat->status, ['ditolak', 'selesai']) || $surat->sla_status === 'terlambat';
+                        $bisaLangsungHapus = in_array($surat->status, ['draft', 'ditolak', 'selesai']) || $surat->sla_status === 'terlambat';
                         $existingRequest = \App\Models\SuratDeleteRequest::where('surat_id', $surat->id)->where('status', 'pending')->first();
                     @endphp
 
@@ -280,5 +283,4 @@
     </div>
 </div>
 @endforeach
-
-@endsection
+@endpush
