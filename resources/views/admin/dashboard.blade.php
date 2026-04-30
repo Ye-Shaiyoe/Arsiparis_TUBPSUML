@@ -120,10 +120,12 @@
                                         <td>
                                             <span class="badge"
                                                 :class="surat.status === 'revisi' ? 'badge-yellow' : 
+                                                         surat.status === 'revisi_admin' ? 'badge-yellow' :
                                                          surat.status === 'ditolak' ? 'badge-red' :
                                                          surat.status === 'selesai' ? 'badge-green' :
                                                          surat.status === 'proses' ? 'badge-blue' : 'badge-gray'"
                                                 x-text="surat.status === 'revisi' ? '📝 Revisi' :
+                                                         surat.status === 'revisi_admin' ? 'Admin Revisi' :
                                                          surat.status === 'ditolak' ? '❌ Ditolak' : 
                                                          surat.status === 'selesai' ? '✅ Selesai' :
                                                          surat.status === 'proses' ? '⏳ Proses' : 'Draft'"></span>
@@ -184,6 +186,8 @@
                             <span class="badge badge-green">Selesai</span>
                         @elseif($surat->status === 'ditolak')
                             <span class="badge badge-red">Ditolak</span>
+                        @elseif($surat->status === 'revisi' || $surat->status === 'revisi_admin')
+                            <span class="badge badge-yellow">Revisi</span>
                         @else
                             <span class="badge badge-amber">Proses</span>
                         @endif
@@ -238,6 +242,8 @@
                                                 <span class="badge badge-green">✓ Selesai</span>
                                             @elseif($surat->status === 'ditolak')
                                                 <span class="badge badge-red">✗ Ditolak</span>
+                                            @elseif($surat->status === 'revisi' || $surat->status === 'revisi_admin')
+                                                <span class="badge badge-yellow">📝 Revisi</span>
                                             @else
                                                 <span class="badge badge-amber">● Proses</span>
                                             @endif
