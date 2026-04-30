@@ -31,14 +31,14 @@ class CleanupExpiredFiles extends Command
 
         foreach ($expiredSurats as $surat) {
             // Hapus file word
-            if ($surat->file_word && Storage::disk('public')->exists($surat->file_word)) {
-                Storage::disk('public')->delete($surat->file_word);
+            if ($surat->file_word && Storage::disk('local')->exists($surat->file_word)) {
+                Storage::disk('local')->delete($surat->file_word);
                 $this->line("  🗑 Menghapus: {$surat->file_word}");
             }
 
             // Hapus file lampiran
-            if ($surat->file_lampiran && Storage::disk('public')->exists($surat->file_lampiran)) {
-                Storage::disk('public')->delete($surat->file_lampiran);
+            if ($surat->file_lampiran && Storage::disk('local')->exists($surat->file_lampiran)) {
+                Storage::disk('local')->delete($surat->file_lampiran);
                 $this->line("  🗑 Menghapus: {$surat->file_lampiran}");
             }
 
