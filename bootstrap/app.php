@@ -15,13 +15,19 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'admin.role.check' => \App\Http\Middleware\RedirectIfAdminRoleNotSelected::class,
+            'it_support' => \App\Http\Middleware\EnsureIsITSupport::class,
         ]);
 
         $middleware->redirectTo(
             users: function ($request) {
                 $user = auth()->user();
-                if ($user && $user->isAdmin()) {
-                    return route('admin.dashboard');
+                if ($user) {
+                    if ($user->isITSupport()) {
+                        return route('itsupport.dashboard');
+                    }
+                    if ($user->isAdmin()) {
+                        return route('admin.dashboard');
+                    }
                 }
                 return route('dashboard');
             }
