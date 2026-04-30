@@ -383,6 +383,22 @@
         animation: bounceDown 1s ease infinite;
     }
 
+    /* Pulse Dot for Live Indicator */
+    .pulse-dot {
+        width: 6px;
+        height: 6px;
+        background: white;
+        border-radius: 50%;
+        display: inline-block;
+        animation: pulseLive 1.5s infinite;
+    }
+
+    @keyframes pulseLive {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+        70% { transform: scale(1.2); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+    }
+
     @keyframes bounceDown {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(3px); }
@@ -574,9 +590,14 @@
                 <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile Photo" class="rounded-circle border border-white border-2" style="width: 60px; height: 60px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
             @endif
             <div>
-                <h2 class="fw-bold mb-2">
-                    <i class="bi bi-hand-thumbs-up-fill me-2"></i>Halo, {{ Str::words(Auth::user()->name, 1, '') }}!
-                </h2>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <h2 class="fw-bold mb-0">
+                        <i class="bi bi-hand-thumbs-up-fill me-2"></i>Halo, {{ Str::words(Auth::user()->name, 1, '') }}!
+                    </h2>
+                    <div id="live-indicator" class="badge rounded-pill bg-success d-flex align-items-center gap-1" style="font-size: 10px; padding: 4px 8px; opacity: 0; transition: opacity 0.5s;">
+                        <span class="pulse-dot"></span> LIVE
+                    </div>
+                </div>
                 <p class="mb-0" style="font-size:14px; opacity:0.9;">
                     {{ now()->translatedFormat('l, d F Y') }} · Selamat datang di Monitoring Surat BP SUML
                 </p>
@@ -612,7 +633,7 @@
             <div class="stat-icon-wrapper">
                 <i class="bi bi-envelope-paper-fill" style="color: #1e3a5f; font-size: 20px;"></i>
             </div>
-            <div class="stat-value-modern" style="font-size: 24px;">{{ $totalSurat }}</div>
+            <div class="stat-value-modern" id="stat-totalSurat" style="font-size: 24px;">{{ $totalSurat }}</div>
             <div class="stat-label-modern" style="font-size: 11px;">Total Surat</div>
         </div>
     </div>
@@ -621,7 +642,7 @@
             <div class="stat-icon-wrapper">
                 <i class="bi bi-check-circle-fill" style="color: #15803d; font-size: 20px;"></i>
             </div>
-            <div class="stat-value-modern" style="font-size: 24px;">{{ $suratSelesai }}</div>
+            <div class="stat-value-modern" id="stat-suratSelesai" style="font-size: 24px;">{{ $suratSelesai }}</div>
             <div class="stat-label-modern" style="font-size: 11px;">Selesai</div>
         </div>
     </div>
@@ -630,7 +651,7 @@
             <div class="stat-icon-wrapper">
                 <i class="bi bi-hourglass-split" style="color: #2563eb; font-size: 20px;"></i>
             </div>
-            <div class="stat-value-modern" style="font-size: 24px;">{{ $suratProses }}</div>
+            <div class="stat-value-modern" id="stat-suratProses" style="font-size: 24px;">{{ $suratProses }}</div>
             <div class="stat-label-modern" style="font-size: 11px;">Proses</div>
         </div>
     </div>
@@ -639,7 +660,7 @@
             <div class="stat-icon-wrapper">
                 <i class="bi bi-pencil-square" style="color: #b45309; font-size: 20px;"></i>
             </div>
-            <div class="stat-value-modern" style="font-size: 24px;">{{ $suratRevisi }}</div>
+            <div class="stat-value-modern" id="stat-suratRevisi" style="font-size: 24px;">{{ $suratRevisi }}</div>
             <div class="stat-label-modern" style="font-size: 11px;">Revisi</div>
         </div>
     </div>
@@ -648,7 +669,7 @@
             <div class="stat-icon-wrapper">
                 <i class="bi bi-x-octagon-fill" style="color: #b91c1c; font-size: 20px;"></i>
             </div>
-            <div class="stat-value-modern" style="font-size: 24px;">{{ $suratDitolak }}</div>
+            <div class="stat-value-modern" id="stat-suratDitolak" style="font-size: 24px;">{{ $suratDitolak }}</div>
             <div class="stat-label-modern" style="font-size: 11px;">Ditolak</div>
         </div>
     </div>
@@ -657,7 +678,7 @@
             <div class="stat-icon-wrapper">
                 <i class="bi bi-file-earmark-text-fill" style="color: #64748b; font-size: 20px;"></i>
             </div>
-            <div class="stat-value-modern" style="font-size: 24px;">{{ $suratDraft }}</div>
+            <div class="stat-value-modern" id="stat-suratDraft" style="font-size: 24px;">{{ $suratDraft }}</div>
             <div class="stat-label-modern" style="font-size: 11px;">Draf</div>
         </div>
     </div>
@@ -688,7 +709,7 @@
                     </a>
                 </div>
             @else
-                <div>
+                <div id="surat-terbaru-list">
                 @foreach($suratTerbaru as $surat)
                     <div class="surat-item">
                         <div class="d-flex align-items-start gap-3">
@@ -779,12 +800,12 @@
                 <h6 class="fw-bold mb-0" style="color:#1e293b;">
                     <i class="bi bi-bell-fill me-2"></i>Notifikasi Terbaru
                 </h6>
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2" id="notif-badge-container">
                     @if(auth()->user()->unreadNotifications->count() > 0)
                         <button onclick="markAllAsRead()" class="btn btn-sm p-0 text-primary fw-semibold" style="font-size:11px; background:none; border:none;">
                             Tandai semua dibaca
                         </button>
-                        <span class="badge rounded-pill bg-danger" style="font-size:11px; padding:6px 10px;">
+                        <span class="badge rounded-pill bg-danger" id="notif-unread-count" style="font-size:11px; padding:6px 10px;">
                             {{ auth()->user()->unreadNotifications->count() }} baru
                         </span>
                     @endif
@@ -855,7 +876,7 @@
                     <i class="bi bi-speedometer2 me-2"></i>Status SLA Surat Aktif
                 </h6>
             </div>
-            <div class="card-body-modern">
+            <div class="card-body-modern" id="sla-surat-list">
                 @foreach($suratAktif as $surat)
                     <div class="mb-3 sla-item p-2 rounded">
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -1251,6 +1272,223 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     scheduleRefresh();
+
+    // ==========================================
+    // REAL-TIME POLLING DASHBOARD
+    // ==========================================
+    let isFetching = false;
+    const pollingInterval = 10000; // 10 detik
+
+    function updateDashboard() {
+        if (isFetching || document.hidden) return;
+        isFetching = true;
+
+        const liveIndicator = document.getElementById('live-indicator');
+        if (liveIndicator) liveIndicator.style.opacity = '1';
+
+        fetch('{{ route("dashboard.liveData") }}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 1. Update Stats
+            for (const [key, value] of Object.entries(data.stats)) {
+                const el = document.getElementById(`stat-${key}`);
+                if (el) {
+                    const currentVal = parseInt(el.innerText);
+                    if (currentVal !== value) {
+                        el.innerText = value;
+                        el.classList.add('animate__animated', 'animate__headShake');
+                        setTimeout(() => el.classList.remove('animate__animated', 'animate__headShake'), 1000);
+                    }
+                }
+            }
+
+            // 2. Update Unread Count Badge
+            const badgeContainer = document.getElementById('notif-badge-container');
+            if (badgeContainer) {
+                if (data.unreadCount > 0) {
+                    badgeContainer.innerHTML = `
+                        <button onclick="markAllAsRead()" class="btn btn-sm p-0 text-primary fw-semibold" style="font-size:11px; background:none; border:none;">
+                            Tandai semua dibaca
+                        </button>
+                        <span class="badge rounded-pill bg-danger" id="notif-unread-count" style="font-size:11px; padding:6px 10px;">
+                            ${data.unreadCount} baru
+                        </span>
+                    `;
+                } else {
+                    badgeContainer.innerHTML = '';
+                }
+            }
+
+            // 3. Update Notification List
+            const notifList = document.getElementById('dashboard-notif-list');
+            if (notifList && data.notifications.length > 0) {
+                // Hanya update jika ada perubahan (sederhananya cek ID notif pertama)
+                const firstNotifId = notifList.querySelector('.btn-delete-notif')?.dataset.id;
+                if (firstNotifId !== data.notifications[0].id) {
+                    let notifHtml = '';
+                    data.notifications.forEach(n => {
+                        const bgType = {
+                            'success': '#dcfce7',
+                            'warning': '#fef3c7',
+                            'danger': '#fee2e2',
+                            'info': '#dbeafe'
+                        }[n.type] || '#dbeafe';
+
+                        const iconClass = {
+                            'success': 'bi-check-circle-fill',
+                            'warning': 'bi-exclamation-triangle-fill',
+                            'danger': 'bi-x-circle-fill',
+                            'info': 'bi-info-circle-fill'
+                        }[n.type] || 'bi-info-circle-fill';
+
+                        const iconColor = {
+                            'success': '#15803d',
+                            'warning': '#b45309',
+                            'danger': '#b91c1c',
+                            'info': '#1d4ed8'
+                        }[n.type] || '#1d4ed8';
+
+                        notifHtml += `
+                            <div class="notification-item-wrapper position-relative">
+                                <a href="${n.url}" class="notification-item d-block text-decoration-none">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                             style="width:36px; height:36px; background:${bgType};">
+                                            <i class="bi ${iconClass}" style="color:${iconColor};"></i>
+                                        </div>
+                                        <div class="flex-grow-1 min-w-0">
+                                            <div class="fw-semibold mb-1" style="color:#1e293b; font-size:13px;">${n.title}</div>
+                                            <div class="text-muted" style="font-size:12px;">${n.message}</div>
+                                            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">${n.created_at_human}</div>
+                                        </div>
+                                        ${!n.read_at ? '<div class="flex-shrink-0 pe-4"><span class="badge rounded-circle" style="width:8px; height:8px; background:#3b82f6; padding:0;"></span></div>' : ''}
+                                    </div>
+                                </a>
+                                <button class="btn-delete-notif" data-id="${n.id}" title="Hapus notifikasi">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                    notifList.innerHTML = notifHtml;
+                }
+            }
+
+            // 4. Update SLA Surat Aktif
+            const slaList = document.getElementById('sla-surat-list');
+            if (slaList) {
+                if (data.suratAktif.length > 0) {
+                    let slaHtml = '';
+                    data.suratAktif.forEach(s => {
+                        slaHtml += `
+                            <div class="mb-3 sla-item p-2 rounded">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-semibold" style="font-size:13px; color:#1e293b;">${s.judul_short}</span>
+                                    ${s.sla_status === 'terlambat' 
+                                        ? '<span class="badge" style="font-size:11px; background:#fee2e2; color:#b91c1c; padding:4px 10px;">⚠ Terlambat</span>'
+                                        : `<span style="font-size:12px; color:#64748b;">${s.sisa_jam}</span>`}
+                                </div>
+                                <div class="progress" style="height:8px; background:#e2e8f0; border-radius:99px;">
+                                    <div class="progress-bar" style="width:${s.pct}%; background:${s.color}; border-radius:99px;"></div>
+                                </div>
+                                <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+                                    Tahap ${s.tahap}/10 · ${s.nama_tahap}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    slaList.innerHTML = slaHtml;
+                } else {
+                    slaList.parentElement.style.display = 'none';
+                }
+            }
+            // 5. Update Surat Terbaru (Tracking)
+            const terbaruList = document.getElementById('surat-terbaru-list');
+            if (terbaruList && data.suratTerbaru.length > 0) {
+                // Sederhananya kita update jika ada perubahan status atau tahap pada surat pertama
+                const firstSuratStatus = terbaruList.querySelector('.flex-shrink-0 .badge')?.innerText;
+                const firstSuratTahap = terbaruList.querySelector('.text-muted')?.innerText;
+                
+                if (firstSuratStatus !== data.suratTerbaru[0].status || firstSuratTahap !== `Tahap ${data.suratTerbaru[0].tahap_sekarang}/10`) {
+                    let terbaruHtml = '';
+                    data.suratTerbaru.forEach(s => {
+                        const statusColor = s.status === 'selesai' ? '#22c55e' : (s.status === 'ditolak' ? '#ef4444' : (['revisi', 'revisi_admin'].includes(s.status) ? '#f59e0b' : '#3b82f6'));
+                        
+                        let statusBadge = '';
+                        if (s.status === 'selesai') statusBadge = '<span class="badge rounded-pill" style="background:#dcfce7; color:#15803d; font-size:11px; padding:6px 12px;">✓ Selesai</span>';
+                        else if (s.status === 'ditolak') statusBadge = '<span class="badge rounded-pill" style="background:#fee2e2; color:#b91c1c; font-size:11px; padding:6px 12px;">✗ Ditolak</span>';
+                        else if (['revisi', 'revisi_admin'].includes(s.status)) statusBadge = '<span class="badge rounded-pill" style="background:#fef3c7; color:#b45309; font-size:11px; padding:6px 12px;">📝 Revisi</span>';
+                        else if (s.sla_status === 'terlambat') statusBadge = '<span class="badge rounded-pill" style="background:#fee2e2; color:#b91c1c; font-size:11px; padding:6px 12px;">⚠ SLA!</span>';
+                        else statusBadge = '<span class="badge rounded-pill" style="background:#dbeafe; color:#1d4ed8; font-size:11px; padding:6px 12px;">⏱ Proses</span>';
+
+                        let stepsHtml = '';
+                        s.tahapans.forEach(t => {
+                            if (t.status === 'selesai' || t.tahap === s.tahap_sekarang || t.status === 'proses') {
+                                const stepBg = t.status === 'selesai' ? '#dcfce7' : (t.status === 'proses' ? '#dbeafe' : (t.status === 'ditolak' ? '#fee2e2' : '#f3f4f6'));
+                                const stepIcon = t.status === 'selesai' ? '<i class="bi bi-check-lg" style="color:#15803d; font-size:16px;"></i>' 
+                                               : (t.status === 'proses' ? '<i class="bi bi-hourglass-split" style="color:#1d4ed8; font-size:14px;"></i>' 
+                                               : (t.status === 'ditolak' ? '<i class="bi bi-x-lg" style="color:#b91c1c; font-size:14px;"></i>' 
+                                               : '<i class="bi bi-hourglass-split" style="color:#9ca3af; font-size:14px;"></i>'));
+                                
+                                stepsHtml += `
+                                    <div class="flex-shrink-0 text-center" style="min-width:80px;">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1"
+                                             style="width:32px; height:32px; background:${stepBg};">
+                                            ${stepIcon}
+                                        </div>
+                                        <div style="font-size:10px; color:#64748b;">${t.nama_tahap}</div>
+                                    </div>
+                                `;
+                            }
+                        });
+
+                        terbaruHtml += `
+                            <div class="surat-item">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="status-dot" style="background:${statusColor}; margin-top:6px;"></div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold mb-1" style="color:#1e293b; font-size:14px;">${s.judul}</div>
+                                        <div class="d-flex gap-2 flex-wrap align-items-center">
+                                            <span class="badge rounded-pill" style="font-size:11px; background:#ede9fe; color:#6d28d9; padding:4px 10px;">${s.jenis_label}</span>
+                                            <span class="badge rounded-pill badge-${s.sifat}" style="font-size:11px; padding:4px 10px;">${s.sifat.charAt(0).toUpperCase() + s.sifat.slice(1)}</span>
+                                            <span class="text-muted" style="font-size:12px;">Tahap ${s.tahap_sekarang}/10</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0">${statusBadge}</div>
+                                </div>
+                                <div class="mt-3 p-3" style="background:#f8fafc; border-radius:10px;">
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <div class="progress flex-grow-1" style="height:8px; border-radius:99px; background:#e2e8f0;">
+                                            <div class="progress-bar" style="width:${s.proses_persen}%; background:linear-gradient(90deg, #1e3a5f, #2563eb); border-radius:99px;"></div>
+                                        </div>
+                                        <span class="fw-bold" style="font-size:13px; color:#1e3a5f;">${s.proses_persen}%</span>
+                                    </div>
+                                    <div class="d-flex gap-2 overflow-auto pb-2">${stepsHtml}</div>
+                                    <div class="text-end mt-2">
+                                        <a href="${s.show_url}" class="btn btn-sm" style="font-size:12px; color:#1e3a5f; border:1px solid #e2e8f0; border-radius:8px;">Detail lengkap →</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    terbaruList.innerHTML = terbaruHtml;
+                }
+            }
+        })
+        .catch(err => console.error('Polling Error:', err))
+        .finally(() => {
+            isFetching = false;
+        });
+    }
+
+    setInterval(updateDashboard, pollingInterval);
+    // Jalankan sekali saat load
+    setTimeout(updateDashboard, 2000);
 });
 </script>
 
