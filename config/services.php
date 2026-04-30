@@ -44,4 +44,8 @@ return [
         'number' => env('WA_NUMBER', ''),
     ],
 
+    'telegram' => [
+        'admin_username' => env('TELEGRAM_ADMIN_USERNAME', ''),
+    ],
+
 ];
