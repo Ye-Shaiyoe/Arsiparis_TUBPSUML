@@ -56,7 +56,7 @@
                         @if($surat->sifat === 'segera') <span class="badge badge-red">Segera</span> @endif
                         @if($surat->status === 'selesai') <span class="badge badge-green">Selesai</span> @endif
                         @if($surat->status === 'revisi') <span class="badge badge-amber">📝 File Revisi Baru</span> @endif
-                        @if($surat->status === 'revisi_admin') <span class="badge" style="background:#fef3c7;color:#92400e;border:1.5px solid #fbbf24;">🔄 Admin Revisi</span> @endif
+                        @if($surat->status === 'revisi_admin') <span class="badge" style="background:#fef3c7;color:#92400e;border:1.5px solid #fbbf24;">Admin Revisi</span> @endif
                         <span class="badge {{ $surat->revisi_count > 0 ? 'badge-light text-orange' : 'badge-info text-orange' }}"> Revisi ke: {{ $surat->revisi_count }} </span>                    </div>
                 </div>
                 <a href="{{ route('admin.surat.index') }}" class="btn btn-sm btn-outline-secondary">← Kembali</a>

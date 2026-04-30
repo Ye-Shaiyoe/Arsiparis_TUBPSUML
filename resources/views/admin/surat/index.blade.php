@@ -93,7 +93,7 @@
                         <th style="width: 150px;">Tujuan</th>
                         <th style="width: 160px;">Proses Tracking</th>
                         <th style="width: 100px;">Status</th>
-                        <th style="width: 140px;">SLA (Sisa Waktu)</th>
+                        <th style="width: 140px;">SLA</th>
                         <th style="width: 90px;">Aksi</th>
                     </tr>
                 </thead>
@@ -159,7 +159,7 @@
                                     <div style="font-size: 8px; opacity: 0.8; margin-top: 1px;">{{ $surat->revisi_uploaded_at?->format('d/m H:i') ?? '-' }}</div>
                                 </div>
                             @elseif($surat->status === 'revisi_admin')
-                                <span class="badge" style="background:#fef3c7;color:#92400e;border:1.5px solid #fbbf24;font-size:10px;">🔄 Admin Revisi</span>
+                                <span class="badge" style="background:#fef3c7;color:#92400e;border:1.5px solid #fbbf24;font-size:10px;">Admin Revisi</span>
                             @elseif($surat->status === 'draft')
                                 <span class="badge badge-gray">📄 Draf</span>
                             @else

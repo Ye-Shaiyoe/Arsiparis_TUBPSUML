@@ -162,7 +162,7 @@
 
         if (isWord) {
             // Use docx-preview for high fidelity
-            const rawUrl = previewUrl + '?raw=1';
+            const rawUrl = previewUrl + '?raw=1&v=' + new Date().getTime();
             fetch(rawUrl)
                 .then(res => res.arrayBuffer())
                 .then(buffer => {
@@ -187,7 +187,7 @@
                 });
         } else {
             // fetch metadata for other types
-            fetch(previewUrl.replace('/preview/', '/preview-content/'))
+            fetch(previewUrl.replace('/preview/', '/preview-content/') + '?v=' + new Date().getTime())
                 .then(res => res.json())
                 .then(data => {
                     el('previewLoader').style.display = 'none';
