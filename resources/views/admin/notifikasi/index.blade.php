@@ -3,6 +3,7 @@
 
 @section('content')
 
+@push('styles')
 <style>
     .notif-container { max-width: 900px; }
     .notif-header {
@@ -188,6 +189,7 @@
     }
     .empty-state i { font-size: 40px; opacity: 0.4; margin-bottom: 12px; display: block; }
 </style>
+@endpush
 
 <div class="notif-container">
     {{-- Header --}}
@@ -286,7 +288,9 @@
     </div>
     @endif
 </div>
+@endsection
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Handle Mark as Read
@@ -492,4 +496,4 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 </script>
-
+@endpush
