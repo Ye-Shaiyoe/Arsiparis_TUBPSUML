@@ -17,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.role.check' => \App\Http\Middleware\RedirectIfAdminRoleNotSelected::class,
             'it_support' => \App\Http\Middleware\EnsureIsITSupport::class,
         ]);
+        
+        $middleware->trustProxies(at: '*');
 
         $middleware->redirectTo(
             users: function ($request) {
