@@ -228,4 +228,4 @@ Proyek ini dibuat untuk keperluan **pendidikan dan PKL**. Hak cipta sepenuhnya m
 
 ---
 
-<p align="center">Made with ❤️ by PKL SMK Al-Falah × BP Suml</p>
+<p align="center">Made with ❤️ by PKL SMK Al-Falah | Yusuf Akram | BP Suml</p>
