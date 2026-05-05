@@ -25,6 +25,7 @@ class User extends Authenticatable
         'role',
         'nip',
         'role_selected',
+        'profile_photo',
     ];
 
     /**
@@ -55,6 +56,19 @@ class User extends Authenticatable
             'admin' => 'Admin (belum update role)',
             default => 'User',
         };
+    }
+
+    /**
+     * Cek apakah format input adalah NIP yang valid (hanya angka)
+     */
+    public static function isValidNipFormat(string $nip): bool
+    {
+        return preg_match('/^\d+$/', $nip) === 1;
+    }
+
+    public function isITSupport(): bool
+    {
+        return $this->role === 'it_support';
     }
 
     /**
@@ -96,6 +110,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'nip' => 'encrypted',
         ];
     }
 }

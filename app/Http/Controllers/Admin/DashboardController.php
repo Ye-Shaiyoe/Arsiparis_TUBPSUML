@@ -9,94 +9,141 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $bulanIni = now()->month;
-        $tahunIni = now()->year;
+        $bulanSelected = (int) $request->input('bulan', now()->month);
+        $tahunSelected = (int) $request->input('tahun', now()->year);
 
-        // Statistik
-        $totalBulanIni = Surat::whereMonth('created_at', $bulanIni)
-                              ->whereYear('created_at', $tahunIni)
-                              ->count();
+        $data = $this->getDashboardData($bulanSelected, $tahunSelected);
 
-        $totalSelesai  = Surat::whereMonth('created_at', $bulanIni)
-                              ->whereYear('created_at', $tahunIni)
-                              ->where('status', 'selesai')->count();
+        return view('admin.dashboard', array_merge($data, [
+            'bulanSelected' => $bulanSelected,
+            'tahunSelected' => $tahunSelected,
+        ]));
+    }
 
-        $totalProses   = Surat::whereMonth('created_at', $bulanIni)
-                              ->whereYear('created_at', $tahunIni)
-                              ->where('status', 'proses')->count();
+    public function liveData(Request $request)
+    {
+        $bulanSelected = (int) $request->input('bulan', now()->month);
+        $tahunSelected = (int) $request->input('tahun', now()->year);
 
-        $totalTerlambat = Surat::where('status', 'proses')
-                               ->whereNotNull('deadline_sla')
-                               ->where('deadline_sla', '<', now())
-                               ->count();
+        $data = $this->getDashboardData($bulanSelected, $tahunSelected);
 
-        // Antrian: surat yang butuh aksi berdasarkan role user ini
-        // Sesuaikan kondisi tahap dengan role masing-masing:
-        // Arsiparis    → tahap 2
-        // Kasubbag TU  → tahap 3
-        // Kepala Balai → tahap 4
-        // Persuratan   → tahap 5,6,7,8,9,10
-        // Admin lama   → semua
+        return response()->json([
+            'stats' => [
+                'totalBulanIni' => $data['totalBulanIni'],
+                'totalSelesai' => $data['totalSelesai'],
+                'totalProses' => $data['totalProses'],
+                'totalTerlambat' => $data['totalTerlambat'],
+            ],
+            'antrian' => [
+                'items' => $data['antrian'],
+                'count' => $data['antrianCount'],
+            ]
+        ]);
+    }
+
+    private function getDashboardData($bulan, $tahun)
+    {
         $admin = Auth::user();
 
-        $antrianQuery = Surat::where('status', 'proses')
+        // Base Query untuk statistik periode (Bulan Ini / Selesai Bulan Ini)
+        $periodeQuery = Surat::whereMonth('created_at', $bulan)
+            ->whereYear('created_at', $tahun);
+
+        // Role-based filter untuk beban kerja (Global)
+        $roleFilter = function ($q) use ($admin) {
+            if ($admin->role === 'admin_aspirasi') {
+                $q->where(function ($sq) {
+                    $sq->where('tahap_sekarang', 2)->orWhere('tahap_sekarang', '>=', 5);
+                });
+            } elseif ($admin->role === 'admin_kasubbag_tu') {
+                $q->where('tahap_sekarang', 3);
+            } elseif ($admin->role === 'admin_kepala_balai') {
+                $q->where('tahap_sekarang', 4);
+            }
+        };
+
+        // Statistik Periode (Terfilter)
+        $totalBulanIni = (clone $periodeQuery)->count();
+        $totalSelesai = (clone $periodeQuery)->where('status', 'selesai')->count();
+
+        // Statistik Workload (Global - Tidak terfilter bulan/tahun agar admin tahu semua kerjaan)
+        $workloadQuery = Surat::query()->where($roleFilter);
+
+        $totalProses = (clone $workloadQuery)->whereIn('status', ['proses', 'revisi', 'revisi_admin'])->count();
+        $totalTerlambat = (clone $workloadQuery)
+            ->whereIn('status', ['proses', 'revisi', 'revisi_admin'])
+            ->whereNotNull('deadline_sla')
+            ->where('deadline_sla', '<', now())
+            ->count();
+
+        // Antrian (Global - Tampilkan semua yang butuh aksi sekarang)
+        $antrian = (clone $workloadQuery)
+            ->whereIn('status', ['proses', 'revisi', 'revisi_admin'])
             ->with('user')
-            ->orderByRaw("CASE WHEN deadline_sla < NOW() THEN 0 ELSE 1 END")
-            ->orderBy('created_at')
-            ->limit(10);
+            ->orderByRaw("CASE WHEN status = 'revisi' OR status = 'revisi_admin' THEN 0 ELSE 1 END")
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get()
+            ->map(function ($s) {
+                $s->status_label = match ($s->status) {
+                    'revisi' => 'Perlu Revisi User',
+                    'revisi_admin' => 'Revisi Internal',
+                    'proses' => 'Proses',
+                    default => $s->status
+                };
+                $s->sla_status = $s->deadline_sla && now()->gt($s->deadline_sla) ? 'terlambat' : 'ok';
+                return $s;
+            })->values();
 
-        // Filter berdasarkan role
-        if ($admin->role === 'admin_aspirasi') {
-            $antrianQuery->where(function($q) {
-                $q->where('tahap_sekarang', 2)
-                  ->orWhere('tahap_sekarang', '>=', 5);
-            });
-        } elseif ($admin->role === 'admin_kasubbag_tu') {
-            $antrianQuery->where('tahap_sekarang', 3);
-        } elseif ($admin->role === 'admin_kepala_balai') {
-            $antrianQuery->where('tahap_sekarang', 4);
-        }
-        // admin lama (role='admin') tetap bisa lihat semua
-
-        $antrian = $antrianQuery->get();
-
-        // Rekap per jenis surat bulan ini
-        $rekapJenis = Surat::whereMonth('created_at', $bulanIni)
-                           ->whereYear('created_at', $tahunIni)
-                           ->selectRaw('jenis, COUNT(*) as jumlah')
-                           ->groupBy('jenis')
-                           ->pluck('jumlah', 'jenis');
-
-        // Surat terbaru
-        $suratTerbaru = Surat::with('user')
-                             ->latest()
-                             ->limit(5)
-                             ->get();
-
-        // Data surat dengan siapa saja yang telah memproses (bulan ini)
-        $suratDenganPengolah = Surat::whereMonth('created_at', $bulanIni)
-                                     ->whereYear('created_at', $tahunIni)
-                                     ->with([
-                                         'user',
-                                         'tahapans' => function ($query) {
-                                             $query->where('status', 'selesai')
-                                                   ->whereNotNull('diproses_oleh')
-                                                   ->with('diprosesByUser')
-                                                   ->orderBy('tahap');
-                                         }
-                                     ])
-                                     ->orderByDesc('created_at')
-                                     ->limit(8)
-                                     ->get();
-
-        // Jumlah antrian untuk badge sidebar (share ke layout)
         $antrianCount = $antrian->count();
 
-        return view('admin.dashboard', compact(
-            'totalBulanIni', 'totalSelesai', 'totalProses', 'totalTerlambat',
-            'antrian', 'rekapJenis', 'suratTerbaru', 'suratDenganPengolah', 'antrianCount'
-        ));
+        // Rekap Jenis (Terfilter periode)
+        $rekapJenis = (clone $periodeQuery)->selectRaw('jenis, COUNT(*) as jumlah')
+            ->groupBy('jenis')
+            ->pluck('jumlah', 'jenis');
+
+        $suratTerbaru = Surat::with('user')->latest()->limit(5)->get();
+
+        $suratDenganPengolah = (clone $periodeQuery)
+            ->with([
+                'user',
+                'tahapans' => function ($query) {
+                    $query->where('status', 'selesai')
+                        ->whereNotNull('diproses_oleh')
+                        ->with('diprosesByUser')
+                        ->orderBy('tahap');
+                }
+            ])
+            ->orderByDesc('created_at')
+            ->limit(8)
+            ->get();
+
+        // Chart Data (Last 6 Months - Always Global Stats per Month)
+        $chartMonths = [];
+        $chartMasuk = [];
+        $chartSelesai = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $chartMonths[] = $date->translatedFormat('M Y');
+            $chartMasuk[] = Surat::whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count();
+            $chartSelesai[] = Surat::whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->where('status', 'selesai')->count();
+        }
+
+        return [
+            'totalBulanIni' => $totalBulanIni,
+            'totalSelesai' => $totalSelesai,
+            'totalProses' => $totalProses,
+            'totalTerlambat' => $totalTerlambat,
+            'antrian' => $antrian,
+            'antrianCount' => $antrianCount,
+            'rekapJenis' => $rekapJenis,
+            'suratTerbaru' => $suratTerbaru,
+            'suratDenganPengolah' => $suratDenganPengolah,
+            'chartMonths' => $chartMonths,
+            'chartMasuk' => $chartMasuk,
+            'chartSelesai' => $chartSelesai,
+        ];
     }
 }

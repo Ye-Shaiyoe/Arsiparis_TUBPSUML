@@ -1,0 +1,332 @@
+Ini adalah website persuratan BP Suml yang dibuat untuk memenuhi tugas PKL SMK Alfalah(persuratan.bp.suml.com)
+
+Website ini menggunakan tools:
+Framework utama: Laravel 12
+Database: MySQL
+Frontend: Bootstrap, TailwindCss, ChartJs, AlpineJs, GSAP, AnimeJS, ThreeJS.
+Backend: Laravel 12, Breeze, Node, Redis, Rest API, Phpoffice.
+CDN: Cloudflare CDN, JSDelivr, CDNJS.(nanti Next klo di deploy)
+Web Security: Cloudflare WAF, Google reCAPTCHA V2, HSTS, SSL/TLS, Scanning, Encrypted Password, Rate Limiting, XSS Protection, CSRF Protection, dll.
+other: Linux, Ngix, Git, Github, SSH, Postman, dll.
+Tools: XAMPP, Antigravity, Cursor, Bash, dll.
+etc.
+Web Hosting: -
+
+Berikut fitur-fitur yang ada pada website persuratan BP Suml buatan anak PKL full staack developer:
+
+{
+    Fitur Unggulan:
+    A. Multi Role/Role Based
+    User:
+        1. Admin Aspirasi (Hanya dapat Mengerjakan Surat di tahap 2 dan 5-10)
+        2. Admin Kassubagtu (Hanya dapat Mengerjakan Surat di tahap 3)
+        3. Admin Kaplai (Hanya dapat Mengerjakan Surat di tahap 4)
+        4. User (Hanya dapat Mengajukan Surat di tahap 1 dan revisi User)
+        5. IT Support (Hanya dapat Memberi notifikasi penting )
+        6. Multi-Role Approval: Melibatkan berbagai peran administratif untuk memastikan validitas surat (Arsiparis, Kasubbag TU, Penomoran, dll)
+    B. Penghapusan surat
+        1. Surat yang sudah selesai lebih dari 3 hari akan ototmatis di hapus oleh sistem demi keamanan tinggi dan mengurangi beban database tanpa menghapus trackingnya.
+        2. Admin dan user bisa langsung Hapus file fisik surat nya aja jika udah selesai.
+        3. surat Revisi: Ada fitur revisi surat ke user dan revisi surat dibalikin ke admin_aspirasi saja. jadi cara kerjanya semisal admin kassubag tu menolak surat nya dan memilih opsi Revisi surat ke user makan surat akan kembali ke user, tapi jika admin itu menolak surat nya dan memilih opsi Revisi surat ke admin_aspirasi maka sura itu akan dikembalikan ke admin_aspirasi untuk dicek ulang apakah sudah benar atau belum.
+        4. Surat yang di tolak ke user jika gak di revisi lebih dari 5 hari maka akan dihapus otomatis sama sistem termasuk tracking/data surat tersebut. 
+        5. Admin dan user bisa langsung hapus tracking surat yang udah selesai.
+        6. Setiap 1 minggu notifikasi yang belum di hapus akan di hapus setiap jam 01.00 malem.
+    C. SLA (Service Level Agreement)
+        1. Akan ada SLA yang berdurasi 24 jam persurat masuk.
+        2. Jika melewati SLA maka akan ada notifikasi kepada admin terkait.
+        3. SLA terlambat tampilannaya akan seperti: contoh -1.4jam.
+    D. Notifikasi 
+        1. Notifikasi pemberitahuan surat masuk.
+        2. Notifikasi pemberitahuan surat selesai.
+        3. Notifikasi pemberitahuan surat ditolak.
+        4. Notifikasi pemberitahuan surat revisi.
+        5. Notifikasi pemberitahuan SLA.
+        6. Notifikasi akan otomatis terhapus setiap 1 minggu.
+        7. Mark read dan Mark all read serta hapus notifikasi satu per satu atau semua.
+        8. User, admin dan itsupport
+        
+        10. Database Notifications: Menyimpan riwayat notifikasi yang bisa dikelola (ditandai baca atau dihapus) melalui dashboard user maupun admin.
+        11. Trigger Lengkap: Notifikasi otomatis untuk surat baru, revisi, penolakan, persetujuan, hingga penghapusan file.
+    E. Jam kerjanya
+        1. Jam operasional yaitu jam 07.30-16.00 jika lewat dari jam tersebut maka user gak bisa mengajukan surat.
+        2. Jam operasional yaitu di hari senin-jumat jika lewat dari jam tersebut maka user gak bisa mengajukan surat.
+        3. Khusus di hari jumat 07.30-16.30
+        4. Dihari Sabtu-minggu tidak bisa mengajukan surat soalnya libur.
+        5. Jika mengajukan di hari jumat maka SLA akan dibekukan sementara 
+            Contoh: User ngajuin surat jam 15.00 di hari jumat maka SLA Deadline nya hari senin 15.00.
+    F. Template Surat
+        1. Admin bisa upload Template buat user pake.
+    G. Lainnya
+        1. UUID-Based Verification: Setiap surat memiliki kode unik (UUID) yang bisa diverifikasi oleh publik/pihak eksternal
+            melalui URL khusus tanpa perlu login.
+        2. Keamanan & Role Selection
+            a. RBAC (Role Based Access Control): Pemisahan akses yang ketat antara User, Admin, dan IT Support.
+            b. Admin Role Selection: Jika seorang admin memiliki banyak tugas, mereka bisa memilih peran aktif yang ingin
+                dijalankan saat itu.
+        3
+    
+}
+1. Halaman awal atau beranda welcome.blade.php
+    Halaman ini berfungsi sebagai halaman utama atau beranda dari website persuratan BP Suml.
+    Pada halaman ini terdapat logo BP Suml dan tombol "Mulai". Saat tombol "Mulai" diklik, maka akan diarahkan ke halaman login.
+    Desain menggunakan framework GSAP, TailwindCss, Bootstrap, dan Css:
+       
+        A. Fey website Framer(Framer Motion) animasi scroll keren.
+        B. High end Desain.
+        C. Text Revel Effect.
+        D. Scroll media component.
+        E. Spiral 3D animation smooth.
+        F.  Horizontal Scrolling Effect.
+        G. kalo udh login bakal berubah yang awalnya tulisan login dan masuk di pojok kanan atas bakal jadi foto profil dan nama username yg dia buat sebelumnya 
+
+2. Halaman Auth untuk pemnbuatan akun.
+    Halaman ini berfungsi sebagai halaman untuk membuat akun. menggunakan Laravel Breeze 
+    Pada halaman ini terdapat form untuk membuat akun. Berikut form yang ada pada halaman ini:
+    A. Register
+        1. Username
+        2. Email
+        3. NIP(opsional)
+        4. Password & konfirmasi password 
+        5. Konfirmasi Password
+        6. CAPTCHA untuk verifikasi
+        7. Email verifikasi
+        8. Tempat untuk masuk sebaai admin kode tertentu gk ada yg tau selain admin
+        9. Masuk sistem bakal di saring tergantung role
+    B. Login
+        1. Bisa login menggunakan NIP atau Username atau Email 
+        2. Password
+        3. Jika sudah berhasil login logic form akan mengarahkan sesuai role
+        4. Masuk sistem bakal di saring tergantung role
+    C. Forgot Password
+        1. Bisa lupa password menggunakan NIP atau Username atau Email
+        2. Jika sudah berhasil reset password akan dikirim via email menggunakan smtp
+        3. Email verifikasi
+        4. Reset password nambahin password baru dan konfirmasi password baru
+
+3. Dashboard User
+    Halaman ini berfungsi sebagai halaman dashboard untuk user. 
+    Desain halaman ini menggunakan framework Bootstrap, TailwindCss dan Css.
+    Fitur yang ada pada halaman ini:
+        A. Halaman Dashboard http://127.0.0.1:8000/dashboard
+            1. Grafik statistik persuratan
+            2. Tabel statistik persuratan
+            3. Tabel statistik persuratan
+            4. Notifikasi
+            5. 4 Template
+            6. Tracking 10 tahap
+            7. ada card Total Surat, Draft, Disetujui, Ditolak, Diproses, dan Revisi.
+
+
+        B. Halaman Surat http://127.0.0.1:8000/surat
+            1. Halaman Surat card
+                - Nampilin surat dalam bentuk card dan mudah di baca
+                - Ada filter dan sort
+                - Ada search
+                - Ada tombol detail
+                - Ada tombol edit
+                - Ada tombol delete
+            2. Halaman Surat tabel
+                - Nampilin surat dalam bentuk tabel, Lebih detail dan mudah di baca
+                - Ada filter dan sort
+                - Ada search
+                - Ada tombol detail
+                - Ada tombol edit
+                - Ada tombol delete
+            3. Draft
+                - Tempat simpen draft biar user gak bingung
+                - Draft yang disimpan bisa dilanjutkan lagi kapan saja
+            4. Bagian untuk Lihat status surat yaitu http://127.0.0.1:8000/surat/{surat uuid}
+                - Disini bisa lihat status surat, siapa yang lagi ngerjain, siapa yang udah ngerjain, siapa yang harus ngerjain selanjutnya,dll.
+                - Tracking 10 tahap yaitu : 
+                    1. Pengajuan(user)
+                    2. Verifikasi Aspirasi(Admin_Aspirasi)
+                    3. Verifikasi Kassubagtu(admin_kassubagtu)
+                    4. Verifikasi Kepala balai (admin_kaplai)
+                    5. Penomoran surat(admin_aspirasi)
+                    6. Tanda Tangan (DS) (admin_aspirasi)
+                    7. Pengiriman via TNDe (admin_aspirasi)
+                    8. Pengiriman via Srikandi (admin_aspirasi)
+                    9. Pengarsipan (admin_aspirasi)
+                    10. Selesai 
+                - Preview Dokumen dan Lampiran.                
+                - QR code Verifikasi 
+                - Tahapan (Contoh 2/10 di pengarsipan)
+                - Tentang data surat.
+                - UUID-Based Verification:
+                    * Setiap surat mendapatkan URL unik berbasis UUID yang aman dan tidak dapat ditebak.
+                    * Tampilan halaman verifikasi yang bersih, menampilkan logo instansi, detail surat, status, riwayat persetujuan, dan QR code.
+                    * Melindungi informasi sensitif dengan kontrol akses berdasarkan peran (User, Admin, Public).
+                - Edit Surat. yang bisa di edit cuma judul surat dan TUJUAN SURAT, sama jenis nya contoh Nota Dinas Rahasia. edit surat berlaku selama 15 menit. Habis tuh gak bisa di Edit Kembali.
+
+            5. Mengajukan Surat http://127.0.0.1:8000/surat/ajukan
+                - Disini tempat user mengajukan surat.
+                - User bisa memilih template surat yang sudah disediakan.
+                - User rwajib mengunggah 1 file Word maksimal 10MB.
+                - User bisa mengunggah file lampiran (opsional) maksimal 10MB.
+                - User bisa memilih jenis surat.
+                - User bisa memilih tingkat prioritas surat.
+                - User harus mengisi form surat seperti 
+                    1. Judul surat
+                    2. Jenis surat (Nota dan surat dinas, Surat keputusan, Pernyataan, ketrangan dan undangan, serta surat lainnya)
+                    3. Sifat surat(Biasa, Penting/segera, Rahasia)
+                    4. tanggal otomatis ke isi setelah upload surat
+                    5. Catata pengusul(opsional)
+                - Jika ingin mengajukan surat di jam libur atau istirahat maka gak akan bisa di upload.
+
+            6. Statistik http://127.0.0.1:8000/statistik
+                - Grafik statistik persuratan realtime
+                - Menampilkan total surat di statistik:
+                     jenis statistik menggunakan chart js:
+                        1. Tren pengajuan (Line Chart)
+                        2. Status surat (Pie Chart)
+                        3. Distribusi jenis Surat(Donut Chart)
+                        4. Tren pengajuan surat per 6 bulan (Bar chart)
+                - ada card Total Surat, Draft, Disetujui, Ditolak, Diproses, dan Revisi.
+
+            7. Notifikasi http://127.0.0.1:8000/notifikasi
+                - Tempat dimana Semua notifikasi lengkap di baian user sini
+                - User akan menerima notifikasi jika ada info dari surat, admin, dan It support 
+                - Bisa lihat detail yang terjadi, markandread, delete, dan fitur all(mark/delet).
+
+            8. Tempat kotak aspirasi untuk user http://127.0.0.1:8000/aspirasi
+                - Tempat dimana User bisa memberikan aspirasi kepada admin.
+                - pilihannya ada Saran, Keluhan dan pertannyaan.
+                - User bisa Memberi aspirasi ke admin atua it support.
+                - Pesan yang dikirm user bisa di bales oleh admin atau it support.
+                - bisa di hapus atau edit jika belum di bales admin atau it support.
+            9. tempat bantuan seputar website ini http://127.0.0.1:8000/faq
+                - tempat dimana user bisa mendapatkan bantuan seputar website ini
+                - Bisa chat ke admin via whatsapp dan email ataau chat via Telegram untuk It Support
+                - Banyak dokumentasi yang tersedia seperti auth sistem, Pengajuan surat. dll. udh lengkap.
+            10. About website http://127.0.0.1:8000/about
+                - tempat dimana user bisa mendapatkan informasi seputar website ini
+                - ada tim yang membuat website ini. 
+                - ada sedikit cerita singkat tentang website ini.
+                - ada foto foto kantor, dll.
+
+4. Dashboard Admin
+        1. Dashboard http://127.0.0.1:8000/Admin/Dashboard
+            1. Grafik statistik persuratan realtime
+            2. Menampilkan total surat di statistik menggunakan chart js yaitu 1 chart aja = Mixed chart dengan line(status selesai) dan bar/batang chart(Jumlah surat perbulan.)
+            3. ada card Total Surat, Draft, Disetujui, Ditolak, Diproses, dan Revisi.
+            5. Ada tabel surat yang harus di kerjakan admin, contohnya: verifikasi aspirasi, verifikasi surat, penomoran surat, dll. 
+            6. Real time dashboard dengan delay 15-20 detik.
+            7. Ada rekap jeinis surat, dll.
+
+
+        2. Notifikasi http://127.0.0.1:8000/Admin/notifikasi
+            - Tempat dimana Semua notifikasi lengkap di bagian admin sini
+            - Admin akan menerima notifikasi jika ada info dari surat, user, dan It supportt
+            - Bisa lihat detail yang terjadi, markandread, delete, dan fitur all(mark/delet).
+
+        3. Antrian Surat http://127.0.0.1:8000/Admin/surat
+            - Disini admin bisa mengelola surat yang masuk sesuai role nya.
+            - dibagian ini tabel admin nya sangat detail dan bisa memfilter, search, sort.
+            - admin bisa mengelola surat, bisa melihat detail surat yang masuk, dan mengelola nya.
+            - ada filter 
+                a. Cari Judul
+                b. Jenis Surat
+                c. Tahun
+                d. Bulan
+                e. Status
+                f. Tahap
+            - Semua surat termasuk proses, selesai, ditolak, dll. berada disini.
+            
+            A. unggulan Tempat lihat surat http://127.0.0.1:8000/Admin/surat/{uuid surat}
+                fitur :
+                    - Menyetujui surat
+                    - Menolak surat
+                    - dan jika menolak surat ada 2 opsi. revisi ke user atau admin aspirasi
+                    - admin juga bisa verifikasi QR Code.
+                    - Memberi catatan admin untuk surat itu an bisa di lihat admin lainnya serta user.  seperti Comment
+                Multi role Approve:
+                    - Tiap admin cuma bisa mengapprove(Setuju dan tolak) surat sesuai dengan role nya masing masing.
+                    - Surat hanya muncul tiap role jadi jika ada di role kassubag tu suratnya maka di admin aspirasi dan kepala balai mereka gak bisa slihat suratnya atau ubah2.
+        4. Ada beberapa tabel unik 
+            1. http://127.0.0.1:8000/Admin/Surat-Masuk 
+                - Semua surat masuk sini untuk yang baru banget di ajukan
+            2. http://127.0.0.1:8000/Admin/Surat-Proses 
+                - Hanya menampilkan surat yang sedang dalam proses, sesuai dengan role admin.
+                - jika udah diproses surat bisa pindah kesini
+            3. http://127.0.0.1:8000/Admin/Surat-Selesai 
+                - Hanya menampilkan surat yang sudah selesai, sesuai dengan role admin.
+                - jika udah selesai surat bisa pindah kesini
+            4. http://127.0.0.1:8000/Admin/Surat-Ditolak 
+                - Hanya menampilkan surat yang sudah ditolak, dan di reviisi atau admin_evisi sesuai dengan role admin.
+                - jika udah ditolak surat bisa pindah kesini
+        5. Laporan
+            A. Rekap Bulanan http://127.0.0.1:8000/Admin/Laporan
+                - Disini admin bisa melihat laporan surat
+                - ada filter 
+                - Hanya mengambil rekap bulanan dan bisa di export ke excel atau pdf.
+            B. Riwayat Pemrosesan Surat http://127.0.0.1:8000/Admin/Riwayat
+                - Disini admin bisa melihat riwayat pemrosesan surat oleh siapa aja dan data lengkap berupa tabel. bisa di export juga csv dan excel.
+        6. Kotak Aspirasi http://127.0.0.1:8000/Admin/Aspirasi
+            - Disini admin bisa menerima aspirasi dari user. 
+            - Admin juga bisa membalas aspirasi tersebut
+            - Admin bisa hapus aspirasinya juga 
+        7. Pengaturan 
+            A.Template http://127.0.0.1:8000/Admin/Template
+                - Admiin dapat mengunggahtemplate custume untuk di pake user. 
+                - ada filter untuk memudahkan admin mencari template. (Jenis Surat, Status)
+                - admin bisa mengedit template, hapus template, preview template. 
+            B. Data Pegawai http://127.0.0.1:8000/Admin/Settings/Users
+                - Admin dapat mengelola data pegawai
+                - Total user dan admin
+                - bisa lihat dia udah mengajukan surat berapa, selesai, ditolak berapa kali, dll.
+            C. File surat http://127.0.0.1:8000/Admin/Settings/File-Surat
+                - Disini admin bisa mengatur folder penyimpanan file surat.
+                - Hanya menghapus file fisik suratnya tanpa hapus trackingnya di database, jadi gak bakal bisa di download/preview suratnya.
+                - Admin punya wewenang untuk Menghapus surat user yang udah selesai atau perlu ditolak, dan revisi.
+                - Jika dalam Surat sedang dalam proses, atau revisi Admin_Aspirasi maka gak akan bisa di hpus file fisik suratnya
+            D. Logs http://127.0.0.1:8000/Admin/Settings/Logs
+                - Disini admin bisa melihat logs dari website.
+                - ada filter untuk memudahkan admin mencari logs. (User, Jenis surat, Tanggal, Bulan, Tahun, Status, Tahap, Role)
+
+        8. Statistik dan Chart Realtime http://127.0.0.1:8000/Admin/Chart
+            - banyak chart untuk memudahakan admin melihat surat. 
+            - Ada chart seperti 
+                1. grafik statistik persuratan realtime
+                2. Menampilkan total surat di statistik menggunakan chart js yaitu 1 chart aja = Mixed chart dengan line(status selesai) dan bar/batang chart(Jumlah surat perbulan.)
+                3. ada card Total Surat, Draft, Disetujui, Ditolak, Diproses, dan Revisi.
+                4. mixed chart realtime
+                5. Bar chart per bulan surat
+                6. Bar line, pie chart untuk jenis surat yang sering di ajukan, dll.
+
+        9. Faq http://127.0.0.1:8000/Admin/faq
+            - Disini Admin bisa mengelola 
+            - dan harus mengikuti rules yang sudah di berikan programmer.
+            - penjelasan sistem juga ada disini.
+            - dll
+
+5. Profile fitur
+    - ada profile untuk user dan admin
+    - Bisa ubah email, username, NIP dan password
+    - Bisa Hapus akun
+    - Bisa ganti/beralih akun. 
+    - Upload foto profile, dll 
+6. Fitur keamanan lainnya
+    - email verifikasi
+    - hashing password dan NIP (bcrypt)
+    - validasi upload file (MIME, size)
+    - proteksi XSS & SQL injection
+    - rate limit login 5 per menit per ip
+    - CSRF protection
+    - reCAPTCHA google
+    - RBAC
+    - Perlindungan Data & Anti-Enumeration {V/{uuid}}
+    - Privacy Management
+    - validasi input
+    - HSTS.
+
+
+
+Fitur lainnya untuk memudahkah admin dan user:
+    - Admin_aspirasi bisa edit surat user
+    - Saat revisi dokumen Word user harus upload ulang file word nya. 
+    - Hanya admin_aspirasi yang bisa mengedit surat user.
+    - User bisa mengedit surat nya sendiri hanya selama 15 menit semenjak di upload
+    - validasi input maksimal 255 charakter, ada yg 500 dan 1000o
+    - tiap akun user punya surat, data, biodata nya masing masing.
+    - 
+    

@@ -56,6 +56,17 @@
                 </select>
             </div>
             <div>
+                <label class="form-label mb-1" style="font-size:11px;color:#6b7280;font-weight:600;">BULAN</label>
+                <select name="bulan" class="form-select form-select-sm" style="font-size:13px;border-radius:7px;width:120px;">
+                    <option value="">Semua</option>
+                    @foreach(range(1, 12) as $m)
+                        <option value="{{ $m }}" {{ request('bulan') == $m ? 'selected' : '' }}>
+                            {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
                 <label class="form-label mb-1" style="font-size:11px;color:#6b7280;font-weight:600;">CARI JUDUL</label>
                 <div class="input-group input-group-sm" style="width: 250px;">
                     <span class="input-group-text bg-white border-end-0" style="border-radius: 7px 0 0 7px; border-color: #e5e7eb;">

@@ -11,12 +11,14 @@ use App\Notifications\SuratMasukNotification;
 use App\Notifications\DeleteRequestNotification;
 use App\Notifications\SuratDeletedNotification;
 use App\Notifications\FileRevisiNotification;
+use App\Notifications\SuratPurgedNotification;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-    class SuratController extends Controller
+class SuratController extends Controller
 {
     public function index(Request $request)
     {
@@ -26,110 +28,317 @@ use Illuminate\Support\Facades\Storage;
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        } else {
+            $query->where('status', '!=', 'draft');
         }
+
+        if ($request->filled('jenis')) {
+            $query->where('jenis', $request->jenis);
+        }
+        if ($request->filled('tahun')) {
+            $query->whereYear('created_at', $request->tahun);
+        }
+        if ($request->filled('bulan')) {
+            $query->whereMonth('created_at', $request->bulan);
+        }
+
+        if ($request->filled('search')) {
+            $query->where('judul', 'like', '%' . $request->search . '%');
+        }
+
+        $surats = $query->paginate(10)->withQueryString();
+        $title = $request->status === 'draft' ? 'Draft Surat Saya' : 'Surat Saya';
+
+        return view('user.surat.index', compact('surats', 'title'));
+    }
+
+    public function table(Request $request)
+    {
+        $query = Surat::where('user_id', Auth::id())
+                      ->with('tahapans')
+                      ->latest();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        } else {
+            $query->where('status', '!=', 'draft');
+        }
+
         if ($request->filled('jenis')) {
             $query->where('jenis', $request->jenis);
         }
 
-        $surats = $query->paginate(10)->withQueryString();
+        if ($request->filled('tahun')) {
+            $query->whereYear('created_at', $request->tahun);
+        }
+        if ($request->filled('bulan')) {
+            $query->whereMonth('created_at', $request->bulan);
+        }
 
-        return view('user.surat.index', compact('surats'));
+        if ($request->filled('search')) {
+            $query->where('judul', 'like', '%' . $request->search . '%');
+        }
+
+        $surats = $query->paginate(15)->withQueryString();
+        $title = $request->status === 'draft' ? 'Tabel Draft Surat' : 'Tabel Surat Saya';
+
+        return view('user.surat.table', compact('surats', 'title'));
     }
 
     public function create()
     {
-        /** @var FilesystemAdapter $publicDisk */
-        $publicDisk = Storage::disk('public');
-        $templates = collect($publicDisk->files('templates'))
+        $isLibur = $this->isLayananTutup();
+        $templates = collect(Storage::disk('private')->files('templates'))
             ->map(fn($path) => [
                 'nama' => basename($path),
-                'url'  => $publicDisk->url($path),
+                'url'  => route('user.template.download', ['nama' => basename($path)]),
             ])->values();
 
-        return view('user.surat.create', compact('templates'));
+        return view('user.surat.create', compact('templates', 'isLibur'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'judul'          => 'required|string|max:255',
-            'jenis'          => 'required|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
-            'sifat'          => 'required|in:biasa,segera,rahasia',
-            'tujuan'         => 'required|string|max:500',
-            'file_word'      => 'required|file|mimes:docx,doc|max:10240',
-            'file_lampiran'  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480',
+        $isDraft = $request->input('action') === 'draft';
+
+        if ($this->isLayananTutup()) {
+            return back()->with('error', 'Mohon maaf, layanan pengajuan dan draf surat hanya tersedia pada hari kerja. Senin–Kamis pukul 07.00–16.00 WIB, Jumat pukul 07.30–16.30 WIB. Sabtu & Minggu libur.');
+        }
+
+        $rules = [
+            'judul'          => ($isDraft ? 'nullable' : 'required') . '|string|max:255',
+            'jenis'          => ($isDraft ? 'nullable' : 'required') . '|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
+            'sifat'          => ($isDraft ? 'nullable' : 'required') . '|in:biasa,segera,rahasia',
+            'tujuan'         => ($isDraft ? 'nullable' : 'required') . '|string|max:500',
+            'catatan_pengusul' => 'nullable|string|max:1000',
+            'file_word'      => ($isDraft ? 'nullable' : 'required') . '|file|mimes:docx,doc|max:5120',
+            'file_lampiran'  => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc|max:10240',
+        ];
+
+        $request->validate($rules, [
+            'file_word.mimes' => 'File harus berupa dokumen Word (.docx, .doc)',
+            'file_lampiran.mimes' => 'File lampiran harus berupa PDF, Gambar (JPG, PNG), atau Dokumen Word (DOCX)',
         ]);
 
-        // Upload file
-        $fileWord = $request->file('file_word')->store('surat/word', 'public');
-        $fileLamp = $request->file('file_lampiran')
-                  ? $request->file('file_lampiran')->store('surat/lampiran', 'public')
+        // Upload file ke disk 'private'
+        $fileWord = $request->hasFile('file_word') 
+            ? $request->file('file_word')->store('surat/word', 'private')
+            : null;
+        $fileLamp = $request->hasFile('file_lampiran')
+                  ? $request->file('file_lampiran')->store('surat/lampiran', 'private')
                   : null;
 
-        // Hitung deadline SLA = 24 jam kerja (skip Sabtu-Minggu)
-        $deadline = $this->hitungSLA(now());
+        // Hitung deadline SLA jika bukan draft
+        $deadline = !$isDraft ? $this->hitungSLA(now()) : null;
 
         $surat = Surat::create([
             'user_id'       => Auth::id(),
-            'judul'         => $request->judul,
-            'jenis'         => $request->jenis,
-            'sifat'         => $request->sifat,
-            'tujuan'        => $request->tujuan,
+            'judul'         => $request->judul ?? 'Draft Surat ' . now()->format('d/m/Y H:i'),
+            'jenis'         => $request->jenis ?? ('nota_dinas'), // Default for drafts
+            'sifat'         => $request->sifat ?? 'biasa',
+            'tujuan'        => $request->tujuan ?? '', // Default for drafts
+            'catatan_pengusul'=> $request->catatan_pengusul,
             'file_word'     => $fileWord,
             'file_lampiran' => $fileLamp,
             'tahap_sekarang'=> 1,
-            'status'        => 'proses',
+            'status'        => $isDraft ? 'draft' : 'proses',
             'deadline_sla'  => $deadline,
         ]);
 
-        // Inisialisasi semua tahapan
-        $surat->initTahapan();
+        if (!$isDraft) {
+            // Inisialisasi tahapan hanya jika submit beneran
+            $surat->initTahapan();
+            $surat->tahapans()->where('tahap', 2)->update(['status' => 'proses']);
+            $surat->update(['tahap_sekarang' => 2]);
 
-        // Set tahap 2 jadi 'proses' (siap diverifikasi arsiparis)
-        $surat->tahapans()->where('tahap', 2)->update(['status' => 'proses']);
+            // Notif admin
+            User::whereIn('role', ['admin', 'admin_aspirasi', 'admin_kasubbag_tu', 'admin_kepala_balai'])
+                ->each(fn($a) => $a->notify(new SuratMasukNotification($surat)));
 
-        // Update tahap_sekarang ke 2 karena tahap 1 sudah selesai otomatis
-        $surat->update(['tahap_sekarang' => 2]);
+            return redirect()->route('user.surat.show', $surat)
+                             ->with('success', 'Surat berhasil diajukan!');
+        }
 
-        // Notif ke SEMUA admin (semua role)
-        User::whereIn('role', ['admin', 'admin_aspirasi', 'admin_kasubbag_tu', 'admin_kepala_balai'])
-            ->each(fn($a) => $a->notify(new SuratMasukNotification($surat)));
-
-        return redirect()->route('user.surat.show', $surat)
-                         ->with('success', 'Surat berhasil diajukan! Silakan pantau statusnya di bawah.');
+        return redirect()->route('user.surat.index')
+                         ->with('success', 'Draft surat berhasil disimpan.');
     }
 
-    public function show(Surat $surat)
+    public function edit(Surat $surat)
     {
-        // Pastikan hanya pemilik yang bisa lihat
+        // Pastikan hanya pemilik yang bisa edit draft
+        abort_if($surat->user_id !== Auth::id() || $surat->status !== 'draft', 403);
+
+        $templates = collect(Storage::disk('private')->files('templates'))
+            ->map(fn($path) => [
+                'nama' => basename($path),
+                'url'  => route('user.template.download', ['nama' => basename($path)]),
+            ])->values();
+
+        $isLibur = $this->isLayananTutup();
+        return view('user.surat.edit', compact('surat', 'templates', 'isLibur'));
+    }
+
+    public function update(Request $request, Surat $surat)
+    {
+        abort_if($surat->user_id !== Auth::id() || $surat->status !== 'draft', 403);
+
+        $isDraft = $request->input('action') === 'draft';
+
+        if ($this->isLayananTutup()) {
+            return back()->with('error', 'Mohon maaf, layanan pengajuan dan draf surat hanya tersedia pada hari kerja. Senin–Kamis pukul 07.00–16.00 WIB, Jumat pukul 07.30–16.30 WIB. Sabtu & Minggu libur.');
+        }
+
+        $rules = [
+            'judul'          => ($isDraft ? 'nullable' : 'required') . '|string|max:255',
+            'jenis'          => ($isDraft ? 'nullable' : 'required') . '|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
+            'sifat'          => ($isDraft ? 'nullable' : 'required') . '|in:biasa,segera,rahasia',
+            'tujuan'         => ($isDraft ? 'nullable' : 'required') . '|string|max:500',
+            'catatan_pengusul' => 'nullable|string|max:1000',
+            'file_word'      => ($isDraft || $surat->file_word ? 'nullable' : 'required') . '|file|mimes:docx,doc|max:5120',
+            'file_lampiran'  => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc|max:10240',
+        ];
+
+        $request->validate($rules);
+
+        if ($request->hasFile('file_word')) {
+            if ($surat->file_word) Storage::disk('private')->delete($surat->file_word);
+            $surat->file_word = $request->file('file_word')->store('surat/word', 'private');
+        }
+
+        if ($request->hasFile('file_lampiran')) {
+            if ($surat->file_lampiran) Storage::disk('private')->delete($surat->file_lampiran);
+            $surat->file_lampiran = $request->file('file_lampiran')->store('surat/lampiran', 'private');
+        }
+
+        $surat->judul  = $request->judul  ?? $surat->judul;
+        $surat->jenis  = $request->jenis  ?? $surat->jenis;
+        $surat->sifat  = $request->sifat  ?? $surat->sifat;
+        $surat->tujuan = $request->tujuan ?? $surat->tujuan;
+        if ($request->has('catatan_pengusul')) {
+            $surat->catatan_pengusul = $request->catatan_pengusul;
+        }
+
+        if (!$isDraft) {
+            $surat->status = 'proses';
+            $surat->deadline_sla = $this->hitungSLA(now());
+            $surat->save();
+
+            $surat->initTahapan();
+            $surat->tahapans()->where('tahap', 2)->update(['status' => 'proses']);
+            $surat->update(['tahap_sekarang' => 2]);
+
+            User::whereIn('role', ['admin', 'admin_aspirasi', 'admin_kasubbag_tu', 'admin_kepala_balai'])
+                ->each(fn($a) => $a->notify(new SuratMasukNotification($surat)));
+
+            return redirect()->route('user.surat.show', $surat)
+                             ->with('success', 'Draft berhasil diajukan!');
+        }
+
+        $surat->save();
+        return redirect()->route('user.surat.index')->with('success', 'Draft berhasil diperbarui.');
+    }
+
+    public function updateMetadata(Request $request, Surat $surat)
+    {
         abort_if($surat->user_id !== Auth::id(), 403);
 
-        $surat->load(['tahapans' => function($query) {
+        $isDalamWaktu = $surat->created_at && $surat->created_at->diffInMinutes(now()) <= 15;
+        if (!$isDalamWaktu) {
+            return back()->with('error', 'Waktu edit telah habis. Surat hanya bisa diedit dalam 15 menit pertama setelah diajukan.');
+        }
+
+        $request->validate([
+            'judul'  => 'required|string|max:255',
+            'jenis'  => 'required|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
+            'sifat'  => 'required|in:biasa,segera,rahasia',
+            'tujuan' => 'required|string|max:500',
+            'catatan_pengusul' => 'nullable|string|max:1000',
+        ]);
+
+        $surat->update([
+            'judul'  => $request->judul,
+            'jenis'  => $request->jenis,
+            'sifat'  => $request->sifat,
+            'tujuan' => $request->tujuan,
+            'catatan_pengusul' => $request->catatan_pengusul,
+        ]);
+
+        return back()->with('success', 'Detail surat berhasil diperbarui.');
+    }
+
+    public function show($surat)
+    {
+        // Cari berdasarkan UUID dulu (standar baru)
+        $suratModel = Surat::where('uuid', $surat)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        // Fallback: Jika tidak ketemu dan inputnya angka, coba cari berdasarkan ID (untuk link lama)
+        if (!$suratModel && is_numeric($surat)) {
+            $suratModel = Surat::where('id', $surat)
+                ->where('user_id', Auth::id())
+                ->first();
+            
+            if ($suratModel) {
+                // Redirect otomatis ke URL versi UUID biar rapi
+                return redirect()->route('user.surat.show', $suratModel);
+            }
+        }
+
+        if (!$suratModel) {
+            abort(404, 'Surat tidak ditemukan atau Anda tidak memiliki akses.');
+        }
+
+        $suratModel->load(['tahapans' => function($query) {
             $query->orderBy('tahap')->with('diprosesByUser');
         }]);
 
-        return view('user.surat.show', compact('surat'));
+        return view('user.surat.show', ['surat' => $suratModel]);
     }
 
-    // Hitung 24 jam kerja (skip Sabtu & Minggu)
+    // Hitung SLA 1 Hari Kerja dengan mematuhi jam operasional
     private function hitungSLA(Carbon $dari): Carbon
     {
-        $deadline = $dari->copy();
-        $jamDitambahkan = 0;
+        $sla = $dari->copy();
 
-        // Tambah 24 jam, skip weekend
-        while ($jamDitambahkan < 24) {
-            $deadline->addHour();
-
-            // Jika masuk weekend, skip ke Senin
-            while ($deadline->isWeekend()) {
-                $deadline->addDay()->startOfDay();
+        // 1. Sesuaikan waktu mulai jika di luar jam kerja
+        while (true) {
+            if ($sla->isWeekend()) {
+                $sla->addDay()->setTime(7, 30, 0);
+                continue;
             }
 
-            $jamDitambahkan++;
+            $isFriday = $sla->isFriday();
+            $startHour = $isFriday ? 7 : 7;
+            $startMinute = $isFriday ? 30 : 0;
+            $endHour = 16;
+            $endMinute = $isFriday ? 30 : 0;
+
+            $startTime = $sla->copy()->setTime($startHour, $startMinute, 0);
+            $endTime = $sla->copy()->setTime($endHour, $endMinute, 0);
+
+            if ($sla->greaterThanOrEqualTo($endTime)) {
+                // Lewat jam kerja, geser ke besok pagi
+                $isBesokJumat = $sla->copy()->addDay()->isFriday();
+                $sla->addDay()->setTime(7, $isBesokJumat ? 30 : 0, 0);
+                continue;
+            } elseif ($sla->lessThan($startTime)) {
+                // Sebelum jam kerja, geser ke jam buka hari ini
+                $sla->setTime($startHour, $startMinute, 0);
+            }
+            break;
         }
 
-        return $deadline;
+        // 2. Tambahkan 24 jam kalender (1 hari) melewati weekend
+        $hoursToAdd = 24;
+        while ($hoursToAdd > 0) {
+            $sla->addHour();
+            if (!$sla->isWeekend()) {
+                $hoursToAdd--;
+            }
+        }
+
+        return $sla;
     }
 
     /**
@@ -150,7 +359,7 @@ use Illuminate\Support\Facades\Storage;
         }
 
         // Jika surat ditolak, selesai, atau SLA terlambat - bisa langsung hapus tanpa approval
-        $bisaLangsungHapus = in_array($surat->status, ['ditolak', 'selesai']) || $surat->sla_status === 'terlambat';
+        $bisaLangsungHapus = in_array($surat->status, ['draft', 'ditolak', 'selesai']) || $surat->sla_status === 'terlambat';
 
         if ($bisaLangsungHapus) {
             // Validasi ringan, alasan opsional
@@ -198,20 +407,14 @@ use Illuminate\Support\Facades\Storage;
      */
     private function hapusSurat(Surat $surat)
     {
-        // Hapus file word
+        // Hapus file word dari private storage
         if ($surat->file_word) {
-            $wordPath = storage_path('app/public/' . $surat->file_word);
-            if (file_exists($wordPath)) {
-                @unlink($wordPath);
-            }
+            Storage::disk('private')->delete($surat->file_word);
         }
 
-        // Hapus file lampiran
+        // Hapus file lampiran dari private storage
         if ($surat->file_lampiran) {
-            $lampiranPath = storage_path('app/public/' . $surat->file_lampiran);
-            if (file_exists($lampiranPath)) {
-                @unlink($lampiranPath);
-            }
+            Storage::disk('private')->delete($surat->file_lampiran);
         }
 
         // Hapus surat (tahapans akan terhapus otomatis karena cascade)
@@ -226,60 +429,297 @@ use Illuminate\Support\Facades\Storage;
         // Pastikan hanya pemilik yang bisa upload ulang
         abort_if($surat->user_id !== Auth::id(), 403);
 
+        if ($this->isLayananTutup()) {
+            return back()->with('error', 'Mohon maaf, layanan pengajuan surat hanya tersedia pada hari kerja. Senin–Kamis pukul 07.00–16.00 WIB, Jumat pukul 07.30–16.30 WIB. Sabtu & Minggu libur.');
+        }
+
         // Hanya bisa jika status ditolak
         if (!$surat->bisaRevisi()) {
             return back()->with('error', 'Upload ulang hanya bisa dilakukan jika surat ditolak.');
         }
 
         $request->validate([
-            'file_word'     => 'required|file|mimes:docx,doc|max:10240',
-            'file_lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:20480',
+            'file_word'     => 'required|file|mimes:docx,doc|max:5120',
+            'file_lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc|max:10240',
         ]);
 
         if ($surat->file_word) {
-            $wordPath = storage_path('app/public/' . $surat->file_word);
-            if (file_exists($wordPath)) {
-                @unlink($wordPath);
-            }
+            Storage::disk('private')->delete($surat->file_word);
         }
         if ($surat->file_lampiran) {
-            $lampiranPath = storage_path('app/public/' . $surat->file_lampiran);
-            if (file_exists($lampiranPath)) {
-                @unlink($lampiranPath);
-            }
+            Storage::disk('private')->delete($surat->file_lampiran);
         }
 
-        // Upload file baru
-        $fileWord = $request->file('file_word')->store('surat/word', 'public');
+        // Upload file baru ke private disk
+        $fileWord = $request->file('file_word')->store('surat/word', 'private');
         $fileLamp = $request->file('file_lampiran')
-                  ? $request->file('file_lampiran')->store('surat/lampiran', 'public')
+                  ? $request->file('file_lampiran')->store('surat/lampiran', 'private')
                   : null;
-
-        $tahapDitolak = $surat->tahap_sekarang;
-        $tahapanDitolak = $surat->tahapans()->where('tahap', $tahapDitolak)->first();
-        $namaTahapDitolak = $tahapanDitolak ? $tahapanDitolak->nama_tahap : 'Tahap ' . $tahapDitolak;
 
         $surat->update([
             'file_word'         => $fileWord,
             'file_lampiran'     => $fileLamp,
             'status'            => 'revisi',
+            'tahap_sekarang'    => 2,
             'status_revisi'     => true,
             'revisi_count'      => $surat->revisi_count + 1,
             'revisi_uploaded_at'=> now(),
         ]);
 
-        $surat->tahapans()->where('tahap', $tahapDitolak)->update([
-            'status' => 'proses',
+        // Reset tahap 1 ke status selesai (sudah lewat)
+        $surat->tahapans()->where('tahap', 1)->update([
+            'status' => 'selesai',
+        ]);
+
+        // Tahap 2 sedang di-verifikasi ulang - RESET TOTAL
+        $surat->tahapans()->where('tahap', 2)->update([
+            'status'        => 'proses',
+            'selesai_pada'  => null,
+            'diproses_oleh' => null,
+            'catatan'       => null,
+        ]);
+
+        // Reset tahapan setelah tahap 2 menjadi 'menunggu' karena akan diverifikasi ulang
+        $surat->tahapans()->where('tahap', '>', 2)->update([
+            'status'        => 'menunggu',
+            'selesai_pada'  => null,
+            'diproses_oleh' => null,
+            'catatan'       => null,
         ]);
 
         // Notif ke SEMUA admin
         User::whereIn('role', ['admin', 'admin_aspirasi', 'admin_kasubbag_tu', 'admin_kepala_balai'])
             ->each(fn($a) => $a->notify(new FileRevisiNotification(
                 $surat,
-                $tahapDitolak,
-                $namaTahapDitolak
+                2,
+                'Verifikasi Arsiparis'
             )));
 
         return back()->with('success', 'File perbaikan berhasil diupload! Menunggu review admin.');
+    }
+
+    /**
+     * Download template surat untuk user
+     */
+    public function templateDownload(string $nama)
+    {
+        $safeName = basename($nama);
+        $path = 'templates/' . $safeName;
+        if (!Storage::disk('private')->exists($path)) {
+            abort(404, 'Template tidak ditemukan');
+        }
+
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        return Storage::disk('private')->download($path);
+    }
+
+    /**
+     * Preview file untuk user (PDF/Image inline, Word via converter)
+     */
+    public function preview(Surat $surat, string $tipe)
+    {
+        // Pastikan hanya pemilik yang bisa melihat
+        abort_if($surat->user_id !== Auth::id(), 403);
+
+        $filePath = $tipe === 'word' ? $surat->file_word : $surat->file_lampiran;
+
+        if (!$filePath) {
+            Log::warning('User attempting to preview non-existent file path', ['surat_id' => $surat->id, 'tipe' => $tipe]);
+            abort(404, 'File tidak ditemukan');
+        }
+
+        $fullPath = Storage::disk('private')->path($filePath);
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        Log::info('Previewing file', [
+            'surat_id' => $surat->id,
+            'tipe' => $tipe,
+            'filePath' => $filePath,
+            'fullPath' => $fullPath,
+            'extension' => $extension,
+            'fileExists' => Storage::disk('private')->exists($filePath)
+        ]);
+
+        if (!Storage::disk('private')->exists($filePath)) {
+            Log::error('File not found on disk for preview', ['fullPath' => $fullPath, 'filePath' => $filePath]);
+            
+            // Jika file hilang tapi database masih punya reference, clear reference
+            if ($tipe === 'word') {
+                $surat->update(['file_word' => null]);
+            } else {
+                $surat->update(['file_lampiran' => null]);
+            }
+            
+            return back()->with('error', 'File tidak ditemukan. File mungkin sudah dihapus atau berhasil di-update dengan versi baru.');
+        }
+
+        // Cek jika request minta raw file (untuk iframe/img source)
+        if (request()->has('raw')) {
+            $fileContent = Storage::disk('private')->get($filePath);
+            if ($fileContent === false) {
+                abort(404, 'File tidak dapat dibaca.');
+            }
+            $mimeType = $extension === 'pdf' ? 'application/pdf' : $this->getMimeTypeFromExtension($extension);
+            $headers = [
+                'Content-Type' => $mimeType,
+                'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"',
+            ];
+            return response($fileContent, 200, $headers);
+        }
+
+        // PDF inline preview via view
+        if ($extension === 'pdf') {
+            return view('user.surat.preview', [
+                'surat' => $surat,
+                'pdfUrl' => route('user.surat.preview', [$surat, $tipe, 'raw' => 1]),
+                'tipe' => $tipe,
+                'fileName' => basename($filePath),
+            ]);
+        }
+
+        // Image inline preview via view
+        if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'])) {
+            return view('user.surat.preview', [
+                'surat' => $surat,
+                'imageUrl' => route('user.surat.preview', [$surat, $tipe, 'raw' => 1]),
+                'tipe' => $tipe,
+                'fileName' => basename($filePath),
+            ]);
+        }
+
+        // Jika .doc biasa, paksa download karena docx converter tidak support doc binary
+        if ($extension === 'doc') {
+            return $this->download($surat, $tipe);
+        }
+
+        // Word (convert ke HTML)
+        if ($extension === 'docx') {
+            $converter = new \App\Services\DocxToHtmlConverter($fullPath);
+            $htmlRaw = $converter->convert();
+            
+            // Sanitasi HTML sebelum ditampilkan ke browser
+            $htmlContent = \App\Services\HtmlSanitizer::clean($htmlRaw);
+
+            return view('user.surat.preview', [
+                'surat' => $surat,
+                'htmlContent' => $htmlContent,
+                'tipe' => $tipe,
+                'fileName' => basename($filePath),
+            ]);
+        }
+
+        return Storage::disk('private')->download($filePath);
+    }
+
+    /**
+     * Download file untuk user
+     */
+    public function download(Surat $surat, string $tipe)
+    {
+        // Pastikan hanya pemilik yang bisa mendownload
+        abort_if($surat->user_id !== Auth::id(), 403);
+
+        $filePath = $tipe === 'word' ? $surat->file_word : $surat->file_lampiran;
+
+        if (!$filePath || !Storage::disk('private')->exists($filePath)) {
+            abort(404, 'File tidak ditemukan');
+        }
+
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $originalName = $tipe === 'word' ? $surat->judul : 'lampiran';
+        $downloadName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalName) . '.' . $extension;
+
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        return Storage::disk('private')->download($filePath, $downloadName);
+    }
+
+    /**
+     * Get MIME type from file extension.
+     */
+    private function getMimeTypeFromExtension(string $extension): string
+    {
+        return match (strtolower($extension)) {
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'bmp' => 'image/bmp',
+            'webp' => 'image/webp',
+            default => 'application/octet-stream',
+        };
+    }
+
+    /**
+     * Hapus hanya file fisik (Word & Lampiran) tapi tetap simpan data suratnya.
+     * Khusus untuk surat yang sudah SELESAI.
+     */
+    public function purgeFiles(Surat $surat)
+    {
+        // Pastikan hanya pemilik
+        abort_if($surat->user_id !== Auth::id(), 403);
+
+        // Hanya untuk surat yang sudah selesai
+        if ($surat->status !== 'selesai') {
+            return back()->with('error', 'Pembersihan file hanya bisa dilakukan untuk surat yang sudah selesai pemrosesannya.');
+        }
+
+        // Hapus file fisik dari private storage
+        if ($surat->file_word) {
+            Storage::disk('private')->delete($surat->file_word);
+        }
+        if ($surat->file_lampiran) {
+            Storage::disk('private')->delete($surat->file_lampiran);
+        }
+
+        // Update database (kosongkan path file tapi tandai dihapus)
+        $surat->update([
+            'file_word' => null,
+            'file_lampiran' => null,
+            'file_dihapus_pada' => now(),
+        ]);
+
+        // Notifikasi ke semua admin
+        User::whereIn('role', ['admin', 'admin_aspirasi', 'admin_kasubbag_tu', 'admin_kepala_balai'])
+            ->each(function ($admin) use ($surat) {
+                $admin->notify(new SuratPurgedNotification($surat, Auth::user()->name));
+            });
+
+        return back()->with('success', 'File fisik surat berhasil dibersihkan dari penyimpanan. Tracking tetap tersimpan.');
+    }
+
+    /**
+     * Cek apakah layanan sedang tutup.
+     * Senin–Kamis: 07:30 – 16:00 WIB
+     * Jumat       : 07:30 – 16:30 WIB
+     * Sabtu–Minggu: Libur
+     */
+    private function isLayananTutup(): bool
+    {
+        $now = now();
+        if ($now->isWeekend()) return true;
+
+        $dayOfWeek = $now->dayOfWeek; // 1 (Mon) - 7 (Sun)
+        $timeInMinutes = $now->hour * 60 + $now->minute;
+
+        // Senin–Kamis: 07:00 – 16:00
+        if ($dayOfWeek >= 1 && $dayOfWeek <= 4) {
+            $start = 7 * 60; // 07:00
+            $end   = 16 * 60; // 16:00
+            return $timeInMinutes < $start || $timeInMinutes >= $end;
+        }
+
+        // Jumat: 07:30 – 16:30
+        if ($dayOfWeek === 5) {
+            $start = 7 * 60 + 30; // 07:30
+            $end   = 16 * 60 + 30; // 16:30
+            return $timeInMinutes < $start || $timeInMinutes >= $end;
+        }
+
+        return true;
     }
 }

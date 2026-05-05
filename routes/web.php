@@ -11,15 +11,15 @@ use App\Http\Controllers\User\StatistikController as UserStatistik;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationApiController;
+use Illuminate\Http\Request;
 
-Route::get('/', function () {
-    if (auth()->check()) {
+Route::get('/', function (Request $request) {
+    if (auth()->check() && !$request->has('home')) {
         $user = auth()->user();
-        if ($user->isITSupport()) {
-            return redirect()->route('itsupport.dashboard');
-        }
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
+        } elseif ($user->isITSupport()) {
+            return redirect()->route('itsupport.dashboard');
         }
         return redirect()->route('dashboard');
     }
@@ -46,6 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/notifikasi', [\App\Http\Controllers\User\NotifikasiController::class, 'index'])->name('user.notifikasi.index');
     Route::get('/aspirasi', [\App\Http\Controllers\User\AspirasiController::class, 'index'])->name('user.aspirasi.index');
     Route::post('/aspirasi', [\App\Http\Controllers\User\AspirasiController::class, 'store'])->name('user.aspirasi.store');
+    Route::delete('/aspirasi/{aspirasi}', [\App\Http\Controllers\User\AspirasiController::class, 'destroy'])->name('user.aspirasi.destroy');
 
     Route::prefix('surat')->name('user.surat.')->group(function () {
         Route::get('/',          [UserSurat::class, 'index'])->name('index');
@@ -55,6 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{surat}',   [UserSurat::class, 'show'])->name('show');
         Route::get('/{surat}/edit', [UserSurat::class, 'edit'])->name('edit');
         Route::patch('/{surat}', [UserSurat::class, 'update'])->name('update');
+        Route::patch('/{surat}/metadata', [UserSurat::class, 'updateMetadata'])->name('updateMetadata');
         Route::get('/{surat}/preview/{tipe}', [UserSurat::class, 'preview'])->name('preview');
         Route::get('/{surat}/download/{tipe}', [UserSurat::class, 'download'])->name('download');
         Route::post('/{surat}/reupload', [UserSurat::class, 'reuploadFile'])->name('reupload');
@@ -73,7 +75,6 @@ Route::prefix('Admin')->middleware(['auth', 'verified', 'admin'])->name('admin.'
 
     // Download routes (tanpa admin.role.check agar binary gak corrupt)
     Route::get('/Surat/{surat}/preview/{tipe}', [\App\Http\Controllers\Admin\SuratController::class, 'preview'])->name('surat.preview');
-    Route::get('/Surat/{surat}/preview-content/{tipe}', [\App\Http\Controllers\Admin\SuratController::class, 'previewContent'])->name('surat.previewContent');
     Route::get('/Surat/{surat}/download/{tipe}', [\App\Http\Controllers\Admin\SuratController::class, 'download'])->name('surat.download');
 
     // Dashboard & other routes (dengan middleware admin.role.check)
@@ -138,6 +139,7 @@ Route::prefix('Admin')->middleware(['auth', 'verified', 'admin'])->name('admin.'
         Route::get('/Aspirasi', [\App\Http\Controllers\Admin\AspirasiController::class, 'index'])->name('aspirasi.index');
         Route::patch('/Aspirasi/{aspirasi}', [\App\Http\Controllers\Admin\AspirasiController::class, 'update'])->name('aspirasi.update');
         Route::post('/Aspirasi/{aspirasi}/read', [\App\Http\Controllers\Admin\AspirasiController::class, 'markAsRead'])->name('aspirasi.read');
+        Route::delete('/Aspirasi/{aspirasi}', [\App\Http\Controllers\Admin\AspirasiController::class, 'destroy'])->name('aspirasi.destroy');
 
         Route::post('/Notifikasi/read/{id}', [\App\Http\Controllers\Admin\NotifikasiController::class, 'markAsRead'])->name('notifikasi.read');
         Route::post('/Notifikasi/read-all', [\App\Http\Controllers\Admin\NotifikasiController::class, 'markAllAsRead'])->name('notifikasi.readAll');
@@ -157,11 +159,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->prefix('notif')->name('notif.')->group(function () {
-    Route::get('/read/{id}',      [\App\Http\Controllers\User\NotifikasiController::class, 'read'])->name('read');
-    Route::post('/read-all',      [\App\Http\Controllers\User\NotifikasiController::class, 'readAll'])->name('readAll');
-    Route::post('/mark-read/{id}',[\App\Http\Controllers\User\NotifikasiController::class, 'markRead'])->name('markRead');
-    Route::post('/delete/{id}',   [NotificationApiController::class, 'destroy'])->name('delete');
-    Route::post('/delete-all',    [NotificationApiController::class, 'destroyAll'])->name('deleteAll');
+    Route::get('/read/{id}',       [\App\Http\Controllers\User\NotifikasiController::class, 'read'])->name('read');
+    Route::post('/read-all',       [\App\Http\Controllers\User\NotifikasiController::class, 'readAll'])->name('readAll');
+    Route::post('/mark-read/{id}', [\App\Http\Controllers\User\NotifikasiController::class, 'markAsRead'])->name('markRead');
+    Route::post('/delete/{id}',    [\App\Http\Controllers\User\NotifikasiController::class, 'destroy'])->name('delete');
+    Route::post('/delete-all',     [\App\Http\Controllers\User\NotifikasiController::class, 'destroyAll'])->name('deleteAll');
 });
 
 // ===== PROFILE (Breeze) =====

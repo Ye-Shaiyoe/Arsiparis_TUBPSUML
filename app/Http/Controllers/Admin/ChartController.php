@@ -24,18 +24,24 @@ class ChartController extends Controller
             return response()->json(['error' => 'Tahun tidak valid.'], 422);
         }
 
-        $data = Cache::remember("chart_data_{$tahun}", now()->addMinutes(5), function () use ($tahun) {
-            return [
-                'suratPerBulan'  => $this->suratPerBulan($tahun),
-                'suratPerJenis'  => $this->suratPerJenis($tahun),
-                'suratPerStatus' => $this->suratPerStatus(),
-                'slaChart'       => $this->slaChart($tahun),
-                'suratPerTahap'  => $this->suratPerTahap(),
-                'trendHarian'    => $this->trendHarian(),
-                'topPengusul'    => $this->topPengusul($tahun),
-                'topAdmin'       => $this->topAdmin($tahun),
-            ];
-        });
+        $data = [
+            'suratPerBulan'   => $this->suratPerBulan($tahun),
+            'suratPerJenis'   => $this->suratPerJenis($tahun),
+            'suratPerStatus'  => $this->suratPerStatus($tahun),
+            'slaChart'        => $this->slaChart($tahun),
+            'suratPerTahap'   => $this->suratPerTahap(),
+            'trendHarian'     => $this->trendHarian(),
+            'topPengusul'     => $this->topPengusul($tahun),
+            'topAdmin'        => $this->topAdmin($tahun),
+            // Data baru
+            'revisiPerBulan'  => $this->revisiPerBulan($tahun),
+            'hariPengajuan'   => $this->hariPengajuan($tahun),
+            'completionTahap' => $this->completionTahap($tahun),
+            'sifatSurat'      => $this->sifatSurat($tahun),
+            'avgWaktuProses'  => $this->avgWaktuProses($tahun),
+            'lifetimeMixed'   => $this->lifetimeMixedChart(),
+            'totalSemua'      => \App\Models\Surat::count(),
+        ];
 
         return response()->json($data);
     }
@@ -50,7 +56,8 @@ class ChartController extends Controller
                 COUNT(*) as total,
                 SUM(status = "selesai") as selesai,
                 SUM(status = "proses")  as proses,
-                SUM(status = "ditolak") as ditolak
+                SUM(status = "ditolak") as ditolak,
+                SUM(status = "revisi" OR status = "revisi_admin") as revisi
             ')
             ->groupBy('bulan')
             ->orderBy('bulan')
@@ -58,7 +65,7 @@ class ChartController extends Controller
             ->keyBy('bulan');
 
         $labels  = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-        $total = $selesai = $proses = $ditolak = [];
+        $total = $selesai = $proses = $ditolak = $revisi = [];
 
         for ($m = 1; $m <= 12; $m++) {
             $row       = $rows->get($m);
@@ -66,9 +73,10 @@ class ChartController extends Controller
             $selesai[] = (int) ($row?->selesai ?? 0);
             $proses[]  = (int) ($row?->proses  ?? 0);
             $ditolak[] = (int) ($row?->ditolak ?? 0);
+            $revisi[]  = (int) ($row?->revisi  ?? 0);
         }
 
-        return compact('labels', 'total', 'selesai', 'proses', 'ditolak');
+        return compact('labels', 'total', 'selesai', 'proses', 'ditolak', 'revisi');
     }
 
     // ── Surat per jenis (doughnut) ────────────────────────────────────────────
@@ -98,10 +106,10 @@ class ChartController extends Controller
 
     // ── Status surat bulan ini (doughnut) ─────────────────────────────────────
     // Enum DB: proses | selesai | ditolak
-    private function suratPerStatus(): array
+    private function suratPerStatus(int $tahun): array
     {
         $rows = DB::table('surats')
-            ->whereYear('created_at', now()->year)
+            ->whereYear('created_at', $tahun)
             ->whereMonth('created_at', now()->month)
             ->selectRaw('status, COUNT(*) as total')
             ->groupBy('status')
@@ -109,9 +117,11 @@ class ChartController extends Controller
             ->keyBy('status');
 
         return [
-            'proses'  => (int) ($rows->get('proses')?->total  ?? 0),
-            'selesai' => (int) ($rows->get('selesai')?->total ?? 0),
-            'ditolak' => (int) ($rows->get('ditolak')?->total ?? 0),
+            'proses'       => (int) ($rows->get('proses')?->total       ?? 0),
+            'selesai'      => (int) ($rows->get('selesai')?->total      ?? 0),
+            'ditolak'      => (int) ($rows->get('ditolak')?->total      ?? 0),
+            'revisi'       => (int) ($rows->get('revisi')?->total       ?? 0),
+            'revisi_admin' => (int) ($rows->get('revisi_admin')?->total ?? 0),
         ];
     }
 
@@ -260,5 +270,147 @@ class ChartController extends Controller
             'labels' => $rows->pluck('name')->toArray(),
             'data'   => $rows->pluck('total')->map(fn($v) => (int) $v)->toArray(),
         ];
+    }
+
+    // ── Revisi per bulan (user vs admin) ─────────────────────────────────────
+    private function revisiPerBulan(int $tahun): array
+    {
+        $rows = DB::table('surats')
+            ->whereYear('created_at', $tahun)
+            ->selectRaw('
+                MONTH(created_at) as bulan,
+                SUM(status = "revisi") as user,
+                SUM(status = "revisi_admin") as admin
+            ')
+            ->groupBy('bulan')
+            ->get()
+            ->keyBy('bulan');
+
+        $labels = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        $revisiUser = [];
+        $revisiAdmin = [];
+
+        for ($m = 1; $m <= 12; $m++) {
+            $row = $rows->get($m);
+            $revisiUser[] = (int) ($row?->user ?? 0);
+            $revisiAdmin[] = (int) ($row?->admin ?? 0);
+        }
+
+        return compact('labels', 'revisiUser', 'revisiAdmin');
+    }
+
+    // ── Hari pengajuan (polar) ───────────────────────────────────────────────
+    private function hariPengajuan(int $tahun): array
+    {
+        $rows = DB::table('surats')
+            ->whereYear('created_at', $tahun)
+            ->selectRaw('DAYOFWEEK(created_at) as hari, COUNT(*) as total')
+            ->groupBy('hari')
+            ->get()
+            ->keyBy('hari');
+
+        $labels = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        $data = [];
+
+        for ($h = 1; $h <= 7; $h++) {
+            $data[] = (int) ($rows->get($h)?->total ?? 0);
+        }
+
+        return compact('labels', 'data');
+    }
+
+    // ── Completion Rate per Tahap ───────────────────────────────────────────
+    private function completionTahap(int $tahun): array
+    {
+        $rows = DB::table('surat_tahapans as st')
+            ->join('surats as s', 'st.surat_id', '=', 's.id')
+            ->whereYear('st.created_at', $tahun)
+            ->whereIn('st.status', ['selesai', 'ditolak'])
+            ->selectRaw('st.nama_tahap, 
+                SUM(st.status = "selesai") as selesai,
+                SUM(st.status = "ditolak") as ditolak
+            ')
+            ->groupBy('st.nama_tahap')
+            ->orderBy('st.nama_tahap')
+            ->get();
+
+        return [
+            'labels'  => $rows->pluck('nama_tahap')->toArray(),
+            'selesai' => $rows->pluck('selesai')->map(fn($v) => (int) $v)->toArray(),
+            'ditolak' => $rows->pluck('ditolak')->map(fn($v) => (int) $v)->toArray(),
+        ];
+    }
+
+    // ── Sifat Surat (doughnut) ──────────────────────────────────────────────
+    private function sifatSurat(int $tahun): array
+    {
+        $rows = DB::table('surats')
+            ->whereYear('created_at', $tahun)
+            ->selectRaw('sifat, COUNT(*) as total')
+            ->groupBy('sifat')
+            ->get()
+            ->keyBy('sifat');
+
+        return [
+            'labels' => ['Biasa', 'Segera', 'Rahasia'],
+            'data'   => [
+                (int) ($rows->get('biasa')?->total   ?? 0),
+                (int) ($rows->get('segera')?->total  ?? 0),
+                (int) ($rows->get('rahasia')?->total ?? 0),
+            ]
+        ];
+    }
+
+    // ── Rata-rata waktu proses per jenis (jam) ──────────────────────────────
+    private function avgWaktuProses(int $tahun): array
+    {
+        $rows = DB::table('surats')
+            ->whereYear('created_at', $tahun)
+            ->where('status', 'selesai')
+            ->selectRaw('jenis, AVG(TIMESTAMPDIFF(HOUR, created_at, updated_at)) as avg_jam')
+            ->groupBy('jenis')
+            ->get();
+
+        $jenisLabel = [
+            'nota_dinas'       => 'Nota Dinas',
+            'surat_dinas'      => 'Surat Dinas',
+            'surat_keputusan'  => 'Surat Keputusan',
+            'surat_pernyataan' => 'Surat Pernyataan',
+            'surat_keterangan' => 'Surat Keterangan',
+        ];
+
+        return [
+            'labels' => $rows->map(fn($r) => $jenisLabel[$r->jenis] ?? ucfirst($r->jenis))->values()->toArray(),
+            'data'   => $rows->pluck('avg_jam')->map(fn($v) => round((float)$v, 1))->toArray(),
+        ];
+    }
+
+    // ── Lifetime Mixed Chart (12 Bulan Terakhir) ──────────────────────────────
+    private function lifetimeMixedChart(): array
+    {
+        $labels = [];
+        $masuk = [];
+        $selesai = [];
+
+        for ($i = 11; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $labels[] = $date->translatedFormat('M y');
+            
+            $countMasuk = DB::table('surats')
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->count();
+                
+            $countSelesai = DB::table('surats')
+                ->whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->where('status', 'selesai')
+                ->count();
+                
+            $masuk[] = $countMasuk;
+            $selesai[] = $countSelesai;
+        }
+
+        return compact('labels', 'masuk', 'selesai');
     }
 }

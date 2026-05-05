@@ -1,346 +1,506 @@
-
 @extends('layouts.admin')
 @section('title', 'Dashboard Admin')
 
 @section('content')
     <style>
-        .pulse-dot-admin {
-            width: 6px; height: 6px; background: white; border-radius: 50%; display: inline-block;
-            animation: pulseAdmin 1.5s infinite;
+        /* Modernized Stat Cards */
+        .stat-card-new {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
-        @keyframes pulseAdmin {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
-            70% { transform: scale(1.2); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+
+        .stat-card-new:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+
+        .stat-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .stat-card-new.blue .stat-icon-box {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .stat-card-new.green .stat-icon-box {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .stat-card-new.amber .stat-icon-box {
+            background: #fffbeb;
+            color: #f59e0b;
+        }
+
+        .stat-card-new.red .stat-icon-box {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-label-new {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value-new {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.1;
+            margin: 4px 0;
+        }
+
+        .stat-sub-new {
+            font-size: 11px;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        /* Table Improvements */
+        .table-custom {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-custom thead th {
+            background: var(--bg-tertiary);
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-custom tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table-custom tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .pulse-live {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+        }
+
+        .pulse-live::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid #22c55e;
+            animation: pulseSimple 2s infinite;
+        }
+
+        @keyframes pulseSimple {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        .filter-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
     </style>
 
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:16px;">
+    {{-- HEADER & FILTER --}}
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <h1 style="font-size:1.8rem; font-weight:800; color:var(--text-primary); margin:0;">Dashboard Overview</h1>
-                <div :style="connecting ? 'opacity:1' : 'opacity:0'" style="background:#22c55e; color:white; font-size:10px; padding:3px 8px; border-radius:99px; display:flex; align-items:center; gap:5px; transition:opacity 0.5s;">
-                    <span class="pulse-dot-admin"></span> LIVE
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Dashboard
+                    Overview</h1>
+                <div x-data="{ live: true }" x-show="live"
+                    class="flex items-center gap-2 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 rounded-lg text-[10px] font-bold tracking-widest">
+                    <span class="pulse-live"></span> LIVE
                 </div>
             </div>
-            <p style="font-size:13px; color:var(--text-secondary); margin:4px 0 0 0;">Monitoring aktivitas persuratan {{ \Carbon\Carbon::create()->month($bulanSelected)->translatedFormat('F') }} {{ $tahunSelected }}</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">Monitoring aktivitas persuratan unit
+                kerja secara real-time.</p>
         </div>
-        <form action="{{ route('admin.dashboard') }}" method="GET" style="display:flex; gap:10px; align-items:center; background:var(--bg-secondary); padding:8px 12px; border-radius:12px; border:1px solid var(--border-color);">
-            <div style="font-size:12px; font-weight:600; color:var(--text-secondary); margin-right:4px;">FILTER:</div>
-            <select name="bulan" class="form-select" onchange="this.form.submit()" style="width:140px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); font-size:13px; padding:5px 10px;">
-                @foreach(range(1, 12) as $m)
-                    <option value="{{ $m }}" {{ $bulanSelected == $m ? 'selected' : '' }}>
-                        {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
-                    </option>
-                @endforeach
-            </select>
-            <select name="tahun" class="form-select" onchange="this.form.submit()" style="width:110px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); font-size:13px; padding:5px 10px;">
-                @php $startYear = 2024; $currentYear = date('Y'); @endphp
-                @for($y = $currentYear; $y >= $startYear; $y--)
-                    <option value="{{ $y }}" {{ $tahunSelected == $y ? 'selected' : '' }}>
-                        {{ $y }}
-                    </option>
-                @endfor
-            </select>
+
+        <form action="{{ route('admin.dashboard') }}" method="GET" class="filter-section shadow-sm">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider"><i class="bi bi-funnel"></i> Filter
+                Periode</span>
+            <div class="flex gap-2">
+                <select name="bulan"
+                    class="form-select !py-1.5 !px-3 !text-xs !font-semibold !rounded-lg !border-slate-200 dark:!border-slate-700 !bg-slate-50 dark:!bg-slate-800"
+                    onchange="this.form.submit()">
+                    @foreach(range(1, 12) as $m)
+                        <option value="{{ $m }}" {{ $bulanSelected == $m ? 'selected' : '' }}>
+                            {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+                        </option>
+                    @endforeach
+                </select>
+                <select name="tahun"
+                    class="form-select !py-1.5 !px-3 !text-xs !font-semibold !rounded-lg !border-slate-200 dark:!border-slate-700 !bg-slate-50 dark:!bg-slate-800"
+                    onchange="this.form.submit()">
+                    @php $startYear = 2024;
+                    $currentYear = date('Y'); @endphp
+                    @for($y = $currentYear; $y >= $startYear; $y--)
+                        <option value="{{ $y }}" {{ $tahunSelected == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endfor
+                </select>
+            </div>
         </form>
     </div>
 
-    <div x-data="dashboardData()" x-init="initDashboard()" style="position:relative;">
-
-        {{-- LOADING INDICATOR --}}
-        <div x-show="connecting"
-            style="position:fixed; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #3b82f6, #8b5cf6); animation:pulse 1.5s infinite; z-index:9999;">
-        </div>
+    <div x-data="dashboardData" class="space-y-6">
 
         {{-- STAT CARDS --}}
-
-        <div class="stat-grid">
-            <div class="stat-card blue">
-                <div class="stat-label">Total Surat</div>
-                <div class="stat-value" x-text="stats.totalBulanIni">{{ $totalBulanIni }}</div>
-                <div class="stat-sub">{{ \Carbon\Carbon::create()->month($bulanSelected)->translatedFormat('F') }} {{ $tahunSelected }}</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="stat-card-new blue">
+                <div class="stat-icon-box shadow-sm"><i class="bi bi-envelope-paper"></i></div>
+                <div class="stat-info">
+                    <div class="stat-label-new">Total Surat</div>
+                    <div class="stat-value-new" x-text="stats.totalBulanIni">{{ $totalBulanIni }}</div>
+                    <div class="stat-sub-new">{{ \Carbon\Carbon::create()->month($bulanSelected)->translatedFormat('F') }}
+                        {{ $tahunSelected }}</div>
+                </div>
             </div>
-            <div class="stat-card green">
-                <div class="stat-label">Selesai</div>
-                <div class="stat-value" x-text="stats.totalSelesai">{{ $totalSelesai }}</div>
-                <div class="stat-sub">Sudah diarsipkan</div>
+            <div class="stat-card-new green">
+                <div class="stat-icon-box shadow-sm"><i class="bi bi-check2-circle"></i></div>
+                <div class="stat-info">
+                    <div class="stat-label-new">Selesai</div>
+                    <div class="stat-value-new" x-text="stats.totalSelesai">{{ $totalSelesai }}</div>
+                    <div class="stat-sub-new">Terarsipkan sistem</div>
+                </div>
             </div>
-            <div class="stat-card amber">
-                <div class="stat-label">Sedang Proses</div>
-                <div class="stat-value" x-text="stats.totalProses">{{ $totalProses }}</div>
-                <div class="stat-sub">Menunggu tindak lanjut</div>
+            <div class="stat-card-new amber">
+                <div class="stat-icon-box shadow-sm"><i class="bi bi-hourglass-split"></i></div>
+                <div class="stat-info">
+                    <div class="stat-label-new">Diproses</div>
+                    <div class="stat-value-new" x-text="stats.totalProses">{{ $totalProses }}</div>
+                    <div class="stat-sub-new">Menunggu aksi admin</div>
+                </div>
             </div>
-            <div class="stat-card red">
-                <div class="stat-label">Melewati SLA</div>
-                <div class="stat-value" x-text="stats.totalTerlambat">{{ $totalTerlambat }}</div>
-                <div class="stat-sub">Harus segera ditangani</div>
+            <div class="stat-card-new red">
+                <div class="stat-icon-box shadow-sm"><i class="bi bi-exclamation-triangle"></i></div>
+                <div class="stat-info">
+                    <div class="stat-label-new">Overdue SLA</div>
+                    <div class="stat-value-new" x-text="stats.totalTerlambat">{{ $totalTerlambat }}</div>
+                    <div class="stat-sub-new">Perlu penanganan kilat</div>
+                </div>
             </div>
         </div>
 
-        <div class="dashboard-grid">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            {{-- ANTRIAN VERIFIKASI --}}
-            <div class="card" style="grid-column:1/-1;">
-                <div class="section-header">
+            {{-- ANTRIAN AKSI --}}
+            <div class="card !p-0 overflow-hidden lg:col-span-3 shadow-sm border-slate-200 dark:border-slate-800">
+                <div
+                    class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30">
                     <div>
-                        <h2>📥 Antrian Menunggu Aksi <span x-show="antrian.count > 0"
-                                style="font-size:14px; color:#ef4444; margin-left:8px;"
-                                x-text="'(' + antrian.count + ')'"></span></h2>
-                        <small style="color:var(--text-secondary);">Surat yang perlu diproses sekarang</small>
+                        <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                            <i class="bi bi-list-task text-blue-500"></i> Antrian Menunggu Aksi
+                            <span x-show="antrian.count > 0"
+                                class="px-1.5 py-0.5 bg-red-500 text-white text-[10px] rounded-md"
+                                x-text="antrian.count"></span>
+                        </h2>
+                        <p class="text-[11px] text-slate-500 mt-0.5 font-medium">Segera proses surat-surat di bawah ini.</p>
                     </div>
-                    <a href="{{ route('admin.surat.index') }}" class="btn btn-sm">Lihat Semua →</a>
+                    <a href="{{ route('admin.surat.index') }}"
+                        class="text-[12px] font-bold text-blue-600 dark:text-blue-400 hover:underline">Lihat Semua <i
+                            class="bi bi-chevron-right"></i></a>
                 </div>
 
-                <template x-if="antrian.items && antrian.items.length === 0">
-                    <div style="text-align:center; padding:32px; color:var(--text-secondary); font-size:13px;">
-                        ✅ Tidak ada antrian saat ini
-                    </div>
-                </template>
-
-                <template x-if="antrian.items && antrian.items.length > 0">
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
+                <div class="table-wrap">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>Judul & Tanggal</th>
+                                <th>Pengusul</th>
+                                <th>Klasifikasi</th>
+                                <th>Posisi Tahap</th>
+                                <th>Status</th>
+                                <th>SLA</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-if="antrian.items.length === 0">
                                 <tr>
-                                    <th>Judul Surat</th>
-                                    <th>Pengusul</th>
-                                    <th>Jenis</th>
-                                    <th>Sifat</th>
-                                    <th>Tahap Sekarang</th>
-                                    <th>Status</th>
-                                    <th>SLA</th>
-                                    <th>Aksi</th>
+                                    <td colspan="7" class="text-center py-10">
+                                        <div class="flex flex-col items-center opacity-40">
+                                            <i class="bi bi-check2-all text-4xl mb-2"></i>
+                                            <p class="text-xs font-bold uppercase tracking-widest">Semua surat telah
+                                                diproses</p>
+                                        </div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <template x-for="surat in antrian.items" :key="surat.id">
-                                    <tr>
-                                        <td>
-                                            <div style="font-weight:500; color:var(--text-primary); max-width:220px;"
-                                                x-text="surat.judul"></div>
-                                            <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;"
-                                                x-text="formatDate(surat.created_at)"></div>
-                                        </td>
-                                        <td>
-                                            <div style="font-size:13px; color:var(--text-primary);" x-text="surat.user ? surat.user.name : '—'"></div>
-                                        </td>
-                                        <td><span class="badge badge-purple" x-text="surat.jenis"></span></td>
-                                        <td><span class="badge"
+                            </template>
+                            <template x-for="surat in antrian.items" :key="surat.uuid || surat.id">
+                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                    <td>
+                                        <div class="font-bold text-slate-800 dark:text-slate-200 text-sm line-clamp-1"
+                                            x-text="surat.judul"></div>
+                                        <div class="text-[10px] text-slate-500 mt-1 font-medium"><i
+                                                class="bi bi-calendar-event me-1"></i> <span
+                                                x-text="formatDate(surat.created_at)"></span></div>
+                                    </td>
+                                    <td>
+                                        <div class="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                                            x-text="surat.user ? surat.user.name : '—'"></div>
+                                    </td>
+                                    <td>
+                                        <div class="flex gap-1">
+                                            <span class="badge badge-purple !text-[9px]" x-text="surat.jenis"></span>
+                                            <span class="badge !text-[9px]"
                                                 :class="surat.sifat === 'segera' ? 'badge-red' : 'badge-gray'"
-                                                x-text="surat.sifat || 'Biasa'"></span></td>
-
-                                        <td>
-                                            <div style="font-size:12px; font-weight:500; color:#3b82f6;"
-                                                x-text="'Tahap ' + surat.tahap_sekarang + '/10'"></div>
-                                        </td>
-                                        <td>
-                                            <span class="badge"
-                                                :class="surat.status === 'revisi' ? 'badge-yellow' : 
+                                                x-text="surat.sifat || 'Biasa'"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-2">
+                                            <div class="text-[11px] font-bold text-blue-600"
+                                                x-text="'Tahap ' + surat.tahap_sekarang"></div>
+                                            <div
+                                                class="flex-1 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full max-w-[60px] overflow-hidden">
+                                                <div class="h-full bg-blue-500"
+                                                    :style="'width:' + (surat.tahap_sekarang * 10) + '%'"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge !text-[10px]" :class="surat.status === 'revisi' ? 'badge-yellow' : 
                                                          surat.status === 'revisi_admin' ? 'badge-yellow' :
                                                          surat.status === 'ditolak' ? 'badge-red' :
                                                          surat.status === 'selesai' ? 'badge-green' :
                                                          surat.status === 'proses' ? 'badge-blue' : 'badge-gray'"
-                                                x-text="surat.status === 'revisi' ? '📝 Revisi' :
-                                                         surat.status === 'revisi_admin' ? 'Admin Revisi' :
-                                                         surat.status === 'ditolak' ? '❌ Ditolak' : 
-                                                         surat.status === 'selesai' ? '✅ Selesai' :
-                                                         surat.status === 'proses' ? '⏳ Proses' : 'Draft'"></span>
-                                        </td>
-                                        <td><span :class="surat.sla_status === 'terlambat' ? 'badge-red' : 'badge-green'"
-                                                class="badge"
-                                                x-text="surat.sla_status === 'terlambat' ? '⚠ Terlambat' : '⏱ Aktif'"></span>
-                                        </td>
-                                        <td><a :href="'/Admin/Surat/' + surat.uuid" class="btn btn-sm btn-primary">Proses
-                                                →</a></td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
-                </template>
+                                            x-text="surat.status_label || surat.status"></span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            :class="surat.sla_status === 'terlambat' ? 'text-red-500' : 'text-emerald-500'"
+                                            class="text-[10px] font-bold flex items-center gap-1">
+                                            <i class="bi"
+                                                :class="surat.sla_status === 'terlambat' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill'"></i>
+                                            <span x-text="surat.sla_status === 'terlambat' ? 'TERLAMBAT' : 'AKTIF'"></span>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a :href="'/Admin/Surat/' + surat.uuid"
+                                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                            <i class="bi bi-arrow-right-short text-xl"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            {{-- MIXED CHART: TREND PERSURATAN --}}
-            <div class="card" style="grid-column:1/-1;">
-                <div class="section-header">
+
+            {{-- CHART --}}
+            <div class="card lg:col-span-2 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h2 style="display:flex; align-items:center; gap:8px;">
-                            <i class="bi bi-graph-up-arrow" style="color:#3b82f6;"></i> 
-                            Trend Persuratan (6 Bulan Terakhir)
+                        <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                            <i class="bi bi-graph-up text-blue-500"></i> Statistik Perkembangan
                         </h2>
-                        <small style="color:var(--text-secondary);">Perbandingan surat masuk (Bar) dan surat selesai (Line)</small>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Analisis 6 bulan terakhir</p>
                     </div>
                 </div>
-                <div style="height: 320px; width: 100%; margin-top:10px;">
+                <div class="w-full relative" style="height: 300px; width: 100%;">
                     <canvas id="mixedChart"></canvas>
                 </div>
             </div>
 
-            {{-- REKAP PER JENIS --}}
-            <div class="card">
-                <div class="section-header">
-                    <h2>📊 Rekap Per Jenis</h2>
-                    <small style="color:var(--text-secondary);">Periode {{ \Carbon\Carbon::create()->month($bulanSelected)->translatedFormat('M') }} {{ $tahunSelected }}</small>
+            {{-- REKAP JENIS --}}
+            <div class="card shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                            <i class="bi bi-pie-chart text-purple-500"></i> Rekap Jenis
+                        </h2>
+                    </div>
                 </div>
-                @forelse($rekapJenis as $jenis => $jumlah)
-                    <div
-                        style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-color);">
-                        <span style="font-size:13px; color:var(--text-primary);">
-                            {{ \App\Models\Surat::JENIS_LABEL[$jenis] ?? $jenis }}
-                        </span>
-                        <span class="badge badge-blue">{{ $jumlah }}</span>
-                    </div>
-                @empty
-                    <div style="text-align:center; padding:24px; color:var(--text-secondary); font-size:13px;">
-                        Belum ada surat bulan ini
-                    </div>
-                @endforelse
+                <div class="space-y-2">
+                    @forelse($rekapJenis as $jenis => $jumlah)
+                        <div
+                            class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                                <span
+                                    class="text-xs font-semibold text-slate-600 dark:text-slate-300">{{ \App\Models\Surat::JENIS_LABEL[$jenis] ?? $jenis }}</span>
+                            </div>
+                            <span
+                                class="text-xs font-bold text-slate-900 dark:text-white px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-md">{{ $jumlah }}</span>
+                        </div>
+                    @empty
+                        <p class="text-xs text-slate-500 text-center py-10">Data kosong</p>
+                    @endforelse
+                </div>
             </div>
 
             {{-- SURAT TERBARU --}}
-            <div class="card">
-                <div class="section-header">
-                    <h2>🕐 Surat Terbaru</h2>
+            <div class="card lg:col-span-2 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                            <i class="bi bi-clock-history text-amber-500"></i> Aktivitas Terakhir
+                        </h2>
+                    </div>
                 </div>
-                @forelse($suratTerbaru as $surat)
-                    <div
-                        style="display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid var(--border-color);">
-                        <div style="flex:1; min-width:0;">
-                            <div
-                                style="font-size:13px; font-weight:500; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                {{ $surat->judul }}
+                <div class="space-y-4">
+                    @forelse($suratTerbaru as $surat)
+                        <div class="flex items-center justify-between group">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 group-hover:text-blue-600 transition-colors">
+                                    <i class="bi bi-file-earmark-text text-lg"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <h4
+                                        class="text-xs font-bold text-slate-800 dark:text-white truncate max-w-[200px] lg:max-w-[400px]">
+                                        {{ $surat->judul }}</h4>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">{{ $surat->user?->name ?? '—' }} ·
+                                        {{ $surat->created_at?->diffForHumans() }}</p>
+                                </div>
                             </div>
-                            <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
-                                {{ $surat->user?->name ?? '—' }} · {{ $surat->created_at?->diffForHumans() ?? 'Tanpa tanggal' }}
+                            <div class="flex items-center gap-2">
+                                @if($surat->status === 'selesai')
+                                    <span class="badge badge-green !text-[9px]">Selesai</span>
+                                @elseif($surat->status === 'ditolak')
+                                    <span class="badge badge-red !text-[9px]">Ditolak</span>
+                                @elseif($surat->status === 'revisi' || $surat->status === 'revisi_admin')
+                                    <span class="badge badge-yellow !text-[9px]">Revisi</span>
+                                @else
+                                    <span class="badge badge-blue !text-[9px]">Proses</span>
+                                @endif
+                                <a href="{{ route('admin.surat.show', $surat) }}"
+                                    class="p-1.5 text-slate-400 hover:text-blue-500 transition-colors">
+                                    <i class="bi bi-box-arrow-in-up-right"></i>
+                                </a>
                             </div>
                         </div>
-                        @if($surat->status === 'selesai')
-                            <span class="badge badge-green">Selesai</span>
-                        @elseif($surat->status === 'ditolak')
-                            <span class="badge badge-red">Ditolak</span>
-                        @elseif($surat->status === 'revisi' || $surat->status === 'revisi_admin')
-                            <span class="badge badge-yellow">Revisi</span>
-                        @else
-                            <span class="badge badge-amber">Proses</span>
-                        @endif
-                    </div>
-                @empty
-                    <div style="text-align:center; padding:24px; color:var(--text-secondary); font-size:13px;">
-                        Belum ada data surat
-                    </div>
-                @endforelse
+                    @empty
+                        <p class="text-xs text-slate-500 text-center py-10">Data kosong</p>
+                    @endforelse
+                </div>
             </div>
-            
 
-            {{-- RIWAYAT PEMROSESAN SURAT (BULAN INI) --}}
-            <div class="card" style="grid-column:1/-1;">
-                <div class="section-header">
+            {{-- PEMROSES --}}
+            <div class="card shadow-sm">
+                <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h2>👥 Riwayat Pemrosesan Surat</h2>
-                        <small style="color:var(--text-secondary);">Aktivitas pengolahan periode {{ \Carbon\Carbon::create()->month($bulanSelected)->translatedFormat('F') }} {{ $tahunSelected }}</small>
+                        <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                            <i class="bi bi-people text-emerald-500"></i> Pengolah Teraktif
+                        </h2>
                     </div>
                 </div>
-
-                @if($suratDenganPengolah->isEmpty())
-                    <div style="text-align:center; padding:32px; color:var(--text-secondary); font-size:13px;">
-                        Belum ada data pemrosesan bulan ini
-                    </div>
-                @else
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Judul Surat</th>
-                                    <th>Pengusul</th>
-                                    <th>Status</th>
-                                    <th>Admin Pengolah</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($suratDenganPengolah as $surat)
-                                    <tr>
-                                        <td>
-                                            <div style="font-weight:500; color:var(--text-primary); max-width:200px;">
-                                                {{ \Illuminate\Support\Str::limit($surat->judul, 40) }}
-                                            </div>
-                                            <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">
-                                                {{ $surat->created_at?->format('d M Y') ?? 'Tanpa tanggal' }}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div style="font-size:13px; color:var(--text-primary);">{{ $surat->user?->name ?? '—' }}</div>
-                                        </td>
-                                        <td>
-                                            @if($surat->status === 'selesai')
-                                                <span class="badge badge-green">✓ Selesai</span>
-                                            @elseif($surat->status === 'ditolak')
-                                                <span class="badge badge-red">✗ Ditolak</span>
-                                            @elseif($surat->status === 'revisi' || $surat->status === 'revisi_admin')
-                                                <span class="badge badge-yellow">📝 Revisi</span>
-                                            @else
-                                                <span class="badge badge-amber">● Proses</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div style="display:flex; flex-wrap:wrap; gap:4px;">
-                                                @forelse($surat->tahapans as $tahapan)
-                                                    <span class="badge badge-blue"
-                                                        title="Tahap {{ $tahapan->tahap }}: {{ $tahapan->nama_tahap }}"
-                                                        style="cursor:help; font-size:11px; padding:3px 6px;">
-                                                        {{ $tahapan->diprosesByUser?->getRoleLabel() ?? '—' }}
-                                                    </span>
-                                                @empty
-                                                    <span style="font-size:13px; color:var(--text-secondary);">Belum ada yang proses</span>
-                                                @endforelse
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
+                <div class="space-y-4">
+                    @foreach($suratDenganPengolah->take(5) as $surat)
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold">
+                                {{ strtoupper(substr($surat->tahapans->last()?->diprosesByUser?->name ?? '?', 0, 2)) }}
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-[11px] font-bold text-slate-800 dark:text-white">
+                                    {{ $surat->tahapans->last()?->diprosesByUser?->name ?? 'Sistem' }}</div>
+                                <div class="text-[9px] text-slate-500">
+                                    {{ $surat->tahapans->last()?->diprosesByUser?->getRoleLabel() ?? 'Admin' }}</div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
 
         </div>
 
-    </div> {{-- End of Alpine x-data div --}}
+    </div>
 
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mixed Chart Initialization
-            const ctx = document.getElementById('mixedChart').getContext('2d');
+        function initDashboardChart() {
+            if (typeof Chart === 'undefined') {
+                console.error("Chart.js failed to load. Retrying in 1s...");
+                setTimeout(initDashboardChart, 1000);
+                return;
+            }
+
+            const canvas = document.getElementById('mixedChart');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+            const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: {!! json_encode($chartMonths) !!},
+                    labels: @json($chartMonths),
                     datasets: [
                         {
                             label: 'Surat Selesai',
                             type: 'line',
-                            data: {!! json_encode($chartSelesai) !!},
+                            data: @json($chartSelesai),
                             borderColor: '#10b981',
                             backgroundColor: 'transparent',
                             borderWidth: 3,
                             tension: 0.4,
-                            pointRadius: 5,
-                            pointHoverRadius: 7,
+                            pointRadius: 4,
                             pointBackgroundColor: '#10b981',
                             pointBorderColor: '#fff',
                             pointBorderWidth: 2,
-                            zIndex: 10
                         },
                         {
-                            label: 'Total Surat Masuk',
-                            data: {!! json_encode($chartMasuk) !!},
-                            backgroundColor: 'rgba(59, 130, 246, 0.6)',
-                            borderColor: '#3b82f6',
-                            borderWidth: 1,
-                            borderRadius: 8,
-                            barThickness: 40,
+                            label: 'Surat Masuk',
+                            data: @json($chartMasuk),
+                            backgroundColor: isDark ? 'rgba(59, 130, 246, 0.4)' : 'rgba(59, 130, 246, 0.7)',
+                            borderRadius: 6,
+                            barThickness: 30,
                         }
                     ]
                 },
@@ -353,70 +513,55 @@
                             labels: {
                                 padding: 20,
                                 usePointStyle: true,
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() || '#333',
-                                font: { size: 12, weight: '600' }
+                                color: textColor,
+                                font: { size: 11, weight: '600' }
                             }
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            titleFont: { size: 13 },
-                            bodyFont: { size: 12 },
-                            padding: 12,
-                            cornerRadius: 10,
-                            displayColors: true
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: {
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() || '#666',
-                                stepSize: 1,
-                                font: { size: 11 }
-                            },
-                            grid: {
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim() || '#eee',
-                                drawBorder: false
-                            }
+                            grid: { color: gridColor, drawBorder: false },
+                            ticks: { color: textColor, font: { size: 10 } }
                         },
                         x: {
-                            ticks: {
-                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() || '#666',
-                                font: { size: 11 }
-                            },
-                            grid: {
-                                display: false
-                            }
+                            grid: { display: false },
+                            ticks: { color: textColor, font: { size: 10 } }
                         }
                     }
                 }
             });
-        });
+        }
 
-        function dashboardData() {
-            return {
+        // Jalankan init chart
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDashboardChart);
+        } else {
+            initDashboardChart();
+        }
+
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('dashboardData', () => ({
                 stats: {
-                    totalBulanIni: {{ $totalBulanIni }},
-                    totalSelesai: {{ $totalSelesai }},
-                    totalProses: {{ $totalProses }},
-                    totalTerlambat: {{ $totalTerlambat }},
+                    totalBulanIni: {{ $totalBulanIni ?? 0 }},
+                    totalSelesai: {{ $totalSelesai ?? 0 }},
+                    totalProses: {{ $totalProses ?? 0 }},
+                    totalTerlambat: {{ $totalTerlambat ?? 0 }},
                 },
                 antrian: {
-                    items: {!! json_encode($antrian) !!},
-                    count: {{ $antrianCount }},
+                    items: @json($antrian ?? []),
+                    count: {{ $antrianCount ?? 0 }},
                 },
                 connecting: false,
-                dashboard: null,
-
                 isFetching: false,
-                pollingInterval: 15000, // 15 detik
+                pollingInterval: 30000,
 
-                initDashboard() {
+                init() {
+                    console.log("Dashboard Alpine initialized");
                     this.startPolling();
                 },
 
                 startPolling() {
-                    this.updateData();
                     setInterval(() => this.updateData(), this.pollingInterval);
                 },
 
@@ -435,30 +580,29 @@
                             'Accept': 'application/json'
                         }
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        this.stats = data.stats;
-                        this.antrian.items = data.antrian.items || [];
-                        this.antrian.count = data.antrian.count || 0;
-                    })
-                    .catch(error => {
-                        console.error('Dashboard polling error:', error);
-                    })
-                    .finally(() => {
-                        this.isFetching = false;
-                        this.connecting = false;
-                    });
+                        .then(r => {
+                            if (!r.ok) throw new Error("Network response was not ok");
+                            return r.json();
+                        })
+                        .then(data => {
+                            if (data && data.stats) {
+                                this.stats = data.stats;
+                                this.antrian.items = data.antrian?.items || [];
+                                this.antrian.count = data.antrian?.count || 0;
+                            }
+                        })
+                        .catch(err => console.error("Error fetching live data:", err))
+                        .finally(() => {
+                            this.isFetching = false;
+                            this.connecting = false;
+                        });
                 },
 
                 formatDate(date) {
                     if (!date) return '';
-                    return new Date(date).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    });
+                    return new Date(date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
                 }
-            }
-        }
+            }));
+        });
     </script>
 @endpush

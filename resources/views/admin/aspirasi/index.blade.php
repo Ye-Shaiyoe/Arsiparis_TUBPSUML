@@ -71,11 +71,20 @@
                                             @endif
                                         </td>
                                         <td class="pe-4 text-end">
-                                            <button type="button" class="btn btn-sm btn-light border" 
-                                                    onclick="showAspirasiModal('{{ $item->uuid }}', '{{ addslashes($item->user->name) }}', '{{ addslashes($item->judul) }}', '{{ addslashes($item->isi) }}', '{{ $item->balasan }}', '{{ $item->status }}')"
-                                                    style="font-size: 11px; border-radius: 8px;">
-                                                <i class="bi bi-reply me-1"></i> {{ $item->status === 'dibalas' ? 'Lihat' : 'Balas' }}
-                                            </button>
+                                            <div class="d-flex align-items-center justify-content-end gap-1">
+                                                <button type="button" class="btn btn-sm btn-light border" 
+                                                        onclick="showAspirasiModal('{{ $item->uuid }}', '{{ addslashes($item->user->name) }}', '{{ addslashes($item->judul) }}', '{{ addslashes($item->isi) }}', '{{ $item->balasan }}', '{{ $item->status }}')"
+                                                        style="font-size: 11px; border-radius: 8px;">
+                                                    <i class="bi bi-reply me-1"></i> {{ $item->status === 'dibalas' ? 'Lihat' : 'Balas' }}
+                                                </button>
+                                                <form action="{{ route('admin.aspirasi.destroy', $item) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus aspirasi ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger border" style="font-size: 11px; border-radius: 8px;" title="Hapus">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty

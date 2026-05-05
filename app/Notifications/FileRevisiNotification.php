@@ -30,7 +30,7 @@ class FileRevisiNotification extends Notification
             'type'           => 'warning',
             'title'          => "📝 File perbaikan diajukan (Revisi ke-{$revisiKe})",
             'message'        => "\"{$this->surat->judul}\" dari {$this->surat->user->name} mengupload file perbaikan. Ditolak pada tahap: {$this->namaTahapDitolak}.",
-            'url'            => route('admin.surat.show', $this->surat->id),
+            'url'            => route('admin.surat.show', $this->surat),
             'jenis'          => $this->surat->jenis_label,
             'sifat'          => $this->surat->sifat,
             'tahap_ditolak'  => $this->tahapDitolak,

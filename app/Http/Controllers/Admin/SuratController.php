@@ -13,10 +13,11 @@ use App\Notifications\FileRevisiNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Services\HtmlSanitizer;
 
 class SuratController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, $title = 'Antrian Surat')
     {
         $query = Surat::with('user')->latest();
 
@@ -39,21 +40,69 @@ class SuratController extends Controller
         // admin lama (role='admin') tetap bisa lihat semua
 
         if ($request->filled('jenis'))  $query->where('jenis', $request->jenis);
-        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->filled('status')) {
+            if ($request->status === 'proses') {
+                $query->whereIn('status', ['proses', 'revisi', 'revisi_admin']);
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
         if ($request->filled('tahap'))  $query->where('tahap_sekarang', $request->tahap);
         if ($request->filled('search')) $query->where('judul', 'like', '%'.$request->search.'%');
+        if ($request->filled('bulan'))  $query->whereMonth('created_at', (int) $request->bulan);
+        if ($request->filled('tahun'))  $query->whereYear('created_at', (int) $request->tahun);
 
-        // Tampilkan surat dengan status 'revisi' di paling atas (prioritas)
-        $surats = $query->orderByRaw("CASE WHEN status = 'revisi' THEN 0 ELSE 1 END")
+        // Tampilkan surat dengan status 'revisi' atau 'revisi_admin' di paling atas (prioritas)
+        $surats = $query->orderByRaw("CASE WHEN status = 'revisi' OR status = 'revisi_admin' THEN 0 ELSE 1 END")
                         ->paginate(15)->withQueryString();
 
-        return view('admin.surat.index', compact('surats'));
+        return view('admin.surat.index', compact('surats', 'title'));
     }
 
-    public function show(Surat $surat)
+    public function masuk(Request $request)
     {
-        $surat->load(['user', 'tahapans.diprosesByUser']);
-        return view('admin.surat.show', compact('surat'));
+        $request->merge(['status' => 'proses']);
+        return $this->index($request, 'Surat Masuk');
+    }
+
+    public function proses(Request $request)
+    {
+        $request->merge(['status' => 'proses']);
+        return $this->index($request, 'Surat Sedang Diproses');
+    }
+
+    public function selesai(Request $request)
+    {
+        $request->merge(['status' => 'selesai']);
+        return $this->index($request, 'Surat Selesai');
+    }
+
+    public function revisi(Request $request)
+    {
+        $request->merge(['status' => 'revisi']);
+        return $this->index($request, 'Surat Perlu Revisi');
+    }
+
+    public function show($surat)
+    {
+        // Cari berdasarkan UUID dulu (standar baru)
+        $suratModel = Surat::where('uuid', $surat)->first();
+
+        // Fallback: Jika tidak ketemu dan inputnya angka, coba cari berdasarkan ID (untuk link lama)
+        if (!$suratModel && is_numeric($surat)) {
+            $suratModel = Surat::find($surat);
+            if ($suratModel) {
+                // Redirect otomatis ke URL versi UUID biar rapi
+                return redirect()->route('admin.surat.show', $suratModel);
+            }
+        }
+
+        if (!$suratModel) {
+            abort(404, 'Surat tidak ditemukan.');
+        }
+
+        $suratModel->load(['user', 'tahapans.diprosesByUser']);
+        return view('admin.surat.show', ['surat' => $suratModel]);
     }
 
     public function setujui(Request $request, Surat $surat)
@@ -69,8 +118,8 @@ class SuratController extends Controller
             return back()->with('error', 'Anda tidak memiliki wewenang untuk approve tahap ini.');
         }
 
-        // Jika status revisi, set jadi 'proses' lagi
-        if ($surat->status === 'revisi') {
+        // Jika status revisi (dari user atau admin), set jadi 'proses' lagi
+        if (in_array($surat->status, ['revisi', 'revisi_admin'])) {
             $surat->update(['status' => 'proses']);
         }
 
@@ -101,7 +150,7 @@ class SuratController extends Controller
                 type   : 'success',
                 title  : '✅ Surat selesai diproses!',
                 message: "Surat \"{$surat->judul}\" telah selesai semua tahapan.",
-                url    : route('user.surat.show', $surat->id),
+                url    : route('user.surat.show', $surat),
             ));
         } else {
             $updateData = ['tahap_sekarang' => $tahapBerikutnya];
@@ -124,7 +173,7 @@ class SuratController extends Controller
                 type   : 'info',
                 title  : "📨 Surat maju ke tahap {$tahapBerikutnya}",
                 message: "\"{$surat->judul}\" sudah diverifikasi — sekarang: {$surat->nama_tahap}.",
-                url    : route('user.surat.show', $surat->id),
+                url    : route('user.surat.show', $surat),
             ));
 
             // Notif ke admin lain: surat diproses
@@ -138,37 +187,86 @@ class SuratController extends Controller
     public function tolak(Request $request, Surat $surat)
     {
         $request->validate([
-            'catatan' => 'required|string|max:500',
+            'catatan'     => 'required|string|max:500',
+            'jenis_tolak' => 'nullable|string|in:ke_user,ke_admin_aspirasi',
         ]);
 
-        // Jika sudah status revisi, set kembali ke ditolak
         $statusSebelumnya = $surat->status;
-        
-        SuratTahapan::where('surat_id', $surat->id)
-            ->where('tahap', $surat->tahap_sekarang)
-            ->update([
-                'status'        => 'ditolak',
-                'diproses_oleh' => Auth::id(),
-                'catatan'       => $request->catatan,
-                'selesai_pada'  => now(),
+        $jenisTolak       = $request->input('jenis_tolak', 'ke_user');
+
+        if ($jenisTolak === 'ke_admin_aspirasi') {
+            // Logika: Kembalikan ke Admin Tahap 2
+            
+            // 1. Tandai tahap saat ini sebagai 'ditolak'
+            SuratTahapan::where('surat_id', $surat->id)
+                ->where('tahap', $surat->tahap_sekarang)
+                ->update([
+                    'status'        => 'ditolak',
+                    'diproses_oleh' => Auth::id(),
+                    'catatan'       => $request->catatan,
+                    'selesai_pada'  => now(),
+                ]);
+
+            // 2. Reset Tahap 2 (Admin Aspirasi) agar jadi 'proses' lagi
+            SuratTahapan::where('surat_id', $surat->id)
+                ->where('tahap', 2)
+                ->update([
+                    'status'        => 'proses',
+                    'diproses_oleh' => null,
+                    'selesai_pada'  => null,
+                    // Catatan lama biarkan saja buat histori? Atau hapus? 
+                    // Kita timpa saja nanti saat diproses ulang
+                ]);
+
+            // 3. Update Surat
+            $surat->update([
+                'status'         => 'revisi_admin',
+                'tahap_sekarang' => 2,
             ]);
 
-        $surat->update(['status' => 'ditolak']);
+            // Notif ke pengusul (User): Surat sedang direvisi internal
+            $surat->user->notify(new SuratStatusNotification(
+                surat  : $surat,
+                type   : 'warning',
+                title  : '🔄 Surat sedang direvisi (Internal)',
+                message: "Surat \"{$surat->judul}\" sedang dikembalikan ke bagian Aspirasi untuk perbaikan internal. Catatan: {$request->catatan}",
+                url    : route('user.surat.show', $surat),
+            ));
 
-        // Notif ke pengusul: DITOLAK
-        $surat->user->notify(new SuratStatusNotification(
-            surat  : $surat,
-            type   : 'danger',
-            title  : $statusSebelumnya === 'revisi' ? '❌ File revisi ditolak' : '❌ Surat ditolak',
-            message: "Surat \"{$surat->judul}\" " . ($statusSebelumnya === 'revisi' ? 'file revisinya tetap' : 'ditolak') . ". Alasan: {$request->catatan}",
-            url    :route('user.surat.show', $surat->id),
-        ));
+            // Notif ke admin lain (terutama Admin Aspirasi)
+            $this->notifAdminLain($surat, Auth::user(), 'revisi_admin');
 
-        // Notif ke admin lain
-        $this->notifAdminLain($surat, Auth::user(), $statusSebelumnya === 'revisi' ? 'revisi ditolak' : 'ditolak');
+            return redirect()->route('admin.surat.index')
+                             ->with('success', 'Surat berhasil dikembalikan ke Admin Aspirasi (Tahap 2).');
 
-        return redirect()->route('admin.surat.index')
-                         ->with('success', $statusSebelumnya === 'revisi' ? 'File revisi ditolak. User bisa upload ulang.' : 'Surat telah ditolak.');
+        } else {
+            // Logika Lama: Tolak ke User
+            SuratTahapan::where('surat_id', $surat->id)
+                ->where('tahap', $surat->tahap_sekarang)
+                ->update([
+                    'status'        => 'ditolak',
+                    'diproses_oleh' => Auth::id(),
+                    'catatan'       => $request->catatan,
+                    'selesai_pada'  => now(),
+                ]);
+
+            $surat->update(['status' => 'ditolak']);
+
+            // Notif ke pengusul: DITOLAK
+            $surat->user->notify(new SuratStatusNotification(
+                surat  : $surat,
+                type   : 'danger',
+                title  : $statusSebelumnya === 'revisi' ? '❌ File revisi ditolak' : '❌ Surat ditolak',
+                message: "Surat \"{$surat->judul}\" " . ($statusSebelumnya === 'revisi' ? 'file revisinya tetap' : 'ditolak') . ". Alasan: {$request->catatan}",
+                url    : route('user.surat.show', $surat),
+            ));
+
+            // Notif ke admin lain
+            $this->notifAdminLain($surat, Auth::user(), $statusSebelumnya === 'revisi' ? 'revisi ditolak' : 'ditolak');
+
+            return redirect()->route('admin.surat.index')
+                             ->with('success', $statusSebelumnya === 'revisi' ? 'File revisi ditolak. User bisa upload ulang.' : 'Surat telah ditolak.');
+        }
     }
 
     // Kirim notif ke semua admin kecuali yang sedang login
@@ -188,59 +286,70 @@ class SuratController extends Controller
 
     public function preview(Surat $surat, string $tipe)
     {
-        // Cek apakah file sudah dihapus (expired)
         if ($surat->file_dihapus_pada) {
             abort(404, 'File sudah tidak tersedia (kadaluarsa)');
         }
 
         $filePath = $tipe === 'word' ? $surat->file_word : $surat->file_lampiran;
 
-        if (!$filePath || !\Storage::disk('public')->exists($filePath)) {
+        if (!$filePath || !Storage::disk('private')->exists($filePath)) {
             abort(404, 'File tidak ditemukan');
         }
 
-        $fullPath = storage_path('app/public/' . $filePath);
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $fileContent = Storage::disk('private')->get($filePath);
+        $fileName = basename($filePath);
 
-        // Untuk PDF, tampilkan inline di browser
+        // Jika request minta raw (untuk docx-preview.js)
+        if (request()->has('raw')) {
+            if (ob_get_length()) ob_end_clean();
+            $mimeType = $extension === 'docx' 
+                ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                : 'application/msword';
+
+            return response($fileContent, 200)
+                ->header('Content-Type', $mimeType)
+                ->header('Content-Disposition', 'inline; filename="' . $fileName . '"');
+        }
+
+        // PDF
         if ($extension === 'pdf') {
-            return response()->file($fullPath, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"',
-            ]);
+            if (ob_get_length()) ob_end_clean();
+            return response($fileContent, 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . $fileName . '"');
         }
 
-        // Untuk gambar, langsung tampilkan
+        // Gambar
         if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'])) {
-            $mimeTypes = [
-                'jpg' => 'image/jpeg',
-                'jpeg' => 'image/jpeg',
-                'png' => 'image/png',
-                'gif' => 'image/gif',
-                'webp' => 'image/webp',
-                'bmp' => 'image/bmp',
-            ];
-            return response()->file($fullPath, [
-                'Content-Type' => $mimeTypes[$extension] ?? 'image/jpeg',
-                'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"',
-            ]);
+            if (ob_get_length()) ob_end_clean();
+            $mimeTypes = ['jpg'=>'image/jpeg','jpeg'=>'image/jpeg','png'=>'image/png','gif'=>'image/gif','webp'=>'image/webp','bmp'=>'image/bmp'];
+            return response($fileContent, 200)
+                ->header('Content-Type', $mimeTypes[$extension] ?? 'image/jpeg')
+                ->header('Content-Disposition', 'inline; filename="' . $fileName . '"');
         }
 
-        // Untuk Word (.docx/.doc), convert ke HTML dan tampilkan di modal
-        if (in_array($extension, ['docx', 'doc'])) {
-            $converter = new \App\Services\DocxToHtmlConverter($fullPath);
-            $htmlContent = $converter->convert();
+        // Jika .doc biasa, paksa download karena docx converter tidak support doc binary
+        if ($extension === 'doc') {
+            return $this->download($surat, $tipe);
+        }
+
+        // Word (.docx) - Tampilkan View Preview
+        if ($extension === 'docx') {
+            $converter = new \App\Services\DocxToHtmlConverter(Storage::disk('private')->path($filePath));
+            $htmlRaw = $converter->convert();
+            $htmlContent = HtmlSanitizer::clean($htmlRaw);
 
             return response()->view('admin.surat.preview-word', [
                 'surat' => $surat,
                 'htmlContent' => $htmlContent,
                 'tipe' => $tipe,
-                'fileName' => basename($filePath),
+                'fileName' => $fileName,
             ]);
         }
 
         // Fallback: download
-        return response()->download($fullPath);
+        return Storage::disk('private')->download($filePath);
     }
 
     public function download(Surat $surat, string $tipe)
@@ -252,7 +361,7 @@ class SuratController extends Controller
 
         $filePath = $tipe === 'word' ? $surat->file_word : $surat->file_lampiran;
 
-        if (!$filePath || !\Storage::disk('public')->exists($filePath)) {
+        if (!$filePath || !Storage::disk('private')->exists($filePath)) {
             abort(404, 'File tidak ditemukan');
         }
 
@@ -285,54 +394,10 @@ class SuratController extends Controller
             ob_end_clean();
         }
 
-        return \Storage::disk('public')->download($filePath, $downloadName, [
+        return Storage::disk('private')->download($filePath, $downloadName, [
             'Content-Type' => $mimeType,
         ]);
     }
-    public function previewContent(Surat $surat, string $tipe)
-    {
-        if ($surat->file_dihapus_pada) {
-            return response()->json(['error' => 'File sudah kadaluarsa'], 404);
-        }
-
-        $filePath = $tipe === 'word' ? $surat->file_word : $surat->file_lampiran;
-
-        if (!$filePath || !\Storage::disk('public')->exists($filePath)) {
-            return response()->json(['error' => 'File tidak ditemukan'], 404);
-        }
-
-        $fullPath = storage_path('app/public/' . $filePath);
-        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-
-        if (in_array($extension, ['docx', 'doc'])) {
-            $converter = new \App\Services\DocxToHtmlConverter($fullPath);
-            $htmlContent = $converter->convert();
-
-            return response()->json([
-                'type' => 'html',
-                'content' => $htmlContent,
-            ]);
-        }
-
-        // PDF: return URL untuk iframe
-        if ($extension === 'pdf') {
-            return response()->json([
-                'type' => 'pdf',
-                'url' => route('admin.surat.preview', [$surat, $tipe]),
-            ]);
-        }
-
-        // Image: return URL
-        if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'])) {
-            return response()->json([
-                'type' => 'image',
-                'url' => route('admin.surat.preview', [$surat, $tipe]),
-            ]);
-        }
-
-        return response()->json(['error' => 'Format tidak didukung'], 400);
-    }
-
     /**
      * Approve permintaan hapus surat
      */
@@ -395,7 +460,7 @@ class SuratController extends Controller
             type: 'warning',
             title: '❌ Permintaan hapus ditolak',
             message: "Permintaan hapus surat \"{$surat->judul}\" ditolak. Alasan: {$request->admin_catatan}",
-            url: route('user.surat.show', $surat->id),
+            url: route('user.surat.show', $surat),
         ));
 
         return back()->with('info', 'Permintaan hapus ditolak.');
@@ -403,22 +468,65 @@ class SuratController extends Controller
 
     private function hapusSurat(Surat $surat)
     {
-        // Hapus file word
+        // Hapus file word dari private storage
         if ($surat->file_word) {
-            $wordPath = storage_path('app/public/' . $surat->file_word);
-            if (file_exists($wordPath)) {
-                @unlink($wordPath);
-            }
+            Storage::disk('private')->delete($surat->file_word);
         }
 
-        // Hapus file lampiran
+        // Hapus file lampiran dari private storage
         if ($surat->file_lampiran) {
-            $lampiranPath = storage_path('app/public/' . $surat->file_lampiran);
-            if (file_exists($lampiranPath)) {
-                @unlink($lampiranPath);
-            }
+            Storage::disk('private')->delete($surat->file_lampiran);
         }
 
         $surat->delete();
+    }
+
+    public function uploadFileAdmin(Request $request, Surat $surat)
+    {
+        $request->validate([
+            'file_word'     => 'required|file|mimes:docx,doc|max:5120',
+            'file_lampiran' => 'nullable|file|mimes:pdf,docx,doc,jpg,jpeg,png|max:10240',
+        ]);
+
+        $updated = false;
+
+        // Handle File Word
+        if ($request->hasFile('file_word')) {
+            $pathWord = $request->file('file_word')->store('surat/word', 'private');
+            if ($surat->file_word) {
+                Storage::disk('private')->delete($surat->file_word);
+            }
+            $surat->file_word = $pathWord;
+            $updated = true;
+        }
+
+        // Handle File Lampiran
+        if ($request->hasFile('file_lampiran')) {
+            $pathLampiran = $request->file('file_lampiran')->store('surat/lampiran', 'private');
+            if ($surat->file_lampiran) {
+                Storage::disk('private')->delete($surat->file_lampiran);
+            }
+            $surat->file_lampiran = $pathLampiran;
+            $updated = true;
+        }
+
+        if ($updated) {
+            $surat->save();
+
+            // Berikan notifikasi ke user jika file diubah admin (biasanya tahap 2)
+            if ($surat->user) {
+                $surat->user->notify(new SuratStatusNotification(
+                    surat  : $surat,
+                    type   : 'info',
+                    title  : '📝 File Surat Diperbarui Admin',
+                    message: "Admin Aspirasi telah melakukan penyesuaian/perbaikan format pada file surat \"{$surat->judul}\".",
+                    url    : route('user.surat.show', $surat)
+                ));
+            }
+
+            return back()->with('success', 'File surat berhasil diperbarui.');
+        }
+
+        return back()->with('error', 'Tidak ada file yang diunggah.');
     }
 }

@@ -12,8 +12,8 @@ class RiwayatController extends Controller
     public function index(Request $request)
     {
         // Filter bulan dan tahun
-        $bulan = $request->input('bulan', now()->month);
-        $tahun = $request->input('tahun', now()->year);
+        $bulan = (int) $request->input('bulan', now()->month);
+        $tahun = (int) $request->input('tahun', now()->year);
 
         // Query surat dengan data pengolah
         $query = Surat::whereMonth('created_at', $bulan)

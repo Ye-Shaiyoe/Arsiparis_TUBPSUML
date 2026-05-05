@@ -19,22 +19,7 @@
         overflow: hidden;
     }
     
-    .dashboard-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(255,255,255,0) 50%);
-        animation: rotateBg 15s linear infinite;
-        z-index: 0;
-    }
-    
-    @keyframes rotateBg {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
+
 
     .dashboard-header > div {
         position: relative;
@@ -67,13 +52,8 @@
     }
     
     .stat-card-modern:hover {
-        transform: translateY(-8px);
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
         border-color: var(--accent-color-light);
-    }
-    
-    .stat-card-modern:hover::before {
-        transform: scaleX(1);
     }
     
     .stat-icon-wrapper {
@@ -86,18 +66,6 @@
         font-size: 24px;
         margin-bottom: 16px;
         background: var(--icon-bg);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .stat-card-modern:hover .stat-icon-wrapper {
-        transform: scale(1.1) rotate(10deg);
-        background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-color-light) 100%);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-    }
-    
-    .stat-card-modern:hover .stat-icon-wrapper i {
-        color: white !important;
-        transition: color 0.3s ease;
     }
     
     .stat-value-modern {
@@ -130,7 +98,6 @@
     
     .card-modern:hover {
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-        transform: translateY(-4px);
     }
     
     .card-header-modern {
@@ -170,13 +137,6 @@
     
     .surat-item:hover, .notification-item:hover {
         background: #f8fafc;
-        padding-left: 32px;
-        padding-right: 16px;
-    }
-    
-    .surat-item:hover::before, .notification-item:hover::before {
-        transform: scaleY(1);
-        opacity: 1;
     }
     
     .surat-item:last-child, .notification-item:last-child {
@@ -219,24 +179,11 @@
     }
     
     .btn-primary-modern:hover {
-        transform: translateY(-3px) scale(1.02);
         box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4);
         color: white;
     }
     
-    .btn-primary-modern:hover::after {
-        left: 150%;
-    }
-    
-    .chart-container {
-        position: relative;
-        height: 280px;
-        transition: transform 0.4s ease;
-    }
-    
-    .card-modern:hover .chart-container {
-        transform: scale(1.02);
-    }
+
     
     .notification-item.removing {
         opacity: 0;
@@ -269,20 +216,7 @@
         transform: scale(1.1) rotate(90deg);
     }
     
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px) scale(0.98);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-    }
-    
-    .animate-in {
-        animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
-    }
+
 
     .help-center-glass {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.95) 100%);
@@ -298,45 +232,11 @@
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .help-center-glass:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 16px 40px rgba(37, 99, 235, 0.15), inset 0 0 0 1px rgba(255,255,255,0.8);
-    }
-
-    .help-center-glass:hover .bi-headset {
-        animation: wiggle 1s ease-in-out infinite;
-        display: inline-block;
-    }
-
     @keyframes wiggle {
         0%, 100% { transform: rotate(0deg); }
         25% { transform: rotate(-15deg); }
         50% { transform: rotate(15deg); }
         75% { transform: rotate(-15deg); }
-    }
-
-    .help-center-glass::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, rgba(255,255,255,0) 60%);
-        z-index: -1;
-        animation: pulseGradient 8s linear infinite;
-    }
-
-    .help-center-glass::after {
-        content: '';
-        position: absolute;
-        bottom: -20px;
-        right: -20px;
-        width: 100px;
-        height: 100px;
-        background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(255,255,255,0) 70%);
-        border-radius: 50%;
-        z-index: -1;
     }
 
     @keyframes pulseGradient {
@@ -374,14 +274,11 @@
     }
 
     .template-card-link:hover {
-        transform: translateX(6px);
         background: #eff6ff !important;
         box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
     }
 
-    .template-card-link:hover i {
-        animation: bounceDown 1s ease infinite;
-    }
+
 
     /* Pulse Dot for Live Indicator */
     .pulse-dot {
@@ -390,13 +287,6 @@
         background: white;
         border-radius: 50%;
         display: inline-block;
-        animation: pulseLive 1.5s infinite;
-    }
-
-    @keyframes pulseLive {
-        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
-        70% { transform: scale(1.2); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
-        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
     }
 
     @keyframes bounceDown {
@@ -407,7 +297,6 @@
     .sla-item:hover {
         background: #f8fafc;
         border-color: #f1f5f9;
-        transform: translateX(5px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     }
 
@@ -433,7 +322,6 @@
     }
 
     .doc-preview-card:hover {
-        transform: translateY(-10px);
         box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         border-color: #dbeafe;
     }
@@ -583,7 +471,7 @@
 </style>
 
 {{-- HEADER --}}
-<div class="dashboard-header animate-in">
+<div class="dashboard-header">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div class="d-flex align-items-center gap-3">
             @if(Auth::user()->profile_photo)
@@ -605,21 +493,21 @@
         </div>
         <a href="{{ $isLibur ? 'javascript:void(0)' : route('user.surat.create') }}" 
            class="btn btn-primary-modern d-flex align-items-center gap-2 {{ $isLibur ? 'disabled' : '' }}"
-           @if($isLibur) onclick="Swal.fire({icon: 'info', title: 'Layanan Tutup', text: 'Pengajuan surat baru hanya tersedia pada hari kerja. Senin–Kamis pukul 07.30–16.00 WIB, Jumat pukul 07.30–16.30 WIB.', confirmButtonColor: '#1e3a5f'})" @endif>
+           @if($isLibur) onclick="Swal.fire({icon: 'info', title: 'Layanan Tutup', text: 'Pengajuan surat baru hanya tersedia pada hari kerja. Senin–Kamis pukul 07.00–16.00 WIB, Jumat pukul 07.30–16.30 WIB.', confirmButtonColor: '#1e3a5f'})" @endif>
             <i class="bi bi-plus-circle-fill"></i> Ajukan Surat Baru
         </a>
     </div>
 </div>
 
 @if($isLibur)
-<div class="alert alert-warning border-0 shadow-sm animate-in mb-4" style="border-radius:16px; background:#fffbeb; color:#b45309; animation-delay: 0.05s; border-left: 5px solid #f59e0b !important;">
+<div class="alert alert-warning border-0 shadow-sm mb-4" style="border-radius:16px; background:#fffbeb; color:#b45309; border-left: 5px solid #f59e0b !important;">
     <div class="d-flex align-items-center gap-3 p-2">
         <div style="font-size:32px;">⏰</div>
         <div>
             <h6 class="fw-bold mb-1">Layanan Sedang Tutup</h6>
             <p class="mb-0" style="font-size:13px; opacity:0.9;">
-                Saat ini pukul <strong>{{ now()->format('H:i') }} WIB</strong>. Pengajuan surat baru hanya tersedia pada hari kerja:<br>
-                <strong>Senin–Kamis</strong> pukul <strong>07.30–16.00 WIB</strong> &nbsp;|&nbsp; <strong>Jumat</strong> pukul <strong>07.30–16.30 WIB</strong>.
+                Saat ini pukul <strong>{{ now()->format('H:i') }} WIB</strong>. Pengajuan surat baru & draf hanya tersedia pada hari kerja:<br>
+                <strong>Senin–Kamis</strong> pukul <strong>07.00–16.00 WIB</strong> &nbsp;|&nbsp; <strong>Jumat</strong> pukul <strong>07.30–16.30 WIB</strong>.
             </p>
         </div>
     </div>
@@ -628,7 +516,7 @@
 
 {{-- STAT CARDS --}}
 <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 mb-4">
-    <div class="col animate-in" style="animation-delay: 0.1s;">
+    <div class="col">
         <div class="stat-card-modern" style="--accent-color: #1e3a5f; --accent-color-light: #2563eb; --icon-bg: #eff6ff;">
             <div class="stat-icon-wrapper">
                 <i class="bi bi-envelope-paper-fill" style="color: #1e3a5f; font-size: 20px;"></i>
@@ -1182,32 +1070,40 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(err => console.error('Error marking all as read:', err));
     };
 
-    // Auto-refresh at 08:00 and 16:00
+    // Auto-refresh sesuai jam operasional (07:30 & 16:00/16:30)
     function scheduleRefresh() {
         const now = new Date();
-        const currentHour = now.getHours();
+        const day = now.getDay(); // 0=Minggu, 1=Senin, ..., 5=Jumat, 6=Sabtu
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
         
-        let targetHour = 0;
+        const startMinutes = 7 * 60 + 30;    // 07:30
+        const endMinutesMF = 16 * 60;       // 16:00 (Senin-Kamis)
+        const endMinutesFri = 16 * 60 + 30;  // 16:30 (Jumat)
+        
+        let targetMinutes = 0;
         let targetDate = new Date(now);
         
-        if (currentHour < 8) {
-            targetHour = 8;
-        } else if (currentHour >= 8 && currentHour < 16) {
-            targetHour = 16;
+        const isFriday = (day === 5);
+        const endMinutesToday = isFriday ? endMinutesFri : endMinutesMF;
+        
+        if (currentMinutes < startMinutes) {
+            // Belum buka, refresh pas jam 07:30
+            targetMinutes = startMinutes;
+        } else if (currentMinutes < endMinutesToday && day >= 1 && day <= 5) {
+            // Sedang buka, refresh pas tutup (16:00 atau 16:30)
+            targetMinutes = endMinutesToday;
         } else {
-            // Next day at 8 AM
-            targetHour = 8;
+            // Sudah tutup atau weekend, refresh besok pagi jam 07:30
+            targetMinutes = startMinutes;
             targetDate.setDate(targetDate.getDate() + 1);
         }
         
-        // Set exact target time (e.g. 08:00:00 or 16:00:00)
-        targetDate.setHours(targetHour, 0, 0, 0);
+        targetDate.setHours(Math.floor(targetMinutes / 60), targetMinutes % 60, 0, 0);
         
-        // Calculate difference in milliseconds
         const timeToWait = targetDate.getTime() - now.getTime();
         
         if (timeToWait > 0) {
-            // Refresh with 2 seconds buffer so server definitely sees the new hour
+            // Refresh dengan buffer 2 detik agar status di server sudah pasti berubah
             setTimeout(() => {
                 window.location.reload();
             }, timeToWait + 2000);
@@ -1286,7 +1182,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const liveIndicator = document.getElementById('live-indicator');
         if (liveIndicator) liveIndicator.style.opacity = '1';
 
-        fetch('{{ route("dashboard.liveData") }}', {
+        fetch('{{ route("dashboard.liveData") }}?bulan={{ $bulanSelected }}&tahun={{ $tahunSelected }}', {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
@@ -1407,10 +1303,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     slaList.parentElement.style.display = 'none';
                 }
             }
-            // 5. Update Surat Terbaru (Tracking)
             const terbaruList = document.getElementById('surat-terbaru-list');
             if (terbaruList && data.suratTerbaru.length > 0) {
-                // Sederhananya kita update jika ada perubahan status atau tahap pada surat pertama
                 const firstSuratStatus = terbaruList.querySelector('.flex-shrink-0 .badge')?.innerText;
                 const firstSuratTahap = terbaruList.querySelector('.text-muted')?.innerText;
                 

@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Jalankan cleanup file kadaluarsa setiap hari jam 1 pagi
 Schedule::command('files:cleanup-expired')->dailyAt('01:00');
+
+// Jalankan cleanup notifikasi lama (> 7 hari) setiap hari jam 1 pagi
+Schedule::command('notifications:cleanup')->dailyAt('01:00');

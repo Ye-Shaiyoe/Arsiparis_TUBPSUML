@@ -38,40 +38,60 @@ class NotifikasiController extends Controller
         $notification = Auth::user()->notifications()->findOrFail($id);
         $notification->markAsRead();
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'unreadCount' => Auth::user()->unreadNotifications()->count()
+            ]);
+        }
+
         // Redirect ke URL dari notifikasi jika ada
         $url = $notification->data['url'] ?? route('admin.dashboard');
+
+        // SMART REDIRECT: Jika URL mengandung ID angka (misal /surat/125)
+        if (preg_match('/\/surat\/(\d+)/', $url, $matches)) {
+            $suratId = $matches[1];
+            $surat = \App\Models\Surat::find($suratId);
+            if ($surat) {
+                $url = route('user.surat.show', $surat);
+            }
+        }
         
         return redirect($url);
     }
 
-    /**
-     * Tandai semua notifikasi sebagai sudah dibaca
-     */
     public function markAllAsRead()
     {
         Auth::user()->unreadNotifications->markAsRead();
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'unreadCount' => 0
+            ]);
+        }
+
         return back()->with('success', 'Semua notifikasi telah ditandai sebagai dibaca.');
     }
 
-    /**
-     * Hapus satu notifikasi
-     */
     public function destroy($id)
     {
         $notification = Auth::user()->notifications()->findOrFail($id);
         $notification->delete();
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'unreadCount' => Auth::user()->unreadNotifications()->count()
+            ]);
+        }
+
         return back()->with('success', 'Notifikasi berhasil dihapus.');
     }
 
-    /**
-     * Hapus semua notifikasi
-     */
     public function destroyAll(Request $request)
     {
         $filter = $request->get('filter', 'all');
-
         $query = Auth::user()->notifications();
 
         if ($filter === 'unread') {
@@ -81,6 +101,13 @@ class NotifikasiController extends Controller
         }
 
         $query->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'unreadCount' => Auth::user()->unreadNotifications()->count()
+            ]);
+        }
 
         return back()->with('success', 'Semua notifikasi berhasil dihapus.');
     }

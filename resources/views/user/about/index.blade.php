@@ -253,44 +253,7 @@
                 </div>
             </div>
 
-            {{-- Visi & Misi --}}
-            <div class="row g-3 mt-1 mb-4 animate-in" style="animation-delay: 0.25s;">
-                <div class="col-lg-12">
-                    <div class="card card-custom overflow-hidden">
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                <img src="{{ asset('images/about/building.png') }}" class="img-fluid h-100 object-fit-cover" alt="Vision" style="min-height: 200px;">
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-body p-4">
-                                    <h6 class="fw-semibold mb-3" style="color:#111827;">
-                                        <i class="bi bi-eye text-info me-1 animate-float"></i> Visi & Misi Kami
-                                    </h6>
-                                    <p class="text-muted mb-2" style="font-size: 13.5px;">
-                                        Menjadi institusi yang terpercaya dalam menjamin kepastian pengukuran, meningkatkan daya saing produk nasional, serta memberikan perlindungan maksimal bagi konsumen melalui sistem administrasi yang modern dan transparan.
-                                    </p>
-                                    <div class="d-flex gap-4 mt-4">
-                                        <div class="text-center">
-                                            <div class="h4 fw-bold text-primary mb-0">100%</div>
-                                            <small class="text-muted" style="font-size: 11px;">Transparansi</small>
-                                        </div>
-                                        <div class="vr"></div>
-                                        <div class="text-center">
-                                            <div class="h4 fw-bold text-success mb-0">24/7</div>
-                                            <small class="text-muted" style="font-size: 11px;">Akses Digital</small>
-                                        </div>
-                                        <div class="vr"></div>
-                                        <div class="text-center">
-                                            <div class="h4 fw-bold text-warning mb-0">Reliable</div>
-                                            <small class="text-muted" style="font-size: 11px;">Data Akurat</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
 
             <div class="row g-3 animate-in" style="animation-delay: 0.3s;">
                 {{-- Informasi Kontak --}}
@@ -312,10 +275,16 @@
                                     </div>
                                 </div>
 
-                                <div class="col-12">
-                                    <div class="rounded-2 bg-light p-3" style="background:#f9fafb!important; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                                <div class="col-6">
+                                    <div class="rounded-2 bg-light p-3" style="background:#f9fafb!important; transition: transform 0.3s; min-height: 100px;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                                         <small class="text-muted d-block mb-1">Jam Operasional</small>
-                                        <span style="font-size: 13px; font-weight: 500;color:#111827;">Senin – Kamis<br>07.30 – 16.00 WIB<br>Jum’at<br>07.30 – 16.30 WIB</span>
+                                        <span style="font-size: 13px; font-weight: 500;color:#111827;">Senin – Kamis: 07.30 – 16.00 WIB<br>Jum’at: 07.30 – 16.30 WIB</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="rounded-2 bg-light p-3" style="background:#f9fafb!important; transition: transform 0.3s; min-height: 100px;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                                        <small class="text-muted d-block mb-1">Hari Libur</small>
+                                        <span style="font-size: 13px; font-weight: 500;color:#dc3545;">Sabtu – Minggu<br>Tutup (Libur Akhir Pekan)</span>
                                     </div>
                                 </div>
                                 <div class="col-6">
@@ -379,7 +348,7 @@
                             </h6>
                             <div class="gallery-grid">
                                 <div class="gallery-item large">
-                                    <img src="{{ asset('images/about/office.png') }}" alt="Building">
+                                    <img src="{{ asset('images/about/kantor_suml.jpg') }}" alt="Building">
                                     <div class="gallery-overlay">
                                         <span><i class="bi bi-building-fill me-2"></i>Gedung Direktorat Metrologi</span>
                                     </div>
@@ -391,7 +360,7 @@
                                     </div>
                                 </div>
                                 <div class="gallery-item">
-                                    <img src="{{ asset('images/about/office.png') }}" alt="Office">
+                                    <img src="{{ asset('images/about/Modern.jpg') }}" alt="Office">
                                     <div class="gallery-overlay">
                                         <span><i class="bi bi-laptop me-2"></i>Ruang Kerja Modern</span>
                                     </div>

@@ -19,9 +19,19 @@
             .step-item-h.completed .step-label-h { color: var(--text-primary); }
             .text-orange { color: #ff8c00 !important; }
             /* Dark mode label helper */
-            html.dark-mode .step-label-h { color: #94a3b8; }
-            html.dark-mode .step-item-h.active .step-label-h { color: #60a5fa; }
-            html.dark-mode .step-item-h.completed .step-label-h { color: #e2e8f0; }
+            .dark .step-label-h { color: #94a3b8; }
+            .dark .step-item-h.active .step-label-h { color: #60a5fa; }
+            .dark .step-item-h.completed .step-label-h { color: #e2e8f0; }
+            
+            /* Placeholder fix for dark mode */
+            ::placeholder {
+                color: var(--text-secondary) !important;
+                opacity: 0.7;
+            }
+            .dark ::placeholder {
+                color: #94a3b8 !important;
+                opacity: 0.8;
+            }
         </style>
         <div class="d-flex">
             @for($i = 1; $i <= 10; $i++)
@@ -56,7 +66,7 @@
                         @if($surat->sifat === 'segera') <span class="badge badge-red">Segera</span> @endif
                         @if($surat->status === 'selesai') <span class="badge badge-green">Selesai</span> @endif
                         @if($surat->status === 'revisi') <span class="badge badge-amber">📝 File Revisi Baru</span> @endif
-                        @if($surat->status === 'revisi_admin') <span class="badge" style="background:#fef3c7;color:#92400e;border:1.5px solid #fbbf24;">Admin Revisi</span> @endif
+                        @if($surat->status === 'revisi_admin') <span class="badge" style="background:rgba(251,191,36,0.1);color:#f59e0b;border:1px solid #fbbf24;">Admin Revisi</span> @endif
                         <span class="badge {{ $surat->revisi_count > 0 ? 'badge-light text-orange' : 'badge-info text-orange' }}"> Revisi ke: {{ $surat->revisi_count }} </span>                    </div>
                 </div>
                 <a href="{{ route('admin.surat.index') }}" class="btn btn-sm btn-outline-secondary">← Kembali</a>
@@ -94,6 +104,14 @@
                         <span style="font-size:12px; font-weight:700; color:#3b82f6;">{{ $surat->proses_persen }}%</span>
                     </div>
                 </div>
+                @if($surat->catatan_pengusul)
+                <div style="grid-column: 1 / -1; margin-top: 10px;">
+                    <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px; font-weight:700; letter-spacing:0.5px; opacity: 0.8;">CATATAN DARI PENGUSUL</div>
+                    <div style="font-size:13px; color:var(--text-primary); background:var(--bg-tertiary); padding:12px; border-radius:8px; border:1px solid var(--border-color); font-style:italic;">
+                        "{{ $surat->catatan_pengusul }}"
+                    </div>
+                </div>
+                @endif
             </div>
 
             {{-- FILE --}}
@@ -106,19 +124,19 @@
                 <div style="display:flex; gap:12px; flex-wrap:wrap;">
                     @if($surat->file_word)
                         <div class="btn-group">
-                            <button onclick="openPreview('word', '{{ route('admin.surat.preview', [$surat, 'word']) }}', '{{ addslashes($surat->judul) }}', '{{ $extWord }}')"
+                            <a href="{{ route('admin.surat.preview', [$surat, 'word']) }}" target="_blank"
                                     class="btn btn-sm btn-primary px-3">
                                 <i class="bi bi-file-earmark-word me-1"></i>Preview Word
-                            </button>
+                            </a>
                             <a href="{{ route('admin.surat.download', [$surat, 'word']) }}" class="btn btn-sm btn-dark px-3" title="Download"><i class="bi bi-download"></i></a>
                         </div>
                     @endif
                     @if($surat->file_lampiran)
                         <div class="btn-group">
-                            <button onclick="openPreview('lampiran', '{{ route('admin.surat.preview', [$surat, 'lampiran']) }}', 'Lampiran', '{{ $extLampiran }}')"
+                            <a href="{{ route('admin.surat.preview', [$surat, 'lampiran']) }}" target="_blank"
                                     class="btn btn-sm btn-info text-white px-3">
                                 <i class="bi bi-paperclip me-1"></i>Lampiran
-                            </button>
+                            </a>
                             <a href="{{ route('admin.surat.download', [$surat, 'lampiran']) }}" class="btn btn-sm btn-dark px-3" title="Download"><i class="bi bi-download"></i></a>
                         </div>
                     @endif
@@ -139,7 +157,7 @@
                     <div style="font-size:11px; color:var(--text-secondary); margin-top:6px; font-weight:500;">Oleh: {{ $hist->diprosesByUser?->getRoleLabel() ?? 'Admin' }}</div>
                 </div>
             @empty
-                <p class="text-muted small mb-0">Belum ada catatan pemrosesan.</p>
+                <p class="small mb-0" style="color: var(--text-secondary); opacity: 0.7;">Belum ada catatan pemrosesan.</p>
             @endforelse
         </div>
     </div>
@@ -175,9 +193,9 @@
                     <label class="form-label small fw-bold" style="color:var(--text-secondary); font-size: 11px;">
                         <i class="bi bi-paperclip me-1"></i> Lampiran (Opsional)
                     </label>
-                    <input type="file" name="file_lampiran" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png"
+                    <input type="file" name="file_lampiran" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                            style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color); font-size: 12px;">
-                    <small class="text-muted" style="font-size: 10px;">PDF/JPG/PNG, Max 10MB</small>
+                    <small class="text-muted" style="font-size: 10px;">PDF/JPG/PNG/Word, Max 10MB</small>
                     @error('file_lampiran')
                         <div class="text-danger small mt-1" style="font-size: 11px;"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
                     @enderror
@@ -214,7 +232,9 @@
                     @endif
                     <div class="mb-3">
                         <label class="small fw-bold" style="color:var(--text-secondary);">Catatan (Opsional)</label>
-                        <textarea name="catatan" rows="3" class="form-control form-control-sm" style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" placeholder="Instruksi untuk tahap selanjutnya..."></textarea>
+                        <textarea name="catatan" rows="3" class="form-control form-control-sm" 
+                            style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color);" 
+                            placeholder="Instruksi untuk tahap selanjutnya..."></textarea>
                     </div>
                     <button type="submit" class="btn btn-success w-100 fw-bold py-2 shadow-sm">Setujui & Teruskan</button>
                 </form>
@@ -226,11 +246,11 @@
                 {{-- Pilihan Jenis Tolak --}}
                 <div style="display:flex; gap:8px; margin-bottom:14px;">
                     <label id="opt-user" onclick="setJenisTolak('ke_user')"
-                        style="flex:1; cursor:pointer; border:2px solid #fca5a5; border-radius:10px; padding:10px 12px; display:flex; align-items:flex-start; gap:8px; transition:all 0.2s; background:#fef2f2;">
+                        style="flex:1; cursor:pointer; border:2px solid #fca5a5; border-radius:10px; padding:10px 12px; display:flex; align-items:flex-start; gap:8px; transition:all 0.2s; background:rgba(239,68,68,0.1);">
                         <input type="radio" name="_jenis_tolak_ui" value="ke_user" checked style="margin-top:3px; accent-color:#ef4444;">
                         <div>
-                            <div style="font-size:12px; font-weight:700; color:#b91c1c;">↩ Kembalikan ke User</div>
-                            <div style="font-size:10px; color:#6b7280; margin-top:2px; line-height:1.3;">User diminta revisi / upload ulang file</div>
+                            <div style="font-size:12px; font-weight:700; color:#ef4444;">↩ Kembalikan ke User</div>
+                            <div style="font-size:10px; color:var(--text-secondary); margin-top:2px; line-height:1.3;">User diminta revisi / upload ulang file</div>
                         </div>
                     </label>
                     @if($surat->tahap_sekarang > 2)
@@ -238,8 +258,8 @@
                         style="flex:1; cursor:pointer; border:2px solid var(--border-color); border-radius:10px; padding:10px 12px; display:flex; align-items:flex-start; gap:8px; transition:all 0.2s; background:var(--bg-tertiary);">
                         <input type="radio" name="_jenis_tolak_ui" value="ke_admin_aspirasi" style="margin-top:3px; accent-color:#f59e0b;">
                         <div>
-                            <div style="font-size:12px; font-weight:700; color:#b45309;">🔄 Revisi Admin Aspirasi</div>
-                            <div style="font-size:10px; color:#6b7280; margin-top:2px; line-height:1.3;">Dikembalikan ke Admin Aspirasi (Tahap 2)</div>
+                            <div style="font-size:12px; font-weight:700; color:var(--text-primary); opacity:0.7;">🔄 Revisi Admin Aspirasi</div>
+                            <div style="font-size:10px; color:var(--text-secondary); margin-top:2px; line-height:1.3;">Dikembalikan ke Admin Aspirasi (Tahap 2)</div>
                         </div>
                     </label>
                     @endif
@@ -293,16 +313,15 @@
         @endif
 
         {{-- STATUS CURRENT TAHAP --}}
-        <div class="card border-0 shadow-sm" style="background:var(--sidebar-bg); color:#fff; border-radius:12px;">
-            <div style="font-size:10px; opacity:0.8; font-weight:800; margin-bottom:4px; letter-spacing: 0.5px;">POSISI DOKUMEN</div>
-            <div style="font-size:24px; font-weight:800; line-height: 1.1;">Tahap {{ $surat->tahap_sekarang }}<span style="font-size:14px; opacity:0.5; font-weight:400;">/10</span></div>
-            <div style="font-size:13px; color:#93c5fd; font-weight:600; margin-top: 4px;">{{ $surat->nama_tahap }}</div>
+        <div class="card border-0 shadow-sm" style="background:var(--bg-tertiary); border:1px solid var(--border-color); border-radius:12px;">
+            <div style="font-size:10px; color:var(--text-secondary); font-weight:800; margin-bottom:4px; letter-spacing: 0.5px; opacity:0.8;">POSISI DOKUMEN</div>
+            <div style="font-size:24px; font-weight:800; line-height: 1.1; color:var(--text-primary);">Tahap {{ $surat->tahap_sekarang }}<span style="font-size:14px; opacity:0.5; font-weight:400;">/10</span></div>
+            <div style="font-size:13px; color:#3b82f6; font-weight:600; margin-top: 4px;">{{ $surat->nama_tahap }}</div>
         </div>
 
     </div>
 </div>
 
-@include('admin.surat._preview-modal-partial')
 @include('admin.surat._delete-requests')
 
 @endsection
@@ -325,19 +344,33 @@ function setJenisTolak(jenis) {
     if (!optUser || !optAdmin) return;
 
     if (jenis === 'ke_user') {
-        optUser.style.borderColor  = '#fca5a5';
-        optUser.style.background   = '#fef2f2';
+        optUser.style.borderColor  = '#ef4444';
+        optUser.style.background   = 'rgba(239,68,68,0.1)';
+        optUser.querySelector('.fw-bold').style.color = '#ef4444';
+        optUser.querySelector('.fw-bold').style.opacity = '1';
+
         optAdmin.style.borderColor = 'var(--border-color)';
         optAdmin.style.background  = 'var(--bg-tertiary)';
+        optAdmin.querySelector('.fw-bold').style.color = 'var(--text-primary)';
+        optAdmin.querySelector('.fw-bold').style.opacity = '0.7';
+
         btnLabel.textContent       = 'Tolak & Kembalikan ke User';
         btnEl.className            = 'btn btn-danger w-100 fw-bold py-2 shadow-sm';
+        btnEl.style.background     = '';
+        btnEl.style.borderColor    = '';
         textarea.placeholder       = 'Alasan penolakan / instruksi revisi untuk user...';
         optUser.querySelector('input').checked = true;
     } else {
-        optAdmin.style.borderColor = '#fcd34d';
-        optAdmin.style.background  = '#fffbeb';
+        optAdmin.style.borderColor = '#f59e0b';
+        optAdmin.style.background  = 'rgba(245,158,11,0.1)';
+        optAdmin.querySelector('.fw-bold').style.color = '#f59e0b';
+        optAdmin.querySelector('.fw-bold').style.opacity = '1';
+
         optUser.style.borderColor  = 'var(--border-color)';
         optUser.style.background   = 'var(--bg-tertiary)';
+        optUser.querySelector('.fw-bold').style.color = 'var(--text-primary)';
+        optUser.querySelector('.fw-bold').style.opacity = '0.7';
+
         btnLabel.textContent       = 'Revisi ke Admin Aspirasi';
         btnEl.className            = 'btn w-100 fw-bold py-2 shadow-sm';
         btnEl.style.background     = '#f59e0b';

@@ -11,14 +11,26 @@
         <h5 class="fw-bold mb-0" style="color:var(--text-primary);">Detail & Tracking Surat</h5>
         <small class="text-muted">Pantau progress pengajuan surat kamu</small>
     </div>
-    {{-- Tombol Hapus --}}
-    <button type="button" 
-            class="btn btn-sm btn-danger" 
-            style="border-radius:8px;font-size:13px;"
-            data-bs-toggle="modal" 
-            data-bs-target="#deleteModal">
-        <i class="bi bi-trash"></i> Hapus Surat
-    </button>
+    {{-- Tombol Aksi --}}
+    <div class="d-flex gap-2">
+        @if($surat->created_at && $surat->created_at->diffInMinutes(now()) <= 15)
+        <button type="button" 
+                class="btn btn-sm btn-warning text-dark d-flex align-items-center gap-2" 
+                style="border-radius:8px;font-size:13px;"
+                data-bs-toggle="modal" 
+                data-bs-target="#editModal">
+            <i class="bi bi-pencil-square"></i> Edit Surat
+        </button>
+        @endif
+        
+        <button type="button" 
+                class="btn btn-sm btn-danger d-flex align-items-center gap-2" 
+                style="border-radius:8px;font-size:13px;"
+                data-bs-toggle="modal" 
+                data-bs-target="#deleteModal">
+            <i class="bi bi-trash"></i> Hapus Surat
+        </button>
+    </div>
 </div>
 
 <div class="row g-3">
@@ -45,6 +57,8 @@
                                 <span class="badge rounded-pill" style="background:#fee2e2;color:#b91c1c;font-size:11px;">✗ Ditolak</span>
                             @elseif(in_array($surat->status, ['revisi', 'revisi_admin']))
                                 <span class="badge rounded-pill" style="background:#fef3c7;color:#b45309;font-size:11px;">📝 Revisi</span>
+                            @elseif($surat->status === 'draft')
+                                <span class="badge rounded-pill" style="background:#f1f5f9;color:#64748b;font-size:11px;">📄 Draf</span>
                             @else
                                 <span class="badge rounded-pill" style="background:#dbeafe;color:#1d4ed8;font-size:11px;">⏱ Diproses</span>
                             @endif
@@ -80,6 +94,14 @@
                             @endif
                         </div>
                     </div>
+                    @if($surat->catatan_pengusul)
+                    <div class="col-12">
+                        <div style="color:var(--text-secondary);font-size:11px;font-weight:600;margin-bottom:4px;letter-spacing:0.5px;">CATATAN PENGUSUL</div>
+                        <div style="color:var(--text-primary);font-style:italic;line-height:1.5;">
+                            "{{ $surat->catatan_pengusul }}"
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
                 {{-- Progress overall --}}
@@ -120,10 +142,16 @@
                                 </a>
                             @endif
                             @if($surat->file_lampiran)
+                                @php $extLamp = strtolower(pathinfo($surat->file_lampiran, PATHINFO_EXTENSION)); @endphp
                                 <a href="{{ route('user.surat.preview', [$surat, 'lampiran']) }}"
                                    class="btn btn-sm d-flex align-items-center gap-2"
                                    style="font-size:12px;border:1px solid var(--border-color);border-radius:8px;color:#1e3a5f;background:var(--bg-secondary);">
-                                    <i class="bi bi-paperclip"></i> Preview / Unduh Lampiran
+                                    @if(in_array($extLamp, ['doc', 'docx']))
+                                        <i class="bi bi-file-earmark-word text-primary"></i>
+                                    @else
+                                        <i class="bi bi-paperclip"></i>
+                                    @endif
+                                    Preview / Unduh Lampiran
                                 </a>
                             @endif
 
@@ -340,6 +368,7 @@
                 'ditolak'     => 'linear-gradient(135deg,#b91c1c,#ef4444)',
                 'revisi'      => 'linear-gradient(135deg,#f59e0b,#fbbf24)',
                 'revisi_admin' => 'linear-gradient(135deg,#f59e0b,#fbbf24)',
+                'draft'       => 'linear-gradient(135deg,#64748b,#94a3b8)',
                 default       => 'linear-gradient(135deg,#1e3a5f,#2563eb)',
             };
             $statusIcon = match($surat->status) {
@@ -347,6 +376,7 @@
                 'ditolak'     => '❌',
                 'revisi'      => '📝',
                 'revisi_admin' => '📝',
+                'draft'       => '📄',
                 default       => '⏳',
             };
             $statusTitle = match($surat->status) {
@@ -354,6 +384,7 @@
                 'ditolak'     => 'Surat Ditolak',
                 'revisi'      => 'File Perbaikan Menunggu Review',
                 'revisi_admin' => 'Sedang Direvisi Admin',
+                'draft'       => 'Draf Surat',
                 default       => 'Tahap ' . $surat->tahap_sekarang . '/10',
             };
             $statusSubtitle = match($surat->status) {
@@ -361,6 +392,7 @@
                 'selesai'     => 'Semua tahapan selesai',
                 'revisi'      => 'Menunggu admin approve file baru',
                 'revisi_admin' => 'Admin Aspirasi sedang meninjau ulang',
+                'draft'       => 'Belum diajukan ke admin',
                 default       => 'Perlu perbaikan',
             };
         @endphp
@@ -547,6 +579,69 @@
                     <button type="submit" class="btn btn-danger w-100 py-2" style="border-radius:10px; font-size:13px; font-weight:600;">Ya, Bersihkan File</button>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
+@endif
+
+{{-- Modal Edit Surat --}}
+@if($surat->created_at && $surat->created_at->diffInMinutes(now()) <= 15)
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{{ route('user.surat.updateMetadata', $surat) }}" method="POST">
+                @csrf
+                @method('PATCH')
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="editModalLabel">
+                        <i class="bi bi-pencil-square text-warning"></i> Edit Detail Surat
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-warning" style="font-size:12px; border-radius:10px;">
+                        <i class="bi bi-info-circle-fill"></i> Anda hanya di perbolehkan mengedit surat ini selama 15 menit setelah diajukan. Waktu tersisa: <strong>{{ floor(15 - $surat->created_at->diffInMinutes(now())) }} Menit</strong>.
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-size:13px;font-weight:600;color:var(--text-primary);">Judul Surat</label>
+                        <input type="text" name="judul" class="form-control" value="{{ $surat->judul }}" required style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-size:13px;font-weight:600;color:var(--text-primary);">Tujuan Surat</label>
+                        <input type="text" name="tujuan" class="form-control" value="{{ $surat->tujuan }}" required style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);">
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label" style="font-size:13px;font-weight:600;color:var(--text-primary);">Jenis Surat</label>
+                            <select name="jenis" class="form-select" required style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);">
+                                <option value="nota_dinas" {{ $surat->jenis === 'nota_dinas' ? 'selected' : '' }}>Nota Dinas</option>
+                                <option value="surat_dinas" {{ $surat->jenis === 'surat_dinas' ? 'selected' : '' }}>Surat Dinas</option>
+                                <option value="surat_keputusan" {{ $surat->jenis === 'surat_keputusan' ? 'selected' : '' }}>Surat Keputusan</option>
+                                <option value="surat_pernyataan" {{ $surat->jenis === 'surat_pernyataan' ? 'selected' : '' }}>Surat Pernyataan</option>
+                                <option value="surat_keterangan" {{ $surat->jenis === 'surat_keterangan' ? 'selected' : '' }}>Surat Keterangan</option>
+                                <option value="surat_undangan" {{ $surat->jenis === 'surat_undangan' ? 'selected' : '' }}>Surat Undangan</option>
+                                <option value="surat_lainnya" {{ $surat->jenis === 'surat_lainnya' ? 'selected' : '' }}>Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label" style="font-size:13px;font-weight:600;color:var(--text-primary);">Sifat Surat</label>
+                            <select name="sifat" class="form-select" required style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);">
+                                <option value="biasa" {{ $surat->sifat === 'biasa' ? 'selected' : '' }}>Biasa</option>
+                                <option value="segera" {{ $surat->sifat === 'segera' ? 'selected' : '' }}>Segera</option>
+                                <option value="rahasia" {{ $surat->sifat === 'rahasia' ? 'selected' : '' }}>Rahasia</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-size:13px;font-weight:600;color:var(--text-primary);">Catatan (Opsional)</label>
+                        <textarea name="catatan_pengusul" rows="3" maxlength="1000" class="form-control" style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);" placeholder="Tambahkan catatan untuk admin jika diperlukan (maks 1000 karakter)">{{ $surat->catatan_pengusul }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 p-4">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius:8px;font-size:13px;">Batal</button>
+                    <button type="submit" class="btn btn-warning" style="border-radius:8px;font-size:13px;font-weight:600;">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

@@ -12,7 +12,12 @@ class LogController extends Controller
     public function index(Request $request)
     {
         $logPath = storage_path('logs');
+        if (!File::isDirectory($logPath)) {
+            File::makeDirectory($logPath, 0755, true);
+        }
+        
         $files = File::glob($logPath . '/*.log');
+        $files = $files ?: [];
         $files = array_reverse($files);
 
         $selectedFile = $request->get('file');
@@ -33,7 +38,7 @@ class LogController extends Controller
             return basename($file);
         }, $files);
 
-        return view('admin.logs.index', [
+        return view('admin.Settings.logs.index', [
             'title' => 'System Logs',
             'files' => $fileList,
             'currentFile' => $currentFile,

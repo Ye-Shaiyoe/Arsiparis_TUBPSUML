@@ -10,12 +10,14 @@ class TemplateController extends Controller
 {
     public function index()
     {
-        /** @var FilesystemAdapter $publicDisk */
-        $publicDisk = Storage::disk('public');
-        $templates = collect($publicDisk->files('templates'))
+        /** @var FilesystemAdapter $privateDisk */
+        $privateDisk = Storage::disk('private');
+        $templates = collect($privateDisk->files('templates'))
             ->map(fn(string $path) => [
                 'nama' => basename($path),
-                'url'  => $publicDisk->url($path),
+                'url'  => route('user.template.download', ['nama' => basename($path)]),
+                'size' => round($privateDisk->size($path) / 1024, 1) . ' KB',
+                'ext'  => pathinfo($path, PATHINFO_EXTENSION),
             ])
             ->values();
 

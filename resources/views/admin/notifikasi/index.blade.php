@@ -446,13 +446,34 @@ function deleteAll() {
 
 function updateUnreadCount(count) {
     const badge = document.querySelector('.filter-pill .badge');
-    const markAllBtn = document.querySelector('[data-action="mark-all-read"]');
+    const sidebarContainer = document.getElementById('sidebar-notif-badge-container');
+    const topbarContainer = document.getElementById('topbar-notif-badge-container');
     
+    // Update badge di filter pill
     if (count === 0) {
         if (badge) badge.remove();
+        const markAllBtn = document.querySelector('[data-action="mark-all-read"]');
         if (markAllBtn) markAllBtn.style.display = 'none';
     } else if (badge) {
         badge.textContent = count;
+    }
+
+    // Update badge di Sidebar
+    if (sidebarContainer) {
+        if (count > 0) {
+            sidebarContainer.innerHTML = `<span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none min-w-[18px] text-center animate-pulse">${count}</span>`;
+        } else {
+            sidebarContainer.innerHTML = '';
+        }
+    }
+
+    // Update badge di Topbar
+    if (topbarContainer) {
+        if (count > 0) {
+            topbarContainer.innerHTML = `<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse"></span>`;
+        } else {
+            topbarContainer.innerHTML = '';
+        }
     }
 }
 

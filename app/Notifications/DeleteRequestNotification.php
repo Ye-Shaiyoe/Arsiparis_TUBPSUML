@@ -29,7 +29,7 @@ class DeleteRequestNotification extends Notification
             'type'              => 'warning',
             'title'             => '🗑 Permintaan Hapus Surat',
             'message'           => "User {$this->deleteRequest->user->name} meminta penghapusan surat \"{$surat->judul}\". Alasan: {$this->deleteRequest->alasan}",
-            'url'               => route('admin.surat.show', $surat->id),
+            'url'               => route('admin.surat.show', $surat),
             'alasan'            => $this->deleteRequest->alasan,
         ];
     }

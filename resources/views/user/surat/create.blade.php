@@ -106,6 +106,19 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <div class="mt-3">
+                                <label class="form-label" style="font-size:13px;font-weight:500;color:#111827;">
+                                    Catatan (Opsional)
+                                </label>
+                                <textarea name="catatan_pengusul" rows="3" maxlength="1000"
+                                    class="form-control @error('catatan_pengusul') is-invalid @enderror"
+                                    placeholder="Tambahkan catatan untuk admin jika diperlukan (maks 1000 karakter)"
+                                    style="font-size:13px; border-radius:8px;background:#ffffff;color:#111827;border-color:#e5e7eb;">{{ old('catatan_pengusul') }}</textarea>
+                                @error('catatan_pengusul')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
 
                         <hr style="border-color:#e5e7eb;">
@@ -154,12 +167,12 @@
                             <div>
                                 <label class="form-label" style="font-size:13px;font-weight:500;color:#111827;">
                                     Lampiran (opsional)
-                                    <span class="text-muted fw-normal" style="font-size:11px;">PDF, JPG, PNG</span>
+                                    <span class="text-muted fw-normal" style="font-size:11px;">PDF, JPG, PNG, DOCX</span>
                                 </label>
                                 <label class="upload-area d-block" for="file_lampiran">
                                     <input type="file" id="file_lampiran" name="file_lampiran"
-                                        accept=".pdf,.jpg,.jpeg,.png"
-                                        class="@error('file_lampiran') is-invalid @enderror"
+                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                    class="@error('file_lampiran') is-invalid @enderror"
                                         onchange="showFileName(this, 'nama_lampiran')">
                                     <i class="bi bi-paperclip" style="font-size:24px; display:block; margin-bottom:6px;"></i>
                                     <span id="nama_lampiran" style="font-size:12px;color:#6b7280;">

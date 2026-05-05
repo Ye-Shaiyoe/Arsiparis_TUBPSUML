@@ -56,8 +56,15 @@ class LoginRequest extends FormRequest
             // Login with email + password only
             $attempt = Auth::attempt(['email' => $input, 'password' => $credential], $this->boolean('remember'));
         } elseif ($isNip) {
-            // Login with NIP + password only
-            $attempt = Auth::attempt(['nip' => $input, 'password' => $credential], $this->boolean('remember'));
+            // Login with NIP: Since NIP is encrypted, we can't query it directly with Auth::attempt.
+            // We search for the user manually.
+            $user = User::all()->filter(function($u) use ($input) {
+                return $u->nip === $input;
+            })->first();
+
+            if ($user) {
+                $attempt = Auth::attempt(['email' => $user->email, 'password' => $credential], $this->boolean('remember'));
+            }
         } else {
             // Assume input is username (name field)
             // Login with username + password only

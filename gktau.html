@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA — Premium Portfolio</title>
+
+    <!-- ============ GSAP + ScrollTrigger CDN ============ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js">
+    </script>
+
+    <style>
+        /* ============================================================
+             CSS RESET & BASE STYLES
+             ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #060609;
+            --bg-secondary: #0a0a12;
+            --bg-card: rgba(255, 255, 255, 0.025);
+            --text-primary: #e8e8f0;
+            --text-secondary: #9898b0;
+            --text-muted: #5a5a72;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #6366f1;
+            --accent-cyan: #22d3ee;
+            --accent-amber: #f59e0b;
+            --glow-purple: rgba(139, 92, 246, 0.4);
+            --glow-blue: rgba(99, 102, 241, 0.35);
+            --glow-cyan: rgba(34, 211, 238, 0.3);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-glow: rgba(139, 92, 246, 0.3);
+            --font-display: 'Inter', 'SF Pro Display', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
+            --font-body: 'Inter', 'SF Pro Text', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
+            --transition-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+            --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        html {
+            scroll-behavior: auto;
+            /* GSAP handles scroll */
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+            cursor: default;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        /* Selection */
+        ::selection {
+            background: rgba(139, 92, 246, 0.4);
+            color: #fff;
+        }
+
+        /* ============================================================
+             ANIMATED BACKGROUND ORBS (CSS-only glow ambiance)
+             ============================================================ */
+        .bg-orbs {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.45;
+            will-change: transform;
+            animation: orbFloat 18s ease-in-out infinite;
+        }
+        .bg-orb--purple {
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.55) 0%, transparent 70%);
+            top: -15%;
+            left: -10%;
+            animation-delay: 0s;
+            animation-duration: 20s;
+        }
+        .bg-orb--blue {
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, transparent 70%);
+            top: 50%;
+            right: -12%;
+            animation-delay: -7s;
+            animation-duration: 22s;
+        }
+        .bg-orb--cyan {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(34, 211, 238, 0.4) 0%, transparent 70%);
+            bottom: -10%;
+            left: 30%;
+            animation-delay: -14s;
+            animation-duration: 19s;
+        }
+        .bg-orb--amber {
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%);
+            top: 30%;
+            left: 55%;
+            animation-delay: -4s;
+            animation-duration: 24s;
+        }
+
+        @keyframes orbFloat {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(60px, -40px) scale(1.08);
+            }
+            50% {
+                transform: translate(-30px, 50px) scale(0.94);
+            }
+            75% {
+                transform: translate(-50px, -30px) scale(1.05);
+            }
+        }
+
+        /* ============================================================
+             FIXED NAVIGATION
+             ============================================================ */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.4rem 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.4s var(--transition-smooth),
+                backdrop-filter 0.4s var(--transition-smooth),
+                box-shadow 0.4s var(--transition-smooth);
+            will-change: backdrop-filter, background;
+        }
+        .nav--scrolled {
+            background: rgba(6, 6, 9, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 1px 0 var(--border-subtle);
+            padding: 1rem 3rem;
+        }
+        .nav__logo {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            text-decoration: none;
+            position: relative;
+        }
+        .nav__logo-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent-purple);
+            margin-left: 2px;
+            box-shadow: 0 0 12px var(--glow-purple);
+            animation: logoDotPulse 2.5s ease-in-out infinite;
+        }
+        @keyframes logoDotPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 8px var(--glow-purple);
+            }
+            50% {
+                box-shadow: 0 0 22px var(--glow-purple), 0 0 40px rgba(139, 92, 246, 0.5);
+            }
+        }
+        .nav__links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+        .nav__link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            transition: color 0.3s var(--transition-smooth);
+            position: relative;
+            padding: 0.3rem 0;
+        }
+        .nav__link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1.5px;
+            background: var(--accent-purple);
+            transition: width 0.35s var(--transition-smooth);
+            border-radius: 1px;
+        }
+        .nav__link:hover {
+            color: #fff;
+        }
+        .nav__link:hover::after {
+            width: 100%;
+        }
+        .nav__cta {
+            padding: 0.6rem 1.4rem;
+            border: 1px solid var(--border-glow);
+            border-radius: 50px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.03em;
+            text-decoration: none;
+            background: rgba(139, 92, 246, 0.1);
+            transition: all 0.35s var(--transition-smooth);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .nav__cta:hover {
+            background: rgba(139, 92, 246, 0.25);
+            border-color: rgba(139, 92, 246, 0.6);
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(139, 92, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* ============================================================
+             HERO SECTION — Full viewport, split-text reveal
+             ============================================================ */
+        .hero {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 2rem;
+            overflow: hidden;
+        }
+        .hero__content {
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+        }
+        .hero__pretitle {
+            font-size: 0.85rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent-purple);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            opacity: 0;
+            /* animated in via GSAP */;
+        }
+        .hero__title {
+            font-family: var(--font-display);
+            font-size: clamp(3.5rem, 8vw, 7rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.05;
+            color: #fff;
+            margin-bottom: 1.5rem;
+        }
+        .hero__title .char {
+            display: inline-block;
+            will-change: transform, opacity;
+            /* Each character wrapped for stagger animation */;
+        }
+        .hero__subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            max-width: 500px;
+            margin: 0 auto 2.5rem;
+            opacity: 0;
+            /* animated via GSAP */;
+        }
+        .hero__scroll-indicator {
+            position: absolute;
+            bottom: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+            opacity: 0;
+            z-index: 2;
+            cursor: pointer;
+        }
+        .hero__scroll-indicator span {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .hero__scroll-line {
+            width: 1.5px;
+            height: 36px;
+            background: linear-gradient(to bottom, var(--accent-purple), transparent);
+            border-radius: 1px;
+            animation: scrollLinePulse 2s ease-in-out infinite;
+        }
+        @keyframes scrollLinePulse {
+            0%,
+            100% {
+                opacity: 0.4;
+                height: 36px;
+            }
+            50% {
+                opacity: 1;
+                height: 50px;
+            }
+        }
+        /* Hero decorative ring */
+        .hero__ring {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(65deg);
+            pointer-events: none;
+            z-index: 0;
+            box-shadow: 0 0 120px rgba(139, 92, 246, 0.08);
+            will-change: transform;
+        }
+
+        /* ============================================================
+             STICKY STORYTELLING SECTION — Multi-phase text
+             ============================================================ */
+        .story-section {
+            position: relative;
+            z-index: 1;
+            height: 300vh;
+            /* 3x viewport for 3 phases */;
+        }
+        .story-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .story-phase {
+            position: absolute;
+            text-align: center;
+            max-width: 700px;
+            padding: 0 2rem;
+            will-change: opacity, transform;
+        }
+        .story-phase__label {
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .story-phase__heading {
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 5vw, 4rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.15;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+        .story-phase__text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .story-phase__accent {
+            display: inline-block;
+            width: 40px;
+            height: 2px;
+            background: var(--accent-purple);
+            margin: 1.5rem 0;
+            border-radius: 1px;
+            box-shadow: 0 0 10px var(--glow-purple);
+        }
+
+        /* ============================================================
+             HORIZONTAL SCROLL SECTION — Portfolio cards
+             ============================================================ */
+        .horizontal-section {
+            position: relative;
+            z-index: 1;
+            /* Height is handled dynamically; base is 100vh */
+            height: 100vh;
+            overflow: hidden;
+        }
+        .horizontal-section__label {
+            position: absolute;
+            top: 3rem;
+            left: 3rem;
+            z-index: 10;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .horizontal-track {
+            display: flex;
+            gap: 2rem;
+            padding: 0 3rem;
+            height: 100vh;
+            align-items: center;
+            will-change: transform;
+            /* This gets translated horizontally via GSAP */;
+        }
+        .horizontal-card {
+            flex-shrink: 0;
+            width: 440px;
+            height: 520px;
+            border-radius: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.4s var(--transition-smooth),
+                box-shadow 0.4s var(--transition-smooth),
+                transform 0.5s var(--transition-bounce);
+            position: relative;
+            will-change: transform;
+        }
+        .horizontal-card:hover {
+            border-color: var(--border-glow);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(139, 92, 246, 0.15);
+            transform: translateY(-8px);
+        }
+        .horizontal-card__image {
+            flex: 1;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .horizontal-card__image-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            opacity: 0.5;
+            color: var(--text-muted);
+            transition: opacity 0.4s, transform 0.5s var(--transition-smooth);
+        }
+        .horizontal-card:hover .horizontal-card__image-inner {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+        .horizontal-card__info {
+            padding: 1.5rem 1.8rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .horizontal-card__tag {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+        .horizontal-card__title {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: #fff;
+            margin-bottom: 0.3rem;
+        }
+        .horizontal-card__year {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        /* Glow accent dot on card */
+        .horizontal-card__glow {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-purple);
+            box-shadow: 0 0 10px var(--glow-purple);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .horizontal-card:hover .horizontal-card__glow {
+            opacity: 1;
+        }
+
+        /* ============================================================
+             EXPERTISE / 3D CARDS SECTION
+             ============================================================ */
+        .expertise-section {
+            position: relative;
+            z-index: 1;
+            padding: 8rem 3rem;
+            perspective: 1200px;
+        }
+        .expertise-section__header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+        .expertise-section__label {
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent-amber);
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+        .expertise-section__title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #fff;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .expertise-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            cursor: default;
+            transition: border-color 0.4s, box-shadow 0.4s;
+            position: relative;
+            will-change: transform;
+            transform-style: preserve-3d;
+            /* 3D tilt applied via JS */;
+        }
+        .expertise-card:hover {
+            border-color: var(--border-glow);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 30px rgba(139, 92, 246, 0.1);
+        }
+        .expertise-card__icon {
+            font-size: 2.8rem;
+            margin-bottom: 1.2rem;
+            display: block;
+            transition: transform 0.5s var(--transition-bounce);
+        }
+        .expertise-card:hover .expertise-card__icon {
+            transform: translateZ(30px) scale(1.1);
+        }
+        .expertise-card__title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.6rem;
+            letter-spacing: -0.01em;
+            transition: transform 0.5s var(--transition-bounce);
+        }
+        .expertise-card:hover .expertise-card__title {
+            transform: translateZ(20px);
+        }
+        .expertise-card__desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            transition: transform 0.5s var(--transition-bounce);
+        }
+        .expertise-card:hover .expertise-card__desc {
+            transform: translateZ(15px);
+        }
+
+        /* ============================================================
+             FEATURED PARALLAX SECTION
+             ============================================================ */
+        .featured-section {
+            position: relative;
+            z-index: 1;
+            padding: 8rem 3rem;
+        }
+        .featured-item {
+            display: flex;
+            align-items: center;
+            gap: 6rem;
+            max-width: 1200px;
+            margin: 0 auto 8rem;
+            min-height: 500px;
+        }
+        .featured-item:last-child {
+            margin-bottom: 0;
+        }
+        .featured-item__visual {
+            flex: 1;
+            height: 420px;
+            border-radius: 20px;
+            background: linear-gradient(145deg, #1a1a30, #12122a);
+            border: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+            will-change: transform;
+        }
+        .featured-item__visual-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            opacity: 0.4;
+            color: var(--text-muted);
+            transition: opacity 0.5s;
+        }
+        .featured-item__visual:hover .featured-item__visual-inner {
+            opacity: 0.7;
+        }
+        .featured-item__text {
+            flex: 1;
+            max-width: 450px;
+        }
+        .featured-item__tag {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+        .featured-item__title {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 3vw, 2.8rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #fff;
+            margin-bottom: 1rem;
+            line-height: 1.15;
+        }
+        .featured-item__desc {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.8rem;
+        }
+        .featured-item__link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.03em;
+            padding-bottom: 4px;
+            border-bottom: 1.5px solid var(--accent-purple);
+            transition: all 0.3s var(--transition-smooth);
+        }
+        .featured-item__link:hover {
+            border-bottom-color: #fff;
+            gap: 0.8rem;
+        }
+        .featured-item__link-arrow {
+            transition: transform 0.3s var(--transition-smooth);
+            display: inline-block;
+        }
+        .featured-item__link:hover .featured-item__link-arrow {
+            transform: translateX(4px);
+        }
+
+        /* ============================================================
+             CTA / FOOTER SECTION
+             ============================================================ */
+        .cta-section {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 8rem 2rem 6rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .cta-section__heading {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+        .cta-section__text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto 2.5rem;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.04em;
+            text-decoration: none;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s var(--transition-smooth);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+        }
+        .cta-button:hover {
+            box-shadow: 0 12px 44px rgba(139, 92, 246, 0.5), 0 0 60px rgba(99, 102, 241, 0.25);
+            transform: translateY(-3px);
+        }
+        .cta-button:active {
+            transform: translateY(-1px) scale(0.98);
+            transition: transform 0.1s;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-subtle);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================================
+             RESPONSIVE
+             ============================================================ */
+        @media (max-width: 1024px) {
+            .expertise-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .featured-item {
+                flex-direction: column;
+                gap: 2.5rem;
+                min-height: auto;
+            }
+            .featured-item__visual {
+                height: 300px;
+                width: 100%;
+            }
+            .horizontal-card {
+                width: 340px;
+                height: 420px;
+            }
+            .nav {
+                padding: 1rem 1.5rem;
+            }
+            .nav--scrolled {
+                padding: 0.8rem 1.5rem;
+            }
+            .nav__links {
+                gap: 1.5rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .expertise-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            .horizontal-card {
+                width: 280px;
+                height: 380px;
+            }
+            .horizontal-track {
+                padding: 0 1.5rem;
+                gap: 1rem;
+            }
+            .horizontal-section__label {
+                left: 1.5rem;
+                top: 2rem;
+            }
+            .nav__links {
+                display: none;
+                /* On mobile, hide nav links; could add a hamburger */;
+            }
+            .expertise-section {
+                padding: 5rem 1.5rem;
+            }
+            .featured-section {
+                padding: 5rem 1.5rem;
+            }
+            .cta-section {
+                padding: 5rem 1.5rem 4rem;
+            }
+            .hero__ring {
+                width: 350px;
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    ANIMATED BACKGROUND ORBS
+    ============================================================ -->
+    <div class="bg-orbs" aria-hidden="true">
+        <div class="bg-orb bg-orb--purple"></div>
+        <div class="bg-orb bg-orb--blue"></div>
+        <div class="bg-orb bg-orb--cyan"></div>
+        <div class="bg-orb bg-orb--amber"></div>
+    </div>
+
+    <!-- ============================================================
+    FIXED NAVIGATION
+    ============================================================ -->
+    <nav class="nav" id="nav">
+        <a href="#" class="nav__logo">NOVA<span class="nav__logo-dot"></span></a>
+        <ul class="nav__links">
+            <li><a href="#work" class="nav__link">Work</a></li>
+            <li><a href="#expertise" class="nav__link">Expertise</a></li>
+            <li><a href="#featured" class="nav__link">Featured</a></li>
+            <li><a href="#contact" class="nav__link nav__cta">Get In Touch</a></li>
+        </ul>
+    </nav>
+
+    <!-- ============================================================
+    HERO SECTION
+    ============================================================ -->
+    <section class="hero" id="hero">
+        <div class="hero__ring" aria-hidden="true"></div>
+        <div class="hero__content">
+            <p class="hero__pretitle" id="heroPretitle">Creative Studio • Est. 2024</p>
+            <h1 class="hero__title" id="heroTitle">Crafting Digital<br>Masterpieces</h1>
+            <p class="hero__subtitle" id="heroSubtitle">
+                We design immersive experiences that push the boundaries of the web — blending artistry with cutting-edge technology.
+            </p>
+        </div>
+        <!-- Scroll indicator -->
+        <div class="hero__scroll-indicator" id="scrollIndicator" aria-label="Scroll down">
+            <span>Scroll</span>
+            <div class="hero__scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    STICKY STORYTELLING SECTION (3 phases)
+    ============================================================ -->
+    <section class="story-section" id="story">
+        <div class="story-sticky">
+            <!-- Phase 1 -->
+            <div class="story-phase" id="storyPhase1">
+                <p class="story-phase__label">01 / Philosophy</p>
+                <h2 class="story-phase__heading">Design is<br>intelligence<br>made visible</h2>
+                <div class="story-phase__accent"></div>
+                <p class="story-phase__text">Every pixel serves a purpose. Every interaction tells a story.</p>
+            </div>
+            <!-- Phase 2 -->
+            <div class="story-phase" id="storyPhase2" style="opacity:0;">
+                <p class="story-phase__label">02 / Craft</p>
+                <h2 class="story-phase__heading">Obsessive<br>attention to<br>detail</h2>
+                <div class="story-phase__accent"></div>
+                <p class="story-phase__text">From micro-interactions to grand reveals — nothing is overlooked.</p>
+            </div>
+            <!-- Phase 3 -->
+            <div class="story-phase" id="storyPhase3" style="opacity:0;">
+                <p class="story-phase__label">03 / Impact</p>
+                <h2 class="story-phase__heading">Experiences<br>that leave<br>a mark</h2>
+                <div class="story-phase__accent"></div>
+                <p class="story-phase__text">Memorable, measurable, and built to perform at the highest level.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    HORIZONTAL SCROLL SECTION — Projects
+    ============================================================ -->
+    <section class="horizontal-section" id="work">
+        <p class="horizontal-section__label">Selected Projects</p>
+        <div class="horizontal-track" id="horizontalTrack">
+            <!-- Card 1 -->
+            <div class="horizontal-card">
+                <div class="horizontal-card__glow"></div>
+                <div class="horizontal-card__image">
+                    <div class="horizontal-card__image-inner">✦</div>
+                </div>
+                <div class="horizontal-card__info">
+                    <p class="horizontal-card__tag">Web Platform</p>
+                    <h3 class="horizontal-card__title">Aether Dashboard</h3>
+                    <p class="horizontal-card__year">2024</p>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="horizontal-card">
+                <div class="horizontal-card__glow"></div>
+                <div class="horizontal-card__image">
+                    <div class="horizontal-card__image-inner">◆</div>
+                </div>
+                <div class="horizontal-card__info">
+                    <p class="horizontal-card__tag">E-Commerce</p>
+                    <h3 class="horizontal-card__title">Luminae Store</h3>
+                    <p class="horizontal-card__year">2024</p>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="horizontal-card">
+                <div class="horizontal-card__glow"></div>
+                <div class="horizontal-card__image">
+                    <div class="horizontal-card__image-inner">▲</div>
+                </div>
+                <div class="horizontal-card__info">
+                    <p class="horizontal-card__tag">Brand Identity</p>
+                    <h3 class="horizontal-card__title">Vexa Rebrand</h3>
+                    <p class="horizontal-card__year">2023</p>
+                </div>
+            </div>
+            <!-- Card 4 -->
+            <div class="horizontal-card">
+                <div class="horizontal-card__glow"></div>
+                <div class="horizontal-card__image">
+                    <div class="horizontal-card__image-inner">⬡</div>
+                </div>
+                <div class="horizontal-card__info">
+                    <p class="horizontal-card__tag">Mobile App</p>
+                    <h3 class="horizontal-card__title">Flux Fitness</h3>
+                    <p class="horizontal-card__year">2023</p>
+                </div>
+            </div>
+            <!-- Card 5 -->
+            <div class="horizontal-card">
+                <div class="horizontal-card__glow"></div>
+                <div class="horizontal-card__image">
+                    <div class="horizontal-card__image-inner">◈</div>
+                </div>
+                <div class="horizontal-card__info">
+                    <p class="horizontal-card__tag">SaaS</p>
+                    <h3 class="horizontal-card__title">Nexus Analytics</h3>
+                    <p class="horizontal-card__year">2023</p>
+                </div>
+            </div>
+            <!-- Card 6 -->
+            <div class="horizontal-card">
+                <div class="horizontal-card__glow"></div>
+                <div class="horizontal-card__image">
+                    <div class="horizontal-card__image-inner">⬟</div>
+                </div>
+                <div class="horizontal-card__info">
+                    <p class="horizontal-card__tag">Portfolio</p>
+                    <h3 class="horizontal-card__title">Orion Studio</h3>
+                    <p class="horizontal-card__year">2022</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    EXPERTISE / 3D CARDS SECTION
+    ============================================================ -->
+    <section class="expertise-section" id="expertise">
+        <div class="expertise-section__header">
+            <p class="expertise-section__label">What We Do</p>
+            <h2 class="expertise-section__title">Precision-crafted digital expertise</h2>
+        </div>
+        <div class="expertise-grid" id="expertiseGrid">
+            <div class="expertise-card" data-tilt>
+                <span class="expertise-card__icon">🎨</span>
+                <h3 class="expertise-card__title">UI/UX Design</h3>
+                <p class="expertise-card__desc">Pixel-perfect interfaces with intuitive user journeys that delight at every touchpoint.</p>
+            </div>
+            <div class="expertise-card" data-tilt>
+                <span class="expertise-card__icon">⚡</span>
+                <h3 class="expertise-card__title">Motion Design</h3>
+                <p class="expertise-card__desc">Fluid animations and scroll-driven narratives that bring digital products to life.</p>
+            </div>
+            <div class="expertise-card" data-tilt>
+                <span class="expertise-card__icon">🔮</span>
+                <h3 class="expertise-card__title">3D & WebGL</h3>
+                <p class="expertise-card__desc">Immersive 3D experiences using cutting-edge rendering for the modern web.</p>
+            </div>
+            <div class="expertise-card" data-tilt>
+                <span class="expertise-card__icon">🚀</span>
+                <h3 class="expertise-card__title">Performance</h3>
+                <p class="expertise-card__desc">Blazing-fast load times and buttery 60fps interactions on every device.</p>
+            </div>
+            <div class="expertise-card" data-tilt>
+                <span class="expertise-card__icon">🧬</span>
+                <h3 class="expertise-card__title">Brand Systems</h3>
+                <p class="expertise-card__desc">Cohesive design systems that scale — from atomic components to full ecosystems.</p>
+            </div>
+            <div class="expertise-card" data-tilt>
+                <span class="expertise-card__icon">🌐</span>
+                <h3 class="expertise-card__title">Full-Stack Dev</h3>
+                <p class="expertise-card__desc">End-to-end implementation with modern frameworks and robust architecture.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    FEATURED PARALLAX SECTION
+    ============================================================ -->
+    <section class="featured-section" id="featured">
+        <!-- Featured Item 1 -->
+        <div class="featured-item">
+            <div class="featured-item__visual" data-parallax-speed="0.4">
+                <div class="featured-item__visual-inner">◈</div>
+            </div>
+            <div class="featured-item__text">
+                <p class="featured-item__tag">Featured Case Study</p>
+                <h3 class="featured-item__title">Redefining the luxury e-commerce experience</h3>
+                <p class="featured-item__desc">A complete digital transformation for a high-end fashion brand — from immersive product galleries to a frictionless checkout flow.</p>
+                <a href="#" class="featured-item__link">View Case Study <span class="featured-item__link-arrow">→</span></a>
+            </div>
+        </div>
+        <!-- Featured Item 2 -->
+        <div class="featured-item" style="flex-direction: row-reverse;">
+            <div class="featured-item__visual" data-parallax-speed="0.55">
+                <div class="featured-item__visual-inner">✦</div>
+            </div>
+            <div class="featured-item__text">
+                <p class="featured-item__tag">Award Winner</p>
+                <h3 class="featured-item__title">An analytics dashboard with soul</h3>
+                <p class="featured-item__desc">Turning complex data into beautiful, actionable insights — recognized by Awwwards for exceptional UI design.</p>
+                <a href="#" class="featured-item__link">View Case Study <span class="featured-item__link-arrow">→</span></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+    CTA SECTION
+    ============================================================ -->
+    <section class="cta-section" id="contact">
+        <h2 class="cta-section__heading">Ready to create<br>something extraordinary?</h2>
+        <p class="cta-section__text">Let's collaborate on your next project and make it unforgettable.</p>
+        <a href="#" class="cta-button">Start a Conversation</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-bottom">
+        <p>&copy; 2024 NOVA Studio. All rights reserved. Crafted with precision.</p>
+    </footer>
+
+    <!-- ============================================================
+    GSAP + SCROLLTRIGGER ANIMATIONS
+    ============================================================ -->
+    <script>
+        (function() {
+            // ============ Register ScrollTrigger plugin ============
+            gsap.registerPlugin(ScrollTrigger);
+
+            // ============ DOM ELEMENT REFERENCES ============
+            const nav = document.getElementById('nav');
+            const heroTitle = document.getElementById('heroTitle');
+            const heroPretitle = document.getElementById('heroPretitle');
+            const heroSubtitle = document.getElementById('heroSubtitle');
+            const scrollIndicator = document.getElementById('scrollIndicator');
+            const heroRing = document.querySelector('.hero__ring');
+            const storyPhase1 = document.getElementById('storyPhase1');
+            const storyPhase2 = document.getElementById('storyPhase2');
+            const storyPhase3 = document.getElementById('storyPhase3');
+            const horizontalTrack = document.getElementById('horizontalTrack');
+            const horizontalSection = document.querySelector('.horizontal-section');
+            const expertiseCards = document.querySelectorAll('.expertise-card[data-tilt]');
+            const featuredVisuals = document.querySelectorAll('.featured-item__visual[data-parallax-speed]');
+            const ctaHeading = document.querySelector('.cta-section__heading');
+            const ctaButton = document.querySelector('.cta-button');
+            const bgOrbs = document.querySelectorAll('.bg-orb');
+
+            // ============ UTILITY: Split text into character spans ============
+            /**
+             * Wraps each character of an element's text content in a <span class="char">
+             * for staggered animation. Preserves inner HTML structure where possible.
+             * @param {HTMLElement} el - The element whose text to split
+             * @returns {NodeList} - All created .char spans
+             */
+            function splitTextToChars(el) {
+                const text = el.textContent;
+                el.textContent = '';
+                const fragment = document.createDocumentFragment();
+                for (let i = 0; i < text.length; i++) {
+                    const span = document.createElement('span');
+                    span.className = 'char';
+                    span.textContent = text[i];
+                    span.style.display = 'inline-block';
+                    // Preserve spaces
+                    if (text[i] === ' ') {
+                        span.style.minWidth = '0.25em';
+                    }
+                    fragment.appendChild(span);
+                }
+                el.appendChild(fragment);
+                return el.querySelectorAll('.char');
+            }
+
+            // Split the hero title into characters
+            const heroChars = splitTextToChars(heroTitle);
+
+            // ============ INITIAL LOAD ANIMATION (Hero) ============
+            /**
+             * On page load, animate the hero elements in sequence:
+             * 1. Characters stagger up from below with a slight rotation
+             * 2. Pretitle fades in
+             * 3. Subtitle fades up
+             * 4. Scroll indicator appears
+             */
+            const loadTimeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+            loadTimeline
+                .set(heroChars, {
+                    y: 80,
+                    rotateX: -40,
+                    opacity: 0,
+                    transformOrigin: 'bottom center',
+                })
+                .to(heroChars, {
+                    y: 0,
+                    rotateX: 0,
+                    opacity: 1,
+                    duration: 0.9,
+                    stagger: {
+                        each: 0.025,
+                        from: 'start',
+                    },
+                    ease: 'back.out(1.4)',
+                }, 0.3)
+                .to(heroPretitle, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.7,
+                }, '-=0.4')
+                .fromTo(heroPretitle, { y: 20 }, { y: 0, opacity: 1, duration: 0.7 }, '-=0.4')
+                .to(heroSubtitle, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.7,
+                }, '-=0.3')
+                .fromTo(heroSubtitle, { y: 25 }, { y: 0, opacity: 1, duration: 0.7 }, '-=0.3')
+                .to(scrollIndicator, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.6,
+                }, '-=0.2')
+                .fromTo(scrollIndicator, { y: 15 }, { y: 0, opacity: 1, duration: 0.6 }, '-=0.2');
+
+            // Subtle floating animation for the hero ring
+            gsap.to(heroRing, {
+                rotateX: 70,
+                scale: 1.08,
+                duration: 8,
+                repeat: -1,
+                yoyo: true,
+                ease: 'sine.inOut',
+            });
+
+            // ============ NAVIGATION: Blur background on scroll ============
+            ScrollTrigger.create({
+                trigger: document.body,
+                start: 'top+=60 top',
+                onEnter: () => nav.classList.add('nav--scrolled'),
+                onLeaveBack: () => nav.classList.remove('nav--scrolled'),
+            });
+
+            // ============ STICKY STORYTELLING SECTION ============
+            /**
+             * The story section is 300vh tall. We pin it and scrub through
+             * 3 phases of text, crossfading between them at specific progress points.
+             * Phase 1: 0%–30% | Phase 2: 35%–65% | Phase 3: 70%–100%
+             */
+            const storyTimeline = gsap.timeline({
+                scrollTrigger: {
+                    trigger: '.story-section',
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 1.2,
+                    pin: '.story-sticky',
+                    anticipatePin: 1,
+                },
+            });
+
+            // Initial state: Phase 1 visible, others hidden
+            storyTimeline
+                .set(storyPhase1, { opacity: 1, y: 0, scale: 1 })
+                .set(storyPhase2, { opacity: 0, y: 40, scale: 0.95 })
+                .set(storyPhase3, { opacity: 0, y: 40, scale: 0.95 })
+
+                // Fade out Phase 1
+                .to(storyPhase1, {
+                    opacity: 0,
+                    y: -40,
+                    scale: 0.95,
+                    duration: 1,
+                }, 0.25)
+                // Fade in Phase 2
+                .to(storyPhase2, {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    duration: 1,
+                }, 0.35)
+                // Fade out Phase 2
+                .to(storyPhase2, {
+                    opacity: 0,
+                    y: -40,
+                    scale: 0.95,
+                    duration: 1,
+                }, 0.55)
+                // Fade in Phase 3
+                .to(storyPhase3, {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    duration: 1,
+                }, 0.65);
+
+            // ============ HORIZONTAL SCROLL SECTION ============
+            /**
+             * Pins the horizontal section and translates the track horizontally
+             * based on scroll progress. The scroll distance equals the overflow width.
+             */
+            function setupHorizontalScroll() {
+                // Kill previous ScrollTrigger if any (for resize)
+                ScrollTrigger.getById('horizontalScroll')?.kill();
+
+                const trackWidth = horizontalTrack.scrollWidth;
+                const viewportWidth = window.innerWidth;
+                const scrollDistance = trackWidth - viewportWidth;
+
+                // Only enable horizontal scroll if content overflows
+                if (scrollDistance <= 0) return;
+
+                gsap.to(horizontalTrack, {
+                    x: -scrollDistance,
+                    ease: 'none',
+                    scrollTrigger: {
+                        id: 'horizontalScroll',
+                        trigger: horizontalSection,
+                        start: 'top top',
+                        end: () => '+=' + scrollDistance,
+                        scrub: 1,
+                        pin: true,
+                        anticipatePin: 1,
+                        invalidateOnRefresh: true,
+                    },
+                });
+            }
+            setupHorizontalScroll();
+
+            // ============ EXPERTISE CARDS: Scroll-triggered reveal + 3D mouse tilt ============
+            /**
+             * Each expertise card gets a staggered reveal as it enters the viewport.
+             * Additionally, mouse movement on the card creates a subtle 3D tilt effect.
+             */
+            expertiseCards.forEach((card, index) => {
+                // Scroll-triggered reveal with stagger
+                gsap.fromTo(card, {
+                    y: 60,
+                    opacity: 0,
+                    rotateY: 10,
+                    scale: 0.92,
+                }, {
+                    y: 0,
+                    opacity: 1,
+                    rotateY: 0,
+                    scale: 1,
+                    duration: 0.8,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top bottom-=80px',
+                        toggleActions: 'play none none none',
+                    },
+                    delay: index * 0.08,
+                });
+
+                // 3D mouse tilt interaction
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; // x position within the card
+                    const y = e.clientY - rect.top; // y position within the card
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateY = ((x - centerX) / centerX) * 8; // max ±8deg
+                    const rotateX = -((y - centerY) / centerY) * 8; // max ±8deg (inverted)
+
+                    gsap.to(card, {
+                        rotateY: rotateY,
+                        rotateX: rotateX,
+                        duration: 0.6,
+                        ease: 'power2.out',
+                        overwrite: 'auto',
+                    });
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, {
+                        rotateY: 0,
+                        rotateX: 0,
+                        duration: 0.7,
+                        ease: 'power3.out',
+                        overwrite: 'auto',
+                    });
+                });
+            });
+
+            // ============ FEATURED SECTION: Parallax on visuals ============
+            /**
+             * Each featured visual moves at a different speed relative to scroll,
+             * creating a parallax depth effect.
+             */
+            featuredVisuals.forEach((visual) => {
+                const speed = parseFloat(visual.getAttribute('data-parallax-speed')) || 0.4;
+                gsap.fromTo(visual, {
+                    y: 0,
+                }, {
+                    y: () => -window.innerHeight * speed * 0.5,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: visual.closest('.featured-item'),
+                        start: 'top bottom',
+                        end: 'bottom top',
+                        scrub: 1,
+                        invalidateOnRefresh: true,
+                    },
+                });
+            });
+
+            // ============ CTA SECTION: Reveal on scroll ============
+            gsap.fromTo(ctaHeading, {
+                y: 50,
+                opacity: 0,
+                scale: 0.95,
+            }, {
+                y: 0,
+                opacity: 1,
+                scale: 1,
+                duration: 0.9,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '.cta-section',
+                    start: 'top bottom+=100px',
+                    toggleActions: 'play none none none',
+                },
+            });
+
+            gsap.fromTo(ctaButton, {
+                y: 30,
+                opacity: 0,
+            }, {
+                y: 0,
+                opacity: 1,
+                duration: 0.7,
+                delay: 0.2,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '.cta-section',
+                    start: 'top bottom+=100px',
+                    toggleActions: 'play none none none',
+                },
+            });
+
+            // ============ BACKGROUND ORBS: Subtle parallax on scroll ============
+            bgOrbs.forEach((orb, i) => {
+                const speeds = [0.15, 0.2, 0.12, 0.18];
+                gsap.to(orb, {
+                    y: () => window.innerHeight * speeds[i] * 0.6,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: document.body,
+                        start: 'top top',
+                        end: 'bottom bottom',
+                        scrub: 1,
+                    },
+                });
+            });
+
+            // ============ RESIZE HANDLER ============
+            /**
+             * On window resize, refresh ScrollTrigger and rebuild
+             * the horizontal scroll calculation.
+             */
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    ScrollTrigger.refresh(true);
+                    setupHorizontalScroll();
+                }, 250);
+            });
+
+            // ============ SMOOTH SCROLL FOR NAV LINKS ============
+            document.querySelectorAll('.nav__link[href^="#"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        e.preventDefault();
+                        // Use native smooth scroll as a fallback; ScrollTrigger will handle pinning
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            // Also make scroll indicator clickable
+            scrollIndicator.addEventListener('click', () => {
+                const storySection = document.getElementById('story');
+                if (storySection) {
+                    storySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+
+            console.log('%c✨ NOVA Portfolio %cReady %c— All animations initialized. Scroll to explore.',
+                'color: #a78bfa; font-size: 1.2em; font-weight: bold;',
+                'color: #22d3ee;',
+                'color: #9898b0;');
+        })();
+    </script>
+</body>
+</html>

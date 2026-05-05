@@ -86,9 +86,20 @@
                                     </div>
                                     <div class="text-end">
                                         <div class="small text-muted" style="font-size: 11px;">{{ $item->created_at->format('d M Y') }}</div>
-                                        <span class="badge rounded-pill {{ $item->status === 'pending' ? 'bg-secondary' : ($item->status === 'dibaca' ? 'bg-info' : 'bg-success') }} mt-1" style="font-size: 10px;">
-                                            {{ ucfirst($item->status) }}
-                                        </span>
+                                        <div class="d-flex align-items-center justify-content-end gap-2 mt-1">
+                                            <span class="badge rounded-pill {{ $item->status === 'pending' ? 'bg-secondary' : ($item->status === 'dibaca' ? 'bg-info' : 'bg-success') }}" style="font-size: 10px;">
+                                                {{ ucfirst($item->status) }}
+                                            </span>
+                                            @if(!$item->balasan)
+                                                <form action="{{ route('user.aspirasi.destroy', $item) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus aspirasi ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger p-0 px-1" style="font-size: 10px; border-radius: 4px;" title="Hapus Aspirasi">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                                 <p class="small text-secondary mb-3" style="line-height: 1.6;">{{ $item->isi }}</p>

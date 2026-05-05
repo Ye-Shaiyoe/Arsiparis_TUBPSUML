@@ -61,27 +61,7 @@
             transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* Loading Bar */
-        .page-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, #3b82f6, #60a5fa, #3b82f6);
-            background-size: 200% 100%;
-            z-index: 9999;
-            animation: loadingBar 2s linear infinite, fadeOutLoader 0.5s ease 0.8s forwards;
-            transform-origin: left;
-        }
-        @keyframes loadingBar {
-            0% { background-position: 100% 0; }
-            100% { background-position: -100% 0; }
-        }
-        @keyframes fadeOutLoader {
-            from { opacity: 1; transform: scaleY(1); }
-            to { opacity: 0; transform: scaleY(0); visibility: hidden; }
-        }
+
         .navbar-brand-text {
             font-size: 15px;
             font-weight: 700;
@@ -132,35 +112,15 @@
         .nav-link-item:hover {
             color: #2563eb !important;
             background: rgba(255,255,255,0.7);
-            transform: translateY(-1px);
         }
         .nav-link-item.active {
             color: #2563eb !important;
             background: rgba(255,255,255,0.9);
             box-shadow: 0 4px 12px rgba(31, 38, 135, 0.05);
         }
-        .nav-link-item::after {
-            content: '';
-            position: absolute;
-            bottom: 6px;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: #2563eb;
-            transition: width 0.3s ease;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-        .nav-link-item.active::after {
-            width: 16px;
-        }
         .nav-link-item i { 
             font-size: 1.1rem;
-            transition: transform 0.3s ease;
             display: inline-block;
-        }
-        .nav-link-item:hover i {
-            transform: scale(1.1);
         }
 
         /* ===== NOTIF BELL ===== */
@@ -325,7 +285,6 @@
         }
         .card-custom:hover {
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-            transform: translateY(-4px);
         }
 
         .stat-card {
@@ -340,33 +299,13 @@
             box-shadow: var(--glass-shadow);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s ease;
-        }
         .stat-card:hover {
-            transform: translateY(-8px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-        }
-        .stat-card:hover::before {
-            transform: scaleX(1);
         }
         .stat-card .stat-icon {
             font-size: 28px;
             margin-bottom: 8px;
             display: inline-block;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .stat-card:hover .stat-icon {
-            transform: scale(1.2) rotate(10deg);
         }
         .stat-card .stat-value {
             font-size: 28px;
@@ -379,20 +318,7 @@
             margin-top: 4px;
         }
 
-        /* ===== ANIMATIONS ===== */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.98);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        .animate-in {
-            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
-        }
+
 
         /* ===== TRACKING STEPS ===== */
         .tracking-steps { position: relative; }
@@ -640,11 +566,52 @@
             transform: scale(0.9);
         }
         .mobile-nav-item:hover { color: #3b82f6; }
+
+        /* ===== OFFCANVAS NOTIF ===== */
+        .offcanvas-notif {
+            width: 380px !important;
+            background: rgba(255, 255, 255, 0.75) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border-left: 1px solid var(--border-color) !important;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.05) !important;
+        }
+        .offcanvas-notif .offcanvas-header {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 20px 24px;
+        }
+        .offcanvas-notif .notif-item {
+            padding: 18px 24px;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            display: flex;
+            gap: 14px;
+            transition: all 0.2s ease;
+            text-decoration: none !important;
+        }
+        .offcanvas-notif .notif-item:hover {
+            background: rgba(255, 255, 255, 0.5);
+            padding-left: 28px;
+        }
+        .offcanvas-notif .notif-item.unread {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid #3b82f6;
+        }
+        .offcanvas-notif .notif-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
     </style>
 </head>
 <body>
-    {{-- Page Loader --}}
-    <div class="page-loader"></div>
+
 
 {{-- ===== NAVBAR ===== --}}
 <nav class="navbar navbar-main d-flex align-items-center justify-content-between">
@@ -655,6 +622,9 @@
 
     {{-- Nav Links --}}
     <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
+        <a href="{{ url('/?home=1') }}" class="nav-link-item">
+            <i class="bi bi-globe"></i> Beranda
+        </a>
         <a href="{{ route('dashboard') }}"
            class="nav-link-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <i class="bi bi-house"></i> Dashboard
@@ -733,64 +703,16 @@
     {{-- Right: notif + avatar --}}
     <div class="d-flex align-items-center gap-2">
 
-        {{-- Notifikasi --}}
-        <div class="dropdown">
-            <button type="button" class="notif-btn dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside"
-                    data-bs-placement="bottom-end"
-                    aria-expanded="false" id="notif-toggle">
-                <i class="bi bi-bell"></i>
-                @php $unreadNotif = auth()->user()->unreadNotifications->count(); @endphp
-                @if($unreadNotif > 0)
-                    <span class="notif-badge">{{ $unreadNotif > 9 ? '9+' : $unreadNotif }}</span>
-                @endif
-            </button>
-            <div class="dropdown-menu notif-dropdown dropdown-menu-end" aria-labelledby="notif-toggle">
-                <div class="notif-header">
-                    <span><i class="bi bi-bell me-1"></i> Notifikasi</span>
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        @if($unreadNotif > 0)
-                            <a href="{{ route('notif.readAll') }}"
-                               class="text-decoration-none" style="font-size:11px; color:#3b82f6;"
-                               onclick="event.preventDefault(); document.getElementById('readall-form').submit();">
-                                Tandai semua dibaca
-                            </a>
-                        @endif
-                        <a href="{{ route('dashboard') }}"
-                           class="text-decoration-none" style="font-size:11px; color:#3b82f6;"
-                           title="Refresh notifikasi">
-                            <i class="bi bi-arrow-clockwise"></i> Refresh
-                        </a>
-                    </div>
-                </div>
-
-                @forelse(auth()->user()->notifications->take(10) as $notif)
-                    <a href="{{ route('notif.read', $notif->id) }}"
-                       class="notif-item {{ $notif->read_at ? '' : 'unread' }}">
-                        <div class="notif-icon {{ $notif->data['type'] ?? 'info' }}">
-                            @switch($notif->data['type'] ?? 'info')
-                                @case('success') <i class="bi bi-check-circle-fill"></i> @break
-                                @case('warning') <i class="bi bi-exclamation-triangle-fill"></i> @break
-                                @case('danger')  <i class="bi bi-x-circle-fill"></i> @break
-                                @default         <i class="bi bi-info-circle-fill"></i>
-                            @endswitch
-                        </div>
-                        <div style="flex:1; min-width:0;">
-                            <div class="notif-title">{{ $notif->data['title'] ?? 'Notifikasi' }}</div>
-                            <div class="notif-sub">{{ Str::limit($notif->data['message'] ?? '', 55) }}</div>
-                            <div class="notif-time">{{ $notif->created_at->diffForHumans() }}</div>
-                        </div>
-                        @if(!$notif->read_at)
-                            <div style="width:7px;height:7px;border-radius:50%;background:#3b82f6;flex-shrink:0;margin-top:4px;"></div>
-                        @endif
-                    </a>
-                @empty
-                    <div class="notif-empty">
-                        <i class="bi bi-bell-slash" style="font-size:24px;display:block;margin-bottom:8px;"></i>
-                        Belum ada notifikasi
-                    </div>
-                @endforelse
-            </div>
-        </div>
+        {{-- Notifikasi (Sidebar Trigger) --}}
+        <button type="button" class="notif-btn" 
+                data-bs-toggle="offcanvas" data-bs-target="#offcanvasNotif"
+                aria-controls="offcanvasNotif" id="notif-toggle">
+            <i class="bi bi-bell"></i>
+            @php $unreadNotif = auth()->user()->unreadNotifications->count(); @endphp
+            @if($unreadNotif > 0)
+                <span class="notif-badge">{{ $unreadNotif > 9 ? '9+' : $unreadNotif }}</span>
+            @endif
+        </button>
 
         {{-- User dropdown --}}
         <div class="dropdown">
@@ -844,7 +766,7 @@
 </div>
 
 {{-- Main --}}
-<main class="main-content animate-in">
+<main class="main-content">
     @yield('content')
 </main>
 
@@ -853,10 +775,26 @@
 
 {{-- ===== MOBILE BOTTOM NAV ===== --}}
 <div class="mobile-bottom-nav d-lg-none">
-    <a href="{{ route('dashboard') }}" class="mobile-nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-        <i class="bi bi-house"></i>
-        <span>Home</span>
-    </a>
+    {{-- Dropup Beranda & Dashboard --}}
+    <div class="dropup" style="flex: 1;">
+        <button class="mobile-nav-item border-0 bg-transparent w-100 {{ request()->routeIs('dashboard') || request()->is('/') ? 'active' : '' }}" 
+                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-house"></i>
+            <span>Menu Utama</span>
+        </button>
+        <ul class="dropdown-menu border-0 shadow-lg" style="margin-bottom: 20px; border-radius: 15px; min-width: 160px;">
+            <li>
+                <a class="dropdown-item py-3 {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/?home=1') }}">
+                    <i class="bi bi-globe me-2"></i> Beranda Publik
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item py-3 {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                    <i class="bi bi-speedometer2 me-2"></i> Dashboard User
+                </a>
+            </li>
+        </ul>
+    </div>
     {{-- Dropup Surat Saya untuk Mobile --}}
     <div class="dropup" style="flex: 1;">
         <button class="mobile-nav-item border-0 bg-transparent w-100 {{ request()->routeIs('user.surat.*') && !request()->routeIs('user.surat.create') ? 'active' : '' }}" 
@@ -901,7 +839,7 @@
         </button>
         <ul class="dropdown-menu border-0 shadow-lg" style="margin-bottom: 20px; border-radius: 15px; min-width: 180px;">
             <li>
-                <a class="dropdown-item py-3 {{ request()->routeIs('user.notifikasi.index') ? 'active' : '' }}" href="{{ route('user.notifikasi.index') }}">
+                <a class="dropdown-item py-3" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNotif">
                     <i class="bi bi-bell me-2"></i> Notifikasi
                 </a>
             </li>
@@ -971,5 +909,64 @@
     });
 </script>
 @stack('scripts')
+
+{{-- ===== OFFCANVAS NOTIFIKASI ===== --}}
+<div class="offcanvas offcanvas-end offcanvas-notif" tabindex="-1" id="offcanvasNotif" aria-labelledby="offcanvasNotifLabel">
+    <div class="offcanvas-header d-flex align-items-center justify-content-between">
+        <h5 class="offcanvas-title fw-bold" id="offcanvasNotifLabel" style="font-size: 16px; color: var(--text-primary);">
+            <i class="bi bi-bell me-2 text-primary"></i> Notifikasi
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="px-4 py-2 border-bottom d-flex align-items-center justify-content-between bg-light bg-opacity-50">
+        <span class="text-muted" style="font-size: 11px;">{{ auth()->user()->notifications->count() }} Notifikasi Terakhir</span>
+        @if(auth()->user()->unreadNotifications->count() > 0)
+            <a href="#" onclick="event.preventDefault(); document.getElementById('readall-form').submit();" 
+               class="text-decoration-none fw-bold" style="font-size: 11px; color: #3b82f6;">
+                Tandai semua dibaca
+            </a>
+        @endif
+    </div>
+    <div class="offcanvas-body">
+        @forelse(auth()->user()->notifications->take(15) as $notif)
+            <a href="{{ route('notif.read', $notif->id) }}"
+               class="notif-item {{ $notif->read_at ? '' : 'unread' }}">
+                <div class="notif-icon {{ $notif->data['type'] ?? 'info' }}">
+                    @switch($notif->data['type'] ?? 'info')
+                        @case('success') <i class="bi bi-check-circle-fill text-success"></i> @break
+                        @case('warning') <i class="bi bi-exclamation-triangle-fill text-warning"></i> @break
+                        @case('danger')  <i class="bi bi-x-circle-fill text-danger"></i> @break
+                        @default         <i class="bi bi-info-circle-fill text-primary"></i>
+                    @endswitch
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.3;">
+                        {{ $notif->data['title'] ?? 'Notifikasi' }}
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                        {{ Str::limit($notif->data['message'] ?? '', 80) }}
+                    </div>
+                    <div style="font-size: 10px; color: var(--text-secondary); margin-top: 6px; opacity: 0.7;">
+                        <i class="bi bi-clock me-1"></i> {{ $notif->created_at->diffForHumans() }}
+                    </div>
+                </div>
+                @if(!$notif->read_at)
+                    <div style="width:8px; height:8px; border-radius:50%; background:#3b82f6; flex-shrink:0; margin-top:6px;"></div>
+                @endif
+            </a>
+        @empty
+            <div class="p-5 text-center">
+                <i class="bi bi-bell-slash text-muted" style="font-size: 40px; opacity: 0.3;"></i>
+                <p class="text-muted mt-3 small">Belum ada notifikasi baru untuk Anda.</p>
+            </div>
+        @endforelse
+    </div>
+    <div class="p-3 border-top text-center bg-light bg-opacity-50">
+        <a href="{{ route('dashboard') }}" class="text-decoration-none small fw-bold" style="color: #3b82f6;">
+            Buka Dashboard <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+</div>
+
 </body>
 </html>

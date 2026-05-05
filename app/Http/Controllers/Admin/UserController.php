@@ -15,32 +15,24 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::query()
-            ->leftJoin('surats', 'users.id', '=', 'surats.user_id')
-            ->select(
-                'users.id',
-                'users.name',
-                'users.email',
-                'users.role',
-                'users.created_at',
-                DB::raw('COUNT(CASE WHEN surats.id IS NOT NULL THEN 1 END) as total_surats'),
-                DB::raw('COUNT(CASE WHEN surats.status = "selesai" THEN 1 END) as surats_selesai'),
-                DB::raw('COUNT(CASE WHEN surats.status = "proses" THEN 1 END) as surats_proses'),
-                DB::raw('COUNT(CASE WHEN surats.status = "ditolak" THEN 1 END) as surats_ditolak')
-            )
-            ->groupBy('users.id', 'users.name', 'users.email', 'users.role', 'users.created_at');
+        $query = User::withCount([
+            'surats as total_surats',
+            'surats as surats_selesai' => function ($q) { $q->where('status', 'selesai'); },
+            'surats as surats_proses' => function ($q) { $q->where('status', 'proses'); },
+            'surats as surats_ditolak' => function ($q) { $q->where('status', 'ditolak'); },
+        ]);
 
         // Filter by role
         if ($request->filled('role')) {
-            $query->where('users.role', $request->role);
+            $query->where('role', $request->role);
         }
 
         // Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('users.name', 'like', "%{$search}%")
-                  ->orWhere('users.email', 'like', "%{$search}%");
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -64,7 +56,7 @@ class UserController extends Controller
             'total_surats_ditolak' => Surat::where('status', 'ditolak')->count(),
         ];
 
-        return view('admin.user.index', compact('users', 'stats'));
+        return view('admin.Settings.user.index', compact('users', 'stats'));
     }
 
     /**
@@ -85,7 +77,7 @@ class UserController extends Controller
             'avg_processing_days' => $this->calculateAverageProcessingDays($user),
         ];
 
-        return view('admin.user.show', compact('user', 'stats'));
+        return view('admin.Settings.user.show', compact('user', 'stats'));
     }
 
     /**

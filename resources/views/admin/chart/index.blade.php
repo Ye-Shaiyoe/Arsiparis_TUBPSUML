@@ -152,6 +152,21 @@ table.ringkasan .num-cell { text-align: right; font-family: 'DM Mono', monospace
       <div class="stat-note">tahun ini</div>
     </div>
   </div>
+  
+  {{-- ROW 0: Lifetime Mixed Chart (NEW) --}}
+  <div class="ch-card" style="margin-bottom: 20px;">
+    <div class="ch-card-header" style="display:flex; justify-content: space-between; align-items: flex-start;">
+      <div>
+        <div class="ch-card-title"><span class="ch-dot blue"></span>Tren Seluruh Surat (12 Bulan Terakhir)</div>
+        <div class="ch-sub">perbandingan surat masuk (bar) vs selesai (line) tanpa filter tahun</div>
+      </div>
+      <div class="legend-row" style="margin-top:5px;">
+        <span class="legend-item"><span class="legend-dot" style="background:#3b82f6"></span>Surat Masuk</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#16a34a"></span>Surat Selesai</span>
+      </div>
+    </div>
+    <div class="chart-wrap" style="height:280px;"><canvas id="chart-lifetime"></canvas></div>
+  </div>
 
   {{-- ROW 1: Bulanan + Status --}}
   <div class="charts-row">
@@ -308,6 +323,20 @@ table.ringkasan .num-cell { text-align: right; font-family: 'DM Mono', monospace
     </div>
     <div class="chart-wrap" style="height:220px;"><canvas id="chart-avg-proses"></canvas></div>
   </div>
+  
+  {{-- ROW 9: Lifetime Total Summary Card (Bottom) --}}
+  <div class="ch-card" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; margin-bottom: 30px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px;">
+      <div>
+        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; font-weight: 700;">Akumulasi Seluruh Waktu</div>
+        <div style="font-size: 14px; font-weight: 600; margin-top: 4px;">Total Keseluruhan Surat di Database</div>
+      </div>
+      <div style="text-align: right;">
+        <div id="sc-lifetime-total" style="font-size: 48px; font-weight: 800; font-family: 'DM Mono', monospace; line-height: 1;">—</div>
+        <div style="font-size: 10px; opacity: 0.8; font-weight: 600; margin-top: 5px;">SURAT TERARSIP</div>
+      </div>
+    </div>
+  </div>
 
 </div>{{-- .chart-page --}}
 
@@ -366,6 +395,7 @@ function loadCharts() {
       buildCompletionChart(d.completionTahap);
       buildSifatChart(d.sifatSurat);
       buildAvgProsesChart(d.avgWaktuProses);
+      buildLifetimeChart(d.lifetimeMixed);
       console.log('Charts auto-updated at:', new Date().toLocaleTimeString());
     })
     .catch(err => {
@@ -395,6 +425,10 @@ function updateStatCards(d) {
   document.getElementById('sc-selesai').textContent = b.selesai.reduce((a, v) => a + v, 0);
   document.getElementById('sc-proses').textContent  = d.suratPerStatus.proses;
   document.getElementById('sc-ditolak').textContent = b.ditolak.reduce((a, v) => a + v, 0);
+  
+  if (document.getElementById('sc-lifetime-total')) {
+    document.getElementById('sc-lifetime-total').textContent = d.totalSemua || 0;
+  }
 }
 
 let bulanType = 'bar', bulanData = null;
@@ -835,6 +869,58 @@ function buildAvgProsesChart(data) {
 }
 
 document.addEventListener('DOMContentLoaded', loadCharts);
+// 6. Lifetime Mixed Chart
+function buildLifetimeChart(data) {
+  destroyChart('lifetime');
+  const ctx = document.getElementById('chart-lifetime').getContext('2d');
+  charts['lifetime'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.labels,
+      datasets: [
+        {
+          label: 'Surat Selesai',
+          type: 'line',
+          data: data.selesai,
+          borderColor: C.green,
+          backgroundColor: 'transparent',
+          borderWidth: 3,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: C.green,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          yAxisID: 'y',
+        },
+        {
+          label: 'Surat Masuk',
+          data: data.masuk,
+          backgroundColor: 'rgba(59, 130, 246, 0.6)',
+          borderRadius: 6,
+          barThickness: 'flex',
+          yAxisID: 'y',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { mode: 'index', intersect: false }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: C.text } },
+        y: { 
+          beginAtZero: true, 
+          grid: { color: C.grid }, 
+          ticks: { font: { size: 10 }, precision: 0, color: C.text },
+          border: { display: false }
+        }
+      }
+    }
+  });
+}
 </script>
 
 @endsection

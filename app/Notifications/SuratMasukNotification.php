@@ -24,7 +24,7 @@ class SuratMasukNotification extends Notification
             'type'      => 'info',
             'title'     => 'Surat baru masuk',
             'message'   => "Pengajuan baru: \"{$this->surat->judul}\" dari {$this->surat->user->name}.",
-            'url'       => route('admin.surat.show', $this->surat->id),
+            'url'       => route('admin.surat.show', $this->surat),
             'jenis'     => $this->surat->jenis_label,
             'sifat'     => $this->surat->sifat,
         ];

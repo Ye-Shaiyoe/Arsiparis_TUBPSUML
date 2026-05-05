@@ -8,16 +8,48 @@ use Carbon\Carbon;
 class Surat extends Model
 {
     protected $fillable = [
-        'user_id', 'judul', 'jenis', 'sifat', 'tujuan',
-        'file_word', 'file_lampiran', 'nomor_surat', 'tanggal_surat',
-        'tahap_sekarang', 'status', 'perlu_follow_up', 'catatan_follow_up',
-        'deadline_sla', 'disetujui_pada', 'file_dihapus_pada', 'file_expires_at',
-        'status_revisi', 'revisi_count', 'revisi_uploaded_at',
+        'uuid',
+        'user_id',
+        'judul',
+        'jenis',
+        'sifat',
+        'tujuan',
+        'catatan_pengusul',
+        'file_word',
+        'file_lampiran',
+        'nomor_surat',
+        'tanggal_surat',
+        'tahap_sekarang',
+        'status',
+        'perlu_follow_up',
+        'catatan_follow_up',
+        'deadline_sla',
+        'disetujui_pada',
+        'file_dihapus_pada',
+        'file_expires_at',
+        'status_revisi',
+        'revisi_count',
+        'revisi_uploaded_at',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) \Illuminate\Support\Str::uuid();
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
 
     protected $casts = [
         'tanggal_surat' => 'date',
-        'deadline_sla'  => 'datetime',
+        'deadline_sla' => 'datetime',
         'perlu_follow_up' => 'boolean',
         'disetujui_pada' => 'datetime',
         'file_dihapus_pada' => 'datetime',
@@ -28,25 +60,25 @@ class Surat extends Model
 
     // Label tampilan
     const JENIS_LABEL = [
-        'nota_dinas'       => 'Nota Dinas',
-        'surat_dinas'      => 'Surat Dinas',
-        'surat_keputusan'  => 'Surat Keputusan',
+        'nota_dinas' => 'Nota Dinas',
+        'surat_dinas' => 'Surat Dinas',
+        'surat_keputusan' => 'Surat Keputusan',
         'surat_pernyataan' => 'Surat Pernyataan',
         'surat_keterangan' => 'Surat Keterangan',
-        'surat_undangan'   => 'Surat Undangan',
-        'surat_lainnya'    => 'Surat/Note Lainnya',
+        'surat_undangan' => 'Surat Undangan',
+        'surat_lainnya' => 'Surat Lainnya',
     ];
 
     const NAMA_TAHAP = [
-        1  => 'Usulan Diajukan',
-        2  => 'Verifikasi Arsiparis',
-        3  => 'Verifikasi Kasubbag TU',
-        4  => 'Persetujuan Kepala Balai',
-        5  => 'Penomoran Surat',
-        6  => 'Tanda Tangan (DS)',
-        7  => 'Pengiriman via TNDe',
-        8  => 'Pengiriman via Srikandi',
-        9  => 'Pengarsipan',
+        1 => 'Usulan Diajukan',
+        2 => 'Verifikasi Arsiparis',
+        3 => 'Verifikasi Kasubbag TU',
+        4 => 'Persetujuan Kepala Balai',
+        5 => 'Penomoran Surat',
+        6 => 'Tanda Tangan (DS)',
+        7 => 'Pengiriman via TNDe',
+        8 => 'Pengiriman via Srikandi',
+        9 => 'Pengarsipan',
         10 => 'Follow Up / Selesai',
     ];
 
@@ -84,13 +116,15 @@ class Surat extends Model
 
     public function getSlaStatusAttribute(): string
     {
-        if (!$this->deadline_sla || $this->status === 'selesai') return 'ok';
+        if (!$this->deadline_sla || $this->status === 'selesai')
+            return 'ok';
         return now()->gt($this->deadline_sla) ? 'terlambat' : 'ok';
     }
 
     public function getSisaJamAttribute(): string
     {
-        if (!$this->deadline_sla) return '-';
+        if (!$this->deadline_sla)
+            return '-';
         if (now()->gt($this->deadline_sla)) {
             $diff = round(now()->diffInHours($this->deadline_sla), 1);
             return 'Terlambat ' . $diff . 'j';
@@ -101,7 +135,8 @@ class Surat extends Model
 
     public function getJamTerlambatAttribute(): float
     {
-        if (!$this->deadline_sla || $this->status === 'selesai') return 0;
+        if (!$this->deadline_sla || $this->status === 'selesai')
+            return 0;
         if (now()->gt($this->deadline_sla)) {
             return round(now()->diffInHours($this->deadline_sla), 1);
         }
@@ -122,9 +157,9 @@ class Surat extends Model
     {
         foreach (self::NAMA_TAHAP as $tahap => $nama) {
             $this->tahapans()->create([
-                'tahap'      => $tahap,
+                'tahap' => $tahap,
                 'nama_tahap' => $nama,
-                'status'     => $tahap === 1 ? 'selesai' : 'menunggu',
+                'status' => $tahap === 1 ? 'selesai' : 'menunggu',
             ]);
         }
     }

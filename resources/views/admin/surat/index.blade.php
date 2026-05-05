@@ -28,11 +28,23 @@
         <div style="flex:1; min-width:100px;">
             <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:4px;">Tahun</label>
             <select name="tahun" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); border-radius:7px; font-size:13px;">
-                <option value="">Semua Tahun</option>
+                <option value="">Semua</option>
                 @php $startYear = 2024; $currentYear = date('Y'); @endphp
                 @for($y = $currentYear; $y >= $startYear; $y--)
                     <option value="{{ $y }}" {{ request('tahun') == $y ? 'selected' : '' }}>{{ $y }}</option>
                 @endfor
+            </select>
+        </div>
+
+        <div style="flex:1; min-width:120px;">
+            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:4px;">Bulan</label>
+            <select name="bulan" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); border-radius:7px; font-size:13px;">
+                <option value="">Semua Bulan</option>
+                @foreach(range(1, 12) as $m)
+                    <option value="{{ $m }}" {{ request('bulan') == $m ? 'selected' : '' }}>
+                        {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+                    </option>
+                @endforeach
             </select>
         </div>
 

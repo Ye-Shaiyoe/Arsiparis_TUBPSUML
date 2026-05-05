@@ -31,7 +31,7 @@ class SuratDiprosesNotification extends Notification
             'type'     => $type,
             'title'    => "Surat {$this->aksi} oleh {$this->diprosesByUser->name}",
             'message'  => "\"{$this->surat->judul}\" telah {$this->aksi} — sekarang di tahap {$this->surat->tahap_sekarang}/10.",
-            'url'      => route('admin.surat.show', $this->surat->id),
+            'url'      => route('admin.surat.show', $this->surat),
         ];
     }
 }

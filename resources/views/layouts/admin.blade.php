@@ -8,14 +8,13 @@
     <title>@yield('title', 'Admin') — Persuratan BP SUML</title>
     <link rel="icon" href="{{ asset('images/metrologi.png') }}">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 
     {{-- Bootstrap CDN for Legacy Grid & Components --}}
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 
-    {{-- Tailwind CDN (ganti dengan Tailwind via Vite jika sudah dikonfigurasi) --}}
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -61,9 +60,11 @@
 
     {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    {{-- Alpine JS CDN (Fallback jika Vite/app.js mati) --}}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
         /* ===== SCROLLBAR CUSTOM ===== */
@@ -162,6 +163,69 @@
             backdrop-filter: blur(2px);
         }
         #mobile-backdrop.show { display: block; animation: fadeIn 0.2s ease; }
+
+        /* ===== OFFCANVAS NOTIF ===== */
+        .offcanvas-notif {
+            width: 380px !important;
+            background: rgba(255, 255, 255, 0.75) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border-left: 1px solid var(--border-color) !important;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.05) !important;
+        }
+        .dark .offcanvas-notif {
+            background: rgba(15, 23, 42, 0.75) !important;
+        }
+        .offcanvas-notif .offcanvas-header {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 20px 24px;
+        }
+        .dark .offcanvas-notif .offcanvas-header {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .offcanvas-notif .notif-item {
+            padding: 18px 24px;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            display: flex;
+            gap: 14px;
+            transition: all 0.2s ease;
+            text-decoration: none !important;
+        }
+        .dark .offcanvas-notif .notif-item {
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .offcanvas-notif .notif-item:hover {
+            background: rgba(255, 255, 255, 0.5);
+            padding-left: 28px;
+        }
+        .dark .offcanvas-notif .notif-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .offcanvas-notif .notif-item.unread {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid #3b82f6;
+        }
+        .offcanvas-notif .notif-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+        }
+        .offcanvas-notif .notif-icon.success { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+        .offcanvas-notif .notif-icon.warning { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+        .offcanvas-notif .notif-icon.danger { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+        .offcanvas-notif .notif-icon.info { background: #dbeafe; color: #1d4ed8; border-color: #bfdbfe; }
+        
+        .dark .offcanvas-notif .notif-icon.success { background: rgba(21, 128, 61, 0.2); color: #4ade80; border-color: rgba(74, 222, 128, 0.2); }
+        .dark .offcanvas-notif .notif-icon.warning { background: rgba(180, 83, 9, 0.2); color: #fbbf24; border-color: rgba(251, 191, 36, 0.2); }
+        .dark .offcanvas-notif .notif-icon.danger { background: rgba(185, 28, 28, 0.2); color: #f87171; border-color: rgba(248, 113, 113, 0.2); }
+        .dark .offcanvas-notif .notif-icon.info { background: rgba(29, 78, 216, 0.2); color: #60a5fa; border-color: rgba(96, 165, 250, 0.2); }
 
         /* ===== LEGACY CSS VARIABLES FOR CONTENT ===== */
         :root {
@@ -416,6 +480,13 @@
         {{-- UTAMA --}}
         <p class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-white/30">Utama</p>
 
+        <a href="{{ url('/?home=1') }}"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
+                  border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white">
+            <i class="bi bi-globe text-base w-5 text-center shrink-0"></i>
+            <span>Beranda</span>
+        </a>
+
         <a href="{{ route('admin.dashboard') }}"
            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
                   border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white
@@ -619,7 +690,7 @@
 
     {{-- ===== TOPBAR ===== --}}
     <header id="topbar"
-        class="sticky top-0 z-30 h-14 px-4 lg:px-6 flex items-center gap-3
+        class="sticky top-0 z-30 h-16 px-4 lg:px-10 flex items-center gap-6
                bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/80 dark:border-slate-800/80
                transition-colors duration-300">
 
@@ -631,7 +702,7 @@
 
         {{-- Page Title --}}
         <div class="flex-1 min-w-0">
-            <h1 class="text-[14px] lg:text-[15px] font-semibold text-slate-800 dark:text-slate-100 truncate">
+            <h1 class="text-[14px] lg:text-[20px] font-semibold text-slate-800 dark:text-slate-100 truncate">
                 {{ $title ?? 'Dashboard' }}
             </h1>
         </div>
@@ -647,7 +718,7 @@
             </button>
 
             {{-- Notification Bell --}}
-            <a href="{{ route('admin.notifikasi.index') }}"
+            <button type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNotif" aria-controls="offcanvasNotif"
                 class="relative w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400
                        hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <i class="bi bi-bell text-[15px]"></i>
@@ -657,7 +728,7 @@
                         <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse"></span>
                     @endif
                 </span>
-            </a>
+            </button>
 
             {{-- Divider --}}
             <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
@@ -665,15 +736,15 @@
             {{-- User Dropdown --}}
             <div class="relative" id="user-dropdown-wrap">
                 <button onclick="toggleUserDropdown()" id="user-avatar-btn"
-                    class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group">
-                    <div class="w-7 h-7 rounded-full bg-navy-600 text-white flex items-center justify-center text-[11px] font-bold shrink-0 overflow-hidden ring-2 ring-navy-300/30">
+                    class="flex items-center gap-3 pl-3 pr-5 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group">
+                    <div class="w-10 h-10 rounded-full bg-navy-600 text-white flex items-center justify-center text-[13px] font-bold shrink-0 overflow-hidden ring-2 ring-navy-300/30">
                         @if(Auth::user()->profile_photo)
                             <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile" class="w-full h-full object-cover">
                         @else
                             {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                         @endif
                     </div>
-                    <span class="text-[13px] font-medium text-slate-700 dark:text-slate-200 hidden sm:block max-w-[120px] truncate">{{ Auth::user()->name }}</span>
+                    <span class="text-[14px] font-medium text-slate-700 dark:text-slate-200 hidden sm:block max-w-[140px] truncate">{{ Auth::user()->name }}</span>
                     <i class="bi bi-chevron-down text-[11px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors hidden sm:block"></i>
                 </button>
 
@@ -751,12 +822,13 @@
      SCRIPTS
 ============================================================ --}}
 <script>
-    // ===== DARK MODE =====
-    (function () {
-        const isDark = localStorage.getItem('darkMode') === 'true';
-        if (isDark) document.documentElement.classList.add('dark');
-        updateDarkIcon();
-    })();
+    // ===== FUNGSI GLOBAL =====
+    function updateDarkIcon() {
+        const icon = document.getElementById('dark-mode-icon');
+        if (!icon) return;
+        const isDark = document.documentElement.classList.contains('dark');
+        icon.className = isDark ? 'bi bi-sun text-[15px]' : 'bi bi-moon-stars text-[15px]';
+    }
 
     function toggleDarkMode() {
         const isDark = document.documentElement.classList.toggle('dark');
@@ -764,14 +836,6 @@
         updateDarkIcon();
     }
 
-    function updateDarkIcon() {
-        const icon = document.getElementById('dark-mode-icon');
-        const isDark = document.documentElement.classList.contains('dark');
-        if (!icon) return;
-        icon.className = isDark ? 'bi bi-sun text-[15px]' : 'bi bi-moon-stars text-[15px]';
-    }
-
-    // ===== SIDEBAR MOBILE =====
     function openSidebar() {
         document.getElementById('sidebar').classList.remove('-translate-x-full');
         document.getElementById('mobile-backdrop').classList.add('show');
@@ -782,87 +846,108 @@
         document.getElementById('mobile-backdrop').classList.remove('show');
     }
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeSidebar();
-    });
-
-    // ===== USER DROPDOWN =====
     function toggleUserDropdown() {
         const menu = document.getElementById('user-dropdown');
-        menu.classList.toggle('hidden');
+        if (menu) menu.classList.toggle('hidden');
     }
 
-    document.addEventListener('click', function (e) {
-        const wrap = document.getElementById('user-dropdown-wrap');
-        const menu = document.getElementById('user-dropdown');
-        if (wrap && menu && !wrap.contains(e.target)) {
-            menu.classList.add('hidden');
-        }
-    });
+    // ===== INISIALISASI SAAT LOAD =====
+    (function() {
+        // Dark Mode Init
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        if (isDark) document.documentElement.classList.add('dark');
+        
+        // Jalankan update icon setelah DOM siap
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDarkIcon();
+            
+            // Close dropdown on outside click
+            document.addEventListener('click', function (e) {
+                const wrap = document.getElementById('user-dropdown-wrap');
+                const menu = document.getElementById('user-dropdown');
+                if (wrap && menu && !wrap.contains(e.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
 
-    // ===== AUTO-DISMISS FLASH =====
-    setTimeout(() => {
-        document.querySelectorAll('.toast-enter').forEach(el => {
-            el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(-6px)';
-            setTimeout(() => el.remove(), 400);
+            // Dismiss flash messages
+            setTimeout(() => {
+                document.querySelectorAll('.toast-enter').forEach(el => {
+                    el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(-6px)';
+                    setTimeout(() => el.remove(), 400);
+                });
+            }, 4500);
         });
-    }, 4500);
 
-    // ===== REAL-TIME SIDEBAR COUNTS =====
-    let isFetchingSidebar = false;
-    function updateSidebarCounts() {
-        if (isFetchingSidebar || document.hidden) return;
-        isFetchingSidebar = true;
-
-        fetch('{{ route("admin.sidebar.counts") }}', {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            // 1. Antrian Badge
-            const antrianContainer = document.getElementById('sidebar-antrian-badge-container');
-            if (antrianContainer) {
-                if (data.antrianCount > 0) {
-                    antrianContainer.innerHTML = `<span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none min-w-[18px] text-center">${data.antrianCount}</span>`;
-                } else {
-                    antrianContainer.innerHTML = '';
-                }
-            }
-
-            // 2. Notification Badge (Sidebar)
-            const notifContainer = document.getElementById('sidebar-notif-badge-container');
-            if (notifContainer) {
-                if (data.notifCount > 0) {
-                    notifContainer.innerHTML = `<span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none min-w-[18px] text-center animate-pulse">${data.notifCount}</span>`;
-                } else {
-                    notifContainer.innerHTML = '';
-                }
-            }
-
-            // 3. Notification Badge (Topbar)
-            const topbarNotifContainer = document.getElementById('topbar-notif-badge-container');
-            if (topbarNotifContainer) {
-                if (data.notifCount > 0) {
-                    topbarNotifContainer.innerHTML = `<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse"></span>`;
-                } else {
-                    topbarNotifContainer.innerHTML = '';
-                }
-            }
-        })
-        .catch(err => console.error('Sidebar Polling Error:', err))
-        .finally(() => {
-            isFetchingSidebar = false;
+        // Keydown listener
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSidebar();
         });
-    }
-
-    setInterval(updateSidebarCounts, 20000); // Setiap 20 detik
-    setTimeout(updateSidebarCounts, 5000);   // Jalankan pertama kali setelah 5 detik
+    })();
 </script>
+
+{{-- Form untuk Tandai Semua Dibaca --}}
+<form id="readall-form" action="{{ route('notif.readAll') }}" method="POST" class="d-none">@csrf</form>
+
+{{-- ===== OFFCANVAS NOTIFIKASI ===== --}}
+<div class="offcanvas offcanvas-end offcanvas-notif" tabindex="-1" id="offcanvasNotif" aria-labelledby="offcanvasNotifLabel">
+    <div class="offcanvas-header d-flex align-items-center justify-content-between">
+        <h5 class="offcanvas-title fw-bold" id="offcanvasNotifLabel" style="font-size: 16px; color: var(--text-primary);">
+            <i class="bi bi-bell me-2 text-primary"></i> Notifikasi
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="px-4 py-2 border-bottom d-flex align-items-center justify-content-between bg-slate-50 dark:bg-slate-800/50" style="border-color: var(--border-color) !important;">
+        <span style="font-size: 11px; color: var(--text-secondary);">{{ auth()->user()->notifications->count() }} Notifikasi Terakhir</span>
+        @if(auth()->user()->unreadNotifications->count() > 0)
+            <a href="#" onclick="event.preventDefault(); document.getElementById('readall-form').submit();" 
+               class="text-decoration-none fw-bold" style="font-size: 11px; color: #3b82f6;">
+                Tandai semua dibaca
+            </a>
+        @endif
+    </div>
+    <div class="offcanvas-body p-0" style="overflow-y: auto; overflow-x: hidden;">
+        @forelse(auth()->user()->notifications->take(15) as $notif)
+            <a href="{{ route('notif.read', $notif->id) }}"
+               class="notif-item {{ $notif->read_at ? '' : 'unread' }}">
+                <div class="notif-icon {{ $notif->data['type'] ?? 'info' }}">
+                    @switch($notif->data['type'] ?? 'info')
+                        @case('success') <i class="bi bi-check-circle-fill text-success"></i> @break
+                        @case('warning') <i class="bi bi-exclamation-triangle-fill text-warning"></i> @break
+                        @case('danger')  <i class="bi bi-x-circle-fill text-danger"></i> @break
+                        @default         <i class="bi bi-info-circle-fill text-primary"></i>
+                    @endswitch
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.3;">
+                        {{ $notif->data['title'] ?? 'Notifikasi' }}
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                        {{ Str::limit($notif->data['message'] ?? '', 80) }}
+                    </div>
+                    <div style="font-size: 10px; color: var(--text-secondary); margin-top: 6px; opacity: 0.7;">
+                        <i class="bi bi-clock me-1"></i> {{ $notif->created_at->diffForHumans() }}
+                    </div>
+                </div>
+                @if(!$notif->read_at)
+                    <div style="width:8px; height:8px; border-radius:50%; background:#3b82f6; flex-shrink:0; margin-top:6px;"></div>
+                @endif
+            </a>
+        @empty
+            <div class="p-5 text-center">
+                <i class="bi bi-bell-slash text-slate-300 dark:text-slate-600" style="font-size: 40px; opacity: 0.5;"></i>
+                <p class="mt-3 small" style="color: var(--text-secondary);">Belum ada notifikasi baru untuk Anda.</p>
+            </div>
+        @endforelse
+    </div>
+    <div class="p-3 border-top text-center bg-slate-50 dark:bg-slate-800/50" style="border-color: var(--border-color) !important;">
+        <a href="{{ route('admin.notifikasi.index') }}" class="text-decoration-none small fw-bold" style="color: #3b82f6;">
+            Lihat Semua Notifikasi <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+</div>
 
 @stack('scripts')
 </body>
