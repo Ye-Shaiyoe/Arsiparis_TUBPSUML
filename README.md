@@ -84,7 +84,7 @@
 - Keamanan via `switch_token` (hash, expired 30 hari)
 
 ### 📊 Dashboard Realtime
-- Update otomatis setiap 15–20 detik
+- Update otomatis setiap 15–20 detik(contoh jika user berada di dashoard. itu akan berjalan tapi jika ganti misal ke template maka fitur update otomatis gk bekerja) untuk mngurangi beban server
 - Chart statistik persuratan (Line, Bar, Pie, Donut, Mixed Chart)
 - Kartu ringkasan: Total Surat, Draft, Disetujui, Ditolak, Diproses, Revisi
 
