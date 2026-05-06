@@ -278,7 +278,7 @@
                             <template x-for="surat in antrian.items" :key="surat.uuid || surat.id">
                                 <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                     <td>
-                                        <div class="font-bold text-slate-800 dark:text-slate-200 text-sm line-clamp-1"
+                                        <div class="font-bold text-slate-800 dark:text-slate-200 text-sm overflow-hidden text-ellipsis whitespace-nowrap"
                                             x-text="surat.judul"></div>
                                         <div class="text-[10px] text-slate-500 mt-1 font-medium"><i
                                                 class="bi bi-calendar-event me-1"></i> <span

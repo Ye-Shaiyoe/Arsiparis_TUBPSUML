@@ -90,6 +90,7 @@ class SwitchAccountController extends Controller
             'email'     => $targetUser->email,
             'initials'  => strtoupper(substr($targetUser->name, 0, 2)),
             'role'      => $targetUser->getRoleLabel(),
+            'photo'     => $targetUser->profile_photo ? \Illuminate\Support\Facades\Storage::url($targetUser->profile_photo) : null,
         ]);
     }
 }

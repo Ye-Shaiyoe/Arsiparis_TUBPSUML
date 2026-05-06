@@ -316,6 +316,10 @@
         /* TABLES */
         .table-wrap {
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            display: block;
+            width: 100%;
+            border-radius: 8px;
         }
 
         table {
@@ -334,12 +338,14 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
         }
 
         tbody td {
             padding: 12px 16px;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-primary);
+            white-space: nowrap;
         }
 
         tbody tr:hover td {
@@ -754,9 +760,18 @@
                     class="hidden absolute right-0 top-[calc(100%+8px)] w-[230px]
                            border rounded-2xl shadow-xl overflow-hidden z-50
                            animate-fade-in">
-                    <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800" style="border-color: var(--border-color);">
-                        <div class="text-[13px] font-semibold text-slate-800 dark:text-slate-100 truncate" style="color: var(--text-primary);">{{ Auth::user()->name }}</div>
-                        <div class="text-[11px] text-slate-400 mt-0.5 truncate" style="color: var(--text-secondary);">{{ Auth::user()->email ?? 'Admin' }}</div>
+                    <div class="px-4 py-3 border-b flex items-center gap-3" style="border-color: var(--border-color);">
+                        <div class="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-xs text-slate-500">
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile" class="w-full h-full object-cover">
+                            @else
+                                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                            @endif
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-[13px] font-semibold truncate" style="color: var(--text-primary);">{{ Auth::user()->name }}</div>
+                            <div class="text-[11px] mt-0.5 truncate" style="color: var(--text-secondary);">{{ Auth::user()->email ?? 'Admin' }}</div>
+                        </div>
                     </div>
                     <div class="py-1.5">
                         <a href="{{ route('profile.edit') }}"
@@ -872,6 +887,7 @@
         email:        '{{ addslashes(Auth::user()->email) }}',
         initials:     '{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}',
         role:         '{{ Auth::user()->getRoleLabel() }}',
+        photo:        '{{ Auth::user()->profile_photo ? Storage::url(Auth::user()->profile_photo) : "" }}',
         switch_token: '{{ session("switch_token_raw", "") }}'
     };
     const SWITCH_URL  = '{{ route("auth.switch") }}';
@@ -906,7 +922,9 @@
                onclick="doSwitchAccount(event, ${acc.id}, '${acc.switch_token}')"
                class="flex items-center gap-2 px-4 py-2 text-[12px] hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                style="text-decoration:none;">
-                <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">${acc.initials}</div>
+                <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;overflow:hidden;">
+                    ${acc.photo ? `<img src="${acc.photo}" style="width:100%;height:100%;object-fit:cover;">` : acc.initials}
+                </div>
                 <div style="flex:1;min-width:0;">
                     <div style="font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.name}</div>
                     <div style="font-size:10px;color:var(--text-secondary);">${acc.role || acc.email}</div>
@@ -946,9 +964,13 @@
             if (data.success) {
                 let accounts = getSavedAccounts();
                 const idx = accounts.findIndex(a => a.id === data.user_id);
-                if (idx >= 0) accounts[idx].switch_token = data.new_token;
-                else accounts.push({ id: data.user_id, name: data.name, email: data.email,
-                                     initials: data.initials, role: data.role, switch_token: data.new_token });
+                if (idx >= 0) {
+                    accounts[idx].switch_token = data.new_token;
+                    accounts[idx].photo = data.photo;
+                } else {
+                    accounts.push({ id: data.user_id, name: data.name, email: data.email,
+                                     initials: data.initials, role: data.role, photo: data.photo, switch_token: data.new_token });
+                }
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
                 window.location.href = data.redirect;
             } else {

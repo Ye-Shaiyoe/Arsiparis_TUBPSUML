@@ -724,10 +724,21 @@
                 @endif
             </div>
             <ul class="dropdown-menu dropdown-menu-end" style="border-radius:10px; border:none; box-shadow:0 8px 24px rgba(0,0,0,0.1); font-size:13px; min-width:180px;">
-                <li><div class="px-3 py-2 border-bottom">
-                    <div style="font-weight:600; color:var(--text-primary); font-size:13px;">{{ Auth::user()->name }}</div>
-                    <div style="font-size:11px; color:var(--text-secondary);">{{ Auth::user()->email }}</div>
-                </div></li>
+                <li>
+                    <div class="px-3 py-3 border-bottom d-flex align-items-center gap-3">
+                        <div style="width:32px; height:32px; border-radius:50%; overflow:hidden; flex-shrink:0; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:11px; color:var(--text-secondary);">
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                            @else
+                                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                            @endif
+                        </div>
+                        <div style="min-width:0;">
+                            <div style="font-weight:600; color:var(--text-primary); font-size:13px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ Auth::user()->name }}</div>
+                            <div style="font-size:11px; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ Auth::user()->email }}</div>
+                        </div>
+                    </div>
+                </li>
                 <li><a class="dropdown-item py-2" href="{{ route('profile.edit') }}">
                     <i class="bi bi-person me-2"></i> Profil Saya
                 </a></li>
@@ -953,6 +964,7 @@
         email:       '{{ addslashes(Auth::user()->email) }}',
         initials:    '{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}',
         role:        'user',
+        photo:       '{{ Auth::user()->profile_photo ? Storage::url(Auth::user()->profile_photo) : "" }}',
         switch_token: '{{ session("switch_token_raw", "") }}'
     };
     const SWITCH_URL  = '{{ route("auth.switch") }}';
@@ -987,7 +999,9 @@
                 <a class="dropdown-item py-2" href="#" id="switch-btn-${acc.id}"
                    onclick="doSwitchAccount(event, ${acc.id}, '${acc.switch_token}')"
                    style="display:flex; align-items:center; gap:10px; padding:8px 16px;">
-                    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${acc.initials}</div>
+                    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;overflow:hidden;">
+                        ${acc.photo ? `<img src="${acc.photo}" style="width:100%;height:100%;object-fit:cover;">` : acc.initials}
+                    </div>
                     <div style="flex:1;min-width:0;">
                         <div style="font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.name}</div>
                         <div style="font-size:10px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.email}</div>
@@ -1030,9 +1044,13 @@
                 // Update token baru di localStorage
                 let accounts = getSavedAccounts();
                 const idx = accounts.findIndex(a => a.id === data.user_id);
-                if (idx >= 0) accounts[idx].switch_token = data.new_token;
-                else accounts.push({ id: data.user_id, name: data.name, email: data.email,
-                                     initials: data.initials, role: data.role, switch_token: data.new_token });
+                if (idx >= 0) {
+                    accounts[idx].switch_token = data.new_token;
+                    accounts[idx].photo = data.photo;
+                } else {
+                    accounts.push({ id: data.user_id, name: data.name, email: data.email,
+                                     initials: data.initials, role: data.role, photo: data.photo, switch_token: data.new_token });
+                }
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
                 // Redirect ke dashboard akun target
                 window.location.href = data.redirect;

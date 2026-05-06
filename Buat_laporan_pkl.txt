@@ -264,7 +264,7 @@ Berikut fitur-fitur yang ada pada website persuratan BP Suml buatan anak PKL ful
             A. Rekap Bulanan http://127.0.0.1:8000/Admin/Laporan
                 - Disini admin bisa melihat laporan surat
                 - ada filter 
-                - Hanya mengambil rekap bulanan dan bisa di export ke excel atau pdf.
+                - Hanya mengambil rekap bulanan dan bisa di export CSV atau excel.
             B. Riwayat Pemrosesan Surat http://127.0.0.1:8000/Admin/Riwayat
                 - Disini admin bisa melihat riwayat pemrosesan surat oleh siapa aja dan data lengkap berupa tabel. bisa di export juga csv dan excel.
         6. Kotak Aspirasi http://127.0.0.1:8000/Admin/Aspirasi

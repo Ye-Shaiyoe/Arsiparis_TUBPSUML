@@ -114,7 +114,7 @@
                     <tr>
                         <td style="color:var(--text-secondary); font-size:12px;">{{ $loop->iteration }}</td>
                         <td>
-                            <div style="font-weight:700; color:var(--text-primary); max-width:240px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;" title="{{ $surat->judul }}">
+                            <div style="font-weight:700; color:var(--text-primary); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $surat->judul }}">
                                 {{ $surat->judul }}
                             </div>
                             <div style="font-size:11px; color:#1e3a5f; margin-top:4px; font-weight: 600;">
@@ -127,7 +127,7 @@
                             </div>
                         </td>
                         <td>
-                            <div style="font-size:13px; font-weight: 600; color: var(--text-primary); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $surat->user?->name }}">
+                            <div style="font-size:13px; font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $surat->user?->name }}">
                                 {{ $surat->user?->name ?? '—' }}
                             </div>
                         </td>
@@ -144,7 +144,7 @@
                             @endif
                         </td>
                         <td>
-                            <div style="font-size: 12px; color: var(--text-primary); max-width: 140px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $surat->tujuan }}">
+                            <div style="font-size: 12px; color: var(--text-primary); line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $surat->tujuan }}">
                                 {{ $surat->tujuan ?? '—' }}
                             </div>
                         </td>
@@ -156,7 +156,7 @@
                             <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 10px; overflow: hidden;">
                                 <div style="width: {{ $surat->proses_persen }}%; height: 100%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 10px;"></div>
                             </div>
-                            <div style="font-size:10px; color:var(--text-secondary); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;" title="{{ $surat->nama_tahap }}">
+                            <div style="font-size:10px; color:var(--text-secondary); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $surat->nama_tahap }}">
                                 {{ $surat->nama_tahap }}
                             </div>
                         </td>
