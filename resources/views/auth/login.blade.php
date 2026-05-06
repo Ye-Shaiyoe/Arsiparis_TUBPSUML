@@ -630,6 +630,7 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 13px; font-weight: 700;
             flex-shrink: 0;
+            overflow: hidden;
         }
         .account-info { flex: 1; min-width: 0; }
         .account-name {
@@ -883,7 +884,9 @@
                     <a href="#" class="saved-account-card ${switchTarget === acc.email ? 'is-target' : ''}"
                        data-email="${acc.email}"
                        onclick="event.preventDefault(); selectAccount('${acc.email}', '${acc.name}')">
-                        <div class="account-avatar">${acc.initials}</div>
+                        <div class="account-avatar">
+                            ${acc.photo ? `<img src="${acc.photo}" style="width:100%;height:100%;object-fit:cover;">` : acc.initials}
+                        </div>
                         <div class="account-info">
                             <div class="account-name">${acc.name}</div>
                             <div class="account-email">${acc.email}</div>
