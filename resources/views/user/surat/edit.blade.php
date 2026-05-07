@@ -109,12 +109,15 @@
                             </div>
 
                             <div class="mt-3">
-                                <label class="form-label" style="font-size:13px;font-weight:500;color:#111827;">
-                                    Catatan (Opsional)
-                                </label>
-                                <textarea name="catatan_pengusul" rows="3" maxlength="1000"
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label mb-0" style="font-size:13px;font-weight:500;color:#111827;">
+                                        Catatan (Opsional)
+                                    </label>
+                                    <span id="charCount" class="text-muted" style="font-size: 11px;">0 / 100</span>
+                                </div>
+                                <textarea name="catatan_pengusul" id="catatan_pengusul" rows="3" maxlength="100"
                                     class="form-control @error('catatan_pengusul') is-invalid @enderror"
-                                    placeholder="Tambahkan catatan untuk admin jika diperlukan (maks 1000 karakter)"
+                                    placeholder="Tambahkan catatan singkat (maks 100 karakter)"
                                     style="font-size:13px; border-radius:8px;background:#ffffff;color:#111827;border-color:#e5e7eb;">{{ old('catatan_pengusul', $surat->catatan_pengusul) }}</textarea>
                                 @error('catatan_pengusul')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -247,6 +250,27 @@ document.getElementById('formEdit')?.addEventListener('submit', function(e) {
         text.innerText = 'Mengirim...';
     }
 });
+
+// Character Counter logic
+const catatanInput = document.getElementById('catatan_pengusul');
+const charCount = document.getElementById('charCount');
+
+if (catatanInput && charCount) {
+    const updateCount = () => {
+        const len = catatanInput.value.length;
+        charCount.innerText = `${len} / 100`;
+        if (len >= 100) {
+            charCount.classList.add('text-danger');
+            charCount.classList.remove('text-muted');
+        } else {
+            charCount.classList.remove('text-danger');
+            charCount.classList.add('text-muted');
+        }
+    };
+    
+    catatanInput.addEventListener('input', updateCount);
+    updateCount(); // Initial count
+}
 </script>
 @endpush
 
