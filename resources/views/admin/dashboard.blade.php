@@ -455,6 +455,11 @@
 
         </div>
 
+        {{-- ACTIVITY HEATMAP --}}
+        <div class="mb-6">
+            <x-activity-heatmap :data="$heatmapData" title="Aktivitas Pemrosesan Surat" />
+        </div>
+
     </div>
 
 @endsection
