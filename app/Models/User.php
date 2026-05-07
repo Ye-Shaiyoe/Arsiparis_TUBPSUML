@@ -93,6 +93,83 @@ class User extends Authenticatable
     }
 
     /**
+     * Data Heatmap untuk User (Pengajuan & Revisi)
+     */
+    public function getActivityHeatmapData()
+    {
+        $startDate = \Carbon\Carbon::create(2026, 1, 1)->startOfDay();
+
+        // Ambil data pengajuan
+        $submissions = $this->surats()
+            ->where('created_at', '>=', $startDate)
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date')
+            ->toArray();
+
+        // Ambil data revisi (jika ada field revisi_uploaded_at)
+        $revisions = $this->surats()
+            ->whereNotNull('revisi_uploaded_at')
+            ->where('revisi_uploaded_at', '>=', $startDate)
+            ->selectRaw('DATE(revisi_uploaded_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date')
+            ->toArray();
+
+        // Gabungkan
+        $combined = [];
+        foreach ($submissions as $date => $count) {
+            $combined[$date] = ($combined[$date] ?? 0) + $count;
+        }
+        foreach ($revisions as $date => $count) {
+            $combined[$date] = ($combined[$date] ?? 0) + $count;
+        }
+
+        return $combined;
+    }
+
+    /**
+     * Data Heatmap untuk Admin (Pemrosesan Surat)
+     */
+    public function getAdminActivityHeatmapData()
+    {
+        $startDate = \Carbon\Carbon::create(2026, 1, 1)->startOfDay();
+
+        return \App\Models\SuratTahapan::where('diproses_oleh', $this->id)
+            ->whereNotNull('selesai_pada')
+            ->where('selesai_pada', '>=', $startDate)
+            ->selectRaw('DATE(selesai_pada) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date')
+            ->toArray();
+    }
+
+    /**
+     * Data Aktivitas Mingguan untuk User (Chart)
+     */
+    public function getWeeklyActivityData()
+    {
+        $last7Days = collect();
+        for ($i = 6; $i >= 0; $i--) {
+            $last7Days->put(now()->subDays($i)->format('Y-m-d'), 0);
+        }
+
+        $activity = $this->getActivityHeatmapData();
+        
+        foreach ($last7Days as $date => $val) {
+            if (isset($activity[$date])) {
+                $last7Days[$date] = $activity[$date];
+            }
+        }
+
+        return [
+            'labels' => $last7Days->keys()->map(fn($d) => \Carbon\Carbon::parse($d)->translatedFormat('D'))->toArray(),
+            'values' => $last7Days->values()->toArray(),
+            'total' => $last7Days->sum(),
+        ];
+    }
+
+    /**
      * The attributes that should be hidden for serialization.
      *
      * @var list<string>
