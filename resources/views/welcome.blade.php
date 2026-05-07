@@ -2493,23 +2493,54 @@
                 padding: 8px 16px;
             }
 
+            #features-scroller {
+                overflow: visible;
+            }
+
+            .features-sticky-wrap {
+                position: relative !important;
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+            }
+
+            .features-horizontal-track {
+                display: block !important;
+                width: 100% !important;
+                transform: none !important;
+            }
+
             .feature-slide {
-                padding: 0 20px;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 80vh;
+                padding: 80px 24px !important;
+                display: flex !important;
+                flex-direction: column;
+                justify-content: center;
+                border-bottom: 1px solid var(--glass-border);
+            }
+
+            .feature-slide.first-slide, .feature-slide.last-slide {
+                width: 100% !important;
             }
 
             .feature-visual-wrap {
-                flex-direction: column;
+                flex-direction: column !important;
                 gap: 40px;
                 text-align: center;
+                display: flex !important;
             }
 
             .feature-display-title {
-                font-size: 34px;
+                font-size: clamp(32px, 8vw, 42px);
+                line-height: 1.2;
             }
 
             .tracking-flow {
                 padding: 15px;
                 border-radius: 20px;
+                margin-top: 30px;
             }
 
             .flow-stepper {
@@ -2524,22 +2555,72 @@
 
             .footer-grid {
                 grid-template-columns: 1fr;
-                gap: 40px;
+                gap: 50px;
                 text-align: center;
+                padding-top: 40px;
             }
 
             .footer-brand {
-                margin: 0 auto 15px;
+                margin: 0 auto 20px;
+                font-size: 24px;
+            }
+
+            .footer-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px 25px;
+            }
+
+            .footer-links li {
+                margin-bottom: 0;
             }
 
             .footer-socials {
                 justify-content: center;
+                margin-top: 20px;
+                gap: 20px;
+            }
+
+            .footer-cta-band {
+                flex-direction: column;
+                text-align: center;
+                gap: 25px;
+                padding: 40px 20px;
+                align-items: center;
+            }
+
+            .footer-cta-text {
+                font-size: clamp(22px, 7vw, 28px);
+                line-height: 1.3;
+                max-width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .footer-cta-btns {
+                width: 100%;
+                justify-content: center;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+
+            .btn-primary, .btn-secondary {
+                flex: 1;
+                min-width: 140px;
+                justify-content: center;
+            }
+
+            .tm-label {
+                font-size: 8px;
+                letter-spacing: 0.15em;
+                padding: 0 15px;
             }
 
             .footer-bottom {
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
+                padding: 30px 20px;
             }
 
             .dev-header-minimal h3 {
@@ -2717,22 +2798,21 @@
     <section id="hero">
         <div class="hero-eyebrow">
             <span class="hero-eyebrow-line"></span>
-            Sistem Arsip Digital
+            Sistem Persuratan Digital
         </div>
         <h1 class="hero-title">
             <span class="line">Balai Pengelolaan</span>
             <span class="line"><em>Standar Ukuran</em></span>
-            <span class="line">&amp; Metrologi Legal</span>
+            <span class="line"> Metrologi Legal</span>
         </h1>
         <p class="hero-subtitle">
-            Sistem pengelolaan surat dan dokumen resmi Balai Pengelolaan Standar Ukuran &amp;
-            Metrologi Legal — terarsip, terstruktur, dan mudah diakses kapan saja.
+            Sistem Monitoring dan Pengelolaan Persuratan Balai Pengelolaan Standar Ukuran Metrologi Legal — Efisien, Efektif, Sistematis Serta Mudah Diakses Kapan Saja.
         </p>
         <div class="hero-cta">
             <a href="{{ route('login') }}" class="btn-primary">
                 Masuk Sistem
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
+                    <path d="M5 12h14M12 5l7 7-7 7" /> 
                 </svg>
             </a>
             <a href="{{ route('register') }}" class="btn-secondary">
@@ -2822,7 +2902,7 @@
                     <path
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <div class="about-card-title">Arsip Surat Digital</div>
+                <div class="about-card-title">Sistem Persuratan Digita</div>
                 <div class="about-card-body">Pengelolaan surat masuk, surat keluar, dan dokumen internal secara terpusat
                     dan terdigitalisasi.</div>
             </div>
@@ -2964,7 +3044,14 @@
         </div>
         <div class="portals-grid">
             @php
-                $portals = [['name' => 'SIMET', 'desc' => 'Sistem Informasi Metrologi', 'img' => 'logo.png', 'url' => 'https://metrologi.kemendag.go.id/'], ['name' => 'KEMENDAG', 'desc' => 'Kementerian Perdagangan', 'img' => 'kemendag.png', 'url' => 'https://www.kemendag.go.id/'], ['name' => 'SPBE', 'desc' => 'Informasi Aplikasi SISWASPK', 'img' => 'logo.png', 'url' => 'https://simpktn.kemendag.go.id/index.php/siswaspk'], ['name' => 'PPID', 'desc' => 'Informasi, Pelaporan & Dokumentasi', 'img' => 'kemendag.png', 'url' => 'https://metrologi.kemendag.go.id/pelaporan_ttu/web/home'], ['name' => 'LAPOR!', 'desc' => 'Layanan Pengaduan Online', 'img' => 'logo.png', 'url' => 'http://127.0.0.1:8000/dashboard'], ['name' => 'About BPSUML', 'desc' => 'Sistem BPSUML', 'img' => 'kemendag.png', 'url' => 'https://metrologi.kemendag.go.id/master_suml/']];
+                $portals = [
+                    ['name' => 'SIMET', 'desc' => 'Sistem Informasi Metrologi', 'img' => 'logo.png', 'url' => 'https://metrologi.kemendag.go.id/'],
+                    ['name' => 'KEMENDAG', 'desc' => 'Kementerian Perdagangan', 'img' => 'kemendag.png', 'url' => 'https://www.kemendag.go.id/'],
+                    ['name' => 'SPBE', 'desc' => 'Informasi Aplikasi SISWASPK', 'img' => 'logo.png', 'url' => 'https://simpktn.kemendag.go.id/index.php/siswaspk'],
+                    ['name' => 'PPID', 'desc' => 'Informasi, Pelaporan & Dokumentasi', 'img' => 'kemendag.png', 'url' => 'https://metrologi.kemendag.go.id/pelaporan_ttu/web/home'],
+                    ['name' => 'ASPIRASI', 'desc' => 'Layanan Pengaduan Online', 'img' => 'logo.png', 'url' => route('user.aspirasi.index')],
+                    ['name' => 'About BPSUML', 'desc' => 'Sistem BPSUML', 'img' => 'kemendag.png', 'url' => 'https://metrologi.kemendag.go.id/master_suml/']
+                ];
             @endphp
             @foreach($portals as $p)
                 <a href="{{ $p['url'] }}" target="_blank" class="portal-card">
@@ -3524,12 +3611,13 @@
                 const currentRotation = progress * totalTurns * Math.PI * 2;
                 const angle = baseAngle - currentRotation;
 
-                const radius = 280;
-                const heightSpread = 180;
+                const isMobile = window.innerWidth < 768;
+                const radius = isMobile ? 120 : 280;
+                const heightSpread = isMobile ? 100 : 180;
 
                 const x = Math.cos(angle) * radius;
                 const yMapped = ((((i / n) - progress * (totalTurns)) % 1) + 1) % 1;
-                const y = (yMapped - 0.5) * heightSpread * 3;
+                const y = (yMapped - 0.5) * heightSpread * (isMobile ? 4 : 3);
                 const z = Math.sin(angle) * radius;
 
                 const depth = (z + radius) / (radius * 2);
@@ -3610,7 +3698,7 @@
         // ========== HORIZONTAL FEATURE SCROLLER (FIX) ==========
         const scrollerSection = document.getElementById('features-scroller');
         const trackHorizontal = document.getElementById('features-track');
-        if (scrollerSection && trackHorizontal) {
+        if (scrollerSection && trackHorizontal && window.innerWidth > 768) {
             // Hitung total lebar track
             let totalWidth = 0;
             const slides = trackHorizontal.querySelectorAll('.feature-slide');
@@ -3635,14 +3723,20 @@
             });
             // Refresh ScrollTrigger saat resize
             window.addEventListener('resize', () => {
-                ScrollTrigger.refresh();
-                // Update track width
-                let newTotal = 0;
-                slides.forEach(slide => { newTotal += slide.offsetWidth; });
-                trackHorizontal.style.width = newTotal + 'px';
-                horizontalScroll.vars.x = () => -(newTotal - window.innerWidth);
-                horizontalScroll.invalidate();
+                if (window.innerWidth > 768) {
+                    ScrollTrigger.refresh();
+                    let newTotal = 0;
+                    slides.forEach(slide => { newTotal += slide.offsetWidth; });
+                    trackHorizontal.style.width = newTotal + 'px';
+                    horizontalScroll.vars.x = () => -(newTotal - window.innerWidth);
+                    horizontalScroll.invalidate();
+                }
             });
+        } else if (trackHorizontal) {
+            // Fallback for mobile: reset width and transforms
+            trackHorizontal.style.width = '100%';
+            trackHorizontal.style.transform = 'none';
+            trackHorizontal.style.flexDirection = 'column';
         }
         // Developer Stack Loop
         (function () {

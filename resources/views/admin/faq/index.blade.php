@@ -530,6 +530,32 @@
             </div>
         </div>
 
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Apa itu Activity Heatmap (Kotak Hijau) di Dashboard?</span>
+                <span class="icon"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-answer">
+                <p><strong>Activity Heatmap</strong> adalah visualisasi produktivitas harian Anda dalam memproses surat. Semakin gelap warna hijau pada kotak, semakin banyak aktivitas (verifikasi/penomoran/dll) yang Anda lakukan pada hari tersebut.</p>
+                <ul>
+                    <li><strong>Warna Terang</strong>: Aktivitas rendah (1-2 tindakan).</li>
+                    <li><strong>Warna Gelap</strong>: Aktivitas tinggi (10+ tindakan).</li>
+                    <li><strong>Archive Tahunan</strong>: Anda dapat melihat histori aktivitas tahun-tahun sebelumnya dengan mengklik angka tahun (misal: 2026) di bagian header heatmap.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Bagaimana jika saya terlambat memproses surat melebihi SLA?</span>
+                <span class="icon"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-answer">
+                <p>Jika surat melewati batas <strong>24 jam kerja</strong> di tahap Anda tanpa diproses, indikator SLA akan berwarna merah. Saat Anda melakukan verifikasi pada surat yang sudah terlambat, sistem akan meminta Anda mengisi <strong>"Alasan Keterlambatan"</strong>.</p>
+                <div class="info-box"><i class="bi bi-info-circle-fill"></i>Alasan ini akan tersimpan dalam riwayat proses dan dapat dilihat oleh user sebagai bentuk transparansi layanan.</div>
+            </div>
+        </div>
+
         {{-- ===================== KATEGORI: FITUR LAINNYA ===================== --}}
         <div class="faq-category-title"><i class="bi bi-grid-fill" style="color:#6b7280"></i> Fitur Lainnya</div>
 

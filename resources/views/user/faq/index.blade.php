@@ -791,6 +791,17 @@
                         Anda dapat mengedit data surat (Judul, Jenis, dan Tujuan) selama <strong>15 menit</strong> terhitung sejak surat pertama kali diajukan. Setelah melewati 15 menit, fitur edit akan terkunci otomatis demi menjaga integritas data selama proses verifikasi oleh Admin.
                     </div>
                 </div>
+            <div class="faq-item" data-cat="pengajuan">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <div class="faq-q-icon">🔢</div>
+                    <span class="faq-q-text">Mengapa catatan pengusul dibatasi hanya 100 karakter?</span>
+                    <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
+                </button>
+                <div class="faq-answer-wrap">
+                    <div class="faq-answer">
+                        Pembatasan <strong>100 karakter</strong> pada catatan pengusul bertujuan agar Anda memberikan informasi yang <strong>padat, singkat, dan langsung pada poinnya</strong>. Hal ini membantu Admin mempercepat proses peninjauan tanpa harus membaca penjelasan yang terlalu panjang. Jika ada detail teknis yang panjang, silakan masukkan ke dalam isi dokumen surat atau lampiran.
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -856,6 +867,19 @@
                             <li><strong>Surat Ditolak</strong>: Jika surat ditolak dan tidak dilakukan revisi selama <strong>5 hari</strong>, maka surat akan dihapus permanen oleh sistem.</li>
                         </ul>
                         <em>Catatan: Riwayat tracking tetap tersimpan meski file fisik telah dihapus.</em>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" data-cat="status">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <div class="faq-q-icon">📅</div>
+                    <span class="faq-q-text">Bagaimana jika saya mengajukan surat di hari Jumat sore atau Weekend?</span>
+                    <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
+                </button>
+                <div class="faq-answer-wrap">
+                    <div class="faq-answer">
+                        Jam operasional hari <strong>Jumat adalah 07.30 – 16.30 WIB</strong>. Jika Anda mengajukan lewat dari jam tersebut atau pada hari Sabtu/Minggu, sistem akan menandai layanan sebagai <strong>TUTUP</strong>. Anda baru bisa mengajukan kembali pada hari Senin mulai pukul 07.30 WIB. Hitungan SLA 24 jam juga akan "dibekukan" selama hari libur dan dilanjutkan kembali saat jam kerja aktif.
                     </div>
                 </div>
             </div>

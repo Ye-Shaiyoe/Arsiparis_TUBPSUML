@@ -315,7 +315,25 @@ table.ringkasan .num-cell { text-align: right; font-family: 'DM Mono', monospace
     </div>
   </div>
 
-  {{-- ROW 8: Rata-rata Waktu Proses per Jenis (full-width) --}}
+  {{-- ROW 9: Aspirasi Stats + Tahapan Bottleneck --}}
+  <div class="charts-row" style="margin-bottom: 20px;">
+    <div class="ch-card">
+      <div class="ch-card-header">
+        <div class="ch-card-title"><span class="ch-dot blue"></span>Statistik Kotak Aspirasi</div>
+        <div class="ch-sub">perbandingan aspirasi masuk vs yang sudah dibalas</div>
+      </div>
+      <div class="chart-wrap" style="height:240px;"><canvas id="chart-aspirasi"></canvas></div>
+    </div>
+    <div class="ch-card">
+      <div class="ch-card-header">
+        <div class="ch-card-title"><span class="ch-dot red"></span>Top 5 Tahapan Bottleneck</div>
+        <div class="ch-sub">tahapan dengan frekuensi keterlambatan SLA tertinggi</div>
+      </div>
+      <div class="chart-wrap" style="height:240px;"><canvas id="chart-bottleneck"></canvas></div>
+    </div>
+  </div>
+
+  {{-- ROW 10: Rata-rata Waktu Proses per Jenis (full-width) --}}
   <div class="ch-card" style="margin-bottom:20px;">
     <div class="ch-card-header">
       <div class="ch-card-title"><span class="ch-dot blue"></span>Rata-rata Waktu Penyelesaian per Jenis Surat</div>
@@ -396,6 +414,8 @@ function loadCharts() {
       buildSifatChart(d.sifatSurat);
       buildAvgProsesChart(d.avgWaktuProses);
       buildLifetimeChart(d.lifetimeMixed);
+      buildAspirasiChart(d.aspirasiStats);
+      buildBottleneckChart(d.tahapBottleneck);
       console.log('Charts auto-updated at:', new Date().toLocaleTimeString());
     })
     .catch(err => {
@@ -917,6 +937,55 @@ function buildLifetimeChart(data) {
           ticks: { font: { size: 10 }, precision: 0, color: C.text },
           border: { display: false }
         }
+      }
+    }
+  });
+}
+
+function buildAspirasiChart(data) {
+  destroyChart('aspirasi');
+  const ctx = document.getElementById('chart-aspirasi').getContext('2d');
+  const total = data.data.reduce((a, v) => a + v, 0);
+  charts['aspirasi'] = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: data.labels,
+      datasets: [{
+        data: total > 0 ? data.data : [1],
+        backgroundColor: total > 0 ? [C.amber, C.blue] : ['#e5e7eb'],
+        borderColor: '#fff', borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12, color: C.text } },
+        tooltip: { callbacks: { label: c => total > 0 ? ` ${c.label}: ${c.raw}` : ' Belum ada data' } }
+      }
+    }
+  });
+}
+
+function buildBottleneckChart(data) {
+  destroyChart('bottleneck');
+  const ctx = document.getElementById('chart-bottleneck').getContext('2d');
+  const hasData = data.labels.length > 0;
+  charts['bottleneck'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: hasData ? data.labels : ['Semua tepat waktu'],
+      datasets: [{
+        data: hasData ? data.data : [0],
+        backgroundColor: C.red + 'cc',
+        borderRadius: 4, borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { beginAtZero: true, grid: { color: C.grid }, ticks: { font: { size: 10 }, precision: 0, color: C.text } },
+        y: { grid: { display: false }, ticks: { font: { size: 10 }, color: C.text } }
       }
     }
   });

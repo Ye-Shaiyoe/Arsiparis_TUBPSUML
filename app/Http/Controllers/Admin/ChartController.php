@@ -40,6 +40,8 @@ class ChartController extends Controller
             'sifatSurat'      => $this->sifatSurat($tahun),
             'avgWaktuProses'  => $this->avgWaktuProses($tahun),
             'lifetimeMixed'   => $this->lifetimeMixedChart(),
+            'aspirasiStats'   => $this->aspirasiStats($tahun),
+            'tahapBottleneck' => $this->tahapBottleneck($tahun),
             'totalSemua'      => \App\Models\Surat::count(),
         ];
 
@@ -98,8 +100,12 @@ class ChartController extends Controller
             ->orderByDesc('total')
             ->get();
 
+        $labels = $rows->map(function($r) {
+            return \App\Models\Surat::JENIS_LABEL[$r->jenis] ?? ucfirst(str_replace('_', ' ', $r->jenis));
+        })->values()->toArray();
+
         return [
-            'labels' => $rows->map(fn($r) => $jenisLabel[$r->jenis] ?? ucfirst($r->jenis))->values()->toArray(),
+            'labels' => $labels,
             'data'   => $rows->pluck('total')->map(fn($v) => (int) $v)->toArray(),
         ];
     }
@@ -371,17 +377,52 @@ class ChartController extends Controller
             ->groupBy('jenis')
             ->get();
 
-        $jenisLabel = [
-            'nota_dinas'       => 'Nota Dinas',
-            'surat_dinas'      => 'Surat Dinas',
-            'surat_keputusan'  => 'Surat Keputusan',
-            'surat_pernyataan' => 'Surat Pernyataan',
-            'surat_keterangan' => 'Surat Keterangan',
-        ];
+        $labels = $rows->map(function($r) {
+            return \App\Models\Surat::JENIS_LABEL[$r->jenis] ?? ucfirst(str_replace('_', ' ', $r->jenis));
+        })->values()->toArray();
 
         return [
-            'labels' => $rows->map(fn($r) => $jenisLabel[$r->jenis] ?? ucfirst($r->jenis))->values()->toArray(),
+            'labels' => $labels,
             'data'   => $rows->pluck('avg_jam')->map(fn($v) => round((float)$v, 1))->toArray(),
+        ];
+    }
+
+    // ── Aspirasi Stats (Pie Chart) ───────────────────────────────────────────
+    private function aspirasiStats(int $tahun): array
+    {
+        $rows = DB::table('aspirasis')
+            ->whereYear('created_at', $tahun)
+            ->selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->get()
+            ->keyBy('status');
+
+        return [
+            'labels' => ['Menunggu', 'Dibalas'],
+            'data'   => [
+                (int) ($rows->get('menunggu')?->total ?? 0),
+                (int) ($rows->get('dibalas')?->total   ?? 0),
+            ]
+        ];
+    }
+
+    // ── Tahapan Bottleneck (Mana yang paling sering terlambat?) ──────────────
+    private function tahapBottleneck(int $tahun): array
+    {
+        $rows = DB::table('surat_tahapans as st')
+            ->join('surats as s', 'st.surat_id', '=', 's.id')
+            ->whereYear('st.created_at', $tahun)
+            ->where('s.deadline_sla', '<', DB::raw('st.updated_at'))
+            ->where('st.status', 'selesai')
+            ->selectRaw('st.nama_tahap, COUNT(*) as total')
+            ->groupBy('st.nama_tahap')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        return [
+            'labels' => $rows->pluck('nama_tahap')->toArray(),
+            'data'   => $rows->pluck('total')->map(fn($v) => (int) $v)->toArray(),
         ];
     }
 
