@@ -131,6 +131,8 @@ class DashboardController extends Controller
             $chartSelesai[] = Surat::whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->where('status', 'selesai')->count();
         }
 
+        $heatmapYear = (int) request()->input('heatmap_year', date('Y'));
+
         return [
             'totalBulanIni' => $totalBulanIni,
             'totalSelesai' => $totalSelesai,
@@ -144,7 +146,8 @@ class DashboardController extends Controller
             'chartMonths' => $chartMonths,
             'chartMasuk' => $chartMasuk,
             'chartSelesai' => $chartSelesai,
-            'heatmapData' => $admin->getAdminActivityHeatmapData(),
+            'heatmapData' => $admin->getAdminActivityHeatmapData($heatmapYear),
+            'heatmapYear' => $heatmapYear,
         ];
     }
 }

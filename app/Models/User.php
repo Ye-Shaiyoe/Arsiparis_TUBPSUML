@@ -131,13 +131,20 @@ class User extends Authenticatable
     /**
      * Data Heatmap untuk Admin (Pemrosesan Surat)
      */
-    public function getAdminActivityHeatmapData()
+    public function getAdminActivityHeatmapData($year = null)
     {
-        $startDate = \Carbon\Carbon::create(2026, 1, 1)->startOfDay();
+        $year = $year ?? date('Y');
+        $startDate = \Carbon\Carbon::create($year, 1, 1)->startOfDay();
+        $endDate = \Carbon\Carbon::create($year, 12, 31)->endOfDay();
+
+        // Jika tahun ini, batasi sampai hari ini
+        if ($year == date('Y')) {
+            $endDate = now()->endOfDay();
+        }
 
         return \App\Models\SuratTahapan::where('diproses_oleh', $this->id)
             ->whereNotNull('selesai_pada')
-            ->where('selesai_pada', '>=', $startDate)
+            ->whereBetween('selesai_pada', [$startDate, $endDate])
             ->selectRaw('DATE(selesai_pada) as date, COUNT(*) as count')
             ->groupBy('date')
             ->pluck('count', 'date')

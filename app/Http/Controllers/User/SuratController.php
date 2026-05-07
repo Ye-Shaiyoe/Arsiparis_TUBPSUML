@@ -110,7 +110,7 @@ class SuratController extends Controller
             'jenis'          => ($isDraft ? 'nullable' : 'required') . '|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
             'sifat'          => ($isDraft ? 'nullable' : 'required') . '|in:biasa,segera,rahasia',
             'tujuan'         => ($isDraft ? 'nullable' : 'required') . '|string|max:500',
-            'catatan_pengusul' => 'nullable|string|max:1000',
+            'catatan_pengusul' => 'nullable|string|max:100',
             'file_word'      => ($isDraft ? 'nullable' : 'required') . '|file|mimes:docx,doc|max:5120',
             'file_lampiran'  => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc|max:10240',
         ];
@@ -193,7 +193,7 @@ class SuratController extends Controller
             'jenis'          => ($isDraft ? 'nullable' : 'required') . '|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
             'sifat'          => ($isDraft ? 'nullable' : 'required') . '|in:biasa,segera,rahasia',
             'tujuan'         => ($isDraft ? 'nullable' : 'required') . '|string|max:500',
-            'catatan_pengusul' => 'nullable|string|max:1000',
+            'catatan_pengusul' => 'nullable|string|max:100',
             'file_word'      => ($isDraft || $surat->file_word ? 'nullable' : 'required') . '|file|mimes:docx,doc|max:5120',
             'file_lampiran'  => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc|max:10240',
         ];
@@ -252,7 +252,7 @@ class SuratController extends Controller
             'jenis'  => 'required|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
             'sifat'  => 'required|in:biasa,segera,rahasia',
             'tujuan' => 'required|string|max:500',
-            'catatan_pengusul' => 'nullable|string|max:1000',
+            'catatan_pengusul' => 'nullable|string|max:100',
         ]);
 
         $surat->update([

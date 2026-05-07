@@ -1,9 +1,9 @@
-@props(['data' => [], 'title' => 'Aktivitas'])
+@props(['data' => [], 'title' => 'Aktivitas', 'selectedYear' => null])
 
 @php
-    // Gunakan Carbon untuk manipulasi tanggal
-    $endDate = now();
-    $startDate = \Carbon\Carbon::create(2026, 1, 1)->startOfWeek();
+    $year = $selectedYear ?? date('Y');
+    $endDate = ($year == date('Y')) ? now() : \Carbon\Carbon::create($year, 12, 31);
+    $startDate = \Carbon\Carbon::create($year, 1, 1)->startOfWeek();
     $days = [];
     $currentDate = $startDate->copy();
     
@@ -44,16 +44,23 @@
 <div class="p-5 rounded-2xl border transition-all duration-300 shadow-sm mb-6" 
      style="background: var(--bg-secondary); border-color: var(--border-color);">
     
-    <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
-        <h3 class="text-base font-bold flex items-center gap-3" style="color: var(--text-primary);">
+    <div class="flex flex-wrap justify-between items-start mb-6 gap-4">
+        <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                 <i class="bi bi-fire text-lg"></i>
             </div>
             <div class="flex flex-col">
-                <span>{{ $title }}</span>
-                <span class="text-[10px] opacity-50 uppercase tracking-widest font-bold">Tahun 2026</span>
+                <span class="text-base font-bold" style="color: var(--text-primary);">{{ $title }}</span>
+                <div class="flex items-center gap-2 mt-1">
+                    @foreach(range(date('Y'), 2026) as $y)
+                        <a href="{{ request()->fullUrlWithQuery(['heatmap_year' => $y]) }}" 
+                           class="px-2 py-0.5 rounded text-[9px] font-bold transition-all {{ $year == $y ? 'bg-emerald-500 text-white' : 'bg-slate-800/40 text-slate-500 hover:bg-slate-700' }}">
+                            {{ $y }}
+                        </a>
+                    @endforeach
+                </div>
             </div>
-        </h3>
+        </div>
         
         <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider opacity-60" style="color: var(--text-secondary);">
             <span>Less</span>
