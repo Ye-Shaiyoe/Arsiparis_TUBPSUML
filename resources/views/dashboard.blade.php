@@ -868,6 +868,39 @@
         </div>
     </div>
 </div>
+<br>
+{{-- WEEKLY ACTIVITY CHART --}}
+<div class="card-modern mb-4 animate-in" style="animation-delay: 0.4s;">
+    <div class="card-header-modern d-flex align-items-center justify-content-between">
+        <h6 class="fw-bold mb-0" style="color:#1e293b;">
+            <i class="bi bi-activity me-2 text-primary"></i>Aktivitas Mingguan
+        </h6>
+        <div class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-1" style="font-size: 11px; font-weight: 700;">
+            7 Hari Terakhir
+        </div>
+    </div>
+    <div class="card-body-modern py-4">
+        <div class="row align-items-center">
+            {{-- Statistik Angka --}}
+            <div class="col-12 col-md-4 text-center border-end mb-4 mb-md-0">
+                <div class="d-flex flex-column align-items-center justify-content-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center mb-2" style="width: 48px; height: 48px; background: rgba(37, 99, 235, 0.1);">
+                        <i class="bi bi-fire text-primary fs-4"></i>
+                    </div>
+                    <span class="fw-black text-primary mb-0" style="line-height: 1; font-size: 42px;">{{ $weeklyActivity['total'] }}</span>
+                    <span class="text-muted text-uppercase fw-bold mt-1" style="font-size: 10px; letter-spacing: 1.5px;">Total Kontribusi</span>
+                </div>
+            </div>
+            {{-- Grafik Garis --}}
+            <div class="col-12 col-md-8">
+                <div style="height: 140px; position: relative;">
+                    <canvas id="weeklyActivityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 {{-- CHARTS SECTION --}}
 <div class="row g-4 mt-2">
@@ -1111,6 +1144,79 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Chart: Aktivitas Mingguan
+    const weeklyCtx = document.getElementById('weeklyActivityChart');
+    if (weeklyCtx) {
+        const weeklyData = @json($weeklyActivity);
+        
+        new Chart(weeklyCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: weeklyData.labels,
+                datasets: [{
+                    label: 'Aktivitas',
+                    data: weeklyData.values,
+                    fill: true,
+                    backgroundColor: (context) => {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return null;
+                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                        gradient.addColorStop(0, 'rgba(37, 99, 235, 0)');
+                        gradient.addColorStop(1, 'rgba(37, 99, 235, 0.1)');
+                        return gradient;
+                    },
+                    borderColor: '#2563eb',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#2563eb',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: '#1e293b',
+                        padding: 10,
+                        titleFont: { size: 12 },
+                        bodyFont: { size: 12 },
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { 
+                            stepSize: 1,
+                            color: '#94a3b8',
+                            font: { size: 10 }
+                        },
+                        grid: { 
+                            color: '#f1f5f9',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: { 
+                            color: '#94a3b8',
+                            font: { size: 10 }
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
     // FAQ Welcome Popup - Gunakan ID user agar tidak bentrok antar akun di browser yang sama
     const faqPopupKey = 'hideFaqPopup_{{ Auth::id() }}';
     const hasSeenFaqPopup = localStorage.getItem(faqPopupKey);
