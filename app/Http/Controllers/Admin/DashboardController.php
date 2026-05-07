@@ -144,6 +144,7 @@ class DashboardController extends Controller
             'chartMonths' => $chartMonths,
             'chartMasuk' => $chartMasuk,
             'chartSelesai' => $chartSelesai,
+            'heatmapData' => $admin->getAdminActivityHeatmapData(),
         ];
     }
 }
