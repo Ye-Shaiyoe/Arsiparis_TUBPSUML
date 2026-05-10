@@ -12,19 +12,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NotificationApiController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\WelcomeController;
 
-Route::get('/', function (Request $request) {
-    if (auth()->check() && !$request->has('home')) {
-        $user = auth()->user();
-        if ($user->isAdmin()) {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->isITSupport()) {
-            return redirect()->route('itsupport.dashboard');
-        }
-        return redirect()->route('dashboard');
-    }
-    return view('welcome');
-});
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 // Verifikasi Surat (Public)
 Route::get('/v/{uuid}', [\App\Http\Controllers\VerifikasiSuratController::class, 'index'])->name('surat.verifikasi');
@@ -49,11 +39,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/aspirasi/{aspirasi}', [\App\Http\Controllers\User\AspirasiController::class, 'destroy'])->name('user.aspirasi.destroy');
 
     Route::prefix('surat')->name('user.surat.')->group(function () {
-        Route::get('/',          [UserSurat::class, 'index'])->name('index');
-        Route::get('/tabel',     [UserSurat::class, 'table'])->name('table');
-        Route::get('/ajukan',    [UserSurat::class, 'create'])->name('create');
-        Route::post('/ajukan',   [UserSurat::class, 'store'])->name('store');
-        Route::get('/{surat}',   [UserSurat::class, 'show'])->name('show');
+        Route::get('/', [UserSurat::class, 'index'])->name('index');
+        Route::get('/tabel', [UserSurat::class, 'table'])->name('table');
+        Route::get('/ajukan', [UserSurat::class, 'create'])->name('create');
+        Route::post('/ajukan', [UserSurat::class, 'store'])->name('store');
+        Route::get('/{surat}', [UserSurat::class, 'show'])->name('show');
         Route::get('/{surat}/edit', [UserSurat::class, 'edit'])->name('edit');
         Route::patch('/{surat}', [UserSurat::class, 'update'])->name('update');
         Route::patch('/{surat}/metadata', [UserSurat::class, 'updateMetadata'])->name('updateMetadata');
@@ -135,7 +125,7 @@ Route::prefix('Admin')->middleware(['auth', 'verified', 'admin'])->name('admin.'
 
         // Notifikasi Admin
         Route::get('/Notifikasi', [\App\Http\Controllers\Admin\NotifikasiController::class, 'index'])->name('notifikasi.index');
-        
+
         // Manajemen Aspirasi
         Route::get('/Aspirasi', [\App\Http\Controllers\Admin\AspirasiController::class, 'index'])->name('aspirasi.index');
         Route::patch('/Aspirasi/{aspirasi}', [\App\Http\Controllers\Admin\AspirasiController::class, 'update'])->name('aspirasi.update');
@@ -155,18 +145,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/become-it-support', [\App\Http\Controllers\ITSupportController::class, 'becomeITSupport'])
         ->name('itsupport.become')
         ->middleware('throttle:3,1');
-    
+
     Route::middleware(['it_support'])->prefix('IT-Support')->name('itsupport.')->group(function () {
         Route::get('/Dashboard', [\App\Http\Controllers\ITSupportController::class, 'dashboard'])->name('dashboard');
     });
 });
 
 Route::middleware(['auth', 'verified'])->prefix('notif')->name('notif.')->group(function () {
-    Route::get('/read/{id}',       [\App\Http\Controllers\User\NotifikasiController::class, 'read'])->name('read');
-    Route::post('/read-all',       [\App\Http\Controllers\User\NotifikasiController::class, 'readAll'])->name('readAll');
+    Route::get('/read/{id}', [\App\Http\Controllers\User\NotifikasiController::class, 'read'])->name('read');
+    Route::post('/read-all', [\App\Http\Controllers\User\NotifikasiController::class, 'readAll'])->name('readAll');
     Route::post('/mark-read/{id}', [\App\Http\Controllers\User\NotifikasiController::class, 'markAsRead'])->name('markRead');
-    Route::post('/delete/{id}',    [\App\Http\Controllers\User\NotifikasiController::class, 'destroy'])->name('delete');
-    Route::post('/delete-all',     [\App\Http\Controllers\User\NotifikasiController::class, 'destroyAll'])->name('deleteAll');
+    Route::post('/delete/{id}', [\App\Http\Controllers\User\NotifikasiController::class, 'destroy'])->name('delete');
+    Route::post('/delete-all', [\App\Http\Controllers\User\NotifikasiController::class, 'destroyAll'])->name('deleteAll');
 });
 
 // ===== PROFILE (Breeze) =====
@@ -176,4 +166,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
