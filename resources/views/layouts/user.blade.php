@@ -171,52 +171,31 @@
             -webkit-backdrop-filter: blur(20px);
             transition: background 0.3s;
         }
-        .notif-header {
-            padding: 12px 16px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .notif-item {
-            padding: 12px 16px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-            text-decoration: none;
-            transition: background 0.2s;
-            background: transparent;
-        }
-        .notif-item:hover { background: rgba(255,255,255,0.5); }
-        .notif-item.unread { 
-            background: rgba(59, 130, 246, 0.08);
-        }
-        .notif-item.unread:hover { 
-            background: rgba(59, 130, 246, 0.15);
-        }
-        .notif-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
+        .notif-item { transition: all 0.2s ease; position: relative; }
+        .btn-notif-action {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
-            flex-shrink: 0;
             background: rgba(255,255,255,0.8);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            font-size: 14px;
+            border: none;
         }
-        .notif-icon.success { color: #15803d; }
-        .notif-icon.warning { color: #b45309; }
-        .notif-icon.danger  { color: #b91c1c; }
-        .notif-icon.info    { color: #1d4ed8; }
-        .notif-title { font-size: 12px; font-weight: 600; color: var(--text-primary); line-height: 1.3; }
-        .notif-sub   { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
-        .notif-time  { font-size: 10px; color: var(--text-secondary); margin-top: 3px; }
-        .notif-empty { padding: 32px 16px; text-align: center; color: var(--text-secondary); font-size: 13px; }
+        .btn-notif-action:hover {
+            background: #fff;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .notif-item-wrapper:hover .notif-item {
+            background: rgba(255,255,255,0.5);
+        }
+        .pr-12 { padding-right: 3rem !important; }
+        .mr-4 { margin-right: 1rem !important; }
+        .group:hover .notif-actions { opacity: 1 !important; }
 
         /* ===== AVATAR --===== */
         .user-avatar {
@@ -518,36 +497,38 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 65px;
+            height: 70px; /* Increased slightly for comfort */
             display: flex;
             justify-content: space-around;
             align-items: center;
             z-index: 1040;
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.8);
-            border-radius: 20px 20px 0 0;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
+            padding: 0 8px;
         }
         .mobile-nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: var(--text-secondary);
+            color: #64748b;
             text-decoration: none;
             font-size: 10px;
             font-weight: 600;
-            gap: 2px;
+            gap: 4px;
             flex: 1;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            height: 100%;
         }
         .mobile-nav-item i {
-            font-size: 20px;
-            width: 40px;
-            height: 32px;
+            font-size: 22px;
+            width: 42px;
+            height: 34px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -560,12 +541,29 @@
         .mobile-nav-item.active i {
             background: rgba(37, 99, 235, 0.1);
             color: #2563eb;
-            transform: translateY(-2px);
+            transform: translateY(-4px);
         }
         .mobile-nav-item:active {
-            transform: scale(0.9);
+            transform: scale(0.92);
         }
-        .mobile-nav-item:hover { color: #3b82f6; }
+        .mobile-nav-item.ajukan-btn i {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            font-size: 24px;
+            margin-top: -30px; /* Float up */
+            border: 4px solid white;
+        }
+        .mobile-nav-item.ajukan-btn span {
+            margin-top: 10px;
+        }
+        .mobile-nav-item.ajukan-btn.active i {
+            background: #1e3a8a;
+            transform: translateY(-4px) scale(1.05);
+        }
 
         /* ===== OFFCANVAS NOTIF ===== */
         .offcanvas-notif {
@@ -617,6 +615,34 @@
         .surat-item:focus, .notification-item:focus, .stat-card-modern:focus, .nav-link-item:focus, a:focus, button:focus {
             outline: none !important;
             box-shadow: none !important;
+        }
+
+        /* ===== NESTED DROPDOWN (DROPEND) ===== */
+        .dropdown-submenu {
+            position: relative;
+        }
+        .dropdown-submenu .dropdown-menu {
+            top: 0;
+            left: 100%;
+            margin-top: -1px;
+            display: none;
+        }
+        .dropdown-submenu:hover > .dropdown-menu {
+            display: block;
+        }
+        @media (max-width: 991px) {
+            .dropdown-submenu .dropdown-menu {
+                position: static;
+                display: block;
+                border: none !important;
+                background: rgba(0,0,0,0.03) !important;
+                box-shadow: none !important;
+                margin-left: 1rem;
+                margin-bottom: 0.5rem;
+            }
+            .dropdown-submenu > .dropdown-toggle::after {
+                transform: rotate(90deg);
+            }
         }
     </style>
     <script>
@@ -699,10 +725,23 @@
                         <i class="bi bi-bell me-2"></i> Notifikasi
                     </a>
                 </li>
-                <li>
-                    <a class="dropdown-item {{ request()->routeIs('user.aspirasi.index') ? 'active' : '' }}" href="{{ route('user.aspirasi.index') }}">
-                        <i class="bi bi-chat-right-heart me-2"></i> Kotak Aspirasi
+                <li class="dropdown-submenu">
+                    <a class="dropdown-item d-flex align-items-center justify-content-between {{ request()->routeIs('user.aspirasi.index') ? 'active' : '' }}" href="#">
+                        <span><i class="bi bi-chat-right-heart me-2"></i> Kotak Aspirasi</span>
+                        <i class="bi bi-chevron-right ms-2" style="font-size: 10px;"></i>
                     </a>
+                    <ul class="dropdown-menu border-0 shadow-lg">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('user.aspirasi.index', ['to' => 'admin']) }}">
+                                <i class="bi bi-person-badge me-2"></i> Admin
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('user.aspirasi.index', ['to' => 'itsupport']) }}">
+                                <i class="bi bi-cpu me-2"></i> IT Support
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
@@ -865,8 +904,8 @@
             </li>
         </ul>
     </div>
-    <a href="{{ route('user.surat.create') }}" class="mobile-nav-item {{ request()->routeIs('user.surat.create') ? 'active' : '' }}">
-        <i class="bi bi-plus-circle"></i>
+    <a href="{{ route('user.surat.create') }}" class="mobile-nav-item ajukan-btn {{ request()->routeIs('user.surat.create') ? 'active' : '' }}">
+        <i class="bi bi-plus-lg"></i>
         <span>Ajukan</span>
     </a>
 
@@ -888,10 +927,23 @@
                     <i class="bi bi-bell me-2"></i> Notifikasi
                 </a>
             </li>
-            <li>
-                <a class="dropdown-item py-3 {{ request()->routeIs('user.aspirasi.index') ? 'active' : '' }}" href="{{ route('user.aspirasi.index') }}">
-                    <i class="bi bi-chat-right-heart me-2"></i> Kotak Aspirasi
+            <li class="dropdown-submenu">
+                <a class="dropdown-item py-3 d-flex align-items-center justify-content-between {{ request()->routeIs('user.aspirasi.index') ? 'active' : '' }}" href="#">
+                    <span><i class="bi bi-chat-right-heart me-2"></i> Kotak Aspirasi</span>
+                    <i class="bi bi-chevron-right ms-2" style="font-size: 10px;"></i>
                 </a>
+                <ul class="dropdown-menu border-0">
+                    <li>
+                        <a class="dropdown-item py-2" href="{{ route('user.aspirasi.index', ['to' => 'admin']) }}">
+                            <i class="bi bi-person-badge me-2 text-primary"></i> Admin
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item py-2" href="{{ route('user.aspirasi.index', ['to' => 'itsupport']) }}">
+                            <i class="bi bi-cpu me-2 text-info"></i> IT Support
+                        </a>
+                    </li>
+                </ul>
             </li>
             <li><hr class="dropdown-divider mx-3"></li>
             <li>
@@ -925,6 +977,7 @@
 {{-- Hidden forms --}}
 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
 <form id="readall-form" action="{{ route('notif.readAll') }}" method="POST" class="d-none">@csrf</form>
+<form id="deleteall-form" action="{{ route('notif.deleteAll') }}" method="POST" class="d-none">@csrf</form>
 
 {{-- Switch Account Modal --}}
 <div class="modal fade" id="switchAccountModal" tabindex="-1" aria-hidden="true">
@@ -1102,6 +1155,82 @@
         saveCurrentAccount();
         renderSavedAccounts();
     });
+
+    function markNotifRead(id) {
+        const item = document.querySelector(`.notif-item-wrapper[data-id="${id}"]`);
+        if(item) item.style.opacity = '0.5';
+
+        fetch(`/notif/mark-read/${id}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                if(item) {
+                    item.style.opacity = '1';
+                    const link = item.querySelector('.notif-item');
+                    link.classList.remove('unread');
+                    const dot = item.querySelector('.unread-dot');
+                    if(dot) dot.remove();
+                    const readBtn = item.querySelector('.btn-notif-action.text-primary');
+                    if(readBtn) readBtn.remove();
+                }
+                updateNotifBadges(data.unreadCount);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            if(item) item.style.opacity = '1';
+        });
+    }
+
+    function deleteNotif(id) {
+        if(!confirm('Hapus notifikasi ini?')) return;
+        const item = document.querySelector(`.notif-item-wrapper[data-id="${id}"]`);
+        if(item) item.style.opacity = '0.5';
+
+        fetch(`/notif/delete/${id}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                if(item) {
+                    item.style.transition = 'all 0.3s ease';
+                    item.style.transform = 'translateX(50px)';
+                    item.style.opacity = '0';
+                    setTimeout(() => item.remove(), 300);
+                }
+                updateNotifBadges(data.unreadCount);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            if(item) item.style.opacity = '1';
+        });
+    }
+
+    function updateNotifBadges(count) {
+        const badge = document.querySelector('.notif-badge');
+        if(badge) {
+            if(count > 0) {
+                badge.style.display = 'flex';
+                badge.textContent = count;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    }
 </script>
 @stack('scripts')
 
@@ -1115,40 +1244,66 @@
     </div>
     <div class="px-4 py-2 border-bottom d-flex align-items-center justify-content-between bg-light bg-opacity-50">
         <span class="text-muted" style="font-size: 11px;">{{ auth()->user()->notifications->count() }} Notifikasi Terakhir</span>
-        @if(auth()->user()->unreadNotifications->count() > 0)
-            <a href="#" onclick="event.preventDefault(); document.getElementById('readall-form').submit();" 
-               class="text-decoration-none fw-bold" style="font-size: 11px; color: #3b82f6;">
-                Tandai semua dibaca
-            </a>
-        @endif
+        <div class="d-flex gap-3">
+            @if(auth()->user()->unreadNotifications->count() > 0)
+                <a href="#" onclick="event.preventDefault(); document.getElementById('readall-form').submit();" 
+                   class="text-decoration-none fw-bold" style="font-size: 11px; color: #3b82f6;">
+                    Tandai semua dibaca
+                </a>
+            @endif
+            @if(auth()->user()->notifications->count() > 0)
+                <a href="#" onclick="event.preventDefault(); if(confirm('Hapus semua notifikasi?')) document.getElementById('deleteall-form').submit();" 
+                   class="text-decoration-none fw-bold text-danger" style="font-size: 11px;">
+                    Hapus semua
+                </a>
+            @endif
+        </div>
     </div>
     <div class="offcanvas-body">
         @forelse(auth()->user()->notifications->take(15) as $notif)
-            <a href="{{ route('notif.read', $notif->id) }}"
-               class="notif-item {{ $notif->read_at ? '' : 'unread' }}">
-                <div class="notif-icon {{ $notif->data['type'] ?? 'info' }}">
-                    @switch($notif->data['type'] ?? 'info')
-                        @case('success') <i class="bi bi-check-circle-fill text-success"></i> @break
-                        @case('warning') <i class="bi bi-exclamation-triangle-fill text-warning"></i> @break
-                        @case('danger')  <i class="bi bi-x-circle-fill text-danger"></i> @break
-                        @default         <i class="bi bi-info-circle-fill text-primary"></i>
-                    @endswitch
+            <div class="notif-item-wrapper position-relative group" data-id="{{ $notif->id }}">
+                <a href="{{ route('notif.read', $notif->id) }}"
+                   class="notif-item {{ $notif->read_at ? '' : 'unread' }} pr-12">
+                    <div class="notif-icon {{ $notif->data['type'] ?? 'info' }}">
+                        @switch($notif->data['type'] ?? 'info')
+                            @case('success') <i class="bi bi-check-circle-fill text-success"></i> @break
+                            @case('warning') <i class="bi bi-exclamation-triangle-fill text-warning"></i> @break
+                            @case('danger')  <i class="bi bi-x-circle-fill text-danger"></i> @break
+                            @default         <i class="bi bi-info-circle-fill text-primary"></i>
+                        @endswitch
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.3;">
+                            {{ $notif->data['title'] ?? 'Notifikasi' }}
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                            {{ Str::limit($notif->data['message'] ?? '', 80) }}
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-secondary); margin-top: 6px; opacity: 0.7;">
+                            <i class="bi bi-clock me-1"></i> {{ $notif->created_at->diffForHumans() }}
+                        </div>
+                    </div>
+                </a>
+
+                {{-- Quick Actions --}}
+                <div class="notif-actions position-absolute top-50 translate-middle-y end-0 pr-4 d-flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    @if(!$notif->read_at)
+                        <button onclick="event.preventDefault(); event.stopPropagation(); markNotifRead('{{ $notif->id }}')" 
+                                class="btn-notif-action text-primary" title="Tandai dibaca">
+                            <i class="bi bi-check2-circle"></i>
+                        </button>
+                    @endif
+                    <button onclick="event.preventDefault(); event.stopPropagation(); deleteNotif('{{ $notif->id }}')" 
+                            class="btn-notif-action text-danger" title="Hapus">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
-                <div style="flex:1; min-width:0;">
-                    <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.3;">
-                        {{ $notif->data['title'] ?? 'Notifikasi' }}
-                    </div>
-                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
-                        {{ Str::limit($notif->data['message'] ?? '', 80) }}
-                    </div>
-                    <div style="font-size: 10px; color: var(--text-secondary); margin-top: 6px; opacity: 0.7;">
-                        <i class="bi bi-clock me-1"></i> {{ $notif->created_at->diffForHumans() }}
-                    </div>
-                </div>
+
                 @if(!$notif->read_at)
-                    <div style="width:8px; height:8px; border-radius:50%; background:#3b82f6; flex-shrink:0; margin-top:6px;"></div>
+                    <div class="unread-dot position-absolute top-50 translate-middle-y end-0 mr-4 group-hover:opacity-0 transition-opacity" 
+                         style="width:8px; height:8px; border-radius:50%; background:#3b82f6;"></div>
                 @endif
-            </a>
+            </div>
         @empty
             <div class="p-5 text-center">
                 <i class="bi bi-bell-slash text-muted" style="font-size: 40px; opacity: 0.3;"></i>
@@ -1157,8 +1312,8 @@
         @endforelse
     </div>
     <div class="p-3 border-top text-center bg-light bg-opacity-50">
-        <a href="{{ route('dashboard') }}" class="text-decoration-none small fw-bold" style="color: #3b82f6;">
-            Buka Dashboard <i class="bi bi-arrow-right ms-1"></i>
+        <a href="{{ route('user.notifikasi.index') }}" class="text-decoration-none small fw-bold" style="color: #3b82f6;">
+            Buka Notifikasi Lainnya <i class="bi bi-arrow-right ms-1"></i>
         </a>
     </div>
 </div>
