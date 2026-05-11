@@ -55,8 +55,10 @@
                                 <span class="badge rounded-pill" style="background:#dcfce7;color:#15803d;font-size:11px;">✓ Selesai</span>
                             @elseif($surat->status === 'ditolak')
                                 <span class="badge rounded-pill" style="background:#fee2e2;color:#b91c1c;font-size:11px;">✗ Ditolak</span>
-                            @elseif(in_array($surat->status, ['revisi', 'revisi_admin']))
+                            @elseif($surat->status === 'revisi')
                                 <span class="badge rounded-pill" style="background:#fef3c7;color:#b45309;font-size:11px;">📝 Revisi</span>
+                            @elseif($surat->status === 'revisi_admin')
+                                <span class="badge rounded-pill" style="background:#f3e8ff;color:#6b21a8;font-size:11px;">⚙️ Admin Revisi</span>
                             @elseif($surat->status === 'draft')
                                 <span class="badge rounded-pill" style="background:#f1f5f9;color:#64748b;font-size:11px;">📄 Draf</span>
                             @else
@@ -211,9 +213,9 @@
                                 <label class="form-label" style="font-size:13px;font-weight:600;color:var(--text-primary);">
                                     <i class="bi bi-paperclip text-secondary"></i> File Lampiran (opsional)
                                 </label>
-                                <input type="file" name="file_lampiran" class="form-control" accept=".pdf,.jpg,.jpeg,.png"
+                                <input type="file" name="file_lampiran" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
                                        style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);">
-                                <small class="text-muted">PDF/JPG/PNG (max 20MB)</small>
+                                <small class="text-muted">PDF/JPG/PNG/Word/Excel (max 20MB)</small>
                             </div>
 
                             <div class="col-12">
@@ -376,7 +378,7 @@
                 'selesai'     => 'linear-gradient(135deg,#15803d,#22c55e)',
                 'ditolak'     => 'linear-gradient(135deg,#b91c1c,#ef4444)',
                 'revisi'      => 'linear-gradient(135deg,#f59e0b,#fbbf24)',
-                'revisi_admin' => 'linear-gradient(135deg,#f59e0b,#fbbf24)',
+                'revisi_admin' => 'linear-gradient(135deg,#7c3aed,#a78bfa)',
                 'draft'       => 'linear-gradient(135deg,#64748b,#94a3b8)',
                 default       => 'linear-gradient(135deg,#1e3a5f,#2563eb)',
             };
@@ -384,7 +386,7 @@
                 'selesai'     => '✅',
                 'ditolak'     => '❌',
                 'revisi'      => '📝',
-                'revisi_admin' => '📝',
+                'revisi_admin' => '⚙️',
                 'draft'       => '📄',
                 default       => '⏳',
             };
