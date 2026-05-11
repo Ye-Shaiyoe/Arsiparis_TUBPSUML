@@ -86,6 +86,68 @@
         color: #64748b;
         font-weight: 500;
     }
+
+    /* Premium Stat Cards */
+    .stat-card-new {
+        position: relative;
+        padding: 24px;
+        border-radius: 24px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+    }
+    .stat-card-new:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); }
+    .stat-card-new.blue { background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); color: white; }
+    .stat-card-new.green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+    .stat-card-new.amber { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; }
+    .stat-card-new.red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+    
+    .stat-icon-box {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    .stat-value-new { font-size: 28px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
+    .stat-label-new { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 4px; }
+    .stat-sub-new { font-size: 10px; font-weight: 600; opacity: 0.6; }
+
+    .wave-bg {
+        position: absolute;
+        right: 0;
+        bottom: -5px;
+        opacity: 0.5;
+        width: 100%;
+        height: 80px;
+        pointer-events: none;
+        transition: transform 0.4s ease;
+    }
+
+    /* Fixed Grid Layout to prevent FOUC */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    @media (min-width: 640px) {
+        .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+        .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    .stat-card-new:hover .wave-bg {
+        transform: scaleY(1.2) translateY(-5px);
+    }
     
     .card-modern {
         background: white;
@@ -411,75 +473,106 @@
     /* MOBILE RESPONSIVE TWEAKS */
     @media (max-width: 768px) {
         .dashboard-header {
-            padding: 20px;
+            padding: 24px 20px;
             text-align: center;
+            border-radius: 24px;
+            margin-bottom: 24px;
         }
         .dashboard-header .d-flex {
             flex-direction: column;
-            align-items: stretch !important;
+            align-items: center !important;
             justify-content: center;
         }
         .dashboard-header h2 {
-            font-size: 22px;
+            font-size: 20px;
+            margin-top: 8px;
+        }
+        .dashboard-header p {
+            font-size: 12px !important;
         }
         .btn-primary-modern {
             justify-content: center;
             width: 100%;
+            padding: 12px 20px;
+            font-size: 14px;
+            margin-top: 10px;
         }
         .stat-card-modern {
-            padding: 16px;
+            padding: 14px;
+            border-radius: 16px;
         }
         .stat-icon-wrapper {
-            width: 40px;
-            height: 40px;
-            font-size: 18px;
-            margin-bottom: 10px;
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+            margin-bottom: 8px;
             border-radius: 10px;
         }
         .stat-value-modern {
-            font-size: 22px;
+            font-size: 20px;
         }
         .stat-label-modern {
-            font-size: 11px;
+            font-size: 10px;
         }
         .card-header-modern {
-            padding: 16px;
+            padding: 14px 16px;
         }
         .card-body-modern {
-            padding: 16px;
+            padding: 14px 16px;
         }
         .surat-item {
-            padding: 16px;
+            padding: 14px 16px;
         }
         .notification-item {
-            padding: 12px 16px;
+            padding: 10px 14px;
         }
         .chart-container {
-            height: 240px;
+            height: 220px;
         }
         .d-flex.align-items-start.gap-3 {
-            flex-direction: column;
-            align-items: stretch !important;
+            flex-direction: row !important; /* Keep horizontal on mobile for better layout */
+            align-items: flex-start !important;
         }
         .surat-item .d-flex.align-items-start.gap-3 > .flex-shrink-0 {
             align-self: flex-start;
-            margin-top: 5px;
         }
         .surat-item .status-dot {
-            display: none;
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin-top: 6px;
         }
+        
+        #banner-revisi .d-flex {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            text-align: left !important;
+        }
+        #banner-revisi .btn-danger {
+            width: 100%;
+            margin-top: 12px;
+            text-align: center;
+        }
+    }
+
+    .placeholder-white::placeholder {
+        color: rgba(255,255,255,0.7) !important;
     }
 </style>
 
 {{-- HEADER --}}
-<div class="dashboard-header">
+<div class="dashboard-header animate-in">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div class="d-flex align-items-center gap-3">
             @if(Auth::user()->profile_photo)
-                <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile Photo" class="rounded-circle border border-white border-2" style="width: 60px; height: 60px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile Photo" class="rounded-circle border border-white border-2 shadow-sm" style="width: 65px; height: 65px; object-fit: cover;">
+            @else
+                <div class="rounded-circle border border-white border-2 shadow-sm d-flex align-items-center justify-content-center bg-white text-primary fw-bold" style="width: 65px; height: 65px; font-size: 24px;">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                </div>
             @endif
             <div>
-                <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-1">
                     <h2 class="fw-bold mb-0">
                         <i class="bi bi-hand-thumbs-up-fill me-2"></i>Halo, {{ Str::words(Auth::user()->name, 1, '') }}!
                     </h2>
@@ -487,14 +580,14 @@
                         <span class="pulse-dot"></span> LIVE
                     </div>
                 </div>
-                <p class="mb-0" style="font-size:14px; opacity:0.9;">
+                <p class="mb-0" style="font-size:14px; opacity:0.85; font-weight: 500;">
                     {{ now()->translatedFormat('l, d F Y') }} · Selamat datang di Monitoring Surat BP SUML
                 </p>
             </div>
         </div>
         <a href="{{ $isLibur ? 'javascript:void(0)' : route('user.surat.create') }}" 
            class="btn btn-primary-modern d-flex align-items-center gap-2 {{ $isLibur ? 'disabled' : '' }}"
-           @if($isLibur) onclick="Swal.fire({icon: 'info', title: 'Layanan Tutup', text: 'Pengajuan surat baru hanya tersedia pada hari kerja. Senin–Kamis pukul 07.30–16.00 WIB, Jumat pukul 07.30–16.30 WIB.', confirmButtonColor: '#1e3a5f'})" @endif>
+           @if($isLibur) onclick="Swal.fire({icon: 'info', title: 'Layanan Tutup', text: 'Pengajuan surat baru hanya tersedia pada hari kerja. Senin–Kamis: 07.30–16.00 WIB, Jumat: 07.30–16.30 WIB. Sabtu & Minggu: Libur.', confirmButtonColor: '#1e3a5f'})" @endif>
             <i class="bi bi-plus-circle-fill"></i> Ajukan Surat Baru
         </a>
     </div>
@@ -507,68 +600,90 @@
         <div>
             <h6 class="fw-bold mb-1">Layanan Sedang Tutup</h6>
             <p class="mb-0" style="font-size:13px; opacity:0.9;">
-                Saat ini pukul <strong>{{ now()->format('H:i') }} WIB</strong>. Pengajuan surat baru & draf hanya tersedia pada hari kerja:<br>
-                <strong>Senin–Kamis</strong> pukul <strong>07.30–16.00 WIB</strong> &nbsp;|&nbsp; <strong>Jumat</strong> pukul <strong>07.30–16.30 WIB</strong>.
+                Saat ini: <strong>{{ now()->translatedFormat('l, H:i') }} WIB</strong>. Pengajuan & draf surat baru hanya tersedia pada hari kerja:<br>
+                <strong>Senin–Kamis:</strong> 07.30–16.00 WIB | <strong>Jumat:</strong> 07.30–16.30 WIB | <strong>Sabtu–Minggu:</strong> <span class="badge bg-danger p-1" style="font-size: 10px;">LIBUR</span>
+                <br><small class="mt-1 d-block text-muted"><em>* Catatan: Upload file <strong>perbaikan/revisi</strong> surat tetap bisa dilakukan kapan saja.</em></small>
             </p>
         </div>
     </div>
 </div>
 @endif
+</div>
+
+{{-- BANNER BUTUH TINDAKAN (REVISI) --}}
+@if($suratRevisiUrgent > 0)
+<div class="alert alert-danger border-0 shadow-sm mb-4 animate-in" id="banner-revisi" style="border-radius:20px; background:#fff; color:#b91c1c; border-left: 6px solid #ef4444 !important; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.1) !important;">
+    <div class="d-flex align-items-center justify-content-between gap-3 p-2">
+        <div class="d-flex align-items-center gap-3">
+            <div class="flex-shrink-0" style="font-size:36px; background: #fee2e2; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 14px;">📝</div>
+            <div>
+                <h6 class="fw-bold mb-1" style="font-size: 16px;">Butuh Tindakan Segera!</h6>
+                <p class="mb-0" style="font-size:13px; color: #475569;">
+                    Anda memiliki <span class="fw-bold text-danger" id="revisi-urgent-count">{{ $suratRevisiUrgent }} surat</span> yang butuh perbaikan. Segera unggah file revisi agar proses dapat dilanjutkan.
+                </p>
+            </div>
+        </div>
+        <div class="flex-shrink-0">
+            <a href="{{ route('user.surat.index', ['status' => 'revisi']) }}" class="btn btn-danger px-4 py-2 fw-bold d-flex align-items-center gap-2" style="border-radius:12px; font-size:13px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);">
+                Lihat Revisi <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+@endif
+
+<div class="container-fluid px-0">
 
 {{-- STAT CARDS --}}
-<div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 mb-4">
-    <div class="col">
-        <div class="stat-card-modern" style="--accent-color: #1e3a5f; --accent-color-light: #2563eb; --icon-bg: #eff6ff;">
-            <div class="stat-icon-wrapper">
-                <i class="bi bi-envelope-paper-fill" style="color: #1e3a5f; font-size: 20px;"></i>
-            </div>
-            <div class="stat-value-modern" id="stat-totalSurat" style="font-size: 24px;">{{ $totalSurat }}</div>
-            <div class="stat-label-modern" style="font-size: 11px;">Total Surat</div>
+<div class="stats-grid">
+    {{-- TOTAL SURAT --}}
+    <div class="stat-card-new blue animate-in" style="animation-delay: 0.1s;">
+        <svg class="wave-bg" viewBox="0 0 400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 120 C 50 120, 80 20, 130 80 C 180 140, 210 20, 260 80 C 310 140, 340 120, 400 120" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.4" /></svg>
+        <div class="stat-icon-box shadow-sm"><i class="bi bi-envelope-paper-fill"></i></div>
+        <div class="stat-info">
+            <div class="stat-label-new">Total Surat</div>
+            <div class="stat-value-new" id="stat-totalSurat">{{ $totalSurat }}</div>
+            <div class="stat-sub-new">Termasuk draf pengajuan</div>
         </div>
     </div>
-    <div class="col animate-in" style="animation-delay: 0.15s;">
-        <div class="stat-card-modern" style="--accent-color: #15803d; --accent-color-light: #22c55e; --icon-bg: #f0fdf4;">
-            <div class="stat-icon-wrapper">
-                <i class="bi bi-check-circle-fill" style="color: #15803d; font-size: 20px;"></i>
-            </div>
-            <div class="stat-value-modern" id="stat-suratSelesai" style="font-size: 24px;">{{ $suratSelesai }}</div>
-            <div class="stat-label-modern" style="font-size: 11px;">Selesai</div>
+
+    {{-- SELESAI --}}
+    <div class="stat-card-new green animate-in" style="animation-delay: 0.15s;">
+        <svg class="wave-bg" viewBox="0 0 400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 140 L 100 100 L 200 120 L 300 40 L 400 60" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.4" /></svg>
+        <div class="stat-icon-box shadow-sm"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="stat-info">
+            <div class="stat-label-new">Selesai</div>
+            <div class="stat-value-new" id="stat-suratSelesai">{{ $suratSelesai }}</div>
+            <div class="stat-sub-new">Terarsip & diverifikasi</div>
         </div>
     </div>
-    <div class="col animate-in" style="animation-delay: 0.2s;">
-        <div class="stat-card-modern" style="--accent-color: #2563eb; --accent-color-light: #60a5fa; --icon-bg: #eff6ff;">
-            <div class="stat-icon-wrapper">
-                <i class="bi bi-hourglass-split" style="color: #2563eb; font-size: 20px;"></i>
-            </div>
-            <div class="stat-value-modern" id="stat-suratProses" style="font-size: 24px;">{{ $suratProses }}</div>
-            <div class="stat-label-modern" style="font-size: 11px;">Proses</div>
+
+    {{-- PROSES --}}
+    <div class="stat-card-new amber animate-in" style="animation-delay: 0.2s;">
+        <svg class="wave-bg" viewBox="0 0 400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="80" width="40" height="70" fill="white" opacity="0.3" rx="4"/>
+            <rect x="80" y="40" width="40" height="110" fill="white" opacity="0.3" rx="4"/>
+            <rect x="140" y="60" width="40" height="90" fill="white" opacity="0.3" rx="4"/>
+            <rect x="200" y="20" width="40" height="130" fill="white" opacity="0.3" rx="4"/>
+            <rect x="260" y="70" width="40" height="80" fill="white" opacity="0.3" rx="4"/>
+            <rect x="320" y="50" width="40" height="100" fill="white" opacity="0.3" rx="4"/>
+        </svg>
+        <div class="stat-icon-box shadow-sm"><i class="bi bi-hourglass-split"></i></div>
+        <div class="stat-info">
+            <div class="stat-label-new">Sedang Proses</div>
+            <div class="stat-value-new" id="stat-suratProses">{{ $suratProses }}</div>
+            <div class="stat-sub-new">Menunggu aksi petugas</div>
         </div>
     </div>
-    <div class="col animate-in" style="animation-delay: 0.25s;">
-        <div class="stat-card-modern" style="--accent-color: #b45309; --accent-color-light: #f59e0b; --icon-bg: #fffbeb;">
-            <div class="stat-icon-wrapper">
-                <i class="bi bi-pencil-square" style="color: #b45309; font-size: 20px;"></i>
-            </div>
-            <div class="stat-value-modern" id="stat-suratRevisi" style="font-size: 24px;">{{ $suratRevisi }}</div>
-            <div class="stat-label-modern" style="font-size: 11px;">Revisi</div>
-        </div>
-    </div>
-    <div class="col animate-in" style="animation-delay: 0.3s;">
-        <div class="stat-card-modern" style="--accent-color: #b91c1c; --accent-color-light: #ef4444; --icon-bg: #fef2f2;">
-            <div class="stat-icon-wrapper">
-                <i class="bi bi-x-octagon-fill" style="color: #b91c1c; font-size: 20px;"></i>
-            </div>
-            <div class="stat-value-modern" id="stat-suratDitolak" style="font-size: 24px;">{{ $suratDitolak }}</div>
-            <div class="stat-label-modern" style="font-size: 11px;">Ditolak</div>
-        </div>
-    </div>
-    <div class="col animate-in" style="animation-delay: 0.35s;">
-        <div class="stat-card-modern" style="--accent-color: #64748b; --accent-color-light: #94a3b8; --icon-bg: #f8fafc;">
-            <div class="stat-icon-wrapper">
-                <i class="bi bi-file-earmark-text-fill" style="color: #64748b; font-size: 20px;"></i>
-            </div>
-            <div class="stat-value-modern" id="stat-suratDraft" style="font-size: 24px;">{{ $suratDraft }}</div>
-            <div class="stat-label-modern" style="font-size: 11px;">Draf</div>
+
+    {{-- DITOLAK / REVISI --}}
+    <div class="stat-card-new red animate-in" style="animation-delay: 0.25s;">
+        <svg class="wave-bg" viewBox="0 0 400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 80 L 50 140 L 100 20 L 150 100 L 200 40 L 250 130 L 300 20 L 350 110 L 400 60" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.4" /></svg>
+        <div class="stat-icon-box shadow-sm"><i class="bi bi-exclamation-triangle-fill"></i></div>
+        <div class="stat-info">
+            <div class="stat-label-new">Ditolak / Revisi</div>
+            <div class="stat-value-new" id="stat-suratDitolak">{{ $suratDitolak }}</div>
+            <div class="stat-sub-new">Perlu perbaikan segera</div>
         </div>
     </div>
 </div>
@@ -602,7 +717,7 @@
                 @foreach($suratTerbaru as $surat)
                     <div class="surat-item">
                         <div class="d-flex align-items-start gap-3">
-                            <div class="status-dot" style="background:{{ $surat->status === 'selesai' ? '#22c55e' : ($surat->status === 'ditolak' ? '#ef4444' : (in_array($surat->status, ['revisi', 'revisi_admin']) ? '#f59e0b' : '#3b82f6')) }}; margin-top:6px;"></div>
+                            <div class="status-dot" style="background:{{ $surat->status === 'selesai' ? '#22c55e' : ($surat->status === 'ditolak' ? '#ef4444' : ($surat->status === 'revisi' ? '#f59e0b' : ($surat->status === 'revisi_admin' ? '#8b5cf6' : '#3b82f6'))) }}; margin-top:6px;"></div>
                             <div class="flex-grow-1">
                                 <div class="fw-semibold mb-1" style="color:#1e293b; font-size:14px;">
                                     {{ $surat->judul }}
@@ -624,8 +739,10 @@
                                     <span class="badge rounded-pill" style="background:#dcfce7; color:#15803d; font-size:11px; padding:6px 12px;">✓ Selesai</span>
                                 @elseif($surat->status === 'ditolak')
                                     <span class="badge rounded-pill" style="background:#fee2e2; color:#b91c1c; font-size:11px; padding:6px 12px;">✗ Ditolak</span>
-                                @elseif(in_array($surat->status, ['revisi', 'revisi_admin']))
+                                @elseif($surat->status === 'revisi')
                                     <span class="badge rounded-pill" style="background:#fef3c7; color:#b45309; font-size:11px; padding:6px 12px;">📝 Revisi</span>
+                                @elseif($surat->status === 'revisi_admin')
+                                    <span class="badge rounded-pill" style="background:#f3e8ff; color:#6b21a8; font-size:11px; padding:6px 12px;">⚙️ Admin Revisi</span>
                                 @elseif($surat->sla_status === 'terlambat')
                                     <span class="badge rounded-pill" style="background:#fee2e2; color:#b91c1c; font-size:11px; padding:6px 12px;">⚠ SLA!</span>
                                 @else
@@ -683,6 +800,22 @@
 
     {{-- PANEL KANAN --}}
     <div class="col-12 col-lg-5">
+        {{-- LACAK CEPAT UUID --}}
+        <div class="card-modern mb-4 overflow-hidden" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; border: none;">
+            <div class="card-body-modern p-4">
+                <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-search"></i> Lacak Cepat via UUID
+                </h6>
+                <div class="input-group mb-2" style="background: rgba(255,255,255,0.2); border-radius: 12px; padding: 4px; border: 1px solid rgba(255,255,255,0.3);">
+                    <input type="text" id="quick-uuid-input" class="form-control border-0 bg-transparent text-white placeholder-white" placeholder="Masukkan UUID Surat..." style="box-shadow: none; font-size: 13px;">
+                    <button class="btn btn-white text-primary fw-bold px-3" type="button" id="btn-quick-track" style="border-radius: 8px; font-size: 12px; background: white;">
+                        Lacak
+                    </button>
+                </div>
+                <p class="mb-0" style="font-size: 10px; opacity: 0.8;">Contoh: 123e4567-e89b-12d3-a456-426614174000</p>
+            </div>
+        </div>
+
         {{-- NOTIFIKASI --}}
         <div class="card-modern mb-4">
             <div class="card-header-modern d-flex align-items-center justify-content-between">
@@ -961,34 +1094,31 @@ document.addEventListener('DOMContentLoaded', function() {
         ];
         
         new Chart(jenisCtx.getContext('2d'), {
-            type: 'polarArea',
+            type: 'doughnut',
             data: {
                 labels: labels,
                 datasets: [{
                     data: data,
                     backgroundColor: colors.slice(0, data.length),
-                    borderWidth: 1,
+                    borderWidth: 4,
                     borderColor: '#ffffff',
-                    hoverOffset: 8
+                    hoverOffset: 15,
+                    borderRadius: 10
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '75%',
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 16,
+                            padding: 20,
                             usePointStyle: true,
                             pointStyle: 'circle',
-                            font: { size: 12 }
+                            font: { size: 12, weight: '600' }
                         }
-                    }
-                },
-                scales: {
-                    r: {
-                        ticks: { display: false }
                     }
                 }
             }
@@ -1009,11 +1139,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 datasets: [{
                     label: 'Jumlah Surat',
                     data: data,
-                    backgroundColor: 'rgba(30, 58, 95, 0.8)',
-                    borderColor: '#1e3a5f',
-                    borderWidth: 2,
-                    borderRadius: 8,
-                    barPercentage: 0.6
+                    backgroundColor: (context) => {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return null;
+                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                        gradient.addColorStop(0, '#1e3a5f');
+                        gradient.addColorStop(1, '#3b82f6');
+                        return gradient;
+                    },
+                    borderRadius: 10,
+                    barPercentage: 0.5,
+                    categoryPercentage: 0.8
                 }]
             },
             options: {
@@ -1025,10 +1162,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { stepSize: 1 },
-                        grid: { color: '#f1f5f9' }
+                        ticks: { stepSize: 1, color: '#94a3b8' },
+                        grid: { color: 'rgba(241, 245, 249, 0.5)', drawBorder: false }
                     },
                     x: {
+                        ticks: { color: '#94a3b8' },
                         grid: { display: false }
                     }
                 }
@@ -1310,6 +1448,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
+            // 1.1 Update Banner Revisi
+            const bannerRevisi = document.getElementById('banner-revisi');
+            const revisiCountEl = document.getElementById('revisi-urgent-count');
+            if (data.stats.suratRevisiUrgent > 0) {
+                if (bannerRevisi) {
+                    bannerRevisi.style.display = 'block';
+                    if (revisiCountEl) revisiCountEl.innerText = `${data.stats.suratRevisiUrgent} surat`;
+                }
+            } else if (bannerRevisi) {
+                bannerRevisi.style.display = 'none';
+            }
+
             // 2. Update Unread Count Badge
             const badgeContainer = document.getElementById('notif-badge-container');
             if (badgeContainer) {
@@ -1418,12 +1568,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (firstSuratStatus !== data.suratTerbaru[0].status || firstSuratTahap !== `Tahap ${data.suratTerbaru[0].tahap_sekarang}/10`) {
                     let terbaruHtml = '';
                     data.suratTerbaru.forEach(s => {
-                        const statusColor = s.status === 'selesai' ? '#22c55e' : (s.status === 'ditolak' ? '#ef4444' : (['revisi', 'revisi_admin'].includes(s.status) ? '#f59e0b' : '#3b82f6'));
+                        const statusColor = s.status === 'selesai' ? '#22c55e' : (s.status === 'ditolak' ? '#ef4444' : (s.status === 'revisi' ? '#f59e0b' : (s.status === 'revisi_admin' ? '#8b5cf6' : '#3b82f6')));
                         
                         let statusBadge = '';
                         if (s.status === 'selesai') statusBadge = '<span class="badge rounded-pill" style="background:#dcfce7; color:#15803d; font-size:11px; padding:6px 12px;">✓ Selesai</span>';
                         else if (s.status === 'ditolak') statusBadge = '<span class="badge rounded-pill" style="background:#fee2e2; color:#b91c1c; font-size:11px; padding:6px 12px;">✗ Ditolak</span>';
-                        else if (['revisi', 'revisi_admin'].includes(s.status)) statusBadge = '<span class="badge rounded-pill" style="background:#fef3c7; color:#b45309; font-size:11px; padding:6px 12px;">📝 Revisi</span>';
+                        else if (s.status === 'revisi') statusBadge = '<span class="badge rounded-pill" style="background:#fef3c7; color:#b45309; font-size:11px; padding:6px 12px;">📝 Revisi</span>';
+                        else if (s.status === 'revisi_admin') statusBadge = '<span class="badge rounded-pill" style="background:#f3e8ff; color:#6b21a8; font-size:11px; padding:6px 12px;">⚙️ Admin Revisi</span>';
                         else if (s.sla_status === 'terlambat') statusBadge = '<span class="badge rounded-pill" style="background:#fee2e2; color:#b91c1c; font-size:11px; padding:6px 12px;">⚠ SLA!</span>';
                         else statusBadge = '<span class="badge rounded-pill" style="background:#dbeafe; color:#1d4ed8; font-size:11px; padding:6px 12px;">⏱ Proses</span>';
 
@@ -1490,6 +1641,31 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(updateDashboard, pollingInterval);
     // Jalankan sekali saat load
     setTimeout(updateDashboard, 2000);
+
+    // Quick Track Logic
+    const btnTrack = document.getElementById('btn-quick-track');
+    const inputTrack = document.getElementById('quick-uuid-input');
+    if (btnTrack && inputTrack) {
+        const handleTrack = () => {
+            const uuid = inputTrack.value.trim();
+            if (!uuid) {
+                Swal.fire({ icon: 'warning', title: 'Oops!', text: 'Silakan masukkan UUID surat.' });
+                return;
+            }
+            // Format check (simple regex for UUID)
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (!uuidRegex.test(uuid)) {
+                Swal.fire({ icon: 'error', title: 'Format Salah', text: 'UUID yang Anda masukkan tidak valid.' });
+                return;
+            }
+            window.location.href = `/surat/${uuid}`;
+        };
+
+        btnTrack.addEventListener('click', handleTrack);
+        inputTrack.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleTrack();
+        });
+    }
 });
 </script>
 
