@@ -354,7 +354,7 @@
                                     </div>
                                 </div>
                                 <div class="gallery-item tall">
-                                    <img src="{{ asset('images/about/team.png') }}" alt="Team">
+                                    <img src="{{ asset('images/kolaborasi.jpg') }}" alt="Team">
                                     <div class="gallery-overlay">
                                         <span><i class="bi bi-people-fill me-2"></i>Kolaborasi Tim</span>
                                     </div>
@@ -372,9 +372,60 @@
                                     </div>
                                 </div>
                                 <div class="gallery-item">
-                                    <img src="{{ asset('images/about/digital.png') }}" alt="Digital">
+                                    <img src="{{ asset('images/anggota.jpg') }}" alt="Digital">
                                     <div class="gallery-overlay">
-                                        <span><i class="bi bi-cpu me-2"></i>Digitalisasi Sistem</span>
+                                        <span><i class="bi bi-cpu me-2"></i>Pegawai Kami</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Lab Gallery --}}
+            <div class="row g-3 mt-1 animate-in" style="animation-delay: 0.38s;">
+                <div class="col-12">
+                    <div class="card card-custom">
+                        <div class="card-body p-4">
+                            <h6 class="fw-semibold mb-4" style="color:#111827;">
+                                <i class="bi bi-microscope text-info me-1 animate-float"></i> Infrastruktur Laboratorium BPSUML
+                            </h6>
+                            <div class="gallery-grid">
+                                <div class="gallery-item large">
+                                    <img src="{{ asset('images/lab/lab_listrik.webp') }}" alt="Lab Listrik">
+                                    <div class="gallery-overlay">
+                                        <span><i class="bi bi-lightning-fill me-2"></i>Laboratorium Listrik</span>
+                                    </div>
+                                </div>
+                                <div class="gallery-item tall">
+                                    <img src="{{ asset('images/lab/lab_massa.webp') }}" alt="Lab Massa">
+                                    <div class="gallery-overlay">
+                                        <span><i class="bi bi-box-seam me-2"></i>Laboratorium Massa</span>
+                                    </div>
+                                </div>
+                                <div class="gallery-item tall">
+                                    <img src="{{ asset('images/lab/lab_panjang.webp') }}" alt="Lab Panjang">
+                                    <div class="gallery-overlay">
+                                        <span><i class="bi bi-rulers me-2"></i>Laboratorium Panjang</span>
+                                    </div>
+                                </div>
+                                <div class="gallery-item tall">
+                                    <img src="{{ asset('images/lab/lab_suhu.webp') }}" alt="Lab Suhu">
+                                    <div class="gallery-overlay">
+                                        <span><i class="bi bi-thermometer-half me-2"></i>Laboratorium Suhu</span>
+                                    </div>
+                                </div>
+                                <div class="gallery-item">
+                                    <img src="{{ asset('images/lab/lab_tekanan.webp') }}" alt="Lab Tekanan">
+                                    <div class="gallery-overlay">
+                                        <span><i class="bi bi-speedometer2 me-2"></i>Laboratorium Tekanan</span>
+                                    </div>
+                                </div>
+                                <div class="gallery-item">
+                                    <img src="{{ asset('images/lab/lab_volume.webp') }}" alt="Lab Volume">
+                                    <div class="gallery-overlay">
+                                        <span><i class="bi bi-droplet-fill me-2"></i>Laboratorium Volume</span>
                                     </div>
                                 </div>
                             </div>
