@@ -35,12 +35,12 @@
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Tujuan Aspirasi</label>
                             <div class="d-flex gap-2">
-                                <input type="radio" class="btn-check" name="tujuan" id="to1" value="admin" {{ request('to') !== 'itsupport' ? 'checked' : '' }}>
+                                <input type="radio" class="btn-check" name="tujuan" id="to1" value="admin" {{ request('to') !== 'it_support' ? 'checked' : '' }}>
                                 <label class="btn btn-outline-secondary btn-sm flex-grow-1 d-flex align-items-center justify-content-center gap-2" for="to1">
                                     <i class="bi bi-person-badge"></i> Admin
                                 </label>
 
-                                <input type="radio" class="btn-check" name="tujuan" id="to2" value="itsupport" {{ request('to') === 'itsupport' ? 'checked' : '' }}>
+                                <input type="radio" class="btn-check" name="tujuan" id="to2" value="it_support" {{ request('to') === 'it_support' ? 'checked' : '' }}>
                                 <label class="btn btn-outline-info btn-sm flex-grow-1 d-flex align-items-center justify-content-center gap-2" for="to2">
                                     <i class="bi bi-cpu"></i> IT Support
                                 </label>
@@ -95,11 +95,19 @@
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
                                         <div class="d-flex gap-1">
-                                            <span class="badge {{ $item->kategori === 'saran' ? 'bg-primary' : ($item->kategori === 'keluhan' ? 'bg-danger' : 'bg-info') }} mb-2" style="font-size: 10px;">
+                                            <span class="badge {{ 
+                                                match($item->kategori) {
+                                                    'bug', 'keluhan' => 'bg-danger',
+                                                    'error' => 'bg-warning text-dark',
+                                                    'fitur' => 'bg-success',
+                                                    'saran' => 'bg-primary',
+                                                    default => 'bg-info'
+                                                } 
+                                            }} mb-2" style="font-size: 10px;">
                                                 {{ ucfirst($item->kategori) }}
                                             </span>
-                                            <span class="badge {{ $item->tujuan === 'itsupport' ? 'bg-info bg-opacity-75' : 'bg-secondary bg-opacity-75' }} mb-2" style="font-size: 10px;">
-                                                Untuk: {{ $item->tujuan === 'itsupport' ? 'IT Support' : 'Admin' }}
+                                            <span class="badge {{ $item->tujuan === 'it_support' ? 'bg-info bg-opacity-75' : 'bg-secondary bg-opacity-75' }} mb-2" style="font-size: 10px;">
+                                                Untuk: {{ $item->tujuan === 'it_support' ? 'IT Support' : 'Admin' }}
                                             </span>
                                         </div>
                                         <h6 class="fw-bold mb-0" style="color: var(--text-primary);">{{ $item->judul }}</h6>

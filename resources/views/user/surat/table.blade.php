@@ -9,6 +9,10 @@
         <small class="text-muted">{{ request('status') === 'draft' ? 'Data draf surat dalam format tabel detail' : 'Data surat dalam format tabel detail' }}</small>
     </div>
     <div class="d-flex gap-2">
+        <a href="{{ route('user.surat.exportExcel', request()->all()) }}" class="btn btn-success d-flex align-items-center gap-2"
+           style="border-radius:9px;font-size:13px;font-weight:600;background:#10b981;border-color:#10b981;">
+            <i class="bi bi-file-earmark-excel-fill"></i> Export Excel
+        </a>
         <a href="{{ route('user.surat.index') }}" class="btn btn-light d-flex align-items-center gap-2"
            style="border-radius:9px;font-size:13px;font-weight:600;">
             <i class="bi bi-grid-fill"></i> Tampilan Card
