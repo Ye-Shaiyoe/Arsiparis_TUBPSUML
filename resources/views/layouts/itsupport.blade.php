@@ -10,6 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     
@@ -210,8 +213,11 @@
 
         <nav class="sidebar-menu">
             <div class="menu-label">Console</div>
-            <a href="{{ route('itsupport.dashboard') }}" class="menu-item active">
+            <a href="{{ route('itsupport.dashboard') }}" class="menu-item {{ request()->routeIs('itsupport.dashboard') ? 'active' : '' }}">
                 <i class="bi bi-grid-1x2-fill"></i> Dashboard
+            </a>
+            <a href="{{ route('itsupport.notification.create') }}" class="menu-item {{ request()->routeIs('itsupport.notification.create') ? 'active' : '' }}">
+                <i class="bi bi-megaphone-fill"></i> Add Notification
             </a>
             <a href="#" class="menu-item">
                 <i class="bi bi-code-square"></i> System Config
@@ -262,5 +268,6 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -225,6 +225,71 @@
             box-shadow: var(--glass-shadow) !important;
             border-radius: 12px !important;
             padding: 8px !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ===== HOVER DROPDOWN ===== */
+        @media (min-width: 992px) {
+            .dropdown { position: relative; }
+            
+            .dropdown:hover > .dropdown-menu {
+                display: block;
+                margin-top: 0;
+                opacity: 1;
+                visibility: visible;
+                animation: dropdownFade 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            /* Bridge gap to prevent accidental close */
+            .dropdown > .nav-link-item::after,
+            .dropdown > .user-avatar::after {
+                content: "";
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                height: 10px;
+                background: transparent;
+            }
+
+            /* Ensure right alignment for end-aligned menus on hover */
+            .dropdown-menu-end {
+                right: 0 !important;
+                left: auto !important;
+            }
+            
+            .dropdown-submenu { position: relative; }
+            .dropdown-submenu:hover > .dropdown-menu {
+                display: block;
+                left: 100% !important;
+                right: auto !important;
+                top: 0;
+                margin-top: -8px;
+                margin-left: 0px;
+                border-radius: 12px !important;
+            }
+
+            /* Submenu bridge gap */
+            .dropdown-submenu > a::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 100%;
+                width: 15px;
+                height: 100%;
+                background: transparent;
+            }
+
+            /* Submenu indicator arrow rotation on hover */
+            .dropdown-submenu:hover > a .bi-chevron-right {
+                transform: rotate(90deg);
+                transition: transform 0.2s;
+            }
+        }
+
+        @keyframes dropdownFade {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .dropdown-item {
             border-radius: 8px;
@@ -711,8 +776,7 @@
            class="nav-link-item {{ request()->routeIs('user.template.*') ? 'active' : '' }}">
             <i class="bi bi-file-earmark-word"></i> Template
         </a>
-        
-        {{-- Lainnya Dropdown --}}
+                {{-- Lainnya Dropdown --}}
         <div class="dropdown">
             <button class="nav-link-item border-0 bg-transparent dropdown-toggle {{ request()->routeIs('user.faq.*', 'user.about.*', 'user.notifikasi.index', 'user.aspirasi.index') ? 'active' : '' }}" 
                     type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -756,6 +820,7 @@
                 </li>
             </ul>
         </div>
+        
     </div>
 
     {{-- Right: notif + avatar --}}
@@ -1231,6 +1296,17 @@
             }
         }
     }
+
+    // Auto-close dropdown when clicking a link inside it
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const dropdown = this.closest('.dropdown-menu');
+            if(dropdown && window.innerWidth >= 992) {
+                dropdown.style.display = 'none';
+                setTimeout(() => dropdown.style.display = '', 100);
+            }
+        });
+    });
 </script>
 @stack('scripts')
 

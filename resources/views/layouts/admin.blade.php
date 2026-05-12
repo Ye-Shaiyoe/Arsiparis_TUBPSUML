@@ -27,16 +27,16 @@
                     },
                     colors: {
                         navy: {
-                            50:  '#eef3fb',
-                            100: '#d5e2f5',
-                            200: '#abc5eb',
-                            300: '#7da3df',
-                            400: '#4f7fd3',
-                            500: '#2b5fbe',
-                            600: '#1e3a5f',
-                            700: '#172d4a',
-                            800: '#0f1f33',
-                            900: '#08111c',
+                            50:  '#f5f7ff',
+                            100: '#ebf0fe',
+                            200: '#ced9fd',
+                            300: '#a1b6fb',
+                            400: '#6d8bf7',
+                            500: '#4361ee', /* Modern Electric Blue */
+                            600: '#3a50e0',
+                            700: '#3041c7',
+                            800: '#1e293b', /* Slate 800 for sidebar */
+                            900: '#0f172a', /* Slate 900 for sidebar */
                         },
                     },
                     boxShadow: {
@@ -83,11 +83,41 @@
             -webkit-backdrop-filter: blur(12px);
         }
 
-        /* ===== ACTIVE NAV GLOW ===== */
+        /* ===== ACTIVE NAV MODEREN ===== */
         .nav-active {
-            background: rgba(96,165,250,0.12);
-            border-left-color: #60a5fa;
+            background: linear-gradient(90deg, rgba(67, 97, 238, 0.15) 0%, rgba(67, 97, 238, 0.05) 100%);
+            color: #4361ee !important;
+            font-weight: 700 !important;
+            position: relative;
+        }
+
+        .nav-active::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 4px;
+            background: #4361ee;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 0 10px rgba(67, 97, 238, 0.5);
+        }
+
+        .sidebar-item {
+            margin: 2px 12px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(4px);
             color: #fff;
+        }
+
+        .dark .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.03);
         }
 
         /* ===== TOPBAR BACKDROP ===== */
@@ -269,6 +299,30 @@
             padding: 16px 20px;
             transition: all 0.2s ease;
         }
+
+        .notif-item { transition: all 0.2s ease; position: relative; }
+        .btn-notif-action {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        .btn-notif-action:hover {
+            background: var(--bg-tertiary);
+            transform: scale(1.1);
+        }
+        .notif-item-wrapper:hover .notif-item {
+            background: var(--bg-tertiary);
+        }
+        .pr-12 { padding-right: 3rem !important; }
+        .mr-4 { margin-right: 1rem !important; }
+        .group:hover .notif-actions { opacity: 1 !important; }
 
         .stat-label {
             font-size: 13px;
@@ -470,13 +524,19 @@
      SIDEBAR
 ============================================================ --}}
 <aside id="sidebar"
-    class="fixed lg:static inset-y-0 left-0 w-[240px] flex flex-col bg-navy-600 dark:bg-navy-800 z-40
-           -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shrink-0 h-screen">
+    class="fixed lg:static inset-y-0 left-0 w-[260px] flex flex-col bg-slate-900 z-40
+           -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shrink-0 h-screen border-r border-white/5 shadow-2xl">
 
     {{-- Logo --}}
-    <div class="px-4 py-3 border-b border-white/10 shrink-0 logo-shimmer">
+    <div class="px-6 py-6 border-b border-white/5 shrink-0">
         <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
-            <img src="{{ asset('images/BP_SUML2.png') }}" alt="Logo" class="h-10 w-auto object-contain drop-shadow-md">
+            <div class="p-2 bg-white/5 rounded-xl border border-white/10">
+                <img src="{{ asset('images/BP_SUML2.png') }}" alt="Logo" class="h-8 w-auto object-contain">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white font-black text-sm tracking-tighter leading-none">BP SUML</span>
+                <span class="text-white/40 text-[10px] font-bold uppercase tracking-[2px] mt-1">Admin Panel</span>
+            </div>
         </a>
     </div>
 
@@ -487,29 +547,26 @@
         <p class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-white/30">Utama</p>
 
         <a href="{{ url('/?home=1') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
-                  border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white">
-            <i class="bi bi-globe text-base w-5 text-center shrink-0"></i>
-            <span>Beranda</span>
+           class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400 hover:text-white">
+            <i class="bi bi-globe text-lg w-5 text-center shrink-0"></i>
+            <span>Beranda Utama</span>
         </a>
 
         <a href="{{ route('admin.dashboard') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
-                  border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white
+           class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.dashboard') ? 'nav-active' : '' }}">
-            <i class="bi bi-speedometer2 text-base w-5 text-center shrink-0"></i>
+            <i class="bi bi-grid-1x2-fill text-lg w-5 text-center shrink-0"></i>
             <span>Dashboard</span>
         </a>
 
         <a href="{{ route('admin.surat.index') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
-                  border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white
+           class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.surat.index') ? 'nav-active' : '' }}">
-            <i class="bi bi-envelope text-base w-5 text-center shrink-0"></i>
+            <i class="bi bi-stack text-lg w-5 text-center shrink-0"></i>
             <span class="flex-1">Antrian Surat</span>
             <span id="sidebar-antrian-badge-container">
                 @if($antrianCount ?? 0)
-                    <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none min-w-[18px] text-center">{{ $antrianCount }}</span>
+                    <span class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg shadow-red-500/20">{{ $antrianCount }}</span>
                 @endif
             </span>
         </a>
@@ -520,36 +577,31 @@
         {{-- Dropdown: Tabel Data Surat --}}
         <div class="dropdown-group {{ request()->routeIs('admin.surat.masuk') || request()->routeIs('admin.surat.proses') || request()->routeIs('admin.surat.selesai') || request()->routeIs('admin.surat.revisi') ? 'open' : '' }}">
             <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')"
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
-                       border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white text-left">
-                <i class="bi bi-folder2-open text-base w-5 text-center shrink-0"></i>
+                class="sidebar-item w-[calc(100%-24px)] flex items-center gap-3 text-[13px] font-semibold text-slate-400 text-left">
+                <i class="bi bi-folder2-open text-lg w-5 text-center shrink-0"></i>
                 <span class="flex-1">Tabel Data Surat</span>
                 <i class="bi bi-chevron-down text-[11px] text-white/40 chevron-icon shrink-0"></i>
             </button>
-            <div class="dropdown-list pl-3 mt-0.5 space-y-0.5">
+            <div class="dropdown-list pl-3 mt-1 space-y-1">
                 <a href="{{ route('admin.surat.masuk') }}"
-                   class="flex items-center gap-3 pl-5 pr-3 py-2 rounded-xl text-[12.5px] font-medium text-white/55
-                          border-l-2 border-transparent transition-all hover:bg-white/8 hover:text-white
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.surat.masuk') ? 'nav-active' : '' }}">
-                    <i class="bi bi-inbox text-sm w-4 text-center shrink-0"></i> Surat Masuk
+                    <i class="bi bi-inbox text-base w-5 text-center shrink-0"></i> Surat Masuk
                 </a>
                 <a href="{{ route('admin.surat.proses') }}"
-                   class="flex items-center gap-3 pl-5 pr-3 py-2 rounded-xl text-[12.5px] font-medium text-white/55
-                          border-l-2 border-transparent transition-all hover:bg-white/8 hover:text-white
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.surat.proses') ? 'nav-active' : '' }}">
-                    <i class="bi bi-arrow-repeat text-sm w-4 text-center shrink-0"></i> Surat Diproses
+                    <i class="bi bi-arrow-repeat text-base w-5 text-center shrink-0"></i> Surat Diproses
                 </a>
                 <a href="{{ route('admin.surat.selesai') }}"
-                   class="flex items-center gap-3 pl-5 pr-3 py-2 rounded-xl text-[12.5px] font-medium text-white/55
-                          border-l-2 border-transparent transition-all hover:bg-white/8 hover:text-white
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.surat.selesai') ? 'nav-active' : '' }}">
-                    <i class="bi bi-check-circle text-sm w-4 text-center shrink-0"></i> Surat Selesai
+                    <i class="bi bi-check-circle text-base w-5 text-center shrink-0"></i> Surat Selesai
                 </a>
                 <a href="{{ route('admin.surat.revisi') }}"
-                   class="flex items-center gap-3 pl-5 pr-3 py-2 rounded-xl text-[12.5px] font-medium text-white/55
-                          border-l-2 border-transparent transition-all hover:bg-white/8 hover:text-white
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.surat.revisi') ? 'nav-active' : '' }}">
-                    <i class="bi bi-exclamation-triangle text-sm w-4 text-center shrink-0"></i> Perlu Revisi
+                    <i class="bi bi-exclamation-triangle text-base w-5 text-center shrink-0"></i> Perlu Revisi
                 </a>
             </div>
         </div>
@@ -557,24 +609,26 @@
         {{-- Dropdown: Laporan --}}
         <div class="dropdown-group {{ request()->routeIs('admin.laporan.*') || request()->routeIs('admin.riwayat.*') ? 'open' : '' }}">
             <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')"
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
-                       border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white text-left">
-                <i class="bi bi-bar-chart-line text-base w-5 text-center shrink-0"></i>
+                class="sidebar-item w-[calc(100%-24px)] flex items-center gap-3 text-[13px] font-semibold text-slate-400 text-left">
+                <i class="bi bi-bar-chart-line text-lg w-5 text-center shrink-0"></i>
                 <span class="flex-1">Laporan</span>
                 <i class="bi bi-chevron-down text-[11px] text-white/40 chevron-icon shrink-0"></i>
             </button>
-            <div class="dropdown-list pl-3 mt-0.5 space-y-0.5">
+            <div class="dropdown-list pl-3 mt-1 space-y-1">
                 <a href="{{ route('admin.laporan.index') }}"
-                   class="flex items-center gap-3 pl-5 pr-3 py-2 rounded-xl text-[12.5px] font-medium text-white/55
-                          border-l-2 border-transparent transition-all hover:bg-white/8 hover:text-white
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.laporan.*') ? 'nav-active' : '' }}">
-                    <i class="bi bi-file-earmark-bar-graph text-sm w-4 text-center shrink-0"></i> Rekap Bulanan
+                    <i class="bi bi-file-earmark-bar-graph text-base w-5 text-center shrink-0"></i> Rekap Bulanan
                 </a>
                 <a href="{{ route('admin.riwayat.index') }}"
-                   class="flex items-center gap-3 pl-5 pr-3 py-2 rounded-xl text-[12.5px] font-medium text-white/55
-                          border-l-2 border-transparent transition-all hover:bg-white/8 hover:text-white
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.riwayat.*') ? 'nav-active' : '' }}">
-                    <i class="bi bi-clock-history text-sm w-4 text-center shrink-0"></i> Riwayat Pemrosesan
+                    <i class="bi bi-clock-history text-base w-5 text-center shrink-0"></i> Riwayat Pemrosesan
+                </a>
+                <a href="{{ route('admin.analytics.sla') }}"
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
+                          {{ request()->routeIs('admin.analytics.sla') ? 'nav-active' : '' }}">
+                    <i class="bi bi-lightning-charge text-base w-5 text-center shrink-0"></i> Monitoring SLA
                 </a>
             </div>
         </div>
@@ -583,24 +637,22 @@
         <p class="px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-white/30">Komunikasi</p>
 
         <a href="{{ route('admin.notifikasi.index') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
-                  border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white
+           class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.notifikasi.*') ? 'nav-active' : '' }}">
-            <i class="bi bi-bell text-base w-5 text-center shrink-0"></i>
+            <i class="bi bi-bell text-lg w-5 text-center shrink-0"></i>
             <span class="flex-1">Notifikasi</span>
             <span id="sidebar-notif-badge-container">
                 @php $notifCount = Auth::user()->unreadNotifications()->count(); @endphp
                 @if($notifCount > 0)
-                    <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none min-w-[18px] text-center animate-pulse">{{ $notifCount }}</span>
+                    <span class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg shadow-red-500/20 animate-pulse">{{ $notifCount }}</span>
                 @endif
             </span>
         </a>
 
         <a href="{{ route('admin.aspirasi.index') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
-                  border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white
+           class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.aspirasi.*') ? 'nav-active' : '' }}">
-            <i class="bi bi-chat-heart text-base w-5 text-center shrink-0"></i>
+            <i class="bi bi-chat-heart text-lg w-5 text-center shrink-0"></i>
             <span>Kotak Aspirasi</span>
         </a>
 
@@ -610,77 +662,116 @@
         {{-- Dropdown: Pengaturan --}}
         <div class="dropdown-group {{ request()->routeIs('admin.template.*') || request()->routeIs('admin.users.*') || request()->routeIs('admin.file.*') || request()->routeIs('admin.logs.*') ? 'open' : '' }}">
             <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')"
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
-                       border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white text-left">
-                <i class="bi bi-gear text-base w-5 text-center shrink-0"></i>
+                class="sidebar-item w-[calc(100%-24px)] flex items-center gap-3 text-[13px] font-semibold text-slate-400 text-left">
+                <i class="bi bi-gear text-lg w-5 text-center shrink-0"></i>
                 <span class="flex-1">Pengaturan</span>
                 <i class="bi bi-chevron-down text-[11px] text-white/40 chevron-icon shrink-0"></i>
             </button>
-            <div class="dropdown-list pl-3 mt-0.5 space-y-0.5">
+            <div class="dropdown-list pl-3 mt-1 space-y-1">
                 <a href="{{ route('admin.template.index') }}"
-                   class="flex items-center gap-3 pl-5 pr-3 py-2 rounded-xl text-[12.5px] font-medium text-white/55
-                          border-l-2 border-transparent transition-all hover:bg-white/8 hover:text-white
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.template.*') ? 'nav-active' : '' }}">
-                    <i class="bi bi-file-earmark-text text-sm w-4 text-center shrink-0"></i> Template Surat
+                    <i class="bi bi-file-earmark-text text-base w-5 text-center shrink-0"></i> Template Surat
                 </a>
                 <a href="{{ route('admin.users.index') }}"
-                   class="flex items-center gap-3 pl-5 pr-3 py-2 rounded-xl text-[12.5px] font-medium text-white/55
-                          border-l-2 border-transparent transition-all hover:bg-white/8 hover:text-white
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.users.*') ? 'nav-active' : '' }}">
-                    <i class="bi bi-people text-sm w-4 text-center shrink-0"></i> Data Pegawai
+                    <i class="bi bi-people text-base w-5 text-center shrink-0"></i> Data Pegawai
                 </a>
                 <a href="{{ route('admin.file.index') }}"
-                   class="flex items-center gap-3 pl-5 pr-3 py-2 rounded-xl text-[12.5px] font-medium text-white/55
-                          border-l-2 border-transparent transition-all hover:bg-white/8 hover:text-white
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.file.*') ? 'nav-active' : '' }}">
-                    <i class="bi bi-hdd text-sm w-4 text-center shrink-0"></i> File Surat
+                    <i class="bi bi-hdd text-base w-5 text-center shrink-0"></i> File Surat
                 </a>
                 <a href="{{ route('admin.logs.index') }}"
-                   class="flex items-center gap-3 pl-5 pr-3 py-2 rounded-xl text-[12.5px] font-medium text-white/55
-                          border-l-2 border-transparent transition-all hover:bg-white/8 hover:text-white
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.logs.*') ? 'nav-active' : '' }}">
-                    <i class="bi bi-journal-text text-sm w-4 text-center shrink-0"></i> System Logs
+                    <i class="bi bi-journal-text text-base w-5 text-center shrink-0"></i> System Logs
                 </a>
             </div>
         </div>
 
         <a href="{{ route('admin.chart.index') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
-                  border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white
+           class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.chart.*') ? 'nav-active' : '' }}">
-            <i class="bi bi-bar-chart text-base w-5 text-center shrink-0"></i>
+            <i class="bi bi-bar-chart text-lg w-5 text-center shrink-0"></i>
             <span>Statistik & Grafik</span>
         </a>
 
         {{-- BANTUAN --}}
         <p class="px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-white/30">Bantuan</p>
         <a href="{{ route('admin.faq.index') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/65
-                  border-l-2 border-transparent transition-all duration-150 hover:bg-white/8 hover:text-white
+           class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.faq.*') ? 'nav-active' : '' }}">
-            <i class="bi bi-question-circle text-base w-5 text-center shrink-0"></i>
+            <i class="bi bi-question-circle text-lg w-5 text-center shrink-0"></i>
             <span>FAQ & Panduan</span>
         </a>
+        <a href="{{ route('admin.bug-report.index') }}"
+           class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
+                  {{ request()->routeIs('admin.bug-report.*') ? 'nav-active' : '' }}">
+            <i class="bi bi-bug-fill text-lg w-5 text-center shrink-0"></i>
+            <span>Laporan Bug</span>
+        </a>
+
+        <div x-data="{ open: false }" class="relative">
+            <button @click="open = !open" @click.outside="open = false"
+                    class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400 hover:text-blue-400 transition-colors w-full">
+                <i class="bi bi-headset text-lg w-5 text-center shrink-0"></i>
+                <span>Hubungi IT Support</span>
+                <i class="bi bi-chevron-down ms-auto text-[10px]" :class="open ? 'rotate-180' : ''"></i>
+            </button>
+            <div x-show="open"
+                 xTransition
+                 class="absolute left-0 top-full mt-1 w-56 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl py-2 z-50"
+                 style="display: none;">
+                @php
+                    $waNumber = config('services.whatsapp.number');
+                    $telegramUsername = config('services.telegram.admin_username');
+                @endphp
+                @if($waNumber)
+                <a href="https://wa.me/{{ $waNumber }}?text=Halo%20IT%20Support%2C%20saya%20ingin%20melaporkan%20bug%20atau%20masalah%20di%20sistem."
+                   target="_blank"
+                   class="flex items-center gap-2 px-4 py-2.5 text-[12px] text-slate-300 hover:bg-slate-700 hover:text-white transition-all">
+                    <i class="bi bi-whatsapp text-lg text-emerald-400"></i>
+                    <span>WhatsApp</span>
+                </a>
+                @endif
+                @if($telegramUsername)
+                <a href="https://t.me/{{ $telegramUsername }}" target="_blank"
+                   class="flex items-center gap-2 px-4 py-2.5 text-[12px] text-slate-300 hover:bg-slate-700 hover:text-white transition-all">
+                    <i class="bi bi-telegram text-lg text-blue-400"></i>
+                    <span>Telegram</span>
+                </a>
+                @endif
+                <a href="mailto:tubpsuml@gmail.com?subject=Laporan%20Bug%20Sistem%20Persuratan"
+                   class="flex items-center gap-2 px-4 py-2.5 text-[12px] text-slate-300 hover:bg-slate-700 hover:text-white transition-all">
+                    <i class="bi bi-envelope text-lg text-red-400"></i>
+                    <span>Email</span>
+                </a>
+            </div>
+        </div>
 
         <div class="pb-4"></div>
     </nav>
 
     {{-- User Footer --}}
-    <div class="shrink-0 border-t border-white/10 p-3">
-        <div class="flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-white/8 transition-colors cursor-pointer">
-            <div class="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden">
-                @if(Auth::user()->profile_photo)
-                    <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile" class="w-full h-full object-cover">
-                @else
-                    {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
-                @endif
+    <div class="shrink-0 p-4">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-3 flex items-center gap-3 hover:bg-white/10 transition-all cursor-pointer group">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 p-0.5 shrink-0">
+                <div class="w-full h-full rounded-[10px] bg-slate-900 flex items-center justify-center text-white text-xs font-black overflow-hidden">
+                    @if(Auth::user()->profile_photo)
+                        <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile" class="w-full h-full object-cover">
+                    @else
+                        {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                    @endif
+                </div>
             </div>
-            <div class="min-w-0">
-                <div class="text-white text-xs font-semibold truncate leading-tight">{{ Auth::user()->name }}</div>
-                <div class="text-white/40 text-[10px] mt-0.5 leading-none">{{ Auth::user()->getRoleLabel() }}</div>
+            <div class="min-w-0 flex-1">
+                <div class="text-white text-[13px] font-bold truncate leading-none group-hover:text-blue-400 transition-colors">{{ Auth::user()->name }}</div>
+                <div class="text-white/40 text-[10px] font-bold uppercase tracking-wider mt-1.5 leading-none">{{ Auth::user()->getRoleLabel() }}</div>
             </div>
-            <div class="ml-auto shrink-0">
-                <div class="w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-emerald-400/30"></div>
+            <div class="shrink-0">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
             </div>
         </div>
     </div>
@@ -731,7 +822,9 @@
                 <span id="topbar-notif-badge-container">
                     @php $notifCount = Auth::user()->unreadNotifications()->count(); @endphp
                     @if($notifCount > 0)
-                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse"></span>
+                        <span class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-white dark:ring-slate-900 shadow-lg shadow-red-500/20 animate-pulse">
+                            {{ $notifCount }}
+                        </span>
                     @endif
                 </span>
             </button>
@@ -1033,10 +1126,86 @@
             if (e.key === 'Escape') closeSidebar();
         });
     })();
+
+    function markNotifRead(id) {
+        const item = document.querySelector(`.notif-item-wrapper[data-id="${id}"]`);
+        if(item) item.style.opacity = '0.5';
+
+        fetch(`/notif/mark-read/${id}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                if(item) {
+                    item.style.opacity = '1';
+                    const link = item.querySelector('.notif-item');
+                    link.classList.remove('unread');
+                    const dot = item.querySelector('.unread-dot');
+                    if(dot) dot.remove();
+                    const readBtn = item.querySelector('.btn-notif-action.text-primary');
+                    if(readBtn) readBtn.remove();
+                }
+                // Update Badge counts if possible
+                updateNotifBadges(data.unreadCount);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            if(item) item.style.opacity = '1';
+        });
+    }
+
+    function deleteNotif(id) {
+        if(!confirm('Hapus notifikasi ini?')) return;
+        const item = document.querySelector(`.notif-item-wrapper[data-id="${id}"]`);
+        if(item) item.style.opacity = '0.5';
+
+        fetch(`/notif/delete/${id}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                if(item) {
+                    item.style.transition = 'all 0.3s ease';
+                    item.style.transform = 'translateX(50px)';
+                    item.style.opacity = '0';
+                    setTimeout(() => item.remove(), 300);
+                }
+                updateNotifBadges(data.unreadCount);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            if(item) item.style.opacity = '1';
+        });
+    }
+
+    function updateNotifBadges(count) {
+        const top = document.getElementById('topbar-notif-badge-container');
+        const side = document.getElementById('sidebar-notif-badge-container');
+        const badgeHtml = count > 0 ? `<span class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-white dark:ring-slate-900 shadow-lg shadow-red-500/20 animate-pulse">${count}</span>` : '';
+        const sideHtml = count > 0 ? `<span class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg shadow-red-500/20 animate-pulse">${count}</span>` : '';
+        
+        if(top) top.innerHTML = badgeHtml;
+        if(side) side.innerHTML = sideHtml;
+    }
 </script>
 
 {{-- Form untuk Tandai Semua Dibaca --}}
 <form id="readall-form" action="{{ route('notif.readAll') }}" method="POST" class="d-none">@csrf</form>
+<form id="deleteall-form" action="{{ route('notif.deleteAll') }}" method="POST" class="d-none">@csrf</form>
 
 {{-- ===== OFFCANVAS NOTIFIKASI ===== --}}
 <div class="offcanvas offcanvas-end offcanvas-notif" tabindex="-1" id="offcanvasNotif" aria-labelledby="offcanvasNotifLabel">
@@ -1048,40 +1217,66 @@
     </div>
     <div class="px-4 py-2 border-bottom d-flex align-items-center justify-content-between bg-slate-50 dark:bg-slate-800/50" style="border-color: var(--border-color) !important;">
         <span style="font-size: 11px; color: var(--text-secondary);">{{ auth()->user()->notifications->count() }} Notifikasi Terakhir</span>
-        @if(auth()->user()->unreadNotifications->count() > 0)
-            <a href="#" onclick="event.preventDefault(); document.getElementById('readall-form').submit();" 
-               class="text-decoration-none fw-bold" style="font-size: 11px; color: #3b82f6;">
-                Tandai semua dibaca
-            </a>
-        @endif
+        <div class="d-flex gap-3">
+            @if(auth()->user()->unreadNotifications->count() > 0)
+                <a href="#" onclick="event.preventDefault(); document.getElementById('readall-form').submit();" 
+                   class="text-decoration-none fw-bold" style="font-size: 11px; color: #3b82f6;">
+                    Tandai semua dibaca
+                </a>
+            @endif
+            @if(auth()->user()->notifications->count() > 0)
+                <a href="#" onclick="event.preventDefault(); if(confirm('Hapus semua notifikasi?')) document.getElementById('deleteall-form').submit();" 
+                   class="text-decoration-none fw-bold text-danger" style="font-size: 11px;">
+                    Hapus semua
+                </a>
+            @endif
+        </div>
     </div>
     <div class="offcanvas-body p-0" style="overflow-y: auto; overflow-x: hidden;">
         @forelse(auth()->user()->notifications->take(15) as $notif)
-            <a href="{{ route('notif.read', $notif->id) }}"
-               class="notif-item {{ $notif->read_at ? '' : 'unread' }}">
-                <div class="notif-icon {{ $notif->data['type'] ?? 'info' }}">
-                    @switch($notif->data['type'] ?? 'info')
-                        @case('success') <i class="bi bi-check-circle-fill text-success"></i> @break
-                        @case('warning') <i class="bi bi-exclamation-triangle-fill text-warning"></i> @break
-                        @case('danger')  <i class="bi bi-x-circle-fill text-danger"></i> @break
-                        @default         <i class="bi bi-info-circle-fill text-primary"></i>
-                    @endswitch
+            <div class="notif-item-wrapper position-relative group" data-id="{{ $notif->id }}">
+                <a href="{{ route('notif.read', $notif->id) }}"
+                   class="notif-item {{ $notif->read_at ? '' : 'unread' }} pr-12">
+                    <div class="notif-icon {{ $notif->data['type'] ?? 'info' }}">
+                        @switch($notif->data['type'] ?? 'info')
+                            @case('success') <i class="bi bi-check-circle-fill text-success"></i> @break
+                            @case('warning') <i class="bi bi-exclamation-triangle-fill text-warning"></i> @break
+                            @case('danger')  <i class="bi bi-x-circle-fill text-danger"></i> @break
+                            @default         <i class="bi bi-info-circle-fill text-primary"></i>
+                        @endswitch
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.3;">
+                            {{ $notif->data['title'] ?? 'Notifikasi' }}
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                            {{ Str::limit($notif->data['message'] ?? '', 80) }}
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-secondary); margin-top: 6px; opacity: 0.7;">
+                            <i class="bi bi-clock me-1"></i> {{ $notif->created_at->diffForHumans() }}
+                        </div>
+                    </div>
+                </a>
+                
+                {{-- Quick Actions --}}
+                <div class="notif-actions position-absolute top-50 translate-middle-y end-0 pr-4 d-flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    @if(!$notif->read_at)
+                        <button onclick="event.preventDefault(); event.stopPropagation(); markNotifRead('{{ $notif->id }}')" 
+                                class="btn-notif-action text-primary" title="Tandai dibaca">
+                            <i class="bi bi-check2-circle"></i>
+                        </button>
+                    @endif
+                    <button onclick="event.preventDefault(); event.stopPropagation(); deleteNotif('{{ $notif->id }}')" 
+                            class="btn-notif-action text-danger" title="Hapus">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
-                <div style="flex:1; min-width:0;">
-                    <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.3;">
-                        {{ $notif->data['title'] ?? 'Notifikasi' }}
-                    </div>
-                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
-                        {{ Str::limit($notif->data['message'] ?? '', 80) }}
-                    </div>
-                    <div style="font-size: 10px; color: var(--text-secondary); margin-top: 6px; opacity: 0.7;">
-                        <i class="bi bi-clock me-1"></i> {{ $notif->created_at->diffForHumans() }}
-                    </div>
-                </div>
+
                 @if(!$notif->read_at)
-                    <div style="width:8px; height:8px; border-radius:50%; background:#3b82f6; flex-shrink:0; margin-top:6px;"></div>
+                    <div class="unread-dot position-absolute top-50 translate-middle-y end-0 mr-4 group-hover:opacity-0 transition-opacity" 
+                         style="width:8px; height:8px; border-radius:50%; background:#3b82f6;"></div>
                 @endif
-            </a>
+            </div>
         @empty
             <div class="p-5 text-center">
                 <i class="bi bi-bell-slash text-slate-300 dark:text-slate-600" style="font-size: 40px; opacity: 0.5;"></i>
