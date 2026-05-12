@@ -56,63 +56,119 @@
         </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px;">
-        {{-- Main Actions --}}
-        <div class="card" style="padding: 25px;">
-            <h3 style="margin: 0 0 20px 0; font-size: 18px; color: #111827;">Quick Actions & Tools</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                <a href="#" class="action-btn">
-                    <div class="action-icon" style="background: #f3f4f6;"><i class="bi bi-terminal"></i></div>
-                    <div class="action-text">
-                        <strong>Log Viewer</strong>
-                        <small>Check system logs</small>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+        {{-- KOTAK ASPIRASI --}}
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 style="margin: 0; font-weight: 700; color: #111827;">
+                        <i class="bi bi-chat-right-heart-fill me-2 text-primary"></i> Kotak Aspirasi
+                    </h5>
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill" style="font-size: 11px;">{{ $aspirasis->count() }} Menunggu</span>
+                </div>
+
+            @forelse($aspirasis as $asp)
+                <div class="aspirasi-item-it p-3 mb-3" style="border: 1px solid #e5e7eb; border-radius: 16px; background: #ffffff; transition: all 0.3s ease;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge {{ 
+                            match($asp->kategori) {
+                                'bug', 'keluhan' => 'bg-danger',
+                                'error' => 'bg-warning text-dark',
+                                'fitur' => 'bg-success',
+                                'saran' => 'bg-primary',
+                                default => 'bg-info'
+                            } 
+                        }} rounded-pill" style="font-size: 10px; padding: 5px 10px;">
+                            {{ strtoupper($asp->kategori) }}
+                        </span>
+                        <small class="text-muted" style="font-size: 11px;"><i class="bi bi-clock me-1"></i>{{ $asp->created_at->diffForHumans() }}</small>
                     </div>
-                </a>
-                <a href="#" class="action-btn">
-                    <div class="action-icon" style="background: #f3f4f6;"><i class="bi bi-shield-check"></i></div>
-                    <div class="action-text">
-                        <strong>Access Control</strong>
-                        <small>Manage permissions</small>
-                    </div>
-                </a>
-                <a href="#" class="action-btn">
-                    <div class="action-icon" style="background: #f3f4f6;"><i class="bi bi-database-up"></i></div>
-                    <div class="action-text">
-                        <strong>Backup DB</strong>
-                        <small>Manual snapshot</small>
-                    </div>
-                </a>
-                <a href="#" class="action-btn">
-                    <div class="action-icon" style="background: #f3f4f6;"><i class="bi bi-gear-wide-connected"></i></div>
-                    <div class="action-text">
-                        <strong>Config Editor</strong>
-                        <small>System parameters</small>
-                    </div>
-                </a>
+                    <h6 class="fw-bold mb-1" style="font-size: 14px; color: #1f2937;">{{ $asp->judul }}</h6>
+                    <p class="text-muted mb-3" style="font-size: 13px; line-height: 1.5;">{{ Str::limit($asp->isi, 100) }}</p>
+                    
+                    @if($asp->balasan)
+                        <div class="p-2 mt-2 bg-white rounded border-start border-success border-4">
+                            <div class="small fw-bold text-success mb-1">Sudah Dibalas:</div>
+                            <div class="small text-muted">{{ Str::limit($asp->balasan, 60) }}</div>
+                        </div>
+                    @else
+                        <button class="btn btn-sm btn-outline-info w-100 mt-2" onclick="openReplyModal('{{ $asp->uuid }}', '{{ addslashes($asp->judul) }}')" style="font-size: 11px; border-radius: 8px;">
+                            <i class="bi bi-reply me-1"></i> Balas Aspirasi
+                        </button>
+                    @endif
+                </div>
+            @empty
+                <div class="text-center py-5">
+                    <i class="bi bi-chat-dots text-muted" style="font-size: 40px; opacity: 0.2;"></i>
+                    <p class="text-muted small mt-2">Tidak ada aspirasi untuk IT Support.</p>
+                </div>
+            @endforelse
             </div>
         </div>
 
-        {{-- System Info itsupprot ya boy --}}
-        <div class="card" style="padding: 25px;">
-            <h3 style="margin: 0 0 20px 0; font-size: 18px; color: #111827;">System Info</h3>
-            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
-                <li class="info-item">
-                    <span class="info-label">App Version</span>
-                    <span class="info-val">v2.1.0-stable</span>
-                </li>
-                <li class="info-item">
-                    <span class="info-label">PHP Version</span>
-                    <span class="info-val">{{ PHP_VERSION }}</span>
-                </li>
-                <li class="info-item">
-                    <span class="info-label">Environment</span>
-                    <span class="info-val" style="color: #3b82f6; font-weight: 600;">Production</span>
-                </li>
-                <li class="info-item">
-                    <span class="info-label">Last Backup</span>
-                    <span class="info-val">2 hours ago</span>
-                </li>
-            </ul>
+        {{-- NOTIFIKASI --}}
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 style="margin: 0; font-weight: 700; color: #111827;">
+                        <i class="bi bi-bell-fill me-2 text-warning"></i> Notifikasi
+                    </h5>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                @forelse($notifications as $notif)
+                    <div class="notif-item-it p-3" style="border: 1px solid #f3f4f6; border-radius: 12px; background: {{ $notif->read_at ? 'white' : '#fffbeb' }}; transition: all 0.2s;">
+                        <div class="d-flex gap-3">
+                            <div class="flex-shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background: {{ match($notif->data['type'] ?? '') { 'success' => '#ecfdf5', 'danger' => '#fef2f2', 'warning' => '#fffbeb', default => '#eff6ff' } }}; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi {{ match($notif->data['type'] ?? '') { 'success' => 'bi-check-lg text-success', 'danger' => 'bi-x-lg text-danger', 'warning' => 'bi-exclamation-triangle text-warning', default => 'bi-info-lg text-primary' } }}" style="font-size: 14px;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold mb-1" style="font-size: 13px;">{{ $notif->data['title'] ?? 'Notifikasi' }}</div>
+                                <div class="text-muted" style="font-size: 11px;">{{ $notif->data['message'] ?? '' }}</div>
+                                <div class="text-muted mt-2" style="font-size: 10px; opacity: 0.7;">{{ $notif->created_at->diffForHumans() }}</div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-5">
+                        <i class="bi bi-bell-slash text-muted" style="font-size: 40px; opacity: 0.2;"></i>
+                        <p class="text-muted small mt-2">Belum ada notifikasi.</p>
+                    </div>
+                @endforelse
+            </div>
+            @if($notifications->count() > 0)
+                <button class="btn btn-light mt-3 w-100 fw-bold text-primary" style="font-size: 12px; border-radius: 12px;">Lihat Semua Notifikasi</button>
+            @endif
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Balas Aspirasi --}}
+    <div class="modal fade" id="replyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0" style="border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+                <div class="modal-header border-0 pb-0 pt-4 px-4">
+                    <h5 class="modal-title fw-bold" style="font-size: 20px; color: #111827;">Balas Aspirasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="replyForm" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Judul Aspirasi</label>
+                            <input type="text" id="modal_asp_judul" class="form-control" readonly style="background: #f9fafb; font-size: 14px;">
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label small fw-bold">Isi Balasan (IT Support)</label>
+                            <textarea name="balasan" class="form-control" rows="4" placeholder="Tuliskan solusi atau jawaban teknis di sini..." required style="font-size: 14px; border-radius: 12px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal" style="border-radius: 10px; font-size: 14px;">Batal</button>
+                        <button type="submit" class="btn btn-info text-white px-4" style="border-radius: 10px; font-size: 14px;">Kirim Balasan</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -237,5 +293,25 @@
     .card {
         border-radius: 20px !important;
     }
+
+    .aspirasi-item-it:hover {
+        border-color: #3b82f6 !important;
+        background: white !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .notif-item-it:hover {
+        transform: translateX(5px);
+        border-color: #f59e0b !important;
+    }
 </style>
+
+<script>
+    function openReplyModal(uuid, judul) {
+        document.getElementById('modal_asp_judul').value = judul;
+        document.getElementById('replyForm').action = `/IT-Support/Aspirasi/${uuid}`;
+        var myModal = new bootstrap.Modal(document.getElementById('replyModal'));
+        myModal.show();
+    }
+</script>
 @endsection
