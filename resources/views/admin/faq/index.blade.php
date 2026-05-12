@@ -556,6 +556,37 @@
             </div>
         </div>
 
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Apa fungsi fitur "Export Excel" pada tabel surat?</span>
+                <span class="icon"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-answer">
+                <p>Fitur <strong>Export Excel</strong> (tersedia di menu Laporan) memungkinkan admin untuk mengunduh rekapitulasi seluruh data surat dalam format spreadsheet (.xlsx). Data yang diexport mencakup judul, pengusul, NIP, jenis surat, status terakhir, dan tanggal-tanggal penting dalam pemrosesan.</p>
+                <div class="info-box"><i class="bi bi-info-circle-fill"></i>Gunakan fitur ini untuk mempermudah pembuatan laporan berkala ke pimpinan.</div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Bagaimana cara mengaktifkan role IT Support?</span>
+                <span class="icon"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-answer">
+                <p>Role <strong>IT Support</strong> adalah role khusus untuk menangani kendala teknis aplikasi. Role ini tidak dapat dipilih saat registrasi biasa. Untuk mengaktifkan akses IT Support pada akun admin tertentu, diperlukan intervensi langsung dari Developer/Sistem Administrator melalui rute rahasia `/become-it-support` (dengan otorisasi khusus).</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Kenapa data IT Support dipisahkan dari aspirasi umum?</span>
+                <span class="icon"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-answer">
+                <p>Pemisahan ini bertujuan untuk **spesialisasi penanganan**. Aspirasi umum (Saran/Keluhan) ditangani oleh tim Admin Aspirasi, sedangkan kendala teknis (Bug/Error) diarahkan langsung ke tim IT Support agar perbaikan dapat dilakukan lebih cepat tanpa tercampur dengan urusan administratif surat.</p>
+            </div>
+        </div>
+
         {{-- ===================== KATEGORI: FITUR LAINNYA ===================== --}}
         <div class="faq-category-title"><i class="bi bi-grid-fill" style="color:#6b7280"></i> Fitur Lainnya</div>
 

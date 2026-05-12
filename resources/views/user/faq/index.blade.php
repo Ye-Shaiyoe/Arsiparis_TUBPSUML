@@ -620,7 +620,7 @@
             {{-- Stats --}}
             <div class="faq-stats fade-up fade-up-3">
                 <div class="faq-stat">
-                    <div class="faq-stat-num">33</div>
+                    <div class="faq-stat-num">36</div>
                     <div class="faq-stat-label">Artikel FAQ</div>
                 </div>
                 <div class="faq-stat-divider"></div>
@@ -801,6 +801,46 @@
                     </div>
                 </div>
             </div>
+
+            <div class="faq-item" data-cat="pengajuan">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <div class="faq-q-icon">💻</div>
+                    <span class="faq-q-text">Bagaimana cara menyampaikan kendala teknis ke IT Support?</span>
+                    <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
+                </button>
+                <div class="faq-answer-wrap">
+                    <div class="faq-answer">
+                        Jika Anda mengalami error, masalah tampilan, atau kendala teknis lainnya pada aplikasi, silakan gunakan menu <strong>Aspirasi</strong> dan pilih tujuan <strong>"IT Support"</strong>. Masukkan subjek kendala dan lampirkan screenshot jika diperlukan. Tim teknis akan meninjau dan memberikan balasan langsung melalui sistem.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" data-cat="teknis">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <div class="faq-q-icon">🧹</div>
+                    <span class="faq-q-text">Bagaimana cara menghapus file fisik surat saya sendiri?</span>
+                    <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
+                </button>
+                <div class="faq-answer-wrap">
+                    <div class="faq-answer">
+                        Untuk surat yang sudah berstatus <strong>Selesai</strong>, Anda dapat menghapus file fisik (Word/Lampiran) secara manual melalui menu <strong>"Hapus File Surat"</strong> di Dashboard atau melalui tombol pembersihan di halaman detail surat. Ini berguna untuk mengosongkan kuota penyimpanan Anda. Perlu diingat bahwa tindakan ini <strong>tidak menghapus riwayat tracking</strong> surat tersebut.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" data-cat="teknis">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <div class="faq-q-icon">📊</div>
+                    <span class="faq-q-text">Apa fungsi fitur "Export Excel" pada tabel surat?</span>
+                    <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
+                </button>
+                <div class="faq-answer-wrap">
+                    <div class="faq-answer">
+                        Fitur <strong>Export Excel</strong> memungkinkan Anda mengunduh seluruh daftar riwayat surat Anda ke dalam format spreadsheet (.xlsx). Data yang diexport mencakup judul, nomor surat, jenis, sifat, status, dan tanggal pengajuan. Fitur ini berguna jika Anda ingin membuat rekapitulasi data surat secara mandiri.
+                    </div>
+                </div>
+            </div>
+
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
