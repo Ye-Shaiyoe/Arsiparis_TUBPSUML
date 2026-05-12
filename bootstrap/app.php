@@ -35,8 +35,8 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         );
 
-        // Add HSTS header middleware to web group
-        $middleware->web(\App\Http\Middleware\AddHstsHeader::class);
+        // Add Security headers middleware to web group
+        $middleware->web(\App\Http\Middleware\SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
