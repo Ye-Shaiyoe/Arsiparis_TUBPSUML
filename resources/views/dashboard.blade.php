@@ -90,36 +90,36 @@
     /* Premium Stat Cards */
     .stat-card-new {
         position: relative;
-        padding: 24px;
+        padding: 40px 24px;
         border-radius: 24px;
         overflow: hidden;
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 24px;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
     }
-    .stat-card-new:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); }
+    .stat-card-new:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2); }
     .stat-card-new.blue { background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); color: white; }
     .stat-card-new.green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
     .stat-card-new.amber { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; }
     .stat-card-new.red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
     
     .stat-icon-box {
-        width: 56px;
-        height: 56px;
-        border-radius: 18px;
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
         background: rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(10px);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
+        font-size: 28px;
     }
-    .stat-value-new { font-size: 28px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
-    .stat-label-new { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 4px; }
-    .stat-sub-new { font-size: 10px; font-weight: 600; opacity: 0.6; }
+    .stat-value-new { font-size: 36px; font-weight: 900; line-height: 1; letter-spacing: -1.5px; }
+    .stat-label-new { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; opacity: 0.85; margin-bottom: 6px; }
+    .stat-sub-new { font-size: 11px; font-weight: 600; opacity: 0.7; }
 
     .wave-bg {
         position: absolute;
@@ -610,23 +610,36 @@
 @endif
 </div>
 
-{{-- BANNER BUTUH TINDAKAN (REVISI) --}}
-@if($suratRevisiUrgent > 0)
+{{-- BANNER BUTUH TINDAKAN (REVISI & DITOLAK) --}}
+@php
+    $suratRevisiCount = \App\Models\Surat::where('user_id', auth()->id())->whereIn('status', ['revisi', 'revisi_admin'])->count();
+    $suratDitolakCount = \App\Models\Surat::where('user_id', auth()->id())->where('status', 'ditolak')->count();
+@endphp
+
+@if($suratActionUrgent > 0)
 <div class="alert alert-danger border-0 shadow-sm mb-4 animate-in" id="banner-revisi" style="border-radius:20px; background:#fff; color:#b91c1c; border-left: 6px solid #ef4444 !important; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.1) !important;">
-    <div class="d-flex align-items-center justify-content-between gap-3 p-2">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 p-2">
         <div class="d-flex align-items-center gap-3">
-            <div class="flex-shrink-0" style="font-size:36px; background: #fee2e2; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 14px;">📝</div>
+            <div class="flex-shrink-0" style="font-size:36px; background: #fee2e2; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 14px;">⚠️</div>
             <div>
                 <h6 class="fw-bold mb-1" style="font-size: 16px;">Butuh Tindakan Segera!</h6>
                 <p class="mb-0" style="font-size:13px; color: #475569;">
-                    Anda memiliki <span class="fw-bold text-danger" id="revisi-urgent-count">{{ $suratRevisiUrgent }} surat</span> yang butuh perbaikan. Segera unggah file revisi agar proses dapat dilanjutkan.
+                    Anda memiliki <span class="fw-bold text-danger">{{ $suratActionUrgent }} surat</span> yang butuh perhatian (revisi atau ditolak). Mohon segera ditindaklanjuti.
                 </p>
             </div>
         </div>
-        <div class="flex-shrink-0">
-            <a href="{{ route('user.surat.index', ['status' => 'revisi']) }}" class="btn btn-danger px-4 py-2 fw-bold d-flex align-items-center gap-2" style="border-radius:12px; font-size:13px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);">
-                Lihat Revisi <i class="bi bi-arrow-right"></i>
+        <div class="d-flex gap-2">
+            @if($suratRevisiCount > 0)
+            <a href="{{ route('user.surat.index', ['status' => 'revisi']) }}" class="btn btn-warning px-3 py-2 fw-bold d-flex align-items-center gap-2" style="border-radius:12px; font-size:12px; color: #92400e; background: #fef3c7; border: none;">
+                <i class="bi bi-pencil-square"></i> Lihat Revisi ({{ $suratRevisiCount }})
             </a>
+            @endif
+            
+            @if($suratDitolakCount > 0)
+            <a href="{{ route('user.surat.index', ['status' => 'ditolak']) }}" class="btn btn-danger px-3 py-2 fw-bold d-flex align-items-center gap-2" style="border-radius:12px; font-size:12px; background: #ef4444; border: none;">
+                <i class="bi bi-x-circle"></i> Lihat Ditolak ({{ $suratDitolakCount }})
+            </a>
+            @endif
         </div>
     </div>
 </div>
@@ -905,21 +918,49 @@
                             <span class="fw-semibold" style="font-size:13px; color:#1e293b;">
                                 {{ Str::limit($surat->judul, 30) }}
                             </span>
-                            @if($surat->sla_status === 'terlambat')
-                                <span class="badge" style="font-size:11px; background:#fee2e2; color:#b91c1c; padding:4px 10px;">⚠ Terlambat</span>
-                            @else
-                                <span style="font-size:12px; color:#64748b;">{{ $surat->sisa_jam }}</span>
-                            @endif
+                            @php
+                                $isTerlambat = $surat->sla_status === 'terlambat';
+                                $sisaJamNum  = $surat->deadline_sla ? now()->diffInHours($surat->deadline_sla, false) : 99;
+                                if ($isTerlambat) {
+                                    $slaBadgeBg   = '#fee2e2';
+                                    $slaBadgeColor = '#b91c1c';
+                                    $slaBarColor  = '#ef4444';
+                                    $slaIcon      = '🔴';
+                                } elseif ($sisaJamNum <= 12) {
+                                    $slaBadgeBg   = '#fef3c7';
+                                    $slaBadgeColor = '#92400e';
+                                    $slaBarColor  = '#f59e0b';
+                                    $slaIcon      = '🟡';
+                                } else {
+                                    $slaBadgeBg   = '#dcfce7';
+                                    $slaBadgeColor = '#15803d';
+                                    $slaBarColor  = '#22c55e';
+                                    $slaIcon      = '🟢';
+                                }
+                                // Paksa 100% kalau sudah terlambat, supaya progress bar merah penuh
+                                if ($isTerlambat) {
+                                    $pct = 100;
+                                } else {
+                                    $pct = $surat->deadline_sla
+                                        ? min(100, now()->diffInMinutes($surat->created_at) /
+                                            max(1, $surat->deadline_sla->diffInMinutes($surat->created_at)) * 100)
+                                        : 50;
+                                    $pct = max(2, $pct); // minimal 2% supaya bar selalu kelihatan
+                                }
+                            @endphp
+                            <span class="badge" style="font-size:11px; background:{{ $slaBadgeBg }}; color:{{ $slaBadgeColor }}; padding:4px 10px; border-radius:8px;">
+                                {{ $slaIcon }}
+                                @if($isTerlambat)
+                                    ⚠ Terlambat
+                                @elseif($sisaJamNum <= 12)
+                                    ⚡ {{ $surat->sisa_jam }}
+                                @else
+                                    ✔ {{ $surat->sisa_jam }}
+                                @endif
+                            </span>
                         </div>
                         <div class="progress" style="height:8px; background:#e2e8f0; border-radius:99px;">
-                            @php
-                                $pct = $surat->deadline_sla
-                                    ? min(100, now()->diffInMinutes($surat->created_at) /
-                                        max(1, $surat->deadline_sla->diffInMinutes($surat->created_at)) * 100)
-                                    : 50;
-                                $color = $pct >= 90 ? '#ef4444' : ($pct >= 60 ? '#f59e0b' : '#22c55e');
-                            @endphp
-                            <div class="progress-bar" style="width:{{ $pct }}%; background:{{ $color }}; border-radius:99px;"></div>
+                            <div class="progress-bar" style="width:{{ $pct }}%; background:{{ $slaBarColor }}; border-radius:99px; transition: width 0.6s ease;"></div>
                         </div>
                         <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
                             Tahap {{ $surat->tahap_sekarang }}/10 · {{ $surat->nama_tahap }}
@@ -1448,13 +1489,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // 1.1 Update Banner Revisi
+            // 1.1 Update Banner Revisi/Action
             const bannerRevisi = document.getElementById('banner-revisi');
-            const revisiCountEl = document.getElementById('revisi-urgent-count');
-            if (data.stats.suratRevisiUrgent > 0) {
+            const actionCount = data.stats.suratActionUrgent || 0;
+            if (actionCount > 0) {
                 if (bannerRevisi) {
                     bannerRevisi.style.display = 'block';
-                    if (revisiCountEl) revisiCountEl.innerText = `${data.stats.suratRevisiUrgent} surat`;
+                    // Kita tidak update teksnya via JS secara mendalam agar tidak merusak tombol dinamis, 
+                    // tapi setidaknya pastikan banner tetap muncul.
                 }
             } else if (bannerRevisi) {
                 bannerRevisi.style.display = 'none';
@@ -1507,7 +1549,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }[n.type] || '#1d4ed8';
 
                         notifHtml += `
-                            <div class="notification-item-wrapper position-relative">
+                            <div class="notification-item-wrapper position-relative" data-id="${n.id}">
                                 <a href="${n.url}" class="notification-item d-block text-decoration-none">
                                     <div class="d-flex align-items-start gap-3">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
@@ -1522,7 +1564,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         ${!n.read_at ? '<div class="flex-shrink-0 pe-4"><span class="badge rounded-circle" style="width:8px; height:8px; background:#3b82f6; padding:0;"></span></div>' : ''}
                                     </div>
                                 </a>
-                                <button class="btn-delete-notif" data-id="${n.id}" title="Hapus notifikasi">
+                                <button class="btn-delete-notif" data-id="${n.id}" onclick="event.preventDefault(); event.stopPropagation(); deleteNotif('${n.id}')" title="Hapus notifikasi">
                                     <i class="bi bi-x"></i>
                                 </button>
                             </div>
@@ -1538,16 +1580,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.suratAktif.length > 0) {
                     let slaHtml = '';
                     data.suratAktif.forEach(s => {
+                        // Warna berdasarkan sisa jam (bukan persentase)
+                        let barColor, badgeBg, badgeColor, slaIcon, badgeText;
+                        if (s.sla_status === 'terlambat') {
+                            barColor   = '#ef4444';
+                            badgeBg    = '#fee2e2';
+                            badgeColor = '#b91c1c';
+                            slaIcon    = '🔴';
+                            badgeText  = '⚠ Terlambat';
+                        } else if (s.sisa_jam_angka !== undefined && s.sisa_jam_angka <= 12) {
+                            barColor   = '#f59e0b';
+                            badgeBg    = '#fef3c7';
+                            badgeColor = '#92400e';
+                            slaIcon    = '🟡';
+                            badgeText  = `⚡ ${s.sisa_jam}`;
+                        } else {
+                            barColor   = '#22c55e';
+                            badgeBg    = '#dcfce7';
+                            badgeColor = '#15803d';
+                            slaIcon    = '🟢';
+                            badgeText  = `✔ ${s.sisa_jam}`;
+                        }
+
                         slaHtml += `
                             <div class="mb-3 sla-item p-2 rounded">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="fw-semibold" style="font-size:13px; color:#1e293b;">${s.judul_short}</span>
-                                    ${s.sla_status === 'terlambat' 
-                                        ? '<span class="badge" style="font-size:11px; background:#fee2e2; color:#b91c1c; padding:4px 10px;">⚠ Terlambat</span>'
-                                        : `<span style="font-size:12px; color:#64748b;">${s.sisa_jam}</span>`}
+                                    <span class="badge" style="font-size:11px; background:${badgeBg}; color:${badgeColor}; padding:4px 10px; border-radius:8px;">
+                                        ${slaIcon} ${badgeText}
+                                    </span>
                                 </div>
                                 <div class="progress" style="height:8px; background:#e2e8f0; border-radius:99px;">
-                                    <div class="progress-bar" style="width:${s.pct}%; background:${s.color}; border-radius:99px;"></div>
+                                    <div class="progress-bar" style="width:${s.sla_status === 'terlambat' ? 100 : Math.max(2, s.pct)}%; background:${barColor}; border-radius:99px; transition: width 0.6s ease;"></div>
                                 </div>
                                 <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
                                     Tahap ${s.tahap}/10 · ${s.nama_tahap}
