@@ -33,6 +33,8 @@
     html.dark-mode .badge-selesai { color: #4ade80 !important; background: rgba(21, 128, 61, 0.25) !important; }
     html.dark-mode .badge-ditolak { color: #f87171 !important; background: rgba(185, 28, 28, 0.25) !important; }
     html.dark-mode .badge-proses  { color: #fbbf24 !important; background: rgba(180, 83, 9, 0.25) !important; }
+    html.dark-mode .badge-revisi  { color: #facc15 !important; background: rgba(133, 77, 14, 0.25) !important; }
+    html.dark-mode .badge-revisi-admin { color: #c084fc !important; background: rgba(88, 28, 135, 0.25) !important; }
 
     /* Force Table Transparency for Dark Mode */
     html.dark-mode .table-card .table,
@@ -278,6 +280,8 @@
     .badge-selesai { background: var(--green-soft);  color: var(--green-dark); }
     .badge-ditolak { background: var(--red-soft);    color: var(--red-dark);   }
     .badge-proses  { background: var(--amber-soft);  color: var(--amber-dark); }
+    .badge-revisi  { background: rgba(234, 179, 8, 0.15); color: #ca8a04; }
+    .badge-revisi-admin { background: rgba(168, 85, 247, 0.15); color: #9333ea; }
 
     /* ─── Admin pengolah chips ─────────────────────────────────────── */
     .admin-chips {
@@ -480,6 +484,8 @@
                         <option value="proses"  {{ request('status') === 'proses'   ? 'selected' : '' }}>Proses</option>
                         <option value="selesai" {{ request('status') === 'selesai'  ? 'selected' : '' }}>Selesai</option>
                         <option value="ditolak" {{ request('status') === 'ditolak'  ? 'selected' : '' }}>Ditolak</option>
+                        <option value="revisi"  {{ request('status') === 'revisi'   ? 'selected' : '' }}>Revisi</option>
+                        <option value="revisi_admin" {{ request('status') === 'revisi_admin' ? 'selected' : '' }}>Revisi Admin</option>
                     </select>
                 </div>
 
@@ -573,6 +579,14 @@
                                 @elseif($surat->status === 'ditolak')
                                     <span class="badge-status badge-ditolak">
                                         <i class="bi bi-x-circle-fill"></i> Ditolak
+                                    </span>
+                                @elseif($surat->status === 'revisi')
+                                    <span class="badge-status badge-revisi">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Revisi
+                                    </span>
+                                @elseif($surat->status === 'revisi_admin')
+                                    <span class="badge-status badge-revisi-admin">
+                                        <i class="bi bi-arrow-repeat"></i> Revisi Admin
                                     </span>
                                 @else
                                     <span class="badge-status badge-proses">

@@ -637,6 +637,71 @@
             </div>
         </div>
 
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Bagaimana cara mengelola Aspirasi dari user?</span>
+                <span class="icon"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-answer">
+                <p>Menu <strong>Admin &gt; Aspirasi</strong> berfungsi untuk menerima dan mengelola masukan dari user. Cara mengelola:</p>
+                <ul>
+                    <li>Buka menu <strong>Aspirasi</strong> untuk melihat semua aspirasi yang masuk.</li>
+                    <li>Pilih kategori: <strong>Saran</strong>, <strong>Keluhan</strong>, atau <strong>Pertanyaan</strong>.</li>
+                    <li>Klik <strong>"Balas"</strong> untuk memberikan respons terhadap aspirasi user.</li>
+                    <li>Klik <strong>"Hapus"</strong> untuk menghapus aspirasi yang sudah ditindaklanjuti.</li>
+                </ul>
+                <div class="info-box"><i class="bi bi-info-circle-fill"></i>Aspirasi yang belum dibalas ditandai dengan status <em>Belum Dibalas</em>. Prioritaskan untuk merespons keluhan user.</div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Apa itu menu File-Surat dan apa fungsinya?</span>
+                <span class="icon"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-answer">
+                <p>Menu <strong>Admin &gt; Settings &gt; File-Surat</strong> berfungsi untuk mengelola file fisik surat di server:</p>
+                <ul>
+                    <li><strong>Hapus File Fisik:</strong> Menghapus file Word/lampiran surat dari server tanpa menghapus data tracking di database.</li>
+                    <li><strong>Cetak Ulang:</strong> Jika file sudah dihapus, user tidak bisa preview atau download, tapi tracking tetap ada di sistem.</li>
+                    <li>Menu ini berguna untuk <strong>mengurangi penggunaan storage server</strong> pada surat-surat yang sudah lama.</li>
+                </ul>
+                <div class="warning-box"><i class="bi bi-exclamation-triangle-fill"></i>Surat yang sedang dalam tahap proses (belum selesai) <strong>tidak bisa</strong> dihapus file fisiknya untuk menjaga integritas dokumen.</div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Berapa lama DashboardAdmin diperbarui secara otomatis?</span>
+                <span class="icon"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-answer">
+                <p>Dashboard Admin memiliki fitur <strong>realtime update</strong> dengan interval:</p>
+                <ul>
+                    <li>Data dashboard akan <strong>diperbarui otomatis setiap 30 detik</strong>.</li>
+                    <li>Data antrian, statistik, dan notifikasi akan selalu terbaru.</li>
+                    <li>Indikator <span class="badge-success-inline">LIVE</span> di header menandakan dashboard sedang aktif.</li>
+                </ul>
+                <div class="info-box"><i class="bi bi-info-circle-fill"></i>Fitur polling ini menggunakan AJAX agar tidak perlu reload halaman penuh, lebih hemat resources.</div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>Kapan notifikasi lama dihapus otomatis?</span>
+                <span class="icon"><i class="bi bi-chevron-down"></i></span>
+            </div>
+            <div class="faq-answer">
+                <p>Sistem memiliki penjadwalan <strong>auto-cleanup</strong> untuk notifikasi:</p>
+                <ul>
+                    <li>Notifikasi yang berumur lebih dari <strong>1 minggu</strong> akan dihapus otomatis.</li>
+                    <li>Proses pembersihan berjalan setiap <strong>Senin pukul 01.00</strong> ( dini hari ).</li>
+                    <li>Hanya notifikasi yang sudah dibaca yang dihapus, notifikasi belum dibaca tetap aman.</li>
+                </ul>
+                <p>Ini berfungsi untuk menjaga performa database agar tidak penuh dengan notifikasi lama.</p>
+            </div>
+        </div>
+
     </div>{{-- end #faqList --}}
 
     <div class="faq-no-result" id="noResult">

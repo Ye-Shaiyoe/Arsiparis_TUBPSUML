@@ -156,12 +156,22 @@
         <div class="card" style="background: var(--bg-secondary); border-color: var(--border-color);">
             <h6 class="fw-bold mb-3" style="color:var(--text-primary);"><i class="bi bi-chat-dots me-2 text-primary"></i>Riwayat Catatan</h6>
             @forelse($surat->tahapans->whereNotNull('catatan')->reverse() as $hist)
-                <div style="padding:14px; border-radius:10px; background:var(--bg-tertiary); margin-bottom:12px; border-left:4px solid var(--border-color);">
+                @php
+                    $isDitolak = $hist->status === 'ditolak';
+                    $bgStyle = $isDitolak ? 'background:rgba(239,68,68,0.05); border-left:4px solid #ef4444;' : 'background:var(--bg-tertiary); border-left:4px solid var(--border-color);';
+                    // Ganti kata 'Persetujuan' atau 'Verifikasi' jadi 'Penolakan' jika statusnya ditolak
+                    $namaTahap = $isDitolak ? str_replace(['Persetujuan', 'Verifikasi'], 'Penolakan', $hist->nama_tahap) : $hist->nama_tahap;
+                @endphp
+                <div style="padding:14px; border-radius:10px; {{ $bgStyle }} margin-bottom:12px;">
                     <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:6px;">
-                        <span class="fw-bold" style="color:var(--text-primary);">Tahap {{ $hist->tahap }}: {{ $hist->nama_tahap }}</span>
+                        <span class="fw-bold" style="color:{{ $isDitolak ? '#fca5a5' : 'var(--text-primary)' }};">
+                            Tahap {{ $hist->tahap }}: {{ $namaTahap }}
+                        </span>
                         <span style="color:var(--text-secondary);">{{ $hist->selesai_pada?->format('d M, H:i') ?? '-' }}</span>
                     </div>
-                    <p style="font-size:13px; margin:0; color:var(--text-primary); line-height:1.5;">"{{ $hist->catatan }}"</p>
+                    <p style="font-size:13px; margin:0; color:{{ $isDitolak ? '#fca5a5' : 'var(--text-primary)' }}; line-height:1.5; font-style: italic;">
+                        "{{ $hist->catatan }}"
+                    </p>
                     <div style="font-size:11px; color:var(--text-secondary); margin-top:6px; font-weight:500;">Oleh: {{ $hist->diprosesByUser?->getRoleLabel() ?? 'Admin' }}</div>
                 </div>
             @empty
@@ -201,9 +211,9 @@
                     <label class="form-label small fw-bold" style="color:var(--text-secondary); font-size: 11px;">
                         <i class="bi bi-paperclip me-1"></i> Lampiran (Opsional)
                     </label>
-                    <input type="file" name="file_lampiran" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    <input type="file" name="file_lampiran" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
                            style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color); font-size: 12px;">
-                    <small class="text-muted" style="font-size: 10px;">PDF/JPG/PNG/Word, Max 10MB</small>
+                    <small class="text-muted" style="font-size: 10px;">PDF/JPG/PNG/Word/Excel, Max 10MB</small>
                     @error('file_lampiran')
                         <div class="text-danger small mt-1" style="font-size: 11px;"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
                     @enderror
@@ -408,7 +418,7 @@ function setJenisTolak(jenis) {
         optUser.querySelector('.fw-bold').style.color = 'var(--text-primary)';
         optUser.querySelector('.fw-bold').style.opacity = '0.7';
 
-        btnLabel.textContent       = 'Revisi ke Admin Aspirasi';
+        btnLabel.textContent       = 'Tolak & Kembalikan ke Admin Aspirasi';
         btnEl.className            = 'btn w-100 fw-bold py-2 shadow-sm';
         btnEl.style.background     = '#f59e0b';
         btnEl.style.color          = '#fff';
@@ -434,7 +444,7 @@ function konfirmasiTolak() {
 
     if (jenisTolakAktif === 'ke_admin_aspirasi') {
         icon.textContent        = '🔄';
-        title.textContent       = 'Kembalikan ke Admin Aspirasi?';
+        title.textContent       = 'Tolak & Kembalikan ke Admin Aspirasi?';
         desc.textContent        = 'Surat akan dikembalikan ke Tahap 2 (Admin Aspirasi) untuk direvisi. User akan mendapat notifikasi.';
         btnKonfirm.textContent  = 'Ya, Kembalikan ke Admin Aspirasi';
         btnKonfirm.className    = 'btn w-100 fw-bold';
@@ -445,7 +455,7 @@ function konfirmasiTolak() {
         icon.textContent        = '❌';
         title.textContent       = 'Tolak & Kembalikan ke User?';
         desc.textContent        = 'User akan mendapat notifikasi bahwa suratnya ditolak dan diminta untuk merevisi.';
-        btnKonfirm.textContent  = 'Ya, Tolak Surat';
+        btnKonfirm.textContent  = 'Ya, Tolak Surat Ini';
         btnKonfirm.className    = 'btn w-100 fw-bold btn-danger';
         btnKonfirm.style.background  = '';
         btnKonfirm.style.color       = '';
