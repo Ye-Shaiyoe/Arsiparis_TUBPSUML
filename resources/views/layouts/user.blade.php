@@ -8,6 +8,9 @@
     <title>{{ $title ?? 'Dashboard' }} — Surat Balai Pengelolaan SUML</title>
     <link rel="icon" href="{{ asset('images/metrologi.png') }}">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     {{-- Bootstrap 5 --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     {{-- Bootstrap Icons --}}
@@ -26,6 +29,10 @@
             --navbar-bg: rgba(255, 255, 255, 0.25);
             --navbar-border: rgba(255, 255, 255, 0.5);
             --navbar-text: #1e293b;
+            --user-sidebar-w: 280px;
+            --user-topbar-h: 64px;
+            --accent: #4361ee;
+            --accent-soft: rgba(67, 97, 238, 0.14);
             
             --glass-blur: 16px;
             --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
@@ -42,85 +49,577 @@
             background-attachment: fixed;
             background-size: cover;
             color: var(--text-primary);
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== APP SHELL (sidebar + content) ===== */
+        .user-app {
+            display: flex;
+            min-height: 100vh;
+            align-items: stretch;
+        }
+
+        .user-sidebar {
+            width: var(--user-sidebar-w);
+            flex-shrink: 0;
+            background: linear-gradient(165deg, #0b1222 0%, #111827 42%, #0f172a 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 8px 0 40px rgba(15, 23, 42, 0.35);
+            display: flex;
+            flex-direction: column;
+            z-index: 1020;
+            position: sticky;
+            top: 0;
+            align-self: flex-start;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .user-sidebar::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 120% 80% at 0% 0%, rgba(67, 97, 238, 0.22) 0%, transparent 55%),
+                radial-gradient(ellipse 90% 60% at 100% 100%, rgba(14, 165, 233, 0.12) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .user-sidebar > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-sidebar-brand {
+            padding: 1.25rem 1.25rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+        }
+
+        .user-sidebar-brand a {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            text-decoration: none;
+        }
+
+        .user-sidebar-brand .logo-wrap {
+            padding: 0.45rem 0.55rem;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-sidebar-brand img {
+            height: 34px;
+            width: auto;
+            object-fit: contain;
+            display: block;
+        }
+
+        .user-sidebar-brand .brand-text .title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.02em;
+            line-height: 1.15;
+        }
+
+        .user-sidebar-brand .brand-text .subtitle {
+            font-size: 0.625rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.38);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            margin-top: 0.2rem;
+        }
+
+        .user-sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0.65rem 0.5rem 1rem;
+            scrollbar-width: none;
+        }
+
+        .user-sidebar-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .user-nav-label {
+            font-size: 0.625rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: rgba(255, 255, 255, 0.32);
+            padding: 1rem 0.85rem 0.35rem;
+        }
+
+        .user-sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            margin: 2px 0.5rem;
+            padding: 0.62rem 0.9rem;
+            border-radius: 12px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: rgba(226, 232, 240, 0.72);
+            text-decoration: none;
+            border: none;
+            background: transparent;
+            width: calc(100% - 1rem);
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .user-sidebar-item i {
+            font-size: 1.05rem;
+            width: 1.35rem;
+            text-align: center;
+            flex-shrink: 0;
+            opacity: 0.9;
+        }
+
+        .user-sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+            transform: translateX(2px);
+        }
+
+        .user-sidebar-item.is-active {
+            background: linear-gradient(90deg, var(--accent-soft) 0%, rgba(67, 97, 238, 0.06) 100%);
+            color: #a5b4fc !important;
+            font-weight: 700;
+            box-shadow: inset 0 0 0 1px rgba(129, 140, 248, 0.25);
+        }
+
+        .user-sidebar-item.is-active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 22%;
+            bottom: 22%;
+            width: 3px;
+            background: linear-gradient(180deg, #818cf8, #4361ee);
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 0 14px rgba(67, 97, 238, 0.55);
+        }
+
+        .user-sidebar-item {
+            position: relative;
+        }
+
+        .user-sidebar-icon-stack {
+            position: relative;
+            display: inline-flex;
+            width: 1.35rem;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .user-sidebar-nav-badge {
+            position: absolute;
+            top: -7px;
+            right: -11px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            font-size: 9px;
+            font-weight: 800;
+            line-height: 16px;
+            text-align: center;
+            color: #fff;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 99px;
+            border: 2px solid #0f172a;
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.5);
+        }
+
+        .user-sidebar-item.sidebar-unread-pulse:not(.is-active) {
+            background: rgba(239, 68, 68, 0.1);
+            box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.22);
+        }
+
+        .user-sidebar-item.sidebar-unread-pulse:not(.is-active) span:not(.user-sidebar-nav-badge) {
+            color: #fecaca;
+        }
+
+        .user-sidebar-cta {
+            margin: 0.35rem 0.75rem 0.5rem;
+            padding: 0.7rem 1rem;
+            border-radius: 14px;
+            font-size: 0.8125rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: #fff !important;
+            text-decoration: none;
+            background: linear-gradient(135deg, #4361ee 0%, #6366f1 50%, #0ea5e9 100%);
+            box-shadow: 0 10px 28px rgba(67, 97, 238, 0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .user-sidebar-cta:hover {
+            color: #fff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 14px 36px rgba(67, 97, 238, 0.42);
+        }
+
+        .user-sidebar-cta.is-active {
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35), 0 12px 32px rgba(67, 97, 238, 0.45);
+        }
+
+        .user-nav-group {
+            margin-bottom: 2px;
+        }
+
+        .user-nav-group-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            width: calc(100% - 1rem);
+            margin: 2px 0.5rem;
+            padding: 0.62rem 0.9rem;
+            border-radius: 12px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: rgba(226, 232, 240, 0.72);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .user-nav-group-toggle:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+        }
+
+        .user-nav-group-toggle .chev {
+            margin-left: auto;
+            font-size: 0.65rem;
+            opacity: 0.45;
+            transition: transform 0.2s ease;
+        }
+
+        .user-nav-group.is-open .user-nav-group-toggle .chev {
+            transform: rotate(180deg);
+        }
+
+        .user-nav-group-body {
+            display: none;
+            padding: 2px 0 4px 0.35rem;
+        }
+
+        .user-nav-group.is-open .user-nav-group-body {
+            display: block;
+            animation: sidebarFade 0.18s ease-out;
+        }
+
+        .user-nav-group-body .user-sidebar-item {
+            font-size: 0.78rem;
+            padding: 0.52rem 0.85rem;
+            margin-left: 0.25rem;
+            width: calc(100% - 1.25rem);
+        }
+
+        @keyframes sidebarFade {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-sidebar-footer {
+            flex-shrink: 0;
+            padding: 0.85rem 1rem 1.1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        .user-sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.65rem 0.75rem;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-decoration: none;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .user-sidebar-footer a:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.14);
+        }
+
+        .user-sidebar-footer .sf-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #fff;
+            background: linear-gradient(145deg, #6366f1, #4361ee);
+            box-shadow: 0 6px 18px rgba(67, 97, 238, 0.35);
+        }
+
+        .user-sidebar-footer .sf-meta {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .user-sidebar-footer .sf-name {
+            font-size: 0.8125rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-sidebar-footer .sf-hint {
+            font-size: 0.625rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.38);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: 0.15rem;
+        }
+
+        .user-shell {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
             min-height: 100vh;
         }
 
-        /* ===== NAVBAR ===== */
-        .navbar-main {
-            background: var(--navbar-bg);
-            backdrop-filter: blur(var(--glass-blur));
-            -webkit-backdrop-filter: blur(var(--glass-blur));
-            border-bottom: 1px solid var(--navbar-border);
-            box-shadow: var(--glass-shadow);
-            padding: 0 1.5rem;
-            height: 60px;
+        .user-topbar {
+            height: var(--user-topbar-h);
+            flex-shrink: 0;
             position: sticky;
             top: 0;
-            z-index: 1050;
-            transition: height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-        }
-
-
-        .navbar-brand-text {
-            font-size: 15px;
-            font-weight: 700;
-            color: #1e3a5f !important;
-            letter-spacing: 0.01em;
-        }
-        .navbar-brand-text small {
-            display: block;
-            font-size: 10px;
-            font-weight: 500;
-            color: #475569;
-            letter-spacing: 0;
-        }
-        .nav-link-item {
-            color: #475569 !important;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 8px 16px !important;
-            border-radius: 12px;
-            /* Avoid 'all' to prevent transition from browser defaults on load */
-            transition: 
-                background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            z-index: 1030;
             display: flex;
             align-items: center;
-            gap: 6px;
-            text-decoration: none !important;
-            outline: none !important;
-            border: none !important;
-            box-shadow: none;
-            -webkit-tap-highlight-color: transparent;
-            /* Rendering optimization */
-            backface-visibility: hidden;
-            transform: translateZ(0);
-            -webkit-font-smoothing: antialiased;
+            gap: 1rem;
+            padding: 0 1.25rem;
+            background: rgba(255, 255, 255, 0.42);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+            box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04);
+            transition: background 0.25s ease, box-shadow 0.25s ease;
         }
-        /* Ensure no bootstrap focus ring */
-        .nav-link-item:focus, 
-        .nav-link-item:active,
-        .nav-link-item:focus-visible {
-            outline: none !important;
-            box-shadow: none !important;
-            background: rgba(255,255,255,0.6);
+
+        .user-topbar.scrolled {
+            background: rgba(255, 255, 255, 0.62);
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.07);
         }
-        .nav-link-item:hover {
-            color: #2563eb !important;
-            background: rgba(255,255,255,0.7);
+
+        .user-sidebar-toggle {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            background: rgba(255, 255, 255, 0.55);
+            color: #475569;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
         }
-        .nav-link-item.active {
-            color: #2563eb !important;
-            background: rgba(255,255,255,0.9);
-            box-shadow: 0 4px 12px rgba(31, 38, 135, 0.05);
+
+        .user-sidebar-toggle:hover {
+            background: rgba(255, 255, 255, 0.85);
+            color: #2563eb;
         }
-        .nav-link-item i { 
-            font-size: 1.1rem;
-            display: inline-block;
+
+        .user-topbar-title {
+            flex: 1;
+            min-width: 0;
+            padding-left: 0.5rem;
+        }
+
+        .user-topbar-title h1 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+            line-height: 1.2;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-topbar-title p {
+            margin: 0.2rem 0 0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            opacity: 0.85;
+        }
+
+        /* ===== ENHANCED PROFILE TRIGGER ===== */
+        .user-profile-trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.4rem 0.6rem;
+            padding-right: 0.8rem;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+
+        .user-profile-trigger:hover {
+            background: rgba(255, 255, 255, 0.75);
+            border-color: rgba(255, 255, 255, 1);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        .user-profile-trigger:active {
+            transform: translateY(0);
+        }
+
+        .user-meta {
+            text-align: right;
+            line-height: 1.2;
+        }
+
+        .user-meta .u-name {
+            display: block;
+            font-size: 0.825rem;
+            font-weight: 700;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
+        }
+
+        .user-meta .u-role {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            margin-top: 1px;
+        }
+
+        .user-avatar-wrap {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            border: 2px solid #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.75rem;
+            color: #475569;
+        }
+
+        .user-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .topbar-divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.08);
+            margin: 0 0.5rem;
+        }
+
+        /* ===== ENHANCED NOTIF BTN ===== */
+        .notif-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .notif-btn:hover {
+            background: rgba(255, 255, 255, 0.85);
+            color: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .notif-btn i { font-size: 1.15rem; }
+
+        .notif-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 800;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+        }
+
+        .user-sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            z-index: 1034;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .user-sidebar-backdrop.show {
+            display: block;
+            opacity: 1;
         }
 
         /* ===== NOTIF BELL ===== */
@@ -199,6 +698,7 @@
 
         /* ===== AVATAR --===== */
         .user-avatar {
+            position: relative;
             width: 36px;
             height: 36px;
             border-radius: 50%;
@@ -241,7 +741,6 @@
             }
 
             /* Bridge gap to prevent accidental close */
-            .dropdown > .nav-link-item::after,
             .dropdown > .user-avatar::after {
                 content: "";
                 position: absolute;
@@ -313,8 +812,11 @@
 
         /* ===== MAIN CONTENT ===== */
         .main-content {
+            flex: 1;
             padding: 24px;
-            min-height: calc(100vh - 60px);
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
         }
 
         /* ===== CARDS ===== */
@@ -439,7 +941,7 @@
         /* ===== FLASH ===== */
         .flash-container {
             position: fixed;
-            top: 70px;
+            top: calc(var(--user-topbar-h) + 12px);
             right: 20px;
             z-index: 9999;
             width: 320px;
@@ -516,16 +1018,30 @@
 
         /* ===== MOBILE RESPONSIVE ===== */
         @media (max-width: 991px) {
-            .navbar-brand-text img { height: 35px !important; }
+            .user-sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: none;
+            }
+            .user-sidebar.is-open {
+                transform: translateX(0);
+                box-shadow: 16px 0 48px rgba(0, 0, 0, 0.35);
+                z-index: 1036;
+            }
+            .user-sidebar-toggle {
+                display: inline-flex;
+            }
             .main-content {
                 padding: 16px 12px;
-                padding-bottom: 90px; /* space for bottom nav */
             }
             .flash-container {
                 width: calc(100% - 32px);
                 right: 16px;
                 left: 16px;
-                top: 70px;
+                top: calc(var(--user-topbar-h) + 10px);
             }
             .notif-dropdown {
                 width: calc(100vw - 32px);
@@ -537,97 +1053,11 @@
             .stat-card .stat-icon { font-size: 24px; }
             .stat-card .stat-value { font-size: 24px; }
             
-            /* Hide footer on mobile since we have bottom nav */
-            footer {
-                padding-bottom: 80px !important;
-            }
-            
             .table-responsive {
                 border: 1px solid rgba(255,255,255,0.5);
                 border-radius: 12px;
                 background: rgba(255,255,255,0.3);
             }
-        }
-
-        /* Scrolled Navbar */
-        .navbar-main.scrolled {
-            height: 55px;
-            background: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        }
-
-        /* ===== MOBILE BOTTOM NAV ===== */
-        .mobile-bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 70px; /* Increased slightly for comfort */
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1040;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-top: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 24px 24px 0 0;
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
-            padding: 0 8px;
-        }
-        .mobile-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #64748b;
-            text-decoration: none;
-            font-size: 10px;
-            font-weight: 600;
-            gap: 4px;
-            flex: 1;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            height: 100%;
-        }
-        .mobile-nav-item i {
-            font-size: 22px;
-            width: 42px;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-        .mobile-nav-item.active {
-            color: #2563eb;
-        }
-        .mobile-nav-item.active i {
-            background: rgba(37, 99, 235, 0.1);
-            color: #2563eb;
-            transform: translateY(-4px);
-        }
-        .mobile-nav-item:active {
-            transform: scale(0.92);
-        }
-        .mobile-nav-item.ajukan-btn i {
-            background: #2563eb;
-            color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            font-size: 24px;
-            margin-top: -30px; /* Float up */
-            border: 4px solid white;
-        }
-        .mobile-nav-item.ajukan-btn span {
-            margin-top: 10px;
-        }
-        .mobile-nav-item.ajukan-btn.active i {
-            background: #1e3a8a;
-            transform: translateY(-4px) scale(1.05);
         }
 
         /* ===== OFFCANVAS NOTIF ===== */
@@ -677,7 +1107,7 @@
         }
 
         /* Suppress Focus Ring Flicker */
-        .surat-item:focus, .notification-item:focus, .stat-card-modern:focus, .nav-link-item:focus, a:focus, button:focus {
+        .surat-item:focus, .notification-item:focus, .stat-card-modern:focus, .user-sidebar-item:focus, .user-nav-group-toggle:focus, a:focus, button:focus {
             outline: none !important;
             box-shadow: none !important;
         }
@@ -722,332 +1152,307 @@
 </head>
 <body>
 
+@php
+    $unreadNotif = auth()->user()->unreadNotifications->count();
+    $userSuratGroupOpen = request()->routeIs('user.surat.*')
+        && !request()->routeIs('user.surat.create');
+    $userLainnyaOpen = request()->routeIs('user.faq.*', 'user.about.*', 'user.notifikasi.index', 'user.aspirasi.index');
+    $userAspirasiOpen = request()->routeIs('user.aspirasi.index');
+@endphp
 
-{{-- ===== NAVBAR ===== --}} 
-<nav class="navbar navbar-main d-flex align-items-center justify-content-between">
-    {{-- Brand --}}
-    <a class="navbar-brand-text text-decoration-none d-flex align-items-center" href="{{ route('dashboard') }}">
-        <img src="{{ asset('images/BP_SUML2.png') }}" alt="Logo BPR SUML" style="height: 45px; object-fit: contain;">
-    </a>
+<div class="user-app">
 
-    {{-- Nav Links --}}
-    <div class="d-flex align-items-center gap-2 d-none d-lg-flex">
-        <a href="{{ url('/?home=1') }}" class="nav-link-item">
-            <i class="bi bi-globe"></i> Beranda
-        </a>
-        <a href="{{ route('dashboard') }}"
-           class="nav-link-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-            <i class="bi bi-house"></i> Dashboard
-        </a>
-
-        {{-- Dropdown Surat Saya --}}
-        <div class="dropdown">
-            <button class="nav-link-item border-0 bg-transparent dropdown-toggle {{ request()->routeIs('user.surat.*') && !request()->routeIs('user.surat.create') ? 'active' : '' }}" 
-                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-envelope"></i> Surat Saya
-            </button>
-            <ul class="dropdown-menu border-0 shadow-sm">
-                <li>
-                    <a class="dropdown-item {{ request()->routeIs('user.surat.index') && request('status') !== 'draft' ? 'active' : '' }}" href="{{ route('user.surat.index') }}">
-                        <i class="bi bi-envelope-open me-2"></i> Surat Saya (Card)
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item {{ request('status') === 'draft' ? 'active' : '' }}" href="{{ route('user.surat.index', ['status' => 'draft']) }}">
-                        <i class="bi bi-pencil-square me-2"></i> Draft Saya
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item {{ request()->routeIs('user.surat.table') ? 'active' : '' }}" href="{{ route('user.surat.table') }}">
-                        <i class="bi bi-table me-2"></i> Tabel Surat (Detail)
-                    </a>
-                </li>
-            </ul>
+    {{-- ===== SIDEBAR ===== --}}
+    <aside id="userSidebar" class="user-sidebar" aria-label="Menu utama">
+        <div class="user-sidebar-brand">
+            <a href="{{ route('dashboard') }}">
+                <div class="logo-wrap">
+                    <img src="{{ asset('images/BP_SUML2.png') }}" alt="Logo BP SUML">
+                </div>
+                <div class="brand-text">
+                    <div class="title">Persuratan BP SUML</div>
+                    <div class="subtitle">Portal Pegawai</div>
+                </div>
+            </a>
         </div>
-        <a href="{{ route('user.surat.create') }}"
-           class="nav-link-item {{ request()->routeIs('user.surat.create') ? 'active' : '' }}">
-            <i class="bi bi-plus-circle"></i> Ajukan Surat
-        </a>
-        <a href="{{ route('user.statistik.index') }}"
-           class="nav-link-item {{ request()->routeIs('user.statistik.index') ? 'active' : '' }}">
-            <i class="bi bi-bar-chart-line"></i> Statistik
-        </a>
-        <a href="{{ route('user.template.index') }}"
-           class="nav-link-item {{ request()->routeIs('user.template.*') ? 'active' : '' }}">
-            <i class="bi bi-file-earmark-word"></i> Template
-        </a>
-                {{-- Lainnya Dropdown --}}
-        <div class="dropdown">
-            <button class="nav-link-item border-0 bg-transparent dropdown-toggle {{ request()->routeIs('user.faq.*', 'user.about.*', 'user.notifikasi.index', 'user.aspirasi.index') ? 'active' : '' }}" 
-                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-grid"></i> Lainnya
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end border-0">
 
-                <li>
-                    <a class="dropdown-item {{ request()->routeIs('user.notifikasi.index') ? 'active' : '' }}" href="{{ route('user.notifikasi.index') }}">
-                        <i class="bi bi-bell me-2"></i> Notifikasi
-                    </a>
-                </li>
-                <li class="dropdown-submenu">
-                    <a class="dropdown-item d-flex align-items-center justify-content-between {{ request()->routeIs('user.aspirasi.index') ? 'active' : '' }}" href="#">
-                        <span><i class="bi bi-chat-right-heart me-2"></i> Kotak Aspirasi</span>
-                        <i class="bi bi-chevron-right ms-2" style="font-size: 10px;"></i>
-                    </a>
-                    <ul class="dropdown-menu border-0 shadow-lg">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('user.surat.file_index') }}">
-                                <i class="bi bi-file-earmark-x me-2"></i> Hapus File Surat
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('user.aspirasi.index', ['to' => 'admin']) }}">
-                                <i class="bi bi-person-badge me-2"></i> Admin
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('user.aspirasi.index', ['to' => 'itsupport']) }}">
-                                <i class="bi bi-cpu me-2"></i> IT Support
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    <a class="dropdown-item {{ request()->routeIs('user.faq.*') ? 'active' : '' }}" href="{{ route('user.faq.index') }}">
-                        <i class="bi bi-question-circle me-2"></i> FAQ
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item {{ request()->routeIs('user.about.*') ? 'active' : '' }}" href="{{ route('user.about.index') }}">
-                        <i class="bi bi-info-circle me-2"></i> About
-                    </a>
-                </li>
-            </ul>
-        </div>
-        
-    </div>
+        <nav class="user-sidebar-nav">
+            <div class="user-nav-label">Utama</div>
+            <a href="{{ url('/?home=1') }}" class="user-sidebar-item">
+                <i class="bi bi-globe2"></i>
+                <span>Beranda Publik</span>
+            </a>
+            <a href="{{ route('dashboard') }}"
+               class="user-sidebar-item {{ request()->routeIs('dashboard') ? 'is-active' : '' }}">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ route('user.notifikasi.index') }}"
+                class="user-sidebar-item {{ request()->routeIs('user.notifikasi.index') ? 'is-active' : '' }} {{ $unreadNotif > 0 ? 'sidebar-unread-pulse' : '' }}">
+                    <span class="user-sidebar-icon-stack">
+                        <i class="bi bi-bell{{ $unreadNotif > 0 ? '-fill' : '' }}"></i>
+                            @if($unreadNotif > 0)
+                                <span class="user-sidebar-nav-badge">{{ $unreadNotif > 99 ? '99+' : $unreadNotif }}</span>
+                            @endif
+                        </span>
+                    <span>Notifikasi</span>
+                </a>
+                
+            <div class="user-nav-label">Upload Surat</div>
+            <a href="{{ route('user.surat.create') }}"
+               class="user-sidebar-cta {{ request()->routeIs('user.surat.create') ? 'is-active' : '' }}">
+                <i class="bi bi-plus-lg"></i>
+                Ajukan Surat
+            </a>
+            
 
-    {{-- Right: notif + avatar --}}
-    <div class="d-flex align-items-center gap-2">
-
-        {{-- Notifikasi (Sidebar Trigger) --}}
-        <button type="button" class="notif-btn" 
-                data-bs-toggle="offcanvas" data-bs-target="#offcanvasNotif"
-                aria-controls="offcanvasNotif" id="notif-toggle">
-            <i class="bi bi-bell"></i>
-            @php $unreadNotif = auth()->user()->unreadNotifications->count(); @endphp
-            @if($unreadNotif > 0)
-                <span class="notif-badge">{{ $unreadNotif > 9 ? '9+' : $unreadNotif }}</span>
-            @endif
-        </button>
-
-        {{-- User dropdown --}}
-        <div class="dropdown">
-            <div class="user-avatar" data-bs-toggle="dropdown" style="padding: 0; overflow: hidden; display: flex; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                @if(Auth::user()->profile_photo)
-                    <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
-                @else
-                    {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
-                @endif
+            <div class="user-nav-label">Surat</div>
+            <div class="user-nav-group {{ $userSuratGroupOpen ? 'is-open' : '' }}">
+                <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')">
+                    <i class="bi bi-envelope-paper"></i>
+                    <span class="flex-grow-1">Surat Saya</span>
+                    <i class="bi bi-chevron-down chev"></i>
+                </button>
+                <div class="user-nav-group-body">
+                    <a href="{{ route('user.surat.index') }}"
+                       class="user-sidebar-item {{ request()->routeIs('user.surat.index') && request('status') !== 'draft' ? 'is-active' : '' }}">
+                        <i class="bi bi-envelope-open"></i>
+                        <span>Card</span>
+                    </a>
+                    <a href="{{ route('user.surat.index', ['status' => 'draft']) }}"
+                       class="user-sidebar-item {{ request('status') === 'draft' ? 'is-active' : '' }}">
+                        <i class="bi bi-pencil-square"></i>
+                        <span>Draft</span>
+                    </a>
+                    <a href="{{ route('user.surat.table') }}"
+                       class="user-sidebar-item {{ request()->routeIs('user.surat.table') ? 'is-active' : '' }}">
+                        <i class="bi bi-table"></i>
+                        <span>Tabel detail</span>
+                    </a>
+                    <a href="{{ route('user.surat.file_index') }}"
+                        class="user-sidebar-item {{ request()->routeIs('user.surat.file_index') ? 'is-active' : '' }}">
+                        <i class="bi bi-file-earmark-x"></i>
+                        <span>Hapus File Surat</span>
+                    </a>
+                    <a href="{{ route('user.surat.exportExcel') }}"
+                       class="user-sidebar-item {{ request()->routeIs('user.surat.exportExcel') ? 'is-active' : '' }}">
+                        <i class="bi bi-download"></i>
+                        <span>Ekspor Excel</span>
+                    </a>
+                </div>
             </div>
-            <ul class="dropdown-menu dropdown-menu-end" style="border-radius:10px; border:none; box-shadow:0 8px 24px rgba(0,0,0,0.1); font-size:13px; min-width:180px;">
-                <li>
-                    <div class="px-3 py-3 border-bottom d-flex align-items-center gap-3">
-                        <div style="width:32px; height:32px; border-radius:50%; overflow:hidden; flex-shrink:0; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:11px; color:var(--text-secondary);">
+
+            <div class="user-nav-label">Insight</div>
+            <a href="{{ route('user.statistik.index') }}"
+               class="user-sidebar-item {{ request()->routeIs('user.statistik.index') ? 'is-active' : '' }}">
+                <i class="bi bi-graph-up-arrow"></i>
+                <span>Statistik</span>
+            </a>
+            <a href="{{ route('user.sla.index') }}"
+               class="user-sidebar-item {{ request()->routeIs('user.sla.index') ? 'is-active' : '' }}">
+                <i class="bi bi-speedometer2"></i>
+                <span>Monitoring SLA</span>
+            </a>
+            <a href="{{ route('user.template.index') }}"
+               class="user-sidebar-item {{ request()->routeIs('user.template.*') ? 'is-active' : '' }}">
+                <i class="bi bi-file-earmark-word"></i>
+                <span>Template</span>
+            </a>
+            <a href="{{ route('profile.edit') }}"
+               class="user-sidebar-item {{ request()->routeIs('profile.edit') ? 'is-active' : '' }}">
+                <i class="bi bi-person-gear"></i>
+                <span>Profil</span>
+            </a>
+
+            <div class="user-nav-label">Lainnya</div>
+            <div class="user-nav-group {{ $userLainnyaOpen ? 'is-open' : '' }}">
+                <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    <span class="flex-grow-1">Menu tambahan</span>
+                    <i class="bi bi-chevron-down chev"></i>
+                </button>
+                <div class="user-nav-group-body">
+
+                    <div class="user-nav-group {{ $userAspirasiOpen ? 'is-open' : '' }}">
+                        <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')">
+                            <i class="bi bi-chat-heart"></i>
+                            <span class="flex-grow-1">Kotak aspirasi</span>
+                            <i class="bi bi-chevron-down chev"></i>
+                        </button>
+                        <div class="user-nav-group-body">
+                            <a href="{{ route('user.aspirasi.index', ['to' => 'admin']) }}"
+                               class="user-sidebar-item {{ request()->routeIs('user.aspirasi.index') && request('to') === 'admin' ? 'is-active' : '' }}">
+                                <i class="bi bi-person-badge"></i>
+                                <span>Ke Admin</span>
+                            </a>
+                            <a href="{{ route('user.aspirasi.index', ['to' => 'itsupport']) }}"
+                               class="user-sidebar-item {{ request()->routeIs('user.aspirasi.index') && request('to') === 'itsupport' ? 'is-active' : '' }}">
+                                <i class="bi bi-cpu"></i>
+                                <span>IT Support</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="{{ route('user.faq.index') }}"
+                       class="user-sidebar-item {{ request()->routeIs('user.faq.*') ? 'is-active' : '' }}">
+                        <i class="bi bi-question-circle"></i>
+                        <span>FAQ</span>
+                    </a>
+                    <a href="{{ route('user.about.index') }}"
+                       class="user-sidebar-item {{ request()->routeIs('user.about.*') ? 'is-active' : '' }}">
+                        <i class="bi bi-info-circle"></i>
+                        <span>Tentang</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="user-sidebar-footer">
+            <a href="{{ route('profile.edit') }}">
+                <div class="sf-avatar">
+                    @if(Auth::user()->profile_photo)
+                        <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+                    @else
+                        {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                    @endif
+                </div>
+                <div class="sf-meta">
+                    <div class="sf-name">{{ Auth::user()->name }}</div>
+                    <div class="sf-hint">Kelola profil</div>
+                </div>
+                <i class="bi bi-chevron-right text-white-50 small"></i>
+            </a>
+        </div>
+    </aside>
+
+    <div id="userSidebarBackdrop" class="user-sidebar-backdrop" onclick="closeUserSidebar()" aria-hidden="true"></div>
+
+    <div class="user-shell">
+
+        <header class="user-topbar">
+            <button type="button" class="user-sidebar-toggle" onclick="openUserSidebar()" aria-label="Buka menu">
+                <i class="bi bi-list fs-5"></i>
+            </button>
+
+            <div class="user-topbar-title">
+                <h1>{{ $title ?? 'Dashboard Pegawai' }}</h1>
+                <p>Ringkasan aktivitas &amp; persuratan Anda</p>
+            </div>
+
+            <div class="d-flex align-items-center ms-auto">
+                {{-- Notifications --}}
+                <button type="button" class="notif-btn"
+                        data-bs-toggle="offcanvas" data-bs-target="#offcanvasNotif"
+                        aria-controls="offcanvasNotif" id="notif-toggle">
+                    <i class="bi bi-bell"></i>
+                    @if($unreadNotif > 0)
+                        <span class="notif-badge">{{ $unreadNotif > 9 ? '9+' : $unreadNotif }}</span>
+                    @endif
+                </button>
+
+                <div class="topbar-divider d-none d-sm-block"></div>
+
+                {{-- User Profile --}}
+                <div class="dropdown">
+                    <div class="user-profile-trigger" data-bs-toggle="dropdown" role="button" id="userProfileDropdown">
+                        <div class="user-meta d-none d-lg-block text-end">
+                            <span class="u-name">{{ Auth::user()->name }}</span>
+                            <span class="u-role">NIP. {{ Auth::user()->nip ?? '00000000' }}</span>
+                        </div>
+                        <div class="user-avatar-wrap">
                             @if(Auth::user()->profile_photo)
-                                <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                                <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile">
                             @else
                                 {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                             @endif
                         </div>
-                        <div style="min-width:0;">
-                            <div style="font-weight:600; color:var(--text-primary); font-size:13px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ Auth::user()->name }}</div>
-                            <div style="font-size:11px; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ Auth::user()->email }}</div>
-                        </div>
+                        <i class="bi bi-chevron-down d-none d-sm-block opacity-50 ms-1 small"></i>
                     </div>
-                </li>
-                <li><a class="dropdown-item py-2" href="{{ route('profile.edit') }}">
-                    <i class="bi bi-person me-2"></i> Profil Saya
-                </a></li>
-                <li><a class="dropdown-item py-2" href="{{ route('user.surat.index') }}">
-                    <i class="bi bi-envelope me-2"></i> Surat Saya
-                </a></li>
-                <li><a class="dropdown-item py-2" href="{{ route('user.surat.index', ['status' => 'draft']) }}">
-                    <i class="bi bi-pencil-square me-2"></i> Draft Saya
-                </a></li>
-                <li><hr class="dropdown-divider"></li>
-                {{-- Switch Account Section --}}
-                <li>
-                    <div class="px-3 py-1.5" style="font-size:10px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.08em;">
-                        <i class="bi bi-arrow-left-right me-1"></i> Beralih Akun
-                    </div>
-                </li>
-                <li id="user-saved-accounts-list">
-                    {{-- Diisi oleh JS --}}
-                </li>
-                <li>
-                    <a class="dropdown-item py-2" href="#" onclick="switchToNewAccount(event)" style="color:#2563eb;">
-                        <i class="bi bi-plus-circle me-2"></i> Tambah Akun Lain
-                    </a>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    <a class="dropdown-item py-2 text-danger" href="#"
-                       onclick="event.preventDefault(); logoutCurrentUser();">
-                        <i class="bi bi-box-arrow-right me-2"></i> Logout
-                    </a>
-                </li>
-            </ul>
+                    <ul class="dropdown-menu dropdown-menu-end" style="border-radius:10px; border:none; box-shadow:0 8px 24px rgba(0,0,0,0.1); font-size:13px; min-width:180px;">
+                        <li>
+                            <div class="px-3 py-3 border-bottom d-flex align-items-center gap-3">
+                                <div style="width:32px; height:32px; border-radius:50%; overflow:hidden; flex-shrink:0; background:rgba(0,0,0,0.05); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:11px; color:var(--text-secondary);">
+                                    @if(Auth::user()->profile_photo)
+                                        <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                                    @else
+                                        {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                                    @endif
+                                </div>
+                                <div style="min-width:0;">
+                                    <div style="font-weight:600; color:var(--text-primary); font-size:13px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ Auth::user()->name }}</div>
+                                    <div style="font-size:11px; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ Auth::user()->email }}</div>
+                                </div>
+                            </div>
+                        </li>
+                        <li><a class="dropdown-item py-2" href="{{ route('profile.edit') }}">
+                            <i class="bi bi-person me-2"></i> Profil Saya
+                        </a></li>
+                        <li><a class="dropdown-item py-2" href="{{ route('user.surat.index') }}">
+                            <i class="bi bi-envelope me-2"></i> Surat Saya
+                        </a></li>
+                        <li><a class="dropdown-item py-2" href="{{ route('user.surat.index', ['status' => 'draft']) }}">
+                            <i class="bi bi-pencil-square me-2"></i> Draft Saya
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <div class="px-3 py-1.5" style="font-size:10px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.08em;">
+                                <i class="bi bi-arrow-left-right me-1"></i> Beralih Akun
+                            </div>
+                        </li>
+                        <li id="user-saved-accounts-list">
+                            {{-- Diisi oleh JS --}}
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="#" onclick="switchToNewAccount(event)" style="color:#2563eb;">
+                                <i class="bi bi-plus-circle me-2"></i> Tambah Akun Lain
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item py-2 text-danger" href="#"
+                               onclick="event.preventDefault(); logoutCurrentUser();">
+                                <i class="bi bi-box-arrow-right me-2"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        {{-- Flash toast --}}
+        <div class="flash-container">
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert" style="border-radius:10px; font-size:13px; border:none;">
+                    <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert" style="border-radius:10px; font-size:13px; border:none;">
+                    <i class="bi bi-x-circle-fill me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
         </div>
-    </div>
-</nav>
 
-{{-- Flash toast --}}
-<div class="flash-container">
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert" style="border-radius:10px; font-size:13px; border:none;">
-            <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert" style="border-radius:10px; font-size:13px; border:none;">
-            <i class="bi bi-x-circle-fill me-2"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-</div>
+        <main class="main-content">
+            @yield('content')
+        </main>
 
-{{-- Main --}}
-<main class="main-content">
-    @yield('content')
-</main>
+        {{-- Modals stack: dirender di luar <main> agar tidak terjebak stacking context dari transform animation --}}
+        @stack('modals')
 
-{{-- Modals stack: dirender di luar <main> agar tidak terjebak stacking context dari transform animation --}}
-@stack('modals')
+        {{-- ===== FOOTER ===== --}}
+        <footer class="py-4 mt-auto">
+            <div class="container-fluid text-center">
+                <p class="mb-0" style="font-size: 13px; color: var(--text-secondary); opacity: 0.8;">
+                    &copy; {{ date('Y') }} Balai Pengelolaan SUML &mdash; RI. All rights reserved.
+                </p>
+            </div>
+        </footer>
 
-{{-- ===== MOBILE BOTTOM NAV ===== --}}
-<div class="mobile-bottom-nav d-lg-none">
-    {{-- Dropup Beranda & Dashboard --}}
-    <div class="dropup" style="flex: 1;">
-        <button class="mobile-nav-item border-0 bg-transparent w-100 {{ request()->routeIs('dashboard') || request()->is('/') ? 'active' : '' }}" 
-                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-house"></i>
-            <span>Menu Utama</span>
-        </button>
-        <ul class="dropdown-menu border-0 shadow-lg" style="margin-bottom: 20px; border-radius: 15px; min-width: 160px;">
-            <li>
-                <a class="dropdown-item py-3 {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/?home=1') }}">
-                    <i class="bi bi-globe me-2"></i> Beranda Publik
-                </a>
-            </li>
-            <li>
-                <a class="dropdown-item py-3 {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-                    <i class="bi bi-speedometer2 me-2"></i> Dashboard User
-                </a>
-            </li>
-        </ul>
-    </div>
-    {{-- Dropup Surat Saya untuk Mobile --}}
-    <div class="dropup" style="flex: 1;">
-        <button class="mobile-nav-item border-0 bg-transparent w-100 {{ request()->routeIs('user.surat.*') && !request()->routeIs('user.surat.create') ? 'active' : '' }}" 
-                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-envelope"></i>
-            <span>Surat Saya</span>
-        </button>
-        <ul class="dropdown-menu border-0 shadow-lg" style="margin-bottom: 20px; border-radius: 15px; min-width: 160px;">
-            <li>
-                <a class="dropdown-item py-3 {{ request()->routeIs('user.surat.index') && request('status') !== 'draft' ? 'active' : '' }}" href="{{ route('user.surat.index') }}">
-                    <i class="bi bi-envelope-open me-2"></i> Surat Saya (Card)
-                </a>
-            </li>
-            <li>
-                <a class="dropdown-item py-3 {{ request('status') === 'draft' ? 'active' : '' }}" href="{{ route('user.surat.index', ['status' => 'draft']) }}">
-                    <i class="bi bi-pencil-square me-2"></i> Draft Saya
-                </a>
-            </li>
-            <li>
-                <a class="dropdown-item py-3 {{ request()->routeIs('user.surat.table') ? 'active' : '' }}" href="{{ route('user.surat.table') }}">
-                    <i class="bi bi-table me-2"></i> Tabel Surat (Detail)
-                </a>
-            </li>
-        </ul>
-    </div>
-    <a href="{{ route('user.surat.create') }}" class="mobile-nav-item ajukan-btn {{ request()->routeIs('user.surat.create') ? 'active' : '' }}">
-        <i class="bi bi-plus-lg"></i>
-        <span>Ajukan</span>
-    </a>
-
-    <a href="{{ route('user.statistik.index') }}" class="mobile-nav-item {{ request()->routeIs('user.statistik.index') ? 'active' : '' }}">
-        <i class="bi bi-bar-chart-line"></i>
-        <span>Statistik</span>
-    </a>
-
-    {{-- Dropup Lainnya untuk Mobile --}}
-    <div class="dropup" style="flex: 1;">
-        <button class="mobile-nav-item border-0 bg-transparent w-100 {{ request()->routeIs('user.faq.*') || request()->routeIs('user.about.*') || request()->routeIs('user.template.*') || request()->routeIs('user.notifikasi.index') || request()->routeIs('user.aspirasi.index') ? 'active' : '' }}" 
-                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-grid"></i>
-            <span>Lainnya</span>
-        </button>
-        <ul class="dropdown-menu border-0 shadow-lg" style="margin-bottom: 20px; border-radius: 15px; min-width: 180px;">
-            <li>
-                <a class="dropdown-item py-3" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNotif">
-                    <i class="bi bi-bell me-2"></i> Notifikasi
-                </a>
-            </li>
-            <li class="dropdown-submenu">
-                <a class="dropdown-item py-3 d-flex align-items-center justify-content-between {{ request()->routeIs('user.aspirasi.index') ? 'active' : '' }}" href="#">
-                    <span><i class="bi bi-chat-right-heart me-2"></i> Kotak Aspirasi</span>
-                    <i class="bi bi-chevron-right ms-2" style="font-size: 10px;"></i>
-                </a>
-                <ul class="dropdown-menu border-0">
-                    <li>
-                        <a class="dropdown-item py-2" href="{{ route('user.aspirasi.index', ['to' => 'admin']) }}">
-                            <i class="bi bi-person-badge me-2 text-primary"></i> Admin
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item py-2" href="{{ route('user.aspirasi.index', ['to' => 'itsupport']) }}">
-                            <i class="bi bi-cpu me-2 text-info"></i> IT Support
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a class="dropdown-item py-3 {{ request()->routeIs('user.surat.file_index') ? 'active' : '' }}" href="{{ route('user.surat.file_index') }}">
-                    <i class="bi bi-file-earmark-x me-2"></i> Hapus File Surat
-                </a>
-            </li>
-            <li><hr class="dropdown-divider mx-3"></li>
-            <li>
-                <a class="dropdown-item py-3 {{ request()->routeIs('user.template.*') ? 'active' : '' }}" href="{{ route('user.template.index') }}">
-                    <i class="bi bi-file-earmark-word me-2"></i> Template
-                </a>
-            </li>
-            <li>
-                <a class="dropdown-item py-3 {{ request()->routeIs('user.faq.*') ? 'active' : '' }}" href="{{ route('user.faq.index') }}">
-                    <i class="bi bi-question-circle me-2"></i> FAQ
-                </a>
-            </li>
-            <li>
-                <a class="dropdown-item py-3 {{ request()->routeIs('user.about.*') ? 'active' : '' }}" href="{{ route('user.about.index') }}">
-                    <i class="bi bi-info-circle me-2"></i> Tentang
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
-
-{{-- ===== FOOTER ===== --}}
-<footer class="py-4 mt-auto">
-    <div class="container-fluid text-center">
-        <p class="mb-0" style="font-size: 13px; color: var(--text-secondary); opacity: 0.8;">
-             &copy; {{ date('Y') }} Balai Pengelolaan SUML &mdash; RI. All rights reserved.
-        </p>
-    </div>
-</footer>
+    </div>{{-- /.user-shell --}}
+</div>{{-- /.user-app --}}
 
 {{-- Hidden forms --}}
 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
@@ -1094,14 +1499,33 @@
         });
     }, 4000);
 
-    // Navbar scroll effect
+    function openUserSidebar() {
+        document.getElementById('userSidebar')?.classList.add('is-open');
+        document.getElementById('userSidebarBackdrop')?.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeUserSidebar() {
+        document.getElementById('userSidebar')?.classList.remove('is-open');
+        document.getElementById('userSidebarBackdrop')?.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 992) closeUserSidebar();
+    });
+
+    document.getElementById('userSidebar')?.addEventListener('click', (e) => {
+        const link = e.target.closest('a[href]:not([href="#"])');
+        if (link && window.innerWidth < 992) closeUserSidebar();
+    });
+
+    // Topbar scroll effect
     window.addEventListener('scroll', () => {
-        const nav = document.querySelector('.navbar-main');
-        if (window.scrollY > 20) {
-            nav.classList.add('scrolled');
-        } else {
-            nav.classList.remove('scrolled');
-        }
+        const tb = document.querySelector('.user-topbar');
+        if (!tb) return;
+        if (window.scrollY > 12) tb.classList.add('scrolled');
+        else tb.classList.remove('scrolled');
     });
 
     // ===== ACCOUNT SWITCHER (Token-Based Instant Switch) =====

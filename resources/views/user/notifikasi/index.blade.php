@@ -42,8 +42,9 @@
                         <div class="notif-list">
                             @foreach($notifications as $notif)
                                 @php $isUnread = is_null($notif->read_at); @endphp
-                                <div class="notif-card p-3 mb-3 {{ $isUnread ? 'unread' : '' }}" 
+                                <div class="notif-card p-3 mb-3 notif-item-wrapper {{ $isUnread ? 'unread' : '' }}" 
                                      id="notif-{{ $notif->id }}"
+                                     data-id="{{ $notif->id }}"
                                      style="border-radius: 16px; border: 1px solid var(--border-color); background: {{ $notif->read_at ? 'var(--bg-tertiary)' : 'rgba(37, 99, 235, 0.05)' }}; transition: all 0.3s ease; position: relative;">
                                     <div class="d-flex gap-3">
                                         <div class="notif-icon-circle flex-shrink-0" 
@@ -64,7 +65,7 @@
                                                     <small class="text-muted" style="font-size: 11px;">
                                                         {{ $notif->created_at->diffForHumans() }}
                                                     </small>
-                                                    <button onclick="deleteNotif('{{ $notif->id }}')" class="btn btn-link text-danger p-0 border-0" title="Hapus">
+                                                    <button onclick="deleteNotif('{{ $notif->id }}')" class="btn btn-link text-danger p-0 border-0 btn-delete-notif" title="Hapus">
                                                         <i class="bi bi-x-lg" style="font-size: 12px;"></i>
                                                     </button>
                                                 </div>
@@ -77,7 +78,7 @@
                                                     Lihat Detail
                                                 </a>
                                                 @if($isUnread)
-                                                    <button onclick="markAsRead('{{ $notif->id }}')" class="btn btn-sm btn-light py-1 px-3" id="btnRead-{{ $notif->id }}" style="font-size: 11px; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0;">
+                                                    <button onclick="markNotifRead('{{ $notif->id }}')" class="btn btn-sm btn-light py-1 px-3" id="btnRead-{{ $notif->id }}" style="font-size: 11px; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0;">
                                                         Tandai Dibaca
                                                     </button>
                                                     <span class="badge bg-primary rounded-pill d-flex align-items-center px-2 badge-baru" style="font-size: 10px;">Baru</span>
@@ -120,79 +121,7 @@
 </style>
 
 <script>
-    function markAsRead(id) {
-        fetch(`/notif/mark-read/${id}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                const card = document.getElementById(`notif-${id}`);
-                card.classList.remove('unread');
-                card.style.background = 'var(--bg-tertiary)';
-                
-                const btnRead = document.getElementById(`btnRead-${id}`);
-                if (btnRead) btnRead.remove();
-                
-                const badge = card.querySelector('.badge-baru');
-                if (badge) badge.remove();
-                
-                if (data.unreadCount === 0) {
-                    const btnAll = document.getElementById('btnMarkAll');
-                    if (btnAll) btnAll.remove();
-                }
-            }
-        });
-    }
-
-    function markAllAsRead() {
-        if (!confirm('Tandai semua notifikasi sebagai sudah dibaca?')) return;
-        
-        fetch(`{{ route('notif.readAll') }}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        });
-    }
-
-    function deleteNotif(id) {
-        if (!confirm('Hapus notifikasi ini?')) return;
-        fetch(`/notif/delete/${id}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.ok) {
-                const card = document.getElementById(`notif-${id}`);
-                card.style.animation = 'fadeOut 0.3s ease forwards';
-                setTimeout(() => {
-                    card.remove();
-                    if (document.querySelectorAll('.notif-card').length === 0) {
-                        location.reload();
-                    }
-                }, 300);
-            } else {
-                alert('Gagal menghapus notifikasi: ' + (data.message || 'Error tidak diketahui'));
-            }
-        });
-    }
+    // Scripts simplified to use global functions from layouts/user.blade.php
 
     function deleteAllNotif() {
         if (!confirm('Hapus SEMUA notifikasi Anda? Tindakan ini tidak bisa dibatalkan.')) return;
@@ -206,7 +135,7 @@
         })
         .then(res => res.json())
         .then(data => {
-            if (data.ok) {
+            if (data.success) {
                 location.reload();
             }
         });
