@@ -76,6 +76,13 @@ class SlaMonitoringController extends Controller
             })
             ->count();
 
+        // Ambil daftar surat aktif untuk monitoring visual
+        $suratAktif = Surat::query()
+            ->where('user_id', $userId)
+            ->whereIn('status', ['proses', 'revisi', 'revisi_admin'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('user.sla.index', [
             'title' => 'Monitoring SLA',
             'monthLabels' => $monthLabels,
@@ -84,6 +91,7 @@ class SlaMonitoringController extends Controller
             'rataJamSelesai' => $rataJamSelesai,
             'aktifTerlambat' => $aktifTerlambat,
             'aktifNormal' => $aktifNormal,
+            'suratAktif' => $suratAktif,
         ]);
     }
 }
