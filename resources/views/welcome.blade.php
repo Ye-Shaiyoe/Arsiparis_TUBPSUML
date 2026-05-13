@@ -73,7 +73,7 @@
             position: fixed;
             inset: 0;
             z-index: -1;
-            background: 
+            background:
                 radial-gradient(ellipse 80% 50% at 20% 10%, rgba(200, 169, 110, 0.08) 0%, transparent 50%),
                 radial-gradient(ellipse 60% 40% at 80% 80%, rgba(26, 115, 232, 0.06) 0%, transparent 50%),
                 radial-gradient(ellipse 40% 40% at 50% 50%, rgba(26, 115, 232, 0.04) 0%, transparent 60%),
@@ -82,8 +82,15 @@
         }
 
         @keyframes bgShift {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.85; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.85;
+            }
         }
 
 
@@ -179,19 +186,43 @@
         }
 
         @keyframes orbFloat {
-            0%, 100% { transform: translateY(0) }
-            50% { transform: translateY(-30px) }
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-30px)
+            }
         }
 
         @keyframes orbFloat1 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(40px, 20px) scale(1.1); }
-            66% { transform: translate(-20px, -10px) scale(0.95); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(40px, 20px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, -10px) scale(0.95);
+            }
         }
 
         @keyframes orbFloat2 {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-30px, -40px) rotate(5deg); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(-30px, -40px) rotate(5deg);
+            }
         }
 
         /* ── Scroll Progress ── */
@@ -393,8 +424,6 @@
 
         .hero-title .line {
             display: block;
-            opacity: 0;
-            transform: translateY(70px);
         }
 
         .hero-title em {
@@ -2935,8 +2964,39 @@
             will-change: opacity, transform;
         }
 
+        /* ─── TYPING ANIMATION ─── */
+        .typing-container {
+            display: inline-block;
+            position: relative;
+        }
+
+        .word-span {
+            display: inline-block;
+            opacity: 0;
+            filter: blur(8px);
+            transform: translateY(15px);
+            will-change: opacity, transform, filter;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.1em;
+            background: var(--accent);
+            margin-left: 4px;
+            vertical-align: middle;
+            border-radius: 4px;
+            box-shadow: 0 0 10px var(--accent);
+            opacity: 0;
+        }
+
         /* Hover effect untuk cursor area */
-        a, button, .portal-card, .about-card, .stat-card, .chart-card {
+        a,
+        button,
+        .portal-card,
+        .about-card,
+        .stat-card,
+        .chart-card {
             cursor: none;
         }
     </style>
@@ -3018,12 +3078,12 @@
             <span class="hero-eyebrow-line"></span>
             Sistem Persuratan Digital
         </div>
-        <h1 class="hero-title">
+        <h1 class="hero-title" id="hero-title-main">
             <span class="line">Balai Pengelolaan</span>
             <span class="line"><em>Standar Ukuran</em></span>
-            <span class="line"> Metrologi Legal</span>
+            <span class="line">Metrologi Legal</span>
         </h1>
-        <p class="hero-subtitle">
+        <p class="hero-subtitle" id="hero-subtitle-main">
             Sistem Monitoring dan Pengelolaan Persuratan Balai Pengelolaan Standar Ukuran Metrologi Legal — Efisien,
             Efektif, Sistematis Serta Mudah Diakses Kapan Saja.
         </p>
@@ -3746,7 +3806,7 @@
                 // About section scroll trigger
                 const aboutSection = document.getElementById('about');
                 const portalsSection = document.getElementById('portals');
-                
+
                 if (aboutSection) {
                     const observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
@@ -3957,24 +4017,71 @@
             }
         });
 
-        // Hero animations
-        anime({ targets: '.hero-eyebrow', opacity: [0, 1], duration: 600, delay: 300, easing: 'easeOutCubic' });
-        anime({ targets: '.hero-eyebrow-line', width: [0, 32], duration: 800, delay: 500, easing: 'easeOutExpo' });
+        // ─── TYPING ANIMATION LOGIC ───
+        const splitIntoWords = (elementId) => {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            
+            // For hero-title, we need to handle nested .line spans
+            if (elementId === 'hero-title-main') {
+                const lines = el.querySelectorAll('.line');
+                lines.forEach(line => {
+                    const text = line.innerText;
+                    const words = text.split(' ');
+                    const isItalic = line.querySelector('em');
+                    
+                    let html = '';
+                    words.forEach(word => {
+                        html += `<span class="word-span">${word}</span> `;
+                    });
+                    
+                    if (isItalic) {
+                        line.innerHTML = `<em>${html}</em>`;
+                    } else {
+                        line.innerHTML = html;
+                    }
+                });
+            } else {
+                const text = el.innerText;
+                const words = text.split(' ');
+                el.innerHTML = words.map(word => `<span class="word-span">${word}</span>`).join(' ');
+            }
+        };
+
+        splitIntoWords('hero-title-main');
+        splitIntoWords('hero-subtitle-main');
+
+        // Typing Timeline
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-        tl.to('.hero-title .line', { opacity: 1, y: 0, duration: 1.0, stagger: 0.14, delay: 0.5 })
-          .to('.hero-subtitle', { opacity: 1, y: 0, duration: 0.8 }, '-=0.4')
-          .to('.hero-cta', { opacity: 1, y: 0, duration: 0.7 }, '-=0.35')
-          .to('.hero-float-cards', { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5')
-          .to('.hero-badge', { opacity: 1, duration: 0.8 }, '-=0.4')
-          .to('.hero-scroll-hint', { opacity: 1, duration: 0.6 }, '-=0.2');
+        
+        // Initial state for cursor
+        gsap.set('.hero-title, .hero-subtitle', { opacity: 1 });
+
+        tl.fromTo('.hero-eyebrow', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.8, delay: 0.2 })
+        .fromTo('.hero-eyebrow-line', { width: 0 }, { width: 28, duration: 0.8 }, "-=0.6")
+        .to('#hero-title-main .word-span', { 
+            opacity: 1, 
+            y: 0, 
+            filter: 'blur(0px)',
+            duration: 0.5, 
+            stagger: 0.08, 
+            ease: "back.out(1.7)",
+            delay: 0.5 
+        })
+        .to('#hero-subtitle-main .word-span', { 
+            opacity: 1, 
+            y: 0, 
+            filter: 'blur(0px)',
+            duration: 0.4, 
+            stagger: 0.04,
+            ease: "power2.out"
+        }, "-=0.3")
+        .to('.hero-cta', { opacity: 1, y: 0, duration: 0.7 }, '-=0.35')
+        .to('.hero-float-cards', { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5')
+        .to('.hero-badge', { opacity: 1, duration: 0.8 }, '-=0.4')
+        .to('.hero-scroll-hint', { opacity: 1, duration: 0.6 }, '-=0.2');
 
         // ─── ENHANCED ANIMATIONS ───
-
-        // Staggered text reveal for hero with scale
-        gsap.fromTo('.hero-title .line', 
-            { filter: 'blur(8px)' }, 
-            { filter: 'blur(0px)', duration: 1.2, stagger: 0.15, delay: 0.6 }
-        );
 
         // Continuous subtle float on hero float cards
         gsap.to('.hero-float-card', {
@@ -3983,8 +4090,8 @@
         });
 
         // Ticker shimmer effect
-        gsap.fromTo('.ticker-dot', 
-            { scale: 0.5, opacity: 0.3 }, 
+        gsap.fromTo('.ticker-dot',
+            { scale: 0.5, opacity: 0.3 },
             { scale: 1.5, opacity: 1, duration: 1.5, repeat: -1, yoyo: true, stagger: { each: 0.1, from: 'random' } }
         );
 
@@ -4400,7 +4507,7 @@
 
             // Add active class on interactive elements
             const interactiveElements = document.querySelectorAll('a, button, .portal-card, .about-card, .stat-card, .chart-card, input, select, textarea');
-            
+
             interactiveElements.forEach(el => {
                 el.addEventListener('mouseenter', () => {
                     cursor.classList.add('active');
@@ -4411,7 +4518,7 @@
             });
 
             // Cursor color toggle
-            window.setCursorColor = function(color) {
+            window.setCursorColor = function (color) {
                 document.body.classList.remove('cursor-blue', 'cursor-black', 'cursor-brown');
                 document.body.classList.add('cursor-' + color);
                 localStorage.setItem('cursorColor', color);
@@ -4444,7 +4551,7 @@
             const initTextAnimations = () => {
                 document.querySelectorAll('.text-animate').forEach(section => {
                     const words = section.querySelectorAll('.text-animate-word');
-                    
+
                     // Create GSAP timeline
                     const tl = gsap.timeline({
                         scrollTrigger: {
