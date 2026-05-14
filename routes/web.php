@@ -36,8 +36,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/statistik', [UserStatistik::class, 'index'])->name('user.statistik.index');
     Route::get('/monitoring-sla', [UserSlaMonitoring::class, 'index'])->name('user.sla.index');
     Route::get('/notifikasi', [\App\Http\Controllers\User\NotifikasiController::class, 'index'])->name('user.notifikasi.index');
+    
+    // Aspirasi routes dengan rate limiting
     Route::get('/aspirasi', [\App\Http\Controllers\User\AspirasiController::class, 'index'])->name('user.aspirasi.index');
-    Route::post('/aspirasi', [\App\Http\Controllers\User\AspirasiController::class, 'store'])->name('user.aspirasi.store');
+    Route::post('/aspirasi', [\App\Http\Controllers\User\AspirasiController::class, 'store'])
+        ->middleware('throttle:10,1') // Max 10 submissions per minute
+        ->name('user.aspirasi.store');
     Route::delete('/aspirasi/{aspirasi}', [\App\Http\Controllers\User\AspirasiController::class, 'destroy'])->name('user.aspirasi.destroy');
 
     Route::prefix('surat')->name('user.surat.')->group(function () {
