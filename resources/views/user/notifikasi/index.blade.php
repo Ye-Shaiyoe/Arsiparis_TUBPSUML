@@ -123,10 +123,11 @@
 <script>
     // Scripts simplified to use global functions from layouts/user.blade.php
 
-    function deleteAllNotif() {
-        if (!confirm('Hapus SEMUA notifikasi Anda? Tindakan ini tidak bisa dibatalkan.')) return;
-        
-        fetch(`{{ route('notif.deleteAll') }}`, {
+    function markAllAsRead() {
+        const btn = document.getElementById('btnMarkAll');
+        if(btn) btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memproses...';
+
+        fetch(`{{ route('notif.readAll') }}`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -136,7 +137,60 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                location.reload();
+                // Update semua item di list
+                document.querySelectorAll('.notif-item-wrapper.unread').forEach(item => {
+                    item.classList.remove('unread');
+                    item.style.background = 'var(--bg-tertiary)';
+                    const dot = item.querySelector('.badge-baru');
+                    if(dot) dot.remove();
+                    const readBtn = item.querySelector('button[id^="btnRead-"]');
+                    if(readBtn) readBtn.remove();
+                });
+                
+                // Update badge di topbar/sidebar
+                if (typeof updateNotifBadges === 'function') {
+                    updateNotifBadges(0);
+                }
+                
+                // Sembunyikan tombol "Tandai Semua"
+                if(btn) btn.style.display = 'none';
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Semua notifikasi telah ditandai sebagai dibaca',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
+
+    function deleteAllNotif() {
+        Swal.fire({
+            title: 'Hapus semua notifikasi?',
+            text: "Tindakan ini tidak bisa dibatalkan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Hapus Semua!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`{{ route('notif.deleteAll') }}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
             }
         });
     }

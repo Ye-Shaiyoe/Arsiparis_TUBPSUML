@@ -58,6 +58,13 @@
         </div>
     </div>
 
+    <!-- Heatmap Row (GitHub-style Contribution Grid) -->
+    <div class="row mb-4 animate-in" style="animation-delay: 0.15s;">
+        <div class="col-12">
+            <x-activity-heatmap :data="$heatmapData" :selected-year="$heatmapYear" title="Kontribusi Aktivitas Pengajuan Surat" />
+        </div>
+    </div>
+
     <!-- Charts Row -->
     <div class="row g-4 animate-in" style="animation-delay: 0.2s;">
         <!-- Line Chart -->
@@ -107,88 +114,92 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    (function() {
         // Line Chart Configuration
-        const ctxLine = document.getElementById('lineChart').getContext('2d');
-        
-        // Gradient for Line Chart
-        let gradientLine = ctxLine.createLinearGradient(0, 0, 0, 300);
-        gradientLine.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
-        gradientLine.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+        const ctxLine = document.getElementById('lineChart');
+        if (ctxLine) {
+            const ctx = ctxLine.getContext('2d');
+            // Gradient for Line Chart
+            let gradientLine = ctx.createLinearGradient(0, 0, 0, 300);
+            gradientLine.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+            gradientLine.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
 
-        new Chart(ctxLine, {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($chartLabels) !!},
-                datasets: [{
-                    label: 'Jumlah Surat',
-                    data: {!! json_encode($chartData) !!},
-                    borderColor: '#3b82f6',
-                    backgroundColor: gradientLine,
-                    borderWidth: 3,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#3b82f6',
-                    pointBorderWidth: 2,
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false }
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {!! json_encode($chartLabels) !!},
+                    datasets: [{
+                        label: 'Jumlah Surat',
+                        data: {!! json_encode($chartData) !!},
+                        borderColor: '#3b82f6',
+                        backgroundColor: gradientLine,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#3b82f6',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        fill: true,
+                        tension: 0.4
+                    }]
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 1, color: '#64748b' },
-                        grid: { color: 'rgba(255,255,255,0.4)', drawBorder: false }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
                     },
-                    x: {
-                        ticks: { color: '#64748b' },
-                        grid: { display: false, drawBorder: false }
-                    }
-                }
-            }
-        });
-
-        // Doughnut Chart Configuration
-        const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
-        new Chart(ctxDoughnut, {
-            type: 'doughnut',
-            data: {
-                labels: {!! json_encode($statusLabels) !!},
-                datasets: [{
-                    data: {!! json_encode($statusData) !!},
-                    backgroundColor: [
-                        'rgba(16, 185, 129, 0.8)', // Disetujui (Green)
-                        'rgba(239, 68, 68, 0.8)',  // Ditolak (Red)
-                        'rgba(245, 158, 11, 0.8)'  // Diproses (Yellow/Orange)
-                    ],
-                    borderColor: 'rgba(255,255,255,0.5)',
-                    borderWidth: 2,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '70%',
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: '#475569',
-                            usePointStyle: true,
-                            padding: 20
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1, color: '#64748b' },
+                            grid: { color: 'rgba(255,255,255,0.4)', drawBorder: false }
+                        },
+                        x: {
+                            ticks: { color: '#64748b' },
+                            grid: { display: false, drawBorder: false }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
+
+        // Doughnut Chart Configuration
+        const ctxDoughnut = document.getElementById('doughnutChart');
+        if (ctxDoughnut) {
+            new Chart(ctxDoughnut.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: {!! json_encode($statusLabels) !!},
+                    datasets: [{
+                        data: {!! json_encode($statusData) !!},
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.8)', // Disetujui (Green)
+                            'rgba(239, 68, 68, 0.8)',  // Ditolak (Red)
+                            'rgba(245, 158, 11, 0.8)'  // Diproses (Yellow/Orange)
+                        ],
+                        borderColor: 'rgba(255,255,255,0.5)',
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#475569',
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         // Distribusi Jenis Surat
         const jenisCtx = document.getElementById('jenisChart');
@@ -280,6 +291,6 @@
                 }
             });
         }
-    });
+    })();
 </script>
 @endsection

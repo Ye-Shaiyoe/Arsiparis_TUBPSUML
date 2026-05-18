@@ -489,6 +489,7 @@
     </div>
 </div>
 
+@push('modals')
 {{-- Modal Hapus Surat --}}
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -564,8 +565,11 @@
         </div>
     </div>
 </div>
+@endpush
+
 
 @if($surat->status === 'selesai' && !$surat->file_dihapus_pada)
+@push('modals')
 {{-- Modal Purge Files --}}
 <div class="modal fade" id="purgeFilesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -603,10 +607,12 @@
         </div>
     </div>
 </div>
+@endpush
 @endif
 
 {{-- Modal Edit Surat --}}
 @if($surat->created_at && $surat->created_at->diffInMinutes(now()) <= 15)
+@push('modals')
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -666,6 +672,7 @@
         </div>
     </div>
 </div>
+@endpush
 @endif
 
 @endsection

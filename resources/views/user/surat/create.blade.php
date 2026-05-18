@@ -223,60 +223,66 @@
 
 @push('scripts')
 <script>
-function showFileName(input, targetId) {
-    const el = document.getElementById(targetId);
-    if (input.files && input.files[0]) {
-        const name = input.files[0].name;
-        const size = (input.files[0].size / 1024).toFixed(0);
-        el.innerHTML = `<strong style="color:#111827;">${name}</strong><br><span style="font-size:11px;color:#6b7280;">${size} KB · Siap diupload</span>`;
-        input.closest('.upload-area').style.borderColor = '#22c55e';
-        input.closest('.upload-area').style.background = '#f0fdf4';
+document.addEventListener('turbo:load', function() {
+    function showFileName(input, targetId) {
+        const el = document.getElementById(targetId);
+        if (input.files && input.files[0]) {
+            const name = input.files[0].name;
+            const size = (input.files[0].size / 1024).toFixed(0);
+            el.innerHTML = `<strong style="color:#111827;">${name}</strong><br><span style="font-size:11px;color:#6b7280;">${size} KB · Siap diupload</span>`;
+            input.closest('.upload-area').style.borderColor = '#22c55e';
+            input.closest('.upload-area').style.background = '#f0fdf4';
+        }
     }
-}
 
-document.getElementById('formAjukan')?.addEventListener('submit', function(e) {
-    // Jika ada sistem validasi di browser, pastikan disabled hanya saat valid
-    if (!this.checkValidity()) return;
+    // Attach to window so onclick works
+    window.showFileName = showFileName;
 
-    // Hanya munculkan spinner jika tombol yang diklik adalah 'submit'
-    const action = e.submitter ? e.submitter.value : 'submit';
-    if (action !== 'submit') return;
+    const form = document.getElementById('formAjukan');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (!this.checkValidity()) return;
 
-    const btn = document.getElementById('btnSubmit');
-    const icon = document.getElementById('btnIcon');
-    const text = document.getElementById('btnText');
+            const action = e.submitter ? e.submitter.value : 'submit';
+            if (action !== 'submit') return;
 
-    if (btn) {
-        btn.disabled = true;
-        btn.style.opacity = '0.7';
-        btn.style.cursor = 'not-allowed';
+            const btn = document.getElementById('btnSubmit');
+            const icon = document.getElementById('btnIcon');
+            const text = document.getElementById('btnText');
+
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+                btn.style.cursor = 'not-allowed';
+            }
+            if (icon && text) {
+                icon.className = 'spinner-border spinner-border-sm';
+                text.innerText = 'Mengirim...';
+            }
+        });
     }
-    if (icon && text) {
-        icon.className = 'spinner-border spinner-border-sm';
-        text.innerText = 'Mengirim...';
+
+    // Character Counter logic
+    const catatanInput = document.getElementById('catatan_pengusul');
+    const charCount = document.getElementById('charCount');
+
+    if (catatanInput && charCount) {
+        const updateCount = () => {
+            const len = catatanInput.value.length;
+            charCount.innerText = `${len} / 100`;
+            if (len >= 100) {
+                charCount.classList.add('text-danger');
+                charCount.classList.remove('text-muted');
+            } else {
+                charCount.classList.remove('text-danger');
+                charCount.classList.add('text-muted');
+            }
+        };
+        
+        catatanInput.addEventListener('input', updateCount);
+        updateCount(); // Initial count
     }
 });
-
-// Character Counter logic
-const catatanInput = document.getElementById('catatan_pengusul');
-const charCount = document.getElementById('charCount');
-
-if (catatanInput && charCount) {
-    const updateCount = () => {
-        const len = catatanInput.value.length;
-        charCount.innerText = `${len} / 100`;
-        if (len >= 100) {
-            charCount.classList.add('text-danger');
-            charCount.classList.remove('text-muted');
-        } else {
-            charCount.classList.remove('text-danger');
-            charCount.classList.add('text-muted');
-        }
-    };
-    
-    catatanInput.addEventListener('input', updateCount);
-    updateCount(); // Initial count
-}
 </script>
 @endpush
 

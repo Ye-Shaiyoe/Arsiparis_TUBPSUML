@@ -620,7 +620,7 @@
             {{-- Stats --}}
             <div class="faq-stats fade-up fade-up-3">
                 <div class="faq-stat">
-                    <div class="faq-stat-num">36</div>
+                    <div class="faq-stat-num">37</div>
                     <div class="faq-stat-label">Artikel FAQ</div>
                 </div>
                 <div class="faq-stat-divider"></div>
@@ -630,7 +630,7 @@
                 </div>
                 <div class="faq-stat-divider"></div>
                 <div class="faq-stat">
-                    <div class="faq-stat-num">24<span style="font-size:13px;font-weight:600">jam</span></div>
+                    <div class="faq-stat-num">24 <span style="font-size:13px;font-weight:600">jam</span></div>
                     <div class="faq-stat-label">Waktu SLA</div>
                 </div>
             </div>
@@ -691,13 +691,27 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
+                    <div class="faq-q-icon">⏮️</div>
+                    <span class="faq-q-text">Kenapa Preview Word berbeda dengan file asli?</span>
+                    <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
+                </button>
+                <div class="faq-answer-wrap">
+                    <div class="faq-answer">
+                        Tenang saja Itu gak akan memengaruhi file asli anda, Karena itu cuma preview doang. admin/pengurus akan mendownload ulang file anda. tapi tenang aja, preview itu cuma untuk melihat apakah <strong>file anda benar atau tidak</strong>.
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="faq-item" data-cat="pengajuan">
+                <button class="faq-question" onclick="toggleFaq(this)">
                     <div class="faq-q-icon">📂</div>
                     <span class="faq-q-text">Format dan ukuran file apa saja yang diterima sistem?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Untuk <strong>file surat utama</strong>, sistem hanya menerima format <strong>.docx</strong> (Microsoft Word). Untuk <strong>lampiran pendukung</strong>, Anda dapat mengunggah file berformat <strong>PDF, JPG, atau PNG</strong>. Ukuran maksimal per file adalah <strong>10 MB</strong>. Pastikan file tidak terpassword/terenkripsi agar dapat diproses sistem.
+                        Untuk <strong>file surat utama</strong>, sistem hanya menerima format <strong>.docx</strong> (Microsoft Word). Untuk <strong>lampiran pendukung</strong>, Anda dapat mengunggah file berformat <strong>PDF, JPG, .docx, .xlsx atau PNG</strong>. Ukuran maksimal per file adalah <strong>10 MB</strong>. Pastikan file tidak terpassword/terenkripsi agar dapat diproses sistem.
                     </div>
                 </div>
             </div>
@@ -853,6 +867,7 @@
                         Anda dapat mengedit data surat (Judul, Jenis, dan Tujuan) selama <strong>15 menit</strong> terhitung sejak surat pertama kali diajukan. Setelah melewati 15 menit, fitur edit akan terkunci otomatis demi menjaga integritas data selama proses verifikasi oleh Admin.
                     </div>
                 </div>
+            </div>
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
                     <div class="faq-q-icon">🔢</div>
@@ -885,7 +900,7 @@
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Waktu proses maksimal adalah <strong>24 jam kerja</strong> (Hanya dihitung hari kerja: Senin–Kamis pukul 07.30–16.00 WIB, Jumat pukul 07.30–16.30 WIB). Jika proses melebihi 24 jam kerja, sistem akan memberikan indikasi <strong>"Terlambat -0.1 jam"</strong> sebagai tanda bahwa surat telah melewati batas waktu SLA yang ditentukan.
+                        Waktu proses maksimal adalah <strong>24 jam kerja</strong> (Hanya dihitung hari kerja: Senin–Kamis pukul 07.30–16.00 WIB, Jumat pukul 07.30–16.30 WIB). Jika proses melebihi 24 jam kerja, sistem akan memberikan indikasi <strong>"Terlambat -1.4 jam"</strong> sebagai tanda bahwa surat telah melewati batas waktu SLA yang ditentukan.
                     </div>
                 </div>
             </div>
@@ -1143,6 +1158,25 @@
 
             <div class="faq-item" data-cat="akun">
                 <button class="faq-question" onclick="toggleFaq(this)">
+                    <div class="faq-q-icon">👥</div>
+                    <span class="faq-q-text">Cara beralih akun yang dimulai dari register!</span>
+                    <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
+                </button>
+                <div class="faq-answer-wrap">
+                    <div class="faq-answer">
+                        Minimal anda sudah memili satu akun yang terdaftar pada sistem kami dan ini stepnya: <br>
+                        <ol>
+                            <li>1. Silahkan masuk ke halaman login dengan menggunakan akun yang sudah terdaftar pada sistem kami.</li>
+                            <li>2. Silah kan pencet beralih akun dan masuk ke sign up/register.</li>
+                            <li>3. Silahkan isi biodata yang sesuai, dengan informasi yang valid.</li>
+                            <li>4. Setelah berhasil mendaftar, anda harus logout kembali dan ke bagian form sign in/login dan masukan kembali akun yang sudah anda bikin sebelumnya. dan selesai, easy!</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" data-cat="akun">
+                <button class="faq-question" onclick="toggleFaq(this)">
                     <div class="faq-q-icon">🔑</div>
                     <span class="faq-q-text">Sudah dapat login dengan NIP dan password? Segera lakukan ini!</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
@@ -1189,6 +1223,26 @@
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
                         Anda dapat menggunakan fitur <strong>"Beralih Akun"</strong> pada dropdown profil (klik foto profil Anda). Fitur ini memungkinkan Anda berpindah antar akun yang sudah pernah login di perangkat tersebut secara instan. Keamanan dijamin dengan <em>switch_token</em> yang di-hash di database dan masa berlaku token selama 30 hari.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" data-cat="akun">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <div class="faq-q-icon">💻</div>
+                    <span class="faq-q-text">Apa itu fitur Sesi Aktif & Riwayat Perangkat (Device History)?</span>
+                    <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
+                </button>
+                <div class="faq-answer-wrap">
+                    <div class="faq-answer">
+                        Fitur <strong>Sesi Aktif & Riwayat Perangkat</strong> adalah sistem keamanan canggih di halaman Profil Saya untuk memantau semua perangkat yang sedang masuk (login) ke akun Anda secara real-time.
+                        <br><br>
+                        <strong>Fungsi Utama:</strong>
+                        <ul>
+                            <li><strong>Deteksi Otomatis:</strong> Mendeteksi sistem operasi (Windows, macOS, Linux, Android, iOS) dan browser (Chrome, Firefox, Safari, Edge, Opera, Vivaldi, Yandex, Samsung, UC Browser) yang digunakan secara tepat.</li>
+                            <li><strong>Informasi Detail:</strong> Menampilkan alamat IP dan waktu keaktifan terakhir, serta menandai perangkat yang sedang Anda gunakan saat ini dengan label khusus <strong>"Perangkat Ini"</strong>.</li>
+                            <li><strong>Log Out Remote:</strong> Mengeluarkan sesi (log out) perangkat mencurigakan secara instan dari jarak jauh, atau mengeluarkan seluruh perangkat lainnya sekaligus dengan modal konfirmasi kata sandi berlapis.</li>
+                        </ul>
                     </div>
                 </div>
             </div>

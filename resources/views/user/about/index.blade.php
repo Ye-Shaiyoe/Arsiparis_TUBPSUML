@@ -241,13 +241,13 @@
 
                     <p class="text-muted animate-in" style="font-size: 14px; line-height: 1.7; animation-delay: 0.1s;">
                         Direktorat Metrologi merupakan unit pelaksana teknis di bawah Kementerian Perdagangan RI yang
-                        bertugas melaksanakan standardisasi dan pengawasan di bidang BP SUML legal — memastikan
+                        bertugas melaksanakan standardisasi dan pengawasan di bidang BP SUML — memastikan
                         kebenaran pengukuran dalam transaksi perdagangan demi perlindungan konsumen dan kepastian usaha.
                     </p>
 
                     <p class="text-muted animate-in" style="font-size: 14px; line-height: 1.7; animation-delay: 0.2s;">
                         Aplikasi <strong class="text-primary">Surat Balai Pengelolaan SUML</strong> hadir sebagai solusi digital untuk pengelolaan
-                        korespondensi kedinasan di lingkungan BP SUML Legal, mempermudah proses administrasi
+                        korespondensi kedinasan di lingkungan BP SUML, mempermudah proses administrasi
                         surat-menyurat secara transparan dan efisien.
                     </p>
                 </div>
@@ -296,9 +296,9 @@
                                 <div class="col-6">
                                     <div class="rounded-2 bg-light p-3" style="background:#f9fafb!important; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                                         <small class="text-muted d-block mb-1">Website</small>
-                                        <a href="https://tu.persuratan.bp.suml.com" target="_blank"
+                                        <a href="https://persuratan-bpsuml.web.id" target="_blank"
                                            style="font-size: 13px; font-weight: 500;color:#111827;">
-                                            tu.persuratan.bp.suml.com 
+                                            persuratan-bpsuml.web.id 
                                         </a>
                                     </div>
                                 </div>
@@ -481,7 +481,7 @@
                                 Untuk informasi selengkapnya mengenai fitur dan cara kerja, Anda dapat mengunjungi halaman <a href="{{ route('user.faq.index') }}" style="color: #2563eb; font-weight: 600;">FAQ</a>.
                             </p>
                             <span style="font-size: 12px; font-weight: 500; color: #3b82f6;">
-                                <i class="bi bi-github me-1"></i> <a href="https://github.com/Ye-Shaiyoe/Surat-Laravel" target="_blank">GitHub Repository - Ye-Shaiyoe </a> <br>
+                                <i class="bi bi-github me-1"></i> <a href="https://github.com/Ye-Shaiyoe" target="_blank">GitHub Repository - Ye-Shaiyoe </a> <br>
                             </span>
                             <span style="font-size: 12px; font-weight: 500; color: #3b82f6;">
                                 <i class="bi bi-laptop me-1"></i> Developed for Balai Pengelolaan SUML
@@ -585,14 +585,16 @@
                 (function() {
                     const stacks = {
                         'tm-row1': [
-                            { name: 'Laravel 11/12', img: 'https://cdn.simpleicons.org/laravel/FF2D20' },
-                            { name: 'PHP 8.3',       img: 'https://cdn.simpleicons.org/php/777BB4' },
+                            { name: 'Laravel 12',    img: 'https://cdn.simpleicons.org/laravel/FF2D20' },
+                            { name: 'PHP 8.2',       img: 'https://cdn.simpleicons.org/php/777BB4' },
+                            { name: 'Laravel Reverb',img: 'https://cdn.simpleicons.org/laravel/FF2D20' },
                             { name: 'MySQL 8',       img: 'https://cdn.simpleicons.org/mysql/4479A1' },
                             { name: 'Redis',         img: 'https://cdn.simpleicons.org/redis/DC382D' },
-                            { name: 'MongoDB',       img: 'https://cdn.simpleicons.org/mongodb/47A248' },
-                            { name: 'Eloquent ORM',  dot: '#e11d48' },
                             { name: 'REST API',      dot: '#0ea5e9' },
+                            { name: 'Eloquent ORM',  dot: '#e11d48' },
                             { name: 'Sanctum Auth',  img: 'https://cdn.simpleicons.org/laravel/FF2D20' },
+                            { name: 'Laravel Breeze',img: 'https://cdn.simpleicons.org/laravel/FF2D20' },
+                            { name: 'PHPOffice',     img: 'https://cdn.simpleicons.org/php/777BB4' },
                             { name: 'Composer',      img: 'https://cdn.simpleicons.org/composer/885630' },
                             { name: 'Breeze',        img: 'https://cdn.simpleicons.org/laravel/FF2D20' },
                             { name: 'PHPOffice',     img: 'https://cdn.simpleicons.org/php/777BB4' },
@@ -601,36 +603,39 @@
                         ],
                         'tm-row2': [
                             { name: 'Bootstrap 5',    img: 'https://cdn.simpleicons.org/bootstrap/7952B3' },
-                            { name: 'TailwindCSS',    img: 'https://cdn.simpleicons.org/tailwindcss/38B2AC' },
+                            { name: 'Tailwind CSS',   img: 'https://cdn.simpleicons.org/tailwindcss/38B2AC' },
                             { name: 'Alpine.js',      img: 'https://cdn.simpleicons.org/alpinedotjs/8BC0D0' },
+                            { name: 'Hotwire Turbo',  img: 'https://cdn.simpleicons.org/hotwire/F7DF1E' },
                             { name: 'JavaScript',     img: 'https://cdn.simpleicons.org/javascript/F7DF1E' },
                             { name: 'Chart.js',       img: 'https://cdn.simpleicons.org/chartdotjs/FF6384' },
+                            { name: 'Cropper.js',     dot: '#3b82f6' },
                             { name: 'Three.js',       img: 'https://cdn.simpleicons.org/threedotjs/000000' },
+                            { name: 'GSAP',           img: 'https://cdn.simpleicons.org/greensock/88CE02' },
+                            { name: 'Anime.js',       img: 'https://cdn.simpleicons.org/anime.js/FF2D20' },
                             { name: 'Vite',           img: 'https://cdn.simpleicons.org/vite/646CFF' },
                             { name: 'CSS3',           img: 'https://cdn.simpleicons.org/css3/1572B6' },
                             { name: 'Axios',          img: 'https://cdn.simpleicons.org/axios/5A29E4' },
                             { name: 'SortableJS',     dot: '#6366f1' },
                             { name: 'Blade Template', dot: '#f97316' },
-                            { name: 'Open UI',        img: 'https://cdn.simpleicons.org/codecrafters/FF6384' },
-                            { name: 'Framework7',     img: 'https://cdn.simpleicons.org/framework7/FF2D20' },
-                            { name: 'Anime.js',       img: 'https://cdn.simpleicons.org/anime.js/FF2D20' },
-
+                            { name: 'Bootstrap Icons',img: 'https://cdn.simpleicons.org/bootstrap/7952B3' },
                         ],
                         'tm-row3': [
                             { name: 'Docker',       img: 'https://cdn.simpleicons.org/docker/2496ED' },
                             { name: 'Git',          img: 'https://cdn.simpleicons.org/git/F05032' },
                             { name: 'GitHub',       img: 'https://cdn.simpleicons.org/github/181717' },
+                            { name: 'Postman',      img: 'https://cdn.simpleicons.org/postman/FF6C37' },
+                            { name: 'npm',          img: 'https://cdn.simpleicons.org/npm/CB3837' },
                             { name: 'Gemini AI',    img: 'https://cdn.simpleicons.org/googlegemini/4285F4' },
                             { name: 'Google API',   img: 'https://cdn.simpleicons.org/google/4285F4' },
                             { name: 'reCAPTCHA v3', dot: '#4285F4' },
                             { name: 'Mailtrap',     img: 'https://cdn.simpleicons.org/mailtrap/00B9FE' },
                             { name: 'Postman',      img: 'https://cdn.simpleicons.org/postman/FF6C37' },
                             { name: 'Antigravity',  img: 'https://cdn.simpleicons.org/antigravity/000000' },
-                            { name: 'npm',          img: 'https://cdn.simpleicons.org/npm/CB3837' },
-                            { name: 'Nginx',        img: 'https://cdn.simpleicons.org/nginx/181717' },
-                            { name: 'GitHub',       img: 'https://cdn.simpleicons.org/github/181717' },
+                            { name: 'reCAPTCHA v3',  img: 'https://cdn.simpleicons.org/google/4285F4' },
+                            { name: 'Ubuntu Server',img: 'https://cdn.simpleicons.org/ubuntu/E95420' },
+                            { name: 'Nginx',        img: 'https://cdn.simpleicons.org/nginx/009639' },
                             { name: 'Linux',        img: 'https://cdn.simpleicons.org/linux/181717' },
-                            { name: 'Ubuntu Server',img: 'https://cdn.simpleicons.org/ubuntu/181717' },
+                            { name: 'XAMPP',        img: 'https://cdn.simpleicons.org/xampp/FB7A24' },
                         ]
                     };
 

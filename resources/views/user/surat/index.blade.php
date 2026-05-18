@@ -87,7 +87,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('turbo:load', function() {
         const searchInput = document.getElementById('searchInput');
         let searchTimer;
 
@@ -101,7 +101,15 @@
             searchInput.addEventListener('input', function() {
                 clearTimeout(searchTimer);
                 searchTimer = setTimeout(() => {
-                    this.closest('form').submit();
+                    const form = this.closest('form');
+                    if (form) {
+                        // Using requestSubmit() to trigger Turbo if available
+                        if (typeof form.requestSubmit === 'function') {
+                            form.requestSubmit();
+                        } else {
+                            form.submit();
+                        }
+                    }
                 }, 600); // Debounce 600ms
             });
         }
@@ -243,7 +251,7 @@
                     </div>
                     
                     @php
-                        $bisaLangsungHapus = in_array($surat->status, ['draft', 'ditolak', 'selesai']) || $surat->sla_status === 'terlambat';
+                        $bisaLangsungHapus = in_array($surat->status, ['draft', 'ditolak', 'selesai']);
                         $existingRequest = \App\Models\SuratDeleteRequest::where('surat_id', $surat->id)->where('status', 'pending')->first();
                     @endphp
 
