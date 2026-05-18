@@ -44,6 +44,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user.aspirasi.store');
     Route::delete('/aspirasi/{aspirasi}', [\App\Http\Controllers\User\AspirasiController::class, 'destroy'])->name('user.aspirasi.destroy');
 
+    // Fitur Cari Pegawai (Direktori)
+    Route::prefix('pegawai')->name('user.pegawai.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\User\PegawaiController::class, 'index'])->name('index');
+        Route::get('/{user:uuid}', [\App\Http\Controllers\User\PegawaiController::class, 'show'])->name('show');
+    });
+
     Route::prefix('surat')->name('user.surat.')->group(function () {
         Route::get('/', [UserSurat::class, 'index'])->name('index');
         Route::get('/tabel', [UserSurat::class, 'table'])->name('table');
@@ -186,6 +192,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::delete('/profile/sessions/{sessionId}', [ProfileController::class, 'revokeSession'])->name('profile.sessions.revoke');
+    Route::post('/profile/sessions/revoke-others', [ProfileController::class, 'revokeAllOtherSessions'])->name('profile.sessions.revoke-others');
 });
 
 require __DIR__ . '/auth.php';
