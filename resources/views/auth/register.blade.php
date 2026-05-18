@@ -650,7 +650,7 @@
                     <!-- Kode Admin -->
                     <div class="field-group field-full">
                         <label class="field-label" for="admin_code">
-                            Kode Admin
+                            Code pengurus <!-- ini menuju ke Admin  -->
                             <span style="opacity:.5; font-weight:400; text-transform:none; letter-spacing:0; font-size:10px;">&nbsp;(opsional)</span>
                         </label>
                         <div class="input-wrap">

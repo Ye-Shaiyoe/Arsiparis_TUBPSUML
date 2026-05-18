@@ -183,9 +183,9 @@
     {{-- KOLOM KANAN --}}
     <div style="display:flex; flex-direction:column; gap:16px;">
         
-        {{-- UPLOAD FILE ADMIN (hanya untuk admin_aspirasi di tahap 2) --}}
+        {{-- UPLOAD FILE ADMIN (hanya untuk admin_aspirasi di tahap 2 & 9) --}}
         @php
-            $bisa_upload_admin = Auth::check() && Auth::user()->role === 'admin_aspirasi' && $surat->tahap_sekarang === 2;
+            $bisa_upload_admin = Auth::check() && Auth::user()->role === 'admin_aspirasi' && in_array($surat->tahap_sekarang, [2, 9]);
         @endphp
         @if($bisa_upload_admin)
         <div class="card" style="background: var(--bg-secondary); border-color: var(--border-color);">
@@ -197,9 +197,9 @@
                 @csrf
                 <div class="mb-2">
                     <label class="form-label small fw-bold" style="color:var(--text-secondary); font-size: 11px;">
-                        <i class="bi bi-file-earmark-word me-1"></i> File Word <span class="text-danger">*</span>
+                        <i class="bi bi-file-earmark-word me-1"></i> File Word
                     </label>
-                    <input type="file" name="file_word" class="form-control form-control-sm" accept=".docx,.doc" required
+                    <input type="file" name="file_word" class="form-control form-control-sm" accept=".docx,.doc"
                            style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color); font-size: 12px;">
                     <small class="text-muted" style="font-size: 10px;">Max 5MB</small>
                     @error('file_word')
@@ -331,6 +331,7 @@
                 </form>
             </div>
 
+            @push('modals')
             {{-- Modal Konfirmasi Tolak --}}
             <div id="modal-tolak" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
                 <div style="background:var(--bg-secondary); border-radius:16px; padding:28px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); border:1px solid var(--border-color);">
@@ -350,6 +351,7 @@
                     </div>
                 </div>
             </div>
+            @endpush
 
         @elseif($surat->status === 'selesai')
             <div class="card text-center py-4" style="background: var(--bg-secondary); border-color: var(--border-color);">

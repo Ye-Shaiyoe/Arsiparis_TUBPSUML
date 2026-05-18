@@ -292,7 +292,7 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('turbo:load', function() {
     // Handle Mark as Read
     document.querySelectorAll('[data-action="mark-read"]').forEach(btn => {
         btn.addEventListener('click', function(e) {
@@ -333,27 +333,30 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function markAsRead(notifId) {
-    const url = `/Admin/Notifikasi/read/${notifId}`;
+    let url = "{{ route('admin.notifikasi.read', ':id') }}";
+    url = url.replace(':id', notifId);
+    
     fetch(url, {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
             'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
         }
     })
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            const notifItem = document.querySelector(`[data-notif-id="${notifId}"]`).closest('.notif-item');
-            notifItem.classList.remove('unread');
-            
-            // Remove "BARU" badge
-            const badge = notifItem.querySelector('.unread-badge');
-            if (badge) badge.remove();
-            
-            // Remove mark-read button
-            const markBtn = notifItem.querySelector('[data-action="mark-read"]');
-            if (markBtn) markBtn.remove();
+            const btn = document.querySelector(`[data-notif-id="${notifId}"][data-action="mark-read"]`);
+            if (btn) {
+                const notifItem = btn.closest('.notif-item');
+                notifItem.classList.remove('unread');
+                
+                const badge = notifItem.querySelector('.unread-badge');
+                if (badge) badge.remove();
+                
+                btn.remove();
+            }
             
             updateUnreadCount(data.unreadCount);
             showToast('Notifikasi ditandai dibaca', 'success');
@@ -366,12 +369,15 @@ function markAsRead(notifId) {
 }
 
 function deleteNotif(notifId) {
-    const url = `/Admin/Notifikasi/${notifId}`;
+    let url = "{{ route('admin.notifikasi.delete', ':id') }}";
+    url = url.replace(':id', notifId);
+
     fetch(url, {
         method: 'DELETE',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}',
             'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
         }
     })
     .then(res => res.json())

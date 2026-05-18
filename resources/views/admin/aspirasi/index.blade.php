@@ -73,7 +73,13 @@
                                         <td class="pe-4 text-end">
                                             <div class="d-flex align-items-center justify-content-end gap-1">
                                                 <button type="button" class="btn btn-sm btn-light border" 
-                                                        onclick="showAspirasiModal('{{ $item->uuid }}', '{{ addslashes($item->user->name) }}', '{{ addslashes($item->judul) }}', '{{ addslashes($item->isi) }}', '{{ $item->balasan }}', '{{ $item->status }}')"
+                                                        data-uuid="{{ $item->uuid }}"
+                                                        data-name="{{ $item->user->name }}"
+                                                        data-judul="{{ $item->judul }}"
+                                                        data-isi="{{ $item->isi }}"
+                                                        data-balasan="{{ $item->balasan }}"
+                                                        data-status="{{ $item->status }}"
+                                                        onclick="showAspirasiModal(this)"
                                                         style="font-size: 11px; border-radius: 8px;">
                                                     <i class="bi bi-reply me-1"></i> {{ $item->status === 'dibalas' ? 'Lihat' : 'Balas' }}
                                                 </button>
@@ -143,11 +149,18 @@
 </div>
 
 <script>
-function showAspirasiModal(uuid, name, judul, isi, balasan, status) {
+function showAspirasiModal(el) {
+    const uuid = el.getAttribute('data-uuid');
+    const name = el.getAttribute('data-name');
+    const judul = el.getAttribute('data-judul');
+    const isi = el.getAttribute('data-isi');
+    const balasan = el.getAttribute('data-balasan');
+    const status = el.getAttribute('data-status');
+
     document.getElementById('modalUser').innerText = name;
     document.getElementById('modalJudul').innerText = judul;
     document.getElementById('modalIsi').innerText = isi;
-    document.getElementById('modalBalasan').value = balasan === 'null' ? '' : balasan;
+    document.getElementById('modalBalasan').value = (balasan === 'null' || !balasan) ? '' : balasan;
     
     const form = document.getElementById('replyForm');
     form.action = "{{ url('Admin/Aspirasi') }}/" + uuid;

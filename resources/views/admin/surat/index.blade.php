@@ -114,8 +114,13 @@
                     <tr>
                         <td style="color:var(--text-secondary); font-size:12px;">{{ $loop->iteration }}</td>
                         <td>
-                            <div style="font-weight:700; color:var(--text-primary); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $surat->judul }}">
+                            <div style="font-weight:700; color:var(--text-primary); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 6px;" title="{{ $surat->judul }}">
                                 {{ $surat->judul }}
+                                @if($surat->pendingDeleteRequest)
+                                    <span class="badge" style="background:#fee2e2; color:#ef4444; border:1px solid #fca5a5; font-size:9px; padding: 2px 6px;">
+                                        <i class="bi bi-trash-fill"></i> HAPUS?
+                                    </span>
+                                @endif
                             </div>
                             <div style="font-size:11px; color:#1e3a5f; margin-top:4px; font-weight: 600;">
                                 <i class="bi bi-hash"></i> {{ $surat->nomor_surat ?? 'Belum ada nomor' }}

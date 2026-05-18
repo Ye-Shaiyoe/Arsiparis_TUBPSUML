@@ -11,10 +11,16 @@ class AspirasiController extends Controller
 {
     public function index(Request $request)
     {
+        // Validate query parameters
+        $validated = $request->validate([
+            'tahun' => 'nullable|integer|between:2020,' . date('Y'),
+            'tujuan' => 'nullable|in:admin,it_support',
+        ]);
+
         $query = Aspirasi::with('user')->latest();
 
         if ($request->filled('tahun')) {
-            $query->whereYear('created_at', $request->tahun);
+            $query->whereYear('created_at', $validated['tahun']);
         }
 
         $aspirasis = $query->paginate(15)->withQueryString();
@@ -23,12 +29,17 @@ class AspirasiController extends Controller
 
     public function update(Request $request, Aspirasi $aspirasi)
     {
+        // Strict validation untuk mencegah XSS dan injection
         $request->validate([
-            'balasan' => 'required|string',
+            'balasan' => 'required|string|min:5|max:2000',
         ]);
 
+        // Sanitize balasan untuk mencegah XSS
+        $balasan = strip_tags($request->balasan); // Remove HTML tags
+        $balasan = trim($balasan);
+
         $aspirasi->update([
-            'balasan' => $request->balasan,
+            'balasan' => $balasan,
             'status' => 'dibalas',
             'dibalas_at' => now(),
         ]);

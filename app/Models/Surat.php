@@ -99,6 +99,16 @@ class Surat extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function deleteRequests()
+    {
+        return $this->hasMany(SuratDeleteRequest::class);
+    }
+
+    public function pendingDeleteRequest()
+    {
+        return $this->hasOne(SuratDeleteRequest::class)->where('status', 'pending');
+    }
+
     public function tahapans()
     {
         return $this->hasMany(SuratTahapan::class)->orderBy('tahap');

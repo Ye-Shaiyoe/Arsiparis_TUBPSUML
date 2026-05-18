@@ -70,6 +70,7 @@
                 </button>
             </div>
 
+            @push('modals')
             {{-- Modal Approve --}}
             <div class="modal fade" id="approveModal{{ $request->id }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -90,7 +91,7 @@
                                     </label>
                                     <textarea name="admin_catatan" class="form-control" rows="2" 
                                               placeholder="Tambahkan catatan..." 
-                                              style="font-size:13px;"></textarea>
+                                              style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);"></textarea>
                                 </div>
                                 <div class="alert alert-warning" style="font-size:12px;">
                                     <i class="bi bi-exclamation-triangle"></i> 
@@ -129,7 +130,7 @@
                                     <textarea name="admin_catatan" class="form-control" rows="3" 
                                               placeholder="Jelaskan alasan penolakan..." 
                                               required 
-                                              style="font-size:13px;"></textarea>
+                                              style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);"></textarea>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -142,6 +143,7 @@
                     </div>
                 </div>
             </div>
+            @endpush
             @endif
         </div>
         @endforeach

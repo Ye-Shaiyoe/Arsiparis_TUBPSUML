@@ -601,11 +601,9 @@
         }
 
         // Jalankan init chart
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initDashboardChart);
-        } else {
-            initDashboardChart();
-        }
+        document.addEventListener('turbo:load', initDashboardChart);
+        if (document.readyState !== 'loading') initDashboardChart();
+        else document.addEventListener('DOMContentLoaded', initDashboardChart);
 
         document.addEventListener('alpine:init', () => {
             Alpine.data('dashboardData', () => ({
@@ -621,65 +619,10 @@
                 },
                 connecting: false,
                 isFetching: false,
-                pollingInterval: 30000,
 
                 init() {
                     console.log("Dashboard Alpine initialized");
-                    this.startPolling();
-                },
-
-                startPolling() {
-                    setInterval(() => this.updateData(), this.pollingInterval);
-                },
-
-                updateData() {
-                    if (this.isFetching || document.hidden) return;
-                    this.isFetching = true;
-                    this.connecting = true;
-
-                    const url = new URL('{{ route("admin.dashboard.liveData") }}', window.location.origin);
-                    url.searchParams.append('bulan', '{{ $bulanSelected }}');
-                    url.searchParams.append('tahun', '{{ $tahunSelected }}');
-
-                    fetch(url, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        }
-                    })
-                        .then(r => {
-                            if (!r.ok) throw new Error("Network response was not ok");
-                            return r.json();
-                        })
-                        .then(data => {
-                            if (data && data.stats) {
-                                this.stats = data.stats;
-                                this.antrian.items = data.antrian?.items || [];
-                                this.antrian.count = data.antrian?.count || 0;
-
-                                // Sync Badges in Layout (Topbar & Sidebar)
-                                const count = data.stats.unreadNotifCount || 0;
-                                
-                                const topContainer = document.getElementById('topbar-notif-badge-container');
-                                if (topContainer) {
-                                    topContainer.innerHTML = count > 0 
-                                        ? `<span class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-white dark:ring-slate-900 shadow-lg shadow-red-500/20 animate-pulse">${count}</span>` 
-                                        : '';
-                                }
-
-                                const sideContainer = document.getElementById('sidebar-notif-badge-container');
-                                if (sideContainer) {
-                                    sideContainer.innerHTML = count > 0 
-                                        ? `<span class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg shadow-red-500/20 animate-pulse">${count}</span>` 
-                                        : '';
-                                }
-                            }
-                        })
-                        .catch(err => console.error("Error fetching live data:", err))
-                        .finally(() => {
-                            this.isFetching = false;
-                            this.connecting = false;
-                        });
+                    // AJAX Polling removed as per user request
                 },
 
                 formatDate(date) {

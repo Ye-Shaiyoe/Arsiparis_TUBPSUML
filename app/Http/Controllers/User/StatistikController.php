@@ -45,6 +45,10 @@ class StatistikController extends Controller
                           ->pluck('total', 'jenis')
                           ->toArray();
 
+        // 5. Data Heatmap Kontribusi (GitHub Stats)
+        $heatmapYear = (int) $request->input('heatmap_year', date('Y'));
+        $heatmapData = auth()->user()->getActivityHeatmapData($heatmapYear);
+
         return view('user.statistik.index', [
             'title' => 'Statistik & Chart',
             'tahun' => $tahun,
@@ -56,7 +60,9 @@ class StatistikController extends Controller
             'chartData' => $monthlyStats,
             'statusLabels' => $statusLabels,
             'statusData' => $statusStats,
-            'jenisSurat' => $jenisSurat
+            'jenisSurat' => $jenisSurat,
+            'heatmapData' => $heatmapData,
+            'heatmapYear' => $heatmapYear,
         ]);
     }
 }

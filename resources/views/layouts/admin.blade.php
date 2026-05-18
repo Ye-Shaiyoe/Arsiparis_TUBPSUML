@@ -14,6 +14,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/dist/turbo.es2017-umd.js"></script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -181,6 +182,242 @@
         .stat-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px -4px rgba(0,0,0,0.12);
+        }
+
+        /* ===== MINI SIDEBAR ADMIN (Premium YouTube Style) ===== */
+        #sidebar.is-mini {
+            width: 88px !important;
+        }
+
+        #sidebar.is-mini #sidebar-nav {
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
+
+        #sidebar.is-mini .brand-info,
+        #sidebar.is-mini nav p,
+        #sidebar.is-mini .sidebar-item span:not(.bg-red-500),
+        #sidebar.is-mini .chevron-icon,
+        #sidebar.is-mini .shrink-0.p-4 .flex-1,
+        #sidebar.is-mini .shrink-0.p-4 .shrink-0:last-child {
+            display: none !important;
+        }
+
+        /* Enforce absolute positioning for notifications in mini sidebar */
+        #sidebar.is-mini .sidebar-item {
+            position: relative !important;
+        }
+        #sidebar.is-mini .sidebar-item #sidebar-antrian-badge-container,
+        #sidebar.is-mini .sidebar-item #sidebar-notif-badge-container {
+            display: block !important;
+            position: absolute !important;
+            top: 6px !important;
+            right: 12px !important;
+            z-index: 10 !important;
+        }
+
+        /* Sidebar Brand Mini Adjustments */
+        #sidebar.is-mini .admin-sidebar-brand {
+            padding: 1.25rem 0.5rem !important;
+            display: flex !important;
+            justify-content: center !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+        #sidebar.is-mini .admin-sidebar-brand .logo-full {
+            display: none !important;
+        }
+        #sidebar.is-mini .admin-sidebar-brand .logo-mini {
+            display: block !important;
+        }
+
+        /* Premium User Profile Widget in Mini Mode */
+        #sidebar.is-mini .shrink-0.p-4 {
+            padding: 1rem 0.5rem !important;
+            display: flex !important;
+            justify-content: center !important;
+        }
+
+        #sidebar.is-mini .profile-widget-container {
+            padding: 0.5rem !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 16px !important;
+            justify-content: center !important;
+            width: 56px !important;
+            height: 56px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+        }
+        #sidebar.is-mini .profile-widget-container:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            transform: translateY(-2px) scale(1.03) !important;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        #sidebar.is-mini .profile-avatar-wrapper .mini-online-dot {
+            display: block !important;
+        }
+        #sidebar.is-mini .normal-online-dot {
+            display: none !important;
+        }
+
+        /* Refined Sidebar Items & Dropdown Buttons */
+        #sidebar.is-mini .sidebar-item,
+        #sidebar.is-mini .dropdown-group button {
+            flex-direction: column !important;
+            gap: 0.25rem !important;
+            padding: 0.75rem 0.25rem !important;
+            margin: 6px auto !important;
+            width: 72px !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            border-radius: 14px !important;
+        }
+
+        #sidebar.is-mini .sidebar-item i {
+            font-size: 1.3rem !important;
+            margin: 0 !important;
+            width: auto !important;
+        }
+
+        /* Refined Active State indicator for Mini Mode */
+        #sidebar.is-mini .nav-active::after {
+            left: 5px !important;
+            top: 25% !important;
+            bottom: 25% !important;
+            width: 3.5px !important;
+            border-radius: 99px !important;
+            box-shadow: 0 0 12px rgba(67, 97, 238, 0.8) !important;
+        }
+
+        /* Vertical Accordion Submenus for Mini Sidebar */
+        #sidebar.is-mini .dropdown-list {
+            display: none !important;
+            padding-left: 0 !important;
+            margin-top: 4px !important;
+        }
+
+        #sidebar.is-mini .dropdown-group.open .dropdown-list {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+        }
+
+        #sidebar.is-mini .dropdown-list .sidebar-item {
+            width: 48px !important;
+            height: 48px !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            margin: 2px auto !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 12px !important;
+        }
+
+        #sidebar.is-mini .dropdown-list .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            transform: scale(1.05) !important;
+        }
+
+        #sidebar.is-mini .dropdown-list .sidebar-item span {
+            display: none !important;
+        }
+
+        #sidebar.is-mini .dropdown-list .sidebar-item i {
+            font-size: 1.1rem !important;
+            margin: 0 !important;
+            color: #94a3b8 !important;
+        }
+
+        #sidebar.is-mini .dropdown-list .sidebar-item:hover i {
+            color: #38bdf8 !important;
+        }
+
+        #sidebar.is-mini .dropdown-list .sidebar-item.nav-active {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.2) 0%, rgba(67, 97, 238, 0.05) 100%) !important;
+            border: 1px solid rgba(67, 97, 238, 0.4) !important;
+        }
+        #sidebar.is-mini .dropdown-list .sidebar-item.nav-active i {
+            color: #60a5fa !important;
+        }
+        #sidebar.is-mini .dropdown-list .sidebar-item.nav-active::after {
+            display: none !important;
+        }
+
+        /* Vertical IT Support Submenu */
+        #sidebar.is-mini [x-show="open"] {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+            position: static !important;
+            width: auto !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin-top: 4px !important;
+        }
+
+        #sidebar.is-mini [x-show="open"] a {
+            width: 48px !important;
+            height: 48px !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            margin: 2px auto !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 12px !important;
+            transition: all 0.2s !important;
+        }
+
+        #sidebar.is-mini [x-show="open"] a:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            transform: scale(1.05) !important;
+        }
+
+        #sidebar.is-mini [x-show="open"] a span {
+            display: none !important;
+        }
+
+        #sidebar.is-mini [x-show="open"] a i {
+            font-size: 1.1rem !important;
+            margin: 0 !important;
+        }
+
+        /* Tooltips for Mini Sidebar */
+        #sidebar.is-mini [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: calc(100% + 12px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: #1e293b;
+            color: #f1f5f9;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.08);
+            animation: fadeIn 0.15s ease-out;
+        }
+
+        #sidebar.is-mini .dropdown-group.open [data-tooltip]::after,
+        #sidebar.is-mini .relative.open[data-tooltip]::after,
+        #sidebar.is-mini .relative[data-tooltip]:focus-within::after {
+            display: none !important;
+        }
+
+        #sidebar, .flex-1 {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease;
         }
 
         /* ===== MOBILE BACKDROP ===== */
@@ -523,19 +760,20 @@
 {{-- ============================================================
      SIDEBAR
 ============================================================ --}}
-<aside id="sidebar"
-    class="fixed lg:static inset-y-0 left-0 w-[260px] flex flex-col bg-slate-900 z-40
+<aside id="sidebar" data-turbo-permanent
+    class="fixed lg:static inset-y-0 left-0 w-[240px] flex flex-col bg-slate-900 z-40
            -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shrink-0 h-screen border-r border-white/5 shadow-2xl">
 
     {{-- Logo --}}
-    <div class="px-6 py-6 border-b border-white/5 shrink-0">
-        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
-            <div class="p-2 bg-white/5 rounded-xl border border-white/10">
+    <div class="admin-sidebar-brand px-6 py-6 border-b border-white/5 shrink-0 flex items-center justify-center">
+        <a href="{{ route('admin.dashboard') }}" data-turbo="false" class="flex items-center justify-center">
+            <!-- Full Logo -->
+            <div class="p-2 bg-white/5 rounded-xl border border-white/10 logo-full">
                 <img src="{{ asset('images/BP_SUML2.png') }}" alt="Logo" class="h-8 w-auto object-contain">
             </div>
-            <div class="flex flex-col">
-                <span class="text-white font-black text-sm tracking-tighter leading-none">BP SUML</span>
-                <span class="text-white/40 text-[10px] font-bold uppercase tracking-[2px] mt-1">Admin Panel</span>
+            <!-- Mini Logo -->
+            <div class="p-2 bg-white/5 rounded-xl border border-white/10 logo-mini hidden">
+                <img src="{{ asset('images/metrologi.png') }}" alt="Logo" class="h-8 w-8 object-contain">
             </div>
         </a>
     </div>
@@ -546,20 +784,20 @@
         {{-- UTAMA --}}
         <p class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-white/30">Utama</p>
 
-        <a href="{{ url('/?home=1') }}"
+        <a href="{{ url('/?home=1') }}" data-turbo="false" data-tooltip="Beranda Utama"
            class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400 hover:text-white">
             <i class="bi bi-globe text-lg w-5 text-center shrink-0"></i>
             <span>Beranda Utama</span>
         </a>
 
-        <a href="{{ route('admin.dashboard') }}"
+        <a href="{{ route('admin.dashboard') }}" data-turbo="false" data-tooltip="Dashboard"
            class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.dashboard') ? 'nav-active' : '' }}">
             <i class="bi bi-grid-1x2-fill text-lg w-5 text-center shrink-0"></i>
             <span>Dashboard</span>
         </a>
 
-        <a href="{{ route('admin.surat.index') }}"
+        <a href="{{ route('admin.surat.index') }}" data-turbo="false" data-tooltip="Antrian Surat"
            class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.surat.index') ? 'nav-active' : '' }}">
             <i class="bi bi-stack text-lg w-5 text-center shrink-0"></i>
@@ -576,29 +814,29 @@
 
         {{-- Dropdown: Tabel Data Surat --}}
         <div class="dropdown-group {{ request()->routeIs('admin.surat.masuk') || request()->routeIs('admin.surat.proses') || request()->routeIs('admin.surat.selesai') || request()->routeIs('admin.surat.revisi') ? 'open' : '' }}">
-            <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')"
+            <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')" data-tooltip="Tabel Data Surat"
                 class="sidebar-item w-[calc(100%-24px)] flex items-center gap-3 text-[13px] font-semibold text-slate-400 text-left">
                 <i class="bi bi-folder2-open text-lg w-5 text-center shrink-0"></i>
                 <span class="flex-1">Tabel Data Surat</span>
                 <i class="bi bi-chevron-down text-[11px] text-white/40 chevron-icon shrink-0"></i>
             </button>
             <div class="dropdown-list pl-3 mt-1 space-y-1">
-                <a href="{{ route('admin.surat.masuk') }}"
+                <a href="{{ route('admin.surat.masuk') }}" data-tooltip="Surat Masuk"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.surat.masuk') ? 'nav-active' : '' }}">
                     <i class="bi bi-inbox text-base w-5 text-center shrink-0"></i> Surat Masuk
                 </a>
-                <a href="{{ route('admin.surat.proses') }}"
+                <a href="{{ route('admin.surat.proses') }}" data-tooltip="Surat Diproses"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.surat.proses') ? 'nav-active' : '' }}">
                     <i class="bi bi-arrow-repeat text-base w-5 text-center shrink-0"></i> Surat Diproses
                 </a>
-                <a href="{{ route('admin.surat.selesai') }}"
+                <a href="{{ route('admin.surat.selesai') }}" data-tooltip="Surat Selesai"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.surat.selesai') ? 'nav-active' : '' }}">
                     <i class="bi bi-check-circle text-base w-5 text-center shrink-0"></i> Surat Selesai
                 </a>
-                <a href="{{ route('admin.surat.revisi') }}"
+                <a href="{{ route('admin.surat.revisi') }}" data-tooltip="Perlu Revisi"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.surat.revisi') ? 'nav-active' : '' }}">
                     <i class="bi bi-exclamation-triangle text-base w-5 text-center shrink-0"></i> Perlu Revisi
@@ -608,24 +846,24 @@
 
         {{-- Dropdown: Laporan --}}
         <div class="dropdown-group {{ request()->routeIs('admin.laporan.*') || request()->routeIs('admin.riwayat.*') ? 'open' : '' }}">
-            <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')"
+            <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')" data-tooltip="Laporan & Riwayat"
                 class="sidebar-item w-[calc(100%-24px)] flex items-center gap-3 text-[13px] font-semibold text-slate-400 text-left">
                 <i class="bi bi-bar-chart-line text-lg w-5 text-center shrink-0"></i>
                 <span class="flex-1">Laporan</span>
                 <i class="bi bi-chevron-down text-[11px] text-white/40 chevron-icon shrink-0"></i>
             </button>
             <div class="dropdown-list pl-3 mt-1 space-y-1">
-                <a href="{{ route('admin.laporan.index') }}"
+                <a href="{{ route('admin.laporan.index') }}" data-tooltip="Rekap Bulanan"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.laporan.*') ? 'nav-active' : '' }}">
                     <i class="bi bi-file-earmark-bar-graph text-base w-5 text-center shrink-0"></i> Rekap Bulanan
                 </a>
-                <a href="{{ route('admin.riwayat.index') }}"
+                <a href="{{ route('admin.riwayat.index') }}" data-tooltip="Riwayat Pemrosesan"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.riwayat.*') ? 'nav-active' : '' }}">
                     <i class="bi bi-clock-history text-base w-5 text-center shrink-0"></i> Riwayat Pemrosesan
                 </a>
-                <a href="{{ route('admin.analytics.sla') }}"
+                <a href="{{ route('admin.analytics.sla') }}" data-tooltip="Monitoring SLA"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.analytics.sla') ? 'nav-active' : '' }}">
                     <i class="bi bi-lightning-charge text-base w-5 text-center shrink-0"></i> Monitoring SLA
@@ -636,7 +874,7 @@
         {{-- KOMUNIKASI --}}
         <p class="px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-white/30">Komunikasi</p>
 
-        <a href="{{ route('admin.notifikasi.index') }}"
+        <a href="{{ route('admin.notifikasi.index') }}" data-tooltip="Notifikasi"
            class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.notifikasi.*') ? 'nav-active' : '' }}">
             <i class="bi bi-bell text-lg w-5 text-center shrink-0"></i>
@@ -649,7 +887,7 @@
             </span>
         </a>
 
-        <a href="{{ route('admin.aspirasi.index') }}"
+        <a href="{{ route('admin.aspirasi.index') }}" data-tooltip="Kotak Aspirasi"
            class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.aspirasi.*') ? 'nav-active' : '' }}">
             <i class="bi bi-chat-heart text-lg w-5 text-center shrink-0"></i>
@@ -661,29 +899,29 @@
 
         {{-- Dropdown: Pengaturan --}}
         <div class="dropdown-group {{ request()->routeIs('admin.template.*') || request()->routeIs('admin.users.*') || request()->routeIs('admin.file.*') || request()->routeIs('admin.logs.*') ? 'open' : '' }}">
-            <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')"
+            <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')" data-tooltip="Pengaturan"
                 class="sidebar-item w-[calc(100%-24px)] flex items-center gap-3 text-[13px] font-semibold text-slate-400 text-left">
                 <i class="bi bi-gear text-lg w-5 text-center shrink-0"></i>
                 <span class="flex-1">Pengaturan</span>
                 <i class="bi bi-chevron-down text-[11px] text-white/40 chevron-icon shrink-0"></i>
             </button>
             <div class="dropdown-list pl-3 mt-1 space-y-1">
-                <a href="{{ route('admin.template.index') }}"
+                <a href="{{ route('admin.template.index') }}" data-tooltip="Template Surat"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.template.*') ? 'nav-active' : '' }}">
                     <i class="bi bi-file-earmark-text text-base w-5 text-center shrink-0"></i> Template Surat
                 </a>
-                <a href="{{ route('admin.users.index') }}"
+                <a href="{{ route('admin.users.index') }}" data-tooltip="Data Pegawai"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.users.*') ? 'nav-active' : '' }}">
                     <i class="bi bi-people text-base w-5 text-center shrink-0"></i> Data Pegawai
                 </a>
-                <a href="{{ route('admin.file.index') }}"
+                <a href="{{ route('admin.file.index') }}" data-tooltip="File Surat"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.file.*') ? 'nav-active' : '' }}">
                     <i class="bi bi-hdd text-base w-5 text-center shrink-0"></i> File Surat
                 </a>
-                <a href="{{ route('admin.logs.index') }}"
+                <a href="{{ route('admin.logs.index') }}" data-tooltip="System Logs"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.logs.*') ? 'nav-active' : '' }}">
                     <i class="bi bi-journal-text text-base w-5 text-center shrink-0"></i> System Logs
@@ -691,7 +929,7 @@
             </div>
         </div>
 
-        <a href="{{ route('admin.chart.index') }}"
+        <a href="{{ route('admin.chart.index') }}" data-tooltip="Statistik & Grafik"
            class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.chart.*') ? 'nav-active' : '' }}">
             <i class="bi bi-bar-chart text-lg w-5 text-center shrink-0"></i>
@@ -700,20 +938,20 @@
 
         {{-- BANTUAN --}}
         <p class="px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-white/30">Bantuan</p>
-        <a href="{{ route('admin.faq.index') }}"
+        <a href="{{ route('admin.faq.index') }}" data-tooltip="FAQ & Panduan"
            class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.faq.*') ? 'nav-active' : '' }}">
             <i class="bi bi-question-circle text-lg w-5 text-center shrink-0"></i>
             <span>FAQ & Panduan</span>
         </a>
-        <a href="{{ route('admin.bug-report.index') }}"
+        <a href="{{ route('admin.bug-report.index') }}" data-tooltip="Laporan Bug"
            class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400
                   {{ request()->routeIs('admin.bug-report.*') ? 'nav-active' : '' }}">
             <i class="bi bi-bug-fill text-lg w-5 text-center shrink-0"></i>
             <span>Laporan Bug</span>
         </a>
 
-        <div x-data="{ open: false }" class="relative">
+        <div x-data="{ open: false }" class="relative" data-tooltip="Hubungi IT Support">
             <button @click="open = !open" @click.outside="open = false"
                     class="sidebar-item flex items-center gap-3 text-[13px] font-semibold text-slate-400 hover:text-blue-400 transition-colors w-full">
                 <i class="bi bi-headset text-lg w-5 text-center shrink-0"></i>
@@ -730,20 +968,20 @@
                 @endphp
                 @if($waNumber)
                 <a href="https://wa.me/{{ $waNumber }}?text=Halo%20IT%20Support%2C%20saya%20ingin%20melaporkan%20bug%20atau%20masalah%20di%20sistem."
-                   target="_blank"
+                   target="_blank" data-tooltip="WhatsApp"
                    class="flex items-center gap-2 px-4 py-2.5 text-[12px] text-slate-300 hover:bg-slate-700 hover:text-white transition-all">
                     <i class="bi bi-whatsapp text-lg text-emerald-400"></i>
                     <span>WhatsApp</span>
                 </a>
                 @endif
                 @if($telegramUsername)
-                <a href="https://t.me/{{ $telegramUsername }}" target="_blank"
+                <a href="https://t.me/{{ $telegramUsername }}" target="_blank" data-tooltip="Telegram"
                    class="flex items-center gap-2 px-4 py-2.5 text-[12px] text-slate-300 hover:bg-slate-700 hover:text-white transition-all">
                     <i class="bi bi-telegram text-lg text-blue-400"></i>
                     <span>Telegram</span>
                 </a>
                 @endif
-                <a href="mailto:tubpsuml@gmail.com?subject=Laporan%20Bug%20Sistem%20Persuratan"
+                <a href="mailto:tubpsuml@gmail.com?subject=Laporan%20Bug%20Sistem%20Persuratan" data-tooltip="Email"
                    class="flex items-center gap-2 px-4 py-2.5 text-[12px] text-slate-300 hover:bg-slate-700 hover:text-white transition-all">
                     <i class="bi bi-envelope text-lg text-red-400"></i>
                     <span>Email</span>
@@ -756,8 +994,9 @@
 
     {{-- User Footer --}}
     <div class="shrink-0 p-4">
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-3 flex items-center gap-3 hover:bg-white/10 transition-all cursor-pointer group">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 p-0.5 shrink-0">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-3 flex items-center gap-3 hover:bg-white/10 transition-all cursor-pointer group relative profile-widget-container"
+             data-tooltip="Profil: {{ Auth::user()->name }}">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 p-0.5 shrink-0 relative profile-avatar-wrapper">
                 <div class="w-full h-full rounded-[10px] bg-slate-900 flex items-center justify-center text-white text-xs font-black overflow-hidden">
                     @if(Auth::user()->profile_photo)
                         <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile" class="w-full h-full object-cover">
@@ -765,12 +1004,14 @@
                         {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                     @endif
                 </div>
+                <!-- Floating online status dot for mini sidebar avatar -->
+                <div class="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-900 shadow-[0_0_10px_rgba(16,185,129,0.5)] hidden mini-online-dot"></div>
             </div>
             <div class="min-w-0 flex-1">
                 <div class="text-white text-[13px] font-bold truncate leading-none group-hover:text-blue-400 transition-colors">{{ Auth::user()->name }}</div>
                 <div class="text-white/40 text-[10px] font-bold uppercase tracking-wider mt-1.5 leading-none">{{ Auth::user()->getRoleLabel() }}</div>
             </div>
-            <div class="shrink-0">
+            <div class="shrink-0 normal-online-dot">
                 <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
             </div>
         </div>
@@ -791,9 +1032,9 @@
                bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/80 dark:border-slate-800/80
                transition-colors duration-300">
 
-        {{-- Mobile Toggle --}}
+        {{-- Mobile/Desktop Toggle --}}
         <button id="sidebar-toggle" onclick="openSidebar()"
-            class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0">
+            class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0">
             <i class="bi bi-list text-xl"></i>
         </button>
 
@@ -959,8 +1200,13 @@
     }
 
     function openSidebar() {
-        document.getElementById('sidebar').classList.remove('-translate-x-full');
-        document.getElementById('mobile-backdrop').classList.add('show');
+        if (window.innerWidth >= 1024) {
+            document.getElementById('sidebar').classList.toggle('is-mini');
+            localStorage.setItem('admin_sidebar_mini', document.getElementById('sidebar').classList.contains('is-mini'));
+        } else {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+            document.getElementById('mobile-backdrop').classList.add('show');
+        }
     }
 
     function closeSidebar() {
@@ -974,18 +1220,18 @@
     }
 
     // ===== ACCOUNT SWITCHER (Admin - Token-Based Instant Switch) =====
-    const CURRENT_USER = {
+    var CURRENT_USER = {
         id:           {{ Auth::id() }},
         name:         '{{ addslashes(Auth::user()->name) }}',
         email:        '{{ addslashes(Auth::user()->email) }}',
         initials:     '{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}',
-        role:         '{{ Auth::user()->getRoleLabel() }}',
+        role:         'admin',
         photo:        '{{ Auth::user()->profile_photo ? Storage::url(Auth::user()->profile_photo) : "" }}',
         switch_token: '{{ session("switch_token_raw", "") }}'
     };
-    const SWITCH_URL  = '{{ route("auth.switch") }}';
-    const CSRF_TOKEN  = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const STORAGE_KEY = 'bpsuml_saved_accounts';
+    var SWITCH_URL  = '{{ route("auth.switch") }}';
+    var CSRF_TOKEN  = '{{ csrf_token() }}';
+    var STORAGE_KEY = 'bpsuml_saved_accounts';
 
     function getSavedAccounts() {
         try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; }
@@ -1088,23 +1334,21 @@
         document.getElementById('logout-form').submit();
     }
 
-    // ===== INISIALISASI SAAT LOAD =====
+    // ===== INITIALIZATION =====
     (function() {
-        // Dark Mode Init
-        const isDark = localStorage.getItem('darkMode') === 'true';
-        if (isDark) document.documentElement.classList.add('dark');
+        var initAdminLayout = function() {
+            // Refresh CSRF Token
+            CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || CSRF_TOKEN;
 
-        document.addEventListener('DOMContentLoaded', () => {
+            // Dark Mode Init
+            var isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) document.documentElement.classList.add('dark');
             updateDarkIcon();
 
-            // Close dropdown on outside click
-            document.addEventListener('click', function(e) {
-                const wrap = document.getElementById('user-dropdown-wrap');
-                const menu = document.getElementById('user-dropdown');
-                if (wrap && menu && !wrap.contains(e.target)) {
-                    menu.classList.add('hidden');
-                }
-            });
+            // Restore mini state
+            if (localStorage.getItem('admin_sidebar_mini') === 'true' && window.innerWidth >= 1024) {
+                document.getElementById('sidebar')?.classList.add('is-mini');
+            }
 
             // Dismiss flash messages
             setTimeout(() => {
@@ -1119,11 +1363,33 @@
             // Account switcher init
             saveCurrentAccount();
             renderSavedAccounts();
+        };
+
+        document.addEventListener('turbo:load', initAdminLayout);
+        if (document.readyState !== 'loading') initAdminLayout();
+        else document.addEventListener('DOMContentLoaded', initAdminLayout);
+
+        // Global listeners (only once)
+        document.addEventListener('click', function(e) {
+            var wrap = document.getElementById('user-dropdown-wrap');
+            var menu = document.getElementById('user-dropdown');
+            if (wrap && menu && !wrap.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+
+            // Close open mini sidebar dropdowns when clicking outside
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && sidebar.classList.contains('is-mini')) {
+                document.querySelectorAll('.dropdown-group.open').forEach(group => {
+                    if (!group.contains(e.target)) {
+                        group.classList.remove('open');
+                    }
+                });
+            }
         });
 
-        // Keydown listener
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeSidebar();
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && typeof closeSidebar === 'function') closeSidebar();
         });
     })();
 
@@ -1291,6 +1557,70 @@
     </div>
 </div>
 
+@stack('modals')
 @stack('scripts')
+<script>
+    document.addEventListener('turbo:load', () => {
+        // Update active sidebar items
+        const currentPath = window.location.pathname;
+        const currentSearch = window.location.search;
+        
+        let bestScore = -1;
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        
+        sidebarItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (!href || href === '#') return;
+            
+            try {
+                const url = new URL(href, window.location.origin);
+                const linkPath = url.pathname;
+                const linkSearch = url.search;
+                let score = -1;
+
+                if (currentPath === linkPath) {
+                    score = 1; // Path matches
+                    if (linkSearch && currentSearch.includes(linkSearch)) {
+                        score = 2; // Path and Search match
+                    } else if (linkSearch && !currentSearch.includes(linkSearch)) {
+                        score = -1; // Specific parameter mismatch
+                    }
+                }
+                
+                item.setAttribute('data-active-score', score);
+                if (score > bestScore) bestScore = score;
+            } catch(e) {
+                item.setAttribute('data-active-score', -1);
+            }
+        });
+
+        sidebarItems.forEach(item => {
+            const score = parseInt(item.getAttribute('data-active-score') || -1);
+            if (score > 0 && score === bestScore) {
+                item.classList.add('nav-active');
+            } else {
+                item.classList.remove('nav-active');
+            }
+        });
+        
+        // Auto close mobile sidebar
+        if (typeof closeSidebar === 'function') closeSidebar();
+    });
+
+    document.addEventListener('turbo:before-render', (event) => {
+        if (document.startViewTransition) {
+            event.preventDefault();
+            document.startViewTransition(() => {
+                event.detail.resume();
+            });
+        }
+    });
+</script>
+<style>
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: 0.4s;
+    }
+</style>
 </body>
 </html>

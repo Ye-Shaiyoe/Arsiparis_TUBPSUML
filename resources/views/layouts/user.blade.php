@@ -16,6 +16,9 @@
     {{-- Bootstrap Icons --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     {{-- SweetAlert2 --}}
+    {{-- Hotwire Turbo for Smooth SPA-like Transitions --}}
+    <script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/dist/turbo.es2017-umd.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
@@ -29,23 +32,23 @@
             --navbar-bg: rgba(255, 255, 255, 0.25);
             --navbar-border: rgba(255, 255, 255, 0.5);
             --navbar-text: #1e293b;
-            --user-sidebar-w: 280px;
+            --user-sidebar-w: 240px;
             --user-topbar-h: 64px;
-            --accent: #4361ee;
-            --accent-soft: rgba(67, 97, 238, 0.14);
+            --accent: #06b6d4;
+            --accent-soft: rgba(6, 182, 212, 0.14);
             
             --glass-blur: 16px;
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            --glass-shadow: 0 8px 32px 0 rgba(6, 182, 212, 0.07);
         }
 
         body {
-            /* Mesh gradient background for Glassmorphism */
-            background-color: #f0f4f8;
+            /* Nordic Obsidian & Steel Cyan Soft Mesh Gradient */
+            background-color: #f4f7f9;
             background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,7%,0.03) 0, transparent 50%), 
-                radial-gradient(at 50% 0%, hsla(225,39%,30%,0.03) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(339,49%,30%,0.03) 0, transparent 50%),
-                linear-gradient(135deg, #e0c3fc88 0%, #8ec5fc88 100%);
+                radial-gradient(at 0% 10%, rgba(6, 182, 212, 0.12) 0px, transparent 50%), 
+                radial-gradient(at 90% 0%, rgba(37, 99, 235, 0.1) 0px, transparent 50%), 
+                radial-gradient(at 50% 90%, rgba(14, 165, 233, 0.08) 0px, transparent 50%),
+                linear-gradient(135deg, #eef2f6 0%, #f4f7f9 100%);
             background-attachment: fixed;
             background-size: cover;
             color: var(--text-primary);
@@ -64,7 +67,7 @@
         .user-sidebar {
             width: var(--user-sidebar-w);
             flex-shrink: 0;
-            background: linear-gradient(165deg, #0b1222 0%, #111827 42%, #0f172a 100%);
+            background: linear-gradient(165deg, #0b0c10 0%, #15161e 50%, #07080b 100%);
             border-right: 1px solid rgba(255, 255, 255, 0.06);
             box-shadow: 8px 0 40px rgba(15, 23, 42, 0.35);
             display: flex;
@@ -82,8 +85,8 @@
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(ellipse 120% 80% at 0% 0%, rgba(67, 97, 238, 0.22) 0%, transparent 55%),
-                radial-gradient(ellipse 90% 60% at 100% 100%, rgba(14, 165, 233, 0.12) 0%, transparent 50%);
+                radial-gradient(ellipse 120% 80% at 0% 0%, rgba(6, 182, 212, 0.3) 0%, transparent 55%),
+                radial-gradient(ellipse 90% 60% at 100% 100%, rgba(37, 99, 235, 0.15) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
         }
@@ -194,10 +197,10 @@
         }
 
         .user-sidebar-item.is-active {
-            background: linear-gradient(90deg, var(--accent-soft) 0%, rgba(67, 97, 238, 0.06) 100%);
-            color: #a5b4fc !important;
+            background: linear-gradient(90deg, var(--accent-soft) 0%, rgba(6, 182, 212, 0.06) 100%);
+            color: #67e8f9 !important;
             font-weight: 700;
-            box-shadow: inset 0 0 0 1px rgba(129, 140, 248, 0.25);
+            box-shadow: inset 0 0 0 1px rgba(6, 182, 212, 0.25);
         }
 
         .user-sidebar-item.is-active::before {
@@ -207,9 +210,9 @@
             top: 22%;
             bottom: 22%;
             width: 3px;
-            background: linear-gradient(180deg, #818cf8, #4361ee);
+            background: linear-gradient(180deg, #22d3ee, #06b6d4);
             border-radius: 0 4px 4px 0;
-            box-shadow: 0 0 14px rgba(67, 97, 238, 0.55);
+            box-shadow: 0 0 14px rgba(6, 182, 212, 0.55);
         }
 
         .user-sidebar-item {
@@ -264,19 +267,19 @@
             gap: 0.5rem;
             color: #fff !important;
             text-decoration: none;
-            background: linear-gradient(135deg, #4361ee 0%, #6366f1 50%, #0ea5e9 100%);
-            box-shadow: 0 10px 28px rgba(67, 97, 238, 0.35);
+            background: linear-gradient(135deg, #2563eb 0%, #0284c7 50%, #06b6d4 100%);
+            box-shadow: 0 10px 28px rgba(6, 182, 212, 0.3);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .user-sidebar-cta:hover {
             color: #fff !important;
             transform: translateY(-1px);
-            box-shadow: 0 14px 36px rgba(67, 97, 238, 0.42);
+            box-shadow: 0 14px 36px rgba(6, 182, 212, 0.38);
         }
 
         .user-sidebar-cta.is-active {
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35), 0 12px 32px rgba(67, 97, 238, 0.45);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35), 0 12px 32px rgba(6, 182, 212, 0.45);
         }
 
         .user-nav-group {
@@ -337,6 +340,247 @@
         @keyframes sidebarFade {
             from { opacity: 0; transform: translateY(-4px); }
             to { opacity: 1; transform: translateY(0); }
+        }        /* ===== SMOOTH MINI SIDEBAR TRANSITIONS & STYLING ===== */
+        .user-sidebar.is-mini {
+            width: 88px !important;
+        }
+
+        .user-sidebar.is-mini .user-sidebar-nav {
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
+
+        /* Brand logo switch */
+        .user-sidebar-brand {
+            transition: all 0.3s ease;
+        }
+        .user-sidebar.is-mini .user-sidebar-brand {
+            padding: 1.25rem 0.5rem !important;
+            display: flex !important;
+            justify-content: center !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+        .user-sidebar.is-mini .user-sidebar-brand .logo-full {
+            display: none !important;
+        }
+        .user-sidebar.is-mini .user-sidebar-brand .logo-mini {
+            display: block !important;
+        }
+
+        /* Section Labels: smooth fade out */
+        .user-nav-label {
+            transition: all 0.2s ease;
+        }
+        .user-sidebar.is-mini .user-nav-label {
+            opacity: 0 !important;
+            max-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+
+        /* Nav Items & Group Toggles: symmetrical compact styling */
+        .user-sidebar-item, 
+        .user-nav-group-toggle {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .user-sidebar.is-mini .user-sidebar-item, 
+        .user-sidebar.is-mini .user-nav-group-toggle {
+            flex-direction: column !important;
+            gap: 0.25rem !important;
+            padding: 0.75rem 0.25rem !important;
+            margin: 6px auto !important;
+            width: 72px !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            border-radius: 14px !important;
+        }
+
+        .user-sidebar.is-mini .user-sidebar-item i,
+        .user-sidebar.is-mini .user-nav-group-toggle i {
+            font-size: 1.25rem !important;
+            margin: 0 !important;
+            width: auto !important;
+        }
+
+        /* Hide texts & chevrons */
+        .user-sidebar.is-mini .user-sidebar-item span:not(.user-sidebar-nav-badge):not(.user-sidebar-icon-stack),
+        .user-sidebar.is-mini .user-nav-group-toggle .flex-grow-1,
+        .user-sidebar.is-mini .user-nav-group-toggle .chev {
+            display: none !important;
+        }
+
+        /* Notification badge alignment in mini sidebar */
+        .user-sidebar.is-mini .user-sidebar-item .user-sidebar-icon-stack {
+            position: relative !important;
+            width: auto !important;
+            display: inline-flex !important;
+        }
+        .user-sidebar.is-mini .user-sidebar-item .user-sidebar-nav-badge {
+            position: absolute !important;
+            top: -6px !important;
+            right: -10px !important;
+            z-index: 10 !important;
+        }
+
+        /* Active accent indicator for mini sidebar */
+        .user-sidebar.is-mini .user-sidebar-item.is-active::before {
+            left: 5px !important;
+            top: 25% !important;
+            bottom: 25% !important;
+            width: 3.5px !important;
+            border-radius: 99px !important;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.8) !important;
+        }
+
+        /* Call To Action button (Ajukan Surat button) mini morph */
+        .user-sidebar-cta {
+            transition: all 0.3s ease;
+        }
+        .user-sidebar.is-mini .user-sidebar-cta {
+            width: 56px !important;
+            height: 56px !important;
+            border-radius: 16px !important;
+            padding: 0 !important;
+            margin: 10px auto !important;
+            justify-content: center !important;
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.3) !important;
+        }
+        .user-sidebar.is-mini .user-sidebar-cta i {
+            font-size: 1.3rem !important;
+            margin: 0 !important;
+        }
+        .user-sidebar.is-mini .user-sidebar-cta span {
+            display: none !important;
+        }
+
+        /* Vertical Accordion Submenus for User Sidebar */
+        .user-sidebar.is-mini .user-nav-group-body {
+            display: none !important;
+            padding-left: 0 !important;
+            margin-top: 4px !important;
+        }
+
+        .user-sidebar.is-mini .user-nav-group.is-open .user-nav-group-body {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+        }
+
+        .user-sidebar.is-mini .user-nav-group-body .user-sidebar-item {
+            width: 48px !important;
+            height: 48px !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            margin: 2px auto !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 12px !important;
+        }
+
+        .user-sidebar.is-mini .user-nav-group-body .user-sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            transform: scale(1.05) !important;
+        }
+
+        .user-sidebar.is-mini .user-nav-group-body .user-sidebar-item span {
+            display: none !important;
+        }
+
+        .user-sidebar.is-mini .user-nav-group-body .user-sidebar-item i {
+            font-size: 1.1rem !important;
+            margin: 0 !important;
+            color: #94a3b8 !important;
+        }
+
+        .user-sidebar.is-mini .user-nav-group-body .user-sidebar-item:hover i {
+            color: #22d3ee !important;
+        }
+
+        .user-sidebar.is-mini .user-nav-group-body .user-sidebar-item.is-active {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(6, 182, 212, 0.05) 100%) !important;
+            border: 1px solid rgba(6, 182, 212, 0.4) !important;
+            box-shadow: none !important;
+        }
+        .user-sidebar.is-mini .user-nav-group-body .user-sidebar-item.is-active i {
+            color: #22d3ee !important;
+        }
+        .user-sidebar.is-mini .user-nav-group-body .user-sidebar-item.is-active::before {
+            display: none !important;
+        }
+
+        /* Profile Footer Widget mini morph */
+        .user-sidebar-footer {
+            transition: all 0.3s ease;
+        }
+        .user-sidebar.is-mini .user-sidebar-footer {
+            padding: 1rem 0.5rem !important;
+            display: flex !important;
+            justify-content: center !important;
+        }
+
+        .user-sidebar.is-mini .profile-widget-container {
+            padding: 0.5rem !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 16px !important;
+            justify-content: center !important;
+            width: 56px !important;
+            height: 56px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+        }
+        .user-sidebar.is-mini .profile-widget-container:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            transform: translateY(-2px) scale(1.03) !important;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+        }
+        .user-sidebar.is-mini .profile-widget-container .sf-meta,
+        .user-sidebar.is-mini .profile-widget-container .sf-chevron {
+            display: none !important;
+        }
+        .user-sidebar.is-mini .profile-widget-container .sf-avatar {
+            margin: 0 !important;
+            border-radius: 12px !important;
+        }
+
+        /* Tooltips for User Sidebar */
+        .user-sidebar.is-mini [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: calc(100% + 12px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: #0f172a;
+            color: #f1f5f9;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.08);
+            animation: fadeIn 0.15s ease-out;
+        }
+
+        .user-sidebar.is-mini .user-nav-group.is-open [data-tooltip]::after,
+        .user-sidebar.is-mini .relative.open[data-tooltip]::after {
+            display: none !important;
+        }
+
+        .user-sidebar, .user-shell {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .user-sidebar-brand .logo-wrap {
+            transition: all 0.3s ease;
         }
 
         .user-sidebar-footer {
@@ -375,8 +619,8 @@
             font-size: 0.72rem;
             font-weight: 800;
             color: #fff;
-            background: linear-gradient(145deg, #6366f1, #4361ee);
-            box-shadow: 0 6px 18px rgba(67, 97, 238, 0.35);
+            background: linear-gradient(145deg, #06b6d4, #2563eb);
+            box-shadow: 0 6px 18px rgba(6, 182, 212, 0.3);
         }
 
         .user-sidebar-footer .sf-meta {
@@ -434,7 +678,7 @@
         }
 
         .user-sidebar-toggle {
-            display: none;
+            display: flex;
             width: 42px;
             height: 42px;
             border-radius: 12px;
@@ -1158,37 +1402,41 @@
         && !request()->routeIs('user.surat.create');
     $userLainnyaOpen = request()->routeIs('user.faq.*', 'user.about.*', 'user.notifikasi.index', 'user.aspirasi.index');
     $userAspirasiOpen = request()->routeIs('user.aspirasi.index');
+    $userProfilOpen = request()->routeIs('profile.edit');
 @endphp
 
 <div class="user-app">
 
     {{-- ===== SIDEBAR ===== --}}
-    <aside id="userSidebar" class="user-sidebar" aria-label="Menu utama">
-        <div class="user-sidebar-brand">
-            <a href="{{ route('dashboard') }}">
-                <div class="logo-wrap">
+    <aside id="userSidebar" class="user-sidebar" aria-label="Menu utama" data-turbo-permanent>
+        <div class="user-sidebar-brand d-flex align-items-center justify-content-center">
+            <a href="{{ route('dashboard') }}" data-turbo="false" class="d-flex align-items-center justify-content-center">
+                <!-- Full Logo -->
+                <div class="logo-wrap logo-full">
                     <img src="{{ asset('images/BP_SUML2.png') }}" alt="Logo BP SUML">
                 </div>
-                <div class="brand-text">
-                    <div class="title">Persuratan BP SUML</div>
-                    <div class="subtitle">Portal Pegawai</div>
+                <!-- Mini Logo -->
+                <div class="logo-wrap logo-mini d-none">
+                    <img src="{{ asset('images/metrologi.png') }}" alt="Logo BP SUML" style="height: 32px; width: 32px;">
                 </div>
             </a>
         </div>
 
         <nav class="user-sidebar-nav">
             <div class="user-nav-label">Utama</div>
-            <a href="{{ url('/?home=1') }}" class="user-sidebar-item">
+            <a href="{{ url('/?home=1') }}" data-turbo="false" class="user-sidebar-item" data-tooltip="Beranda Publik">
                 <i class="bi bi-globe2"></i>
                 <span>Beranda Publik</span>
             </a>
-            <a href="{{ route('dashboard') }}"
-               class="user-sidebar-item {{ request()->routeIs('dashboard') ? 'is-active' : '' }}">
+            <a href="{{ route('dashboard') }}" data-turbo="false"
+               class="user-sidebar-item {{ request()->routeIs('dashboard') ? 'is-active' : '' }}" data-tooltip="Dashboard">
                 <i class="bi bi-grid-1x2-fill"></i>
                 <span>Dashboard</span>
             </a>
+
+            <div class="user-nav-label">Notification</div>
             <a href="{{ route('user.notifikasi.index') }}"
-                class="user-sidebar-item {{ request()->routeIs('user.notifikasi.index') ? 'is-active' : '' }} {{ $unreadNotif > 0 ? 'sidebar-unread-pulse' : '' }}">
+                 class="user-sidebar-item {{ request()->routeIs('user.notifikasi.index') ? 'is-active' : '' }} {{ $unreadNotif > 0 ? 'sidebar-unread-pulse' : '' }}" data-tooltip="Notifikasi">
                     <span class="user-sidebar-icon-stack">
                         <i class="bi bi-bell{{ $unreadNotif > 0 ? '-fill' : '' }}"></i>
                             @if($unreadNotif > 0)
@@ -1200,42 +1448,42 @@
                 
             <div class="user-nav-label">Upload Surat</div>
             <a href="{{ route('user.surat.create') }}"
-               class="user-sidebar-cta {{ request()->routeIs('user.surat.create') ? 'is-active' : '' }}">
+               class="user-sidebar-cta {{ request()->routeIs('user.surat.create') ? 'is-active' : '' }}" data-tooltip="Ajukan Surat">
                 <i class="bi bi-plus-lg"></i>
-                Ajukan Surat
+                <span>Ajukan Surat</span>
             </a>
             
 
             <div class="user-nav-label">Surat</div>
             <div class="user-nav-group {{ $userSuratGroupOpen ? 'is-open' : '' }}">
-                <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')">
+                <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')" data-tooltip="Surat Saya">
                     <i class="bi bi-envelope-paper"></i>
                     <span class="flex-grow-1">Surat Saya</span>
                     <i class="bi bi-chevron-down chev"></i>
                 </button>
                 <div class="user-nav-group-body">
                     <a href="{{ route('user.surat.index') }}"
-                       class="user-sidebar-item {{ request()->routeIs('user.surat.index') && request('status') !== 'draft' ? 'is-active' : '' }}">
+                       class="user-sidebar-item {{ request()->routeIs('user.surat.index') && request('status') !== 'draft' ? 'is-active' : '' }}" data-tooltip="Card">
                         <i class="bi bi-envelope-open"></i>
                         <span>Card</span>
                     </a>
                     <a href="{{ route('user.surat.index', ['status' => 'draft']) }}"
-                       class="user-sidebar-item {{ request('status') === 'draft' ? 'is-active' : '' }}">
+                       class="user-sidebar-item {{ request('status') === 'draft' ? 'is-active' : '' }}" data-tooltip="Draft">
                         <i class="bi bi-pencil-square"></i>
                         <span>Draft</span>
                     </a>
                     <a href="{{ route('user.surat.table') }}"
-                       class="user-sidebar-item {{ request()->routeIs('user.surat.table') ? 'is-active' : '' }}">
+                       class="user-sidebar-item {{ request()->routeIs('user.surat.table') ? 'is-active' : '' }}" data-tooltip="Tabel detail">
                         <i class="bi bi-table"></i>
                         <span>Tabel detail</span>
                     </a>
                     <a href="{{ route('user.surat.file_index') }}"
-                        class="user-sidebar-item {{ request()->routeIs('user.surat.file_index') ? 'is-active' : '' }}">
+                         class="user-sidebar-item {{ request()->routeIs('user.surat.file_index') ? 'is-active' : '' }}" data-tooltip="Hapus File Surat">
                         <i class="bi bi-file-earmark-x"></i>
                         <span>Hapus File Surat</span>
                     </a>
                     <a href="{{ route('user.surat.exportExcel') }}"
-                       class="user-sidebar-item {{ request()->routeIs('user.surat.exportExcel') ? 'is-active' : '' }}">
+                       class="user-sidebar-item {{ request()->routeIs('user.surat.exportExcel') ? 'is-active' : '' }}" data-tooltip="Ekspor Excel">
                         <i class="bi bi-download"></i>
                         <span>Ekspor Excel</span>
                     </a>
@@ -1244,29 +1492,59 @@
 
             <div class="user-nav-label">Insight</div>
             <a href="{{ route('user.statistik.index') }}"
-               class="user-sidebar-item {{ request()->routeIs('user.statistik.index') ? 'is-active' : '' }}">
+               class="user-sidebar-item {{ request()->routeIs('user.statistik.index') ? 'is-active' : '' }}" data-tooltip="Statistik">
                 <i class="bi bi-graph-up-arrow"></i>
                 <span>Statistik</span>
             </a>
             <a href="{{ route('user.sla.index') }}"
-               class="user-sidebar-item {{ request()->routeIs('user.sla.index') ? 'is-active' : '' }}">
+               class="user-sidebar-item {{ request()->routeIs('user.sla.index') ? 'is-active' : '' }}" data-tooltip="Monitoring SLA">
                 <i class="bi bi-speedometer2"></i>
                 <span>Monitoring SLA</span>
             </a>
             <a href="{{ route('user.template.index') }}"
-               class="user-sidebar-item {{ request()->routeIs('user.template.*') ? 'is-active' : '' }}">
+               class="user-sidebar-item {{ request()->routeIs('user.template.*') ? 'is-active' : '' }}" data-tooltip="Template">
                 <i class="bi bi-file-earmark-word"></i>
                 <span>Template</span>
             </a>
-            <a href="{{ route('profile.edit') }}"
-               class="user-sidebar-item {{ request()->routeIs('profile.edit') ? 'is-active' : '' }}">
-                <i class="bi bi-person-gear"></i>
-                <span>Profil</span>
+            <a href="{{ route('user.pegawai.index') }}" data-turbo="false"
+               class="user-sidebar-item {{ request()->routeIs('user.pegawai.*') ? 'is-active' : '' }}" data-tooltip="Cari Pegawai">
+                <i class="bi bi-people"></i>
+                <span>Cari Pegawai</span>
             </a>
+
+            <div class="user-nav-group {{ $userProfilOpen ? 'is-open' : '' }}">
+                <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')" data-tooltip="Profil & Sesi">
+                    <i class="bi bi-person-gear"></i>
+                    <span class="flex-grow-1">Profil & Sesi</span>
+                    <i class="bi bi-chevron-down chev"></i>
+                </button>
+                <div class="user-nav-group-body">
+                    <a href="{{ route('profile.edit') }}#info-umum" data-turbo="false"
+                       class="user-sidebar-item {{ request()->routeIs('profile.edit') && !str_contains(request()->fullUrl(), '#') ? 'is-active' : '' }}" data-tooltip="Informasi Umum">
+                        <i class="bi bi-person-bounding-box"></i>
+                        <span>Informasi Umum</span>
+                    </a>
+                    <a href="{{ route('profile.edit') }}#keamanan" data-turbo="false"
+                       class="user-sidebar-item" data-tooltip="Ubah Kata Sandi">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        <span>Ubah Kata Sandi</span>
+                    </a>
+                    <a href="{{ route('profile.edit') }}#sesi-aktif" data-turbo="false"
+                       class="user-sidebar-item" data-tooltip="Sesi & Perangkat">
+                        <i class="bi bi-laptop"></i>
+                        <span>Sesi & Perangkat</span>
+                    </a>
+                    <a href="{{ route('profile.edit') }}#akun-lain" data-turbo="false"
+                       class="user-sidebar-item" data-tooltip="Multi-Akun">
+                        <i class="bi bi-person-plus-fill"></i>
+                        <span>Multi-Akun</span>
+                    </a>
+                </div>
+            </div>
 
             <div class="user-nav-label">Lainnya</div>
             <div class="user-nav-group {{ $userLainnyaOpen ? 'is-open' : '' }}">
-                <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')">
+                <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')" data-tooltip="Menu tambahan">
                     <i class="bi bi-grid-3x3-gap"></i>
                     <span class="flex-grow-1">Menu tambahan</span>
                     <i class="bi bi-chevron-down chev"></i>
@@ -1274,19 +1552,19 @@
                 <div class="user-nav-group-body">
 
                     <div class="user-nav-group {{ $userAspirasiOpen ? 'is-open' : '' }}">
-                        <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')">
+                        <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')" data-tooltip="Kotak aspirasi">
                             <i class="bi bi-chat-heart"></i>
                             <span class="flex-grow-1">Kotak aspirasi</span>
                             <i class="bi bi-chevron-down chev"></i>
                         </button>
                         <div class="user-nav-group-body">
                             <a href="{{ route('user.aspirasi.index', ['to' => 'admin']) }}"
-                               class="user-sidebar-item {{ request()->routeIs('user.aspirasi.index') && request('to') === 'admin' ? 'is-active' : '' }}">
+                               class="user-sidebar-item {{ request()->routeIs('user.aspirasi.index') && request('to') === 'admin' ? 'is-active' : '' }}" data-tooltip="Ke Admin">
                                 <i class="bi bi-person-badge"></i>
                                 <span>Ke Admin</span>
                             </a>
-                            <a href="{{ route('user.aspirasi.index', ['to' => 'itsupport']) }}"
-                               class="user-sidebar-item {{ request()->routeIs('user.aspirasi.index') && request('to') === 'itsupport' ? 'is-active' : '' }}">
+                            <a href="{{ route('user.aspirasi.index', ['to' => 'it_support']) }}"
+                               class="user-sidebar-item {{ request()->routeIs('user.aspirasi.index') && request('to') === 'it_support' ? 'is-active' : '' }}" data-tooltip="IT Support">
                                 <i class="bi bi-cpu"></i>
                                 <span>IT Support</span>
                             </a>
@@ -1294,33 +1572,43 @@
                     </div>
 
                     <a href="{{ route('user.faq.index') }}"
-                       class="user-sidebar-item {{ request()->routeIs('user.faq.*') ? 'is-active' : '' }}">
+                       class="user-sidebar-item {{ request()->routeIs('user.faq.*') ? 'is-active' : '' }}" data-tooltip="FAQ">
                         <i class="bi bi-question-circle"></i>
                         <span>FAQ</span>
                     </a>
                     <a href="{{ route('user.about.index') }}"
-                       class="user-sidebar-item {{ request()->routeIs('user.about.*') ? 'is-active' : '' }}">
+                       class="user-sidebar-item {{ request()->routeIs('user.about.*') ? 'is-active' : '' }}" data-tooltip="Tentang">
                         <i class="bi bi-info-circle"></i>
                         <span>Tentang</span>
+                    </a>
+                    <a href="#" onclick="showPublicVerificationModal(event)"
+                       class="user-sidebar-item" data-tooltip="Verifikasi Surat">
+                        <i class="bi bi-qr-code-scan"></i>
+                        <span>Verifikasi Surat</span>
                     </a>
                 </div>
             </div>
         </nav>
 
         <div class="user-sidebar-footer">
-            <a href="{{ route('profile.edit') }}">
-                <div class="sf-avatar">
-                    @if(Auth::user()->profile_photo)
-                        <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="" style="width:100%;height:100%;object-fit:cover;">
-                    @else
-                        {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
-                    @endif
+            <a href="{{ route('profile.edit') }}" data-tooltip="Kelola Profil" class="profile-widget-container position-relative d-flex align-items-center">
+                <div class="sf-avatar-wrapper position-relative">
+                    <div class="sf-avatar">
+                        @if(Auth::user()->profile_photo)
+                            <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+                        @else
+                            {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                        @endif
+                    </div>
+                    <!-- Online Status Indicator -->
+                    <span class="position-absolute bottom-0 end-0 bg-emerald-500 border border-slate-900 rounded-full"
+                          style="width: 10px; height: 10px; box-shadow: 0 0 10px rgba(16, 185, 129, 0.6); display: block;"></span>
                 </div>
-                <div class="sf-meta">
+                <div class="sf-meta ms-3">
                     <div class="sf-name">{{ Auth::user()->name }}</div>
                     <div class="sf-hint">Kelola profil</div>
                 </div>
-                <i class="bi bi-chevron-right text-white-50 small"></i>
+                <i class="bi bi-chevron-right text-white-50 small ms-auto sf-chevron"></i>
             </a>
         </div>
     </aside>
@@ -1488,260 +1776,365 @@
 <style>
     [x-cloak] { display: none !important; }
     .rotate-180 { transform: rotate(180deg); }
-</style>
+</style>    @vite(['resources/js/app.js', 'resources/css/app.css'])
 
-@vite(['resources/js/app.js', 'resources/css/app.css'])
-<script>
-    // Auto-dismiss flash setelah 4 detik
-    setTimeout(() => {
-        document.querySelectorAll('.flash-container .alert').forEach(el => {
-            new bootstrap.Alert(el).close();
-        });
-    }, 4000);
+    <script>
+        // ===== GLOBAL FUNCTIONS (Available to onclick) =====
+        var openUserSidebar = function() {
+            var sidebar = document.getElementById('userSidebar');
+            if (window.innerWidth >= 992) {
+                sidebar?.classList.toggle('is-mini');
+                localStorage.setItem('user_sidebar_mini', sidebar?.classList.contains('is-mini'));
+            } else {
+                sidebar?.classList.add('is-open');
+                document.getElementById('userSidebarBackdrop')?.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        };
 
-    function openUserSidebar() {
-        document.getElementById('userSidebar')?.classList.add('is-open');
-        document.getElementById('userSidebarBackdrop')?.classList.add('show');
-        document.body.style.overflow = 'hidden';
-    }
+        var closeUserSidebar = function() {
+            document.getElementById('userSidebar')?.classList.remove('is-open');
+            document.getElementById('userSidebarBackdrop')?.classList.remove('show');
+            document.body.style.overflow = '';
+        };
 
-    function closeUserSidebar() {
-        document.getElementById('userSidebar')?.classList.remove('is-open');
-        document.getElementById('userSidebarBackdrop')?.classList.remove('show');
-        document.body.style.overflow = '';
-    }
-
-    window.addEventListener('resize', () => {
-        if (window.innerWidth >= 992) closeUserSidebar();
-    });
-
-    document.getElementById('userSidebar')?.addEventListener('click', (e) => {
-        const link = e.target.closest('a[href]:not([href="#"])');
-        if (link && window.innerWidth < 992) closeUserSidebar();
-    });
-
-    // Topbar scroll effect
-    window.addEventListener('scroll', () => {
-        const tb = document.querySelector('.user-topbar');
-        if (!tb) return;
-        if (window.scrollY > 12) tb.classList.add('scrolled');
-        else tb.classList.remove('scrolled');
-    });
-
-    // ===== ACCOUNT SWITCHER (Token-Based Instant Switch) =====
-    const CURRENT_USER = {
-        id:          {{ Auth::id() }},
-        name:        '{{ addslashes(Auth::user()->name) }}',
-        email:       '{{ addslashes(Auth::user()->email) }}',
-        initials:    '{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}',
-        role:        'user',
-        photo:       '{{ Auth::user()->profile_photo ? Storage::url(Auth::user()->profile_photo) : "" }}',
-        switch_token: '{{ session("switch_token_raw", "") }}'
-    };
-    const SWITCH_URL  = '{{ route("auth.switch") }}';
-    const CSRF_TOKEN  = '{{ csrf_token() }}';
-    const STORAGE_KEY = 'bpsuml_saved_accounts';
-
-    function getSavedAccounts() {
-        try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; }
-    }
-
-    function saveCurrentAccount() {
-        if (!CURRENT_USER.switch_token) return; // Jangan simpan jika token kosong
-        let accounts = getSavedAccounts();
-        const idx = accounts.findIndex(a => a.id === CURRENT_USER.id);
-        const entry = { ...CURRENT_USER, savedAt: Date.now() };
-        if (idx >= 0) { accounts[idx] = entry; } else { accounts.push(entry); }
-        if (accounts.length > 5) accounts = accounts.slice(-5);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
-    }
-
-    function renderSavedAccounts() {
-        const accounts = getSavedAccounts().filter(a => a.id !== CURRENT_USER.id);
-        const container = document.getElementById('user-saved-accounts-list');
-        if (!container) return;
-
-        if (accounts.length === 0) {
-            container.innerHTML = `<div style="padding:4px 16px 2px; font-size:11px; color:var(--text-secondary); font-style:italic;">Belum ada akun tersimpan lain</div>`;
-            return;
-        }
-        container.innerHTML = accounts.map(acc => `
-            <div>
-                <a class="dropdown-item py-2" href="#" id="switch-btn-${acc.id}"
-                   onclick="doSwitchAccount(event, ${acc.id}, '${acc.switch_token}')"
-                   style="display:flex; align-items:center; gap:10px; padding:8px 16px;">
-                    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;overflow:hidden;">
-                        ${acc.photo ? `<img src="${acc.photo}" style="width:100%;height:100%;object-fit:cover;">` : acc.initials}
-                    </div>
-                    <div style="flex:1;min-width:0;">
-                        <div style="font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.name}</div>
-                        <div style="font-size:10px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.email}</div>
-                    </div>
-                    <i class="bi bi-arrow-right-circle" style="color:#2563eb;font-size:14px;flex-shrink:0;"></i>
-                </a>
-            </div>
-        `).join('');
-    }
-
-    function doSwitchAccount(e, userId, token) {
-        e.preventDefault();
-        if (!token) {
-            // Token kosong — fallback ke login manual
-            sessionStorage.setItem('bpsuml_switch_to_email',
-                getSavedAccounts().find(a => a.id === userId)?.email || '');
+        var switchToNewAccount = function(e) {
+            if (e) e.preventDefault();
             document.getElementById('logout-form').submit();
-            return;
+        };
+
+        var logoutCurrentUser = function() {
+            var accounts = getSavedAccounts().filter(a => a.id !== CURRENT_USER.id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+            document.getElementById('logout-form').submit();
+        };
+
+        // ===== DATA & UTILS =====
+        var CURRENT_USER = {
+            id:          {{ Auth::id() }},
+            name:        '{{ addslashes(Auth::user()->name) }}',
+            email:       '{{ addslashes(Auth::user()->email) }}',
+            initials:    '{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}',
+            role:        'user',
+            photo:       '{{ Auth::user()->profile_photo ? Storage::url(Auth::user()->profile_photo) : "" }}',
+            switch_token: '{{ session("switch_token_raw", "") }}'
+        };
+        var SWITCH_URL  = '{{ route("auth.switch") }}';
+        var CSRF_TOKEN  = '{{ csrf_token() }}';
+        var STORAGE_KEY = 'bpsuml_saved_accounts';
+
+        function getSavedAccounts() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return []; }
         }
 
-        const btn = document.getElementById('switch-btn-' + userId);
-        if (btn) {
-            btn.style.opacity = '0.6';
-            btn.style.pointerEvents = 'none';
-            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" style="width:16px;height:16px;"></span> Beralih...`;
+        function saveCurrentAccount() {
+            if (!CURRENT_USER.switch_token) return;
+            var accounts = getSavedAccounts();
+            var idx = accounts.findIndex(a => a.id === CURRENT_USER.id);
+            var entry = Object.assign({}, CURRENT_USER, { savedAt: Date.now() });
+            if (idx >= 0) { accounts[idx] = entry; } else { accounts.push(entry); }
+            if (accounts.length > 5) accounts = accounts.slice(-5);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
         }
 
-        fetch(SWITCH_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': CSRF_TOKEN,
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({ user_id: userId, switch_token: token }),
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                // Update token baru di localStorage
-                let accounts = getSavedAccounts();
-                const idx = accounts.findIndex(a => a.id === data.user_id);
-                if (idx >= 0) {
-                    accounts[idx].switch_token = data.new_token;
-                    accounts[idx].photo = data.photo;
+        function renderSavedAccounts() {
+            var accounts = getSavedAccounts().filter(a => a.id !== CURRENT_USER.id);
+            var container = document.getElementById('user-saved-accounts-list');
+            if (!container) return;
+
+            if (accounts.length === 0) {
+                container.innerHTML = '<div style="padding:4px 16px 2px; font-size:11px; color:var(--text-secondary); font-style:italic;">Belum ada akun tersimpan lain</div>';
+                return;
+            }
+            container.innerHTML = accounts.map(acc => `
+                <div>
+                    <a class="dropdown-item py-2" href="#" id="switch-btn-${acc.id}"
+                       onclick="doSwitchAccount(event, ${acc.id}, '${acc.switch_token}')"
+                       style="display:flex; align-items:center; gap:10px; padding:8px 16px;">
+                        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;overflow:hidden;">
+                            ${acc.photo ? `<img src="${acc.photo}" style="width:100%;height:100%;object-fit:cover;">` : acc.initials}
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.name}</div>
+                            <div style="font-size:10px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${acc.email}</div>
+                        </div>
+                        <i class="bi bi-arrow-right-circle" style="color:#2563eb;font-size:14px;flex-shrink:0;"></i>
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        function doSwitchAccount(e, userId, token) {
+            e.preventDefault();
+            if (!token) {
+                sessionStorage.setItem('bpsuml_switch_to_email', getSavedAccounts().find(a => a.id === userId)?.email || '');
+                document.getElementById('logout-form').submit();
+                return;
+            }
+            var btn = document.getElementById('switch-btn-' + userId);
+            if (btn) {
+                btn.style.opacity = '0.6';
+                btn.style.pointerEvents = 'none';
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" style="width:16px;height:16px;"></span> Beralih...';
+            }
+            fetch(SWITCH_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+                body: JSON.stringify({ user_id: userId, switch_token: token }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    var accounts = getSavedAccounts();
+                    var idx = accounts.findIndex(a => a.id === data.user_id);
+                    if (idx >= 0) { accounts[idx].switch_token = data.new_token; accounts[idx].photo = data.photo; }
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+                    window.location.href = data.redirect;
                 } else {
-                    accounts.push({ id: data.user_id, name: data.name, email: data.email,
-                                     initials: data.initials, role: data.role, photo: data.photo, switch_token: data.new_token });
+                    alert('Gagal beralih akun: ' + data.message);
+                    renderSavedAccounts();
                 }
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
-                // Redirect ke dashboard akun target
-                window.location.href = data.redirect;
-            } else {
-                alert('Gagal beralih akun: ' + data.message);
-                if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
+            }).catch(() => {
+                alert('Terjadi kesalahan jaringan.');
                 renderSavedAccounts();
-            }
-        })
-        .catch(() => {
-            alert('Terjadi kesalahan jaringan. Coba lagi.');
-            if (btn) { btn.style.opacity = ''; btn.style.pointerEvents = ''; }
-            renderSavedAccounts();
-        });
-    }
-
-    function switchToNewAccount(e) {
-        e.preventDefault();
-        document.getElementById('logout-form').submit();
-    }
-
-    function logoutCurrentUser() {
-        let accounts = getSavedAccounts().filter(a => a.id !== CURRENT_USER.id);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
-        document.getElementById('logout-form').submit();
-    }
-
-    // Jalankan saat halaman load
-    document.addEventListener('DOMContentLoaded', function() {
-        saveCurrentAccount();
-        renderSavedAccounts();
-    });
-
-    function markNotifRead(id) {
-        const item = document.querySelector(`.notif-item-wrapper[data-id="${id}"]`);
-        if(item) item.style.opacity = '0.5';
-
-        fetch(`/notif/mark-read/${id}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': CSRF_TOKEN,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                if(item) {
-                    item.style.opacity = '1';
-                    const link = item.querySelector('.notif-item');
-                    link.classList.remove('unread');
-                    const dot = item.querySelector('.unread-dot');
-                    if(dot) dot.remove();
-                    const readBtn = item.querySelector('.btn-notif-action.text-primary');
-                    if(readBtn) readBtn.remove();
-                }
-                updateNotifBadges(data.unreadCount);
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            if(item) item.style.opacity = '1';
-        });
-    }
-
-    function deleteNotif(id) {
-        if(!confirm('Hapus notifikasi ini?')) return;
-        const item = document.querySelector(`.notif-item-wrapper[data-id="${id}"]`);
-        if(item) item.style.opacity = '0.5';
-
-        fetch(`/notif/delete/${id}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': CSRF_TOKEN,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                if(item) {
-                    item.style.transition = 'all 0.3s ease';
-                    item.style.transform = 'translateX(50px)';
-                    item.style.opacity = '0';
-                    setTimeout(() => item.remove(), 300);
-                }
-                updateNotifBadges(data.unreadCount);
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            if(item) item.style.opacity = '1';
-        });
-    }
-
-    function updateNotifBadges(count) {
-        const badge = document.querySelector('.notif-badge');
-        if(badge) {
-            if(count > 0) {
-                badge.style.display = 'flex';
-                badge.textContent = count;
-            } else {
-                badge.style.display = 'none';
-            }
+            });
         }
-    }
 
-    // Auto-close dropdown when clicking a link inside it
-    document.querySelectorAll('.dropdown-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const dropdown = this.closest('.dropdown-menu');
-            if(dropdown && window.innerWidth >= 992) {
-                dropdown.style.display = 'none';
-                setTimeout(() => dropdown.style.display = '', 100);
+        // ===== INITIALIZATION =====
+        (function() {
+            var initUserLayout = function() {
+                // Refresh CSRF Token and User Data from the newly loaded page
+                // (This is important because Turbo only replaces the body/title)
+                CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || CSRF_TOKEN;
+
+                // Restore sidebar state
+                if (localStorage.getItem('user_sidebar_mini') === 'true' && window.innerWidth >= 992) {
+                    document.getElementById('userSidebar')?.classList.add('is-mini');
+                }
+
+                // Update active sidebar items
+                var currentPath = window.location.pathname;
+                var currentSearch = window.location.search;
+                var currentFull = currentPath + currentSearch;
+                
+                var bestScore = -1;
+                var sidebarItems = document.querySelectorAll('.user-sidebar-item, .user-sidebar-cta');
+                
+                // First pass: find the best score
+                sidebarItems.forEach(item => {
+                    var href = item.getAttribute('href');
+                    if (!href || href === '#') return;
+                    
+                    try {
+                        var url = new URL(href, window.location.origin);
+                        var linkPath = url.pathname;
+                        var linkSearch = url.search;
+                        var score = -1;
+
+                        if (currentPath === linkPath) {
+                            score = 1; // Path matches
+                            if (linkSearch && currentSearch.includes(linkSearch)) {
+                                score = 2; // Path and Search match
+                            } else if (linkSearch && !currentSearch.includes(linkSearch)) {
+                                score = -1; // Specific parameter mismatch
+                            }
+                        }
+                        
+                        item.setAttribute('data-active-score', score);
+                        if (score > bestScore) bestScore = score;
+                    } catch(e) {
+                        item.setAttribute('data-active-score', -1);
+                    }
+                });
+
+                // Second pass: apply classes
+                sidebarItems.forEach(item => {
+                    var score = parseInt(item.getAttribute('data-active-score') || -1);
+                    if (score > 0 && score === bestScore) {
+                        item.classList.add('is-active');
+                    } else {
+                        item.classList.remove('is-active');
+                    }
+                });
+
+                saveCurrentAccount();
+                renderSavedAccounts();
+
+                // Dropdown auto-close
+                document.querySelectorAll('.dropdown-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        var dropdown = this.closest('.dropdown-menu');
+                        if(dropdown && window.innerWidth >= 992) {
+                            dropdown.style.display = 'none';
+                            setTimeout(() => dropdown.style.display = '', 100);
+                        }
+                    });
+                });
+
+                closeUserSidebar();
+            };
+
+            document.addEventListener('turbo:load', initUserLayout);
+            if (document.readyState !== 'loading') initUserLayout();
+            else document.addEventListener('DOMContentLoaded', initUserLayout);
+        })();
+
+        // ===== NOTIFICATION FUNCTIONS =====
+        var markNotifRead = function(id) {
+            var item = document.querySelector(`.notif-item-wrapper[data-id="${id}"]`);
+            if(item) item.style.opacity = '0.5';
+
+            fetch(`/notif/mark-read/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': CSRF_TOKEN,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    if(item) {
+                        item.style.opacity = '1';
+                        item.classList.remove('unread');
+                        var dot = item.querySelector('.unread-dot, .badge-baru');
+                        if(dot) dot.remove();
+                        var readBtn = item.querySelector('.btn-notif-action.text-primary, button[id^="btnRead-"]');
+                        if(readBtn) readBtn.remove();
+                        var link = item.querySelector('.notif-item');
+                        if(link) link.classList.remove('unread');
+                    }
+                    updateNotifBadges(data.unreadCount);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                if(item) item.style.opacity = '1';
+            });
+        };
+
+        var deleteNotif = function(id) {
+            if(!confirm('Hapus notifikasi ini?')) return;
+            var item = document.querySelector(`.notif-item-wrapper[data-id="${id}"]`);
+            if(item) item.style.opacity = '0.5';
+
+            fetch(`/notif/delete/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': CSRF_TOKEN,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    if(item) {
+                        item.style.transition = 'all 0.3s ease';
+                        item.style.transform = 'translateX(50px)';
+                        item.style.opacity = '0';
+                        setTimeout(() => item.remove(), 300);
+                    }
+                    updateNotifBadges(data.unreadCount);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                if(item) item.style.opacity = '1';
+            });
+        };
+
+        var updateNotifBadges = function(count) {
+            document.querySelectorAll('.notif-badge').forEach(badge => {
+                if(count > 0) {
+                    badge.style.display = 'flex';
+                    badge.textContent = count > 9 ? '9+' : count;
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
+            document.querySelectorAll('.user-sidebar-nav-badge').forEach(badge => {
+                if(count > 0) {
+                    badge.style.display = 'block';
+                    badge.textContent = count > 99 ? '99+' : count;
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
+        };
+
+        // View Transitions
+        document.addEventListener('turbo:before-render', (event) => {
+            if (document.startViewTransition) {
+                event.preventDefault();
+                document.startViewTransition(() => event.detail.resume());
             }
         });
-    });
-</script>
+
+        function showPublicVerificationModal(e) {
+            if (e) e.preventDefault();
+            Swal.fire({
+                title: '🔒 Verifikasi Keaslian Surat',
+                html: `
+                    <div class="text-start" style="font-size:13px; color:#475569;">
+                        <p class="mb-3">Masukkan Kode UUID verifikasi surat untuk memvalidasi keaslian surat langsung dari sistem resmi.</p>
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold mb-1" style="font-size:12px;color:#1e293b;">Kode UUID Surat</label>
+                            <input type="text" id="swal-verification-uuid" class="form-control py-2 px-3" 
+                                   placeholder="Contoh: 123e4567-e89b-12d3-a456-426614174000" 
+                                   style="border-radius:10px; font-size:13px; background:rgba(255,255,255,0.7); border:1px solid #cbd5e1;">
+                        </div>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: '<i class="bi bi-shield-check me-1"></i> Verifikasi Sekarang',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#1e3a5f',
+                cancelButtonColor: '#64748b',
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdrop: `rgba(15, 23, 42, 0.35)`,
+                customClass: {
+                    popup: 'rounded-4 shadow-xl border border-white',
+                    confirmButton: 'px-4 py-2 text-sm fw-bold',
+                    cancelButton: 'px-4 py-2 text-sm fw-semibold'
+                },
+                preConfirm: () => {
+                    const uuid = Swal.getPopup().querySelector('#swal-verification-uuid').value.trim();
+                    if (!uuid) {
+                        Swal.showValidationMessage('Kode UUID surat wajib diisi!');
+                        return false;
+                    }
+                    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                    if (!uuidRegex.test(uuid)) {
+                        Swal.showValidationMessage('Format Kode UUID tidak valid!');
+                        return false;
+                    }
+                    return { uuid: uuid };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/v/${result.value.uuid}`;
+                }
+            });
+        }
+        window.showPublicVerificationModal = showPublicVerificationModal;
+    </script>
+
+
+<style>
+    /* View Transitions */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: 0.4s;
+    }
+
+    /* Target content area for smoother transition */
+    .main-content {
+        view-transition-name: main-content;
+    }
+</style>
 @stack('scripts')
 
 {{-- ===== OFFCANVAS NOTIFIKASI ===== --}}

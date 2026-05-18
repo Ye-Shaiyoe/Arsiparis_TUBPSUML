@@ -22,7 +22,7 @@ class SwitchAccountController extends Controller
 
         $user->forceFill([
             'switch_token'            => Hash::make($rawToken),
-            'switch_token_expires_at' => now()->addHours(24),  // Reduced from 30 days to 24 hours for better security
+            'switch_token_expires_at' => now()->addDays(30),  // Set to 30 days for user convenience
         ])->save();
 
         return $rawToken;

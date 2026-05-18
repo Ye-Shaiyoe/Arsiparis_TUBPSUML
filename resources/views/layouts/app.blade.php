@@ -15,8 +15,21 @@
         <!-- Icons -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
+        <!-- Tailwind CDN Fallback -->
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- Alpine.js CDN -->
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+        <!-- x-cloak: hide Alpine elements before init -->
+        <style> [x-cloak] { display: none !important; } </style>
+
+        <link href="https://jsdelivr.net" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        {{-- Hotwire Turbo --}}
+        <script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/dist/turbo.es2017-umd.js"></script>
 
         <style>
             /* Prevent Transition Flicker on Load */
@@ -38,6 +51,8 @@
                 }, 100);
             });
         </script>
+
+        @stack('head')
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
@@ -60,8 +75,8 @@
 
         <script>
             // ===== ACCOUNT SWITCHER (Shared Logic) =====
-            const STORAGE_KEY = 'bpsuml_saved_accounts';
-            const CURRENT_USER = {
+            var STORAGE_KEY = 'bpsuml_saved_accounts';
+            var CURRENT_USER = {
                 id: {{ Auth::id() }},
                 name: '{{ addslashes(Auth::user()->name) }}',
                 email: '{{ addslashes(Auth::user()->email) }}',
@@ -83,7 +98,9 @@
                 } catch(e) { console.error('Failed to save account:', e); }
             }
 
-            document.addEventListener('DOMContentLoaded', saveCurrentAccount);
+            document.addEventListener('turbo:load', saveCurrentAccount);
+            // Fallback for initial load
+            saveCurrentAccount();
         </script>
     </body>
 </html>

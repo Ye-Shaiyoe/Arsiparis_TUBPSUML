@@ -465,27 +465,41 @@
             border: none;
             cursor: pointer;
             border-radius: 12px;
-            transition: transform .3s, box-shadow .3s;
+            transition: transform .4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow .4s cubic-bezier(0.23, 1, 0.32, 1);
             position: relative;
             overflow: hidden;
             box-shadow: var(--shadow-premium);
+            z-index: 1;
         }
 
-        .btn-primary::after {
-            content: '';
+        /* Ensure all direct children are above the liquid overlay */
+        .btn-primary>* {
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-primary-liquid {
             position: absolute;
-            inset: 0;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
             background: rgba(255, 255, 255, 0.15);
-            transform: translateX(-105%);
-            transition: transform .4s;
+            border-radius: 50% 30% 60% 40% / 40% 60% 30% 50%;
+            transform: translate(-50%, -50%) rotate(0deg);
+            transition: width 0.7s cubic-bezier(0.23, 1, 0.32, 1), height 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 1;
+            pointer-events: none;
         }
 
-        .btn-primary:hover::after {
-            transform: translateX(0);
+        .btn-primary:hover .btn-primary-liquid {
+            width: 380px;
+            height: 380px;
+            transform: translate(-50%, -50%) rotate(180deg);
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px);
+            transform: translateY(-4px) scale(1.02);
             box-shadow: 0 24px 60px rgba(26, 115, 232, 0.35), var(--shadow-premium);
         }
 
@@ -505,15 +519,92 @@
             cursor: pointer;
             border: 1.5px solid rgba(200, 169, 110, 0.35);
             border-radius: 12px;
-            transition: border-color .3s, background .3s, color .3s, transform .3s, box-shadow .3s;
+            transition: border-color .4s cubic-bezier(0.23, 1, 0.32, 1), background .4s cubic-bezier(0.23, 1, 0.32, 1), color .4s cubic-bezier(0.23, 1, 0.32, 1), transform .4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow .4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
             box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
+            z-index: 1;
+        }
+
+        .btn-secondary>* {
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-secondary-liquid {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(200, 169, 110, 0.15);
+            border-radius: 40% 60% 50% 50% / 50% 40% 60% 50%;
+            transform: translate(-50%, -50%) rotate(0deg);
+            transition: width 0.7s cubic-bezier(0.23, 1, 0.32, 1), height 0.7s cubic-bezier(0.23, 1, 0.32, 1), transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .btn-secondary:hover .btn-secondary-liquid {
+            width: 380px;
+            height: 380px;
+            transform: translate(-50%, -50%) rotate(-180deg);
         }
 
         .btn-secondary:hover {
             border-color: var(--accent-gold);
             background: rgba(232, 212, 184, 0.25);
-            transform: translateY(-3px);
+            transform: translateY(-4px) scale(1.02);
             box-shadow: 0 16px 40px rgba(200, 169, 110, 0.25);
+        }
+
+        /* ─── TEXT SPLIT REVEAL STYLES ─── */
+        .btn-text-inner {
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            vertical-align: middle;
+            height: 1.2em;
+            line-height: 1.2;
+        }
+
+        .btn-text-inner span {
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        .btn-text-inner::after {
+            content: attr(data-hover);
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+            transform: translateY(0);
+            font-weight: 600;
+        }
+
+        .btn-primary:hover .btn-text-inner span,
+        .btn-secondary:hover .btn-text-inner span {
+            transform: translateY(-100%);
+        }
+
+        .btn-primary:hover .btn-text-inner::after,
+        .btn-secondary:hover .btn-text-inner::after {
+            transform: translateY(-100%);
+        }
+
+        /* Micro-animations for SVGs inside buttons */
+        .btn-primary svg,
+        .btn-secondary svg {
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .btn-primary:hover svg,
+        .btn-secondary:hover svg {
+            transform: translateX(4px);
         }
 
         .btn-ghost {
@@ -987,12 +1078,13 @@
             border: 1.5px solid rgba(200, 169, 110, 0.2);
             backdrop-filter: var(--glass-blur);
             border-radius: var(--radius);
-            padding: 42px 32px;
+            padding: 42px 32px 36px;
             text-align: center;
-            transition: transform .3s, border-color .3s, box-shadow .3s;
+            transition: transform .4s cubic-bezier(0.23, 1, 0.32, 1), border-color .4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow .4s cubic-bezier(0.23, 1, 0.32, 1);
             position: relative;
             overflow: hidden;
             box-shadow: 0 12px 40px rgba(200, 169, 110, 0.08);
+            z-index: 1;
         }
 
         .stat-card::before {
@@ -1004,7 +1096,19 @@
             width: 0;
             height: 2px;
             background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
-            transition: width .4s;
+            transition: width .4s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 3;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(200, 169, 110, 0.12) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .stat-card:hover {
@@ -1017,6 +1121,43 @@
             width: 100%;
         }
 
+        .stat-card:hover::after {
+            opacity: 1;
+        }
+
+        .stat-icon-wrapper {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            background: rgba(200, 169, 110, 0.08);
+            border: 1px solid rgba(200, 169, 110, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-card:hover .stat-icon-wrapper {
+            background: rgba(26, 115, 232, 0.12);
+            border-color: rgba(26, 115, 232, 0.25);
+            transform: scale(1.1) rotate(6deg);
+            box-shadow: 0 8px 20px rgba(26, 115, 232, 0.08);
+        }
+
+        .stat-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--accent-gold);
+            transition: color 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .stat-card:hover .stat-icon {
+            color: var(--accent);
+        }
+
         .stat-number {
             font-family: var(--font-display);
             font-size: 62px;
@@ -1024,6 +1165,8 @@
             line-height: 1;
             color: var(--accent-gold);
             margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
         }
 
         .stat-label {
@@ -1032,6 +1175,37 @@
             color: var(--muted);
             letter-spacing: 0.05em;
             line-height: 1.5;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 100px;
+            margin-top: 14px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 2;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .stat-trend.positive {
+            background: rgba(93, 202, 165, 0.12);
+            color: #1d9e75;
+            border: 1px solid rgba(93, 202, 165, 0.2);
+        }
+
+        .stat-trend.neutral {
+            background: rgba(26, 115, 232, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(26, 115, 232, 0.2);
         }
 
         .stat-type {
@@ -1626,6 +1800,87 @@
             filter: blur(8px);
         }
 
+        /* Sleek Horizontal Progress Tracker Bar */
+        .features-progress-bar-wrap {
+            position: absolute;
+            bottom: 48px;
+            left: 10vw;
+            right: 10vw;
+            height: 3px;
+            background: rgba(26, 115, 232, 0.08);
+            border-radius: 100px;
+            z-index: 100;
+            overflow: hidden;
+            border: 1.5px solid rgba(26, 115, 232, 0.05);
+            backdrop-filter: blur(5px);
+        }
+
+        .features-progress-bar-inner {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent));
+            border-radius: 100px;
+            box-shadow: 0 0 12px rgba(26, 115, 232, 0.4);
+            transition: width 0.1s ease-out;
+        }
+
+        /* Ambient Glow Behind Feature Slides */
+        .feature-slide::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(26, 115, 232, 0.03) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .feature-slide.wide::before {
+            background: radial-gradient(circle, rgba(200, 169, 110, 0.04) 0%, transparent 70%);
+        }
+
+        /* 3D Depth Card Spotlight Halo styling */
+        .tracking-flow,
+        .doc-preview,
+        .archive-item {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s ease;
+        }
+
+        .tracking-flow::after,
+        .doc-preview::after,
+        .archive-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(200, 169, 110, 0.1) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .tracking-flow:hover::after,
+        .doc-preview:hover::after,
+        .archive-item:hover::after {
+            opacity: 1;
+        }
+
+        /* Extra hover scales */
+        .tracking-flow:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 32px 80px rgba(26, 115, 232, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        .doc-preview:hover {
+            transform: rotate(-3deg) translateY(-8px) scale(1.03) !important;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+        }
+
         /* Document Scan Visual */
         .doc-preview {
             width: 240px;
@@ -1740,6 +1995,7 @@
         /* PORTALS */
         #portals {
             padding: 120px 60px;
+            margin-top: 10px;
         }
 
         .portals-header {
@@ -2280,16 +2536,35 @@
             background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(26, 115, 232, 0.12) 0%, transparent 70%);
         }
 
-        /* 3D Spiral Background Image */
-        .spiral-bg-image {
+        /* Upgraded 3D Floating Background Pills */
+        .spiral-bg-3d-elements {
             position: absolute;
             inset: 0;
-            background-image: url('{{ asset("images/about/kantor_suml.jpg") }}');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.15;
-            z-index: 1;
+            overflow: hidden;
             pointer-events: none;
+            z-index: 1;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        .spiral-bg-pill {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.16), rgba(200, 169, 110, 0.16));
+            border: 1.5px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(3px);
+            border-radius: 100px;
+            pointer-events: none;
+            will-change: transform, opacity;
+            box-shadow: 0 8px 32px rgba(6, 182, 212, 0.04);
+            transform-style: preserve-3d;
+        }
+        
+        body.light-mode .spiral-bg-pill {
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.1), rgba(93, 202, 165, 0.1));
+            border-color: rgba(0, 0, 0, 0.04);
+            box-shadow: 0 8px 32px rgba(26, 115, 232, 0.04);
         }
 
         .spiral-stage {
@@ -2990,14 +3265,17 @@
             opacity: 0;
         }
 
-        /* Hover effect untuk cursor area */
+        /* Force default cursor to be hidden globally on all elements to ensure custom cursor is used */
+        *,
+        *::before,
+        *::after,
         a,
         button,
-        .portal-card,
-        .about-card,
-        .stat-card,
-        .chart-card {
-            cursor: none;
+        select,
+        input,
+        textarea,
+        [role="button"] {
+            cursor: none !important;
         }
     </style>
 </head>
@@ -3089,13 +3367,19 @@
         </p>
         <div class="hero-cta">
             <a href="{{ route('login') }}" class="btn-primary">
-                Masuk Ke Web
+                <span class="btn-primary-liquid"></span>
+                <span class="btn-text-inner" data-hover="Masuk Ke Web">
+                    <span>Masuk Ke Web</span>
+                </span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
             </a>
             <a href="{{ route('register') }}" class="btn-secondary">
-                Daftar Akun
+                <span class="btn-secondary-liquid"></span>
+                <span class="btn-text-inner" data-hover="Daftar Akun">
+                    <span>Daftar Akun</span>
+                </span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8zM19 8v6M22 11h-6" />
                 </svg>
@@ -3217,28 +3501,62 @@
 
 
     {{-- STATS --}}
-    <section id="stats">
-        <div class="stats-header">
+    <section id="stats" style="position: relative; overflow: hidden;">
+        <div
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 300px; background: radial-gradient(ellipse, rgba(200, 169, 110, 0.06) 0%, transparent 70%); z-index: 0; pointer-events: none;">
+        </div>
+        <div class="stats-header" style="position: relative; z-index: 2;">
             <div class="stats-label">Statistik</div>
             <h2 class="stats-title">Data <em>Surat</em> Terkini</h2>
         </div>
-        <div class="stats-grid">
-            <div class="stat-card"><span class="stat-type">Masuk</span>
+        <div class="stats-grid" style="position: relative; z-index: 2;">
+            <div class="stat-card">
+                <span class="stat-type">Masuk</span>
+                <div class="stat-icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="stat-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                </div>
                 <div class="stat-number" data-target="{{ $totalSuratMasuk }}">0</div>
                 <div class="stat-label">Total Surat<br> Masuk</div>
+                <span class="stat-trend positive">↑ 12% Minggu Ini</span>
             </div>
-            <div class="stat-card"><span class="stat-type">Selesai</span>
+            <div class="stat-card">
+                <span class="stat-type">Selesai</span>
+                <div class="stat-icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="stat-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
                 <div class="stat-number" data-target="{{ $totalSuratKeluar }}">0</div>
                 <div class="stat-label">Total Surat<br> Selesai</div>
+                <span class="stat-trend positive">SLA 100% On-Time</span>
             </div>
-            <div class="stat-card"><span class="stat-type">Aktif</span>
+            <div class="stat-card">
+                <span class="stat-type">Aktif</span>
+                <div class="stat-icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="stat-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.978 11.978 0 0112 20.25a11.978 11.978 0 01-3-1.013v-.11M8.284 15.633a4.125 4.125 0 00-7.533 2.493 9.337 9.337 0 004.117.953 9.38 9.38 0 002.625-.372M21 7.5a3 3 0 11-6 0 3 3 0 016 0zM7.5 7.5a3 3 0 11-6 0 3 3 0 016 0zM12 10.5a3 3 0 110-6 3 3 0 010 6z" />
+                    </svg>
+                </div>
                 <div class="stat-number" data-target="{{ $totalPengguna }}">0</div>
                 <div class="stat-label">Pengguna<br>Terdaftar</div>
+                <span class="stat-trend neutral">Pegawai Aktif</span>
             </div>
-            <div class="stat-card"><span class="stat-type">Terarsip</span>
-                <div class="stat-number" data-target="{{ $totalDokumenTerarsip }}">0
+            <div class="stat-card">
+                <span class="stat-type">Terarsip</span>
+                <div class="stat-icon-wrapper">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="stat-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                    </svg>
                 </div>
+                <div class="stat-number" data-target="{{ $totalDokumenTerarsip }}">0</div>
                 <div class="stat-label">Dokumen<br>Terarsip</div>
+                <span class="stat-trend positive">Terlindungi Aman</span>
             </div>
         </div>
     </section>
@@ -3247,7 +3565,7 @@
     <section id="spiral-section">
         <div class="spiral-sticky">
             <div class="spiral-bg-gradient"></div>
-            <div class="spiral-bg-image"></div>
+            <div class="spiral-bg-3d-elements" id="spiral-bg-3d"></div>
             <div class="spiral-stage" id="spiral-stage">
                 <div class="spiral-label-center" id="spiral-center">
                     <div class="slc-num">06 — Fitur Unggulan</div>
@@ -3546,10 +3864,21 @@
                     <div class="feature-content">
                         <h2 class="feature-display-title">Siap Mencoba?</h2>
                         <p class="feature-desc">Masuk ke dashboard untuk mulai mengelola surat Anda.</p>
-                        <div style="margin-top: 2rem;"><a href="{{ route('login') }}" class="btn-primary">Buka
-                                Dashboard</a></div>
+                        <div style="margin-top: 2rem;">
+                            <a href="{{ route('login') }}" class="btn-primary">
+                                <span class="btn-primary-liquid"></span>
+                                <span class="btn-text-inner" data-hover="Buka Dashboard">
+                                    <span>Buka Dashboard</span>
+                                </span>
+                            </a>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- SLEEK HORIZONTAL PROGRESS INDICATOR -->
+            <div class="features-progress-bar-wrap">
+                <div class="features-progress-bar-inner" id="features-progress-bar"></div>
             </div>
         </div>
     </section>
@@ -3584,19 +3913,32 @@
     <footer id="footer">
         <div class="footer-cta-band">
             <div class="footer-cta-text">Siap menggunakan<br><em>sistem arsip digital</em>?</div>
-            <div class="footer-cta-btns"><a href="{{ route('login') }}" class="btn-primary">Sign In <svg width="13"
-                        height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="footer-cta-btns">
+                <a href="{{ route('login') }}" class="btn-primary">
+                    <span class="btn-primary-liquid"></span>
+                    <span class="btn-text-inner" data-hover="Sign In">
+                        <span>Sign In</span>
+                    </span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg></a><a href="{{ route('register') }}" class="btn-secondary">Sign Up <svg width="13"
-                        height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    </svg>
+                </a>
+                <a href="{{ route('register') }}" class="btn-secondary">
+                    <span class="btn-secondary-liquid"></span>
+                    <span class="btn-text-inner" data-hover="Sign Up">
+                        <span>Sign Up</span>
+                    </span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14" />
-                    </svg></a></div>
+                    </svg>
+                </a>
+            </div>
         </div>
         <div class="footer-grid">
             <div>
                 <div class="footer-brand">BPSUML</div>
                 <p class="footer-desc">Balai Pengelolaan Standar Ukuran Metrologi Legal — unit pelaksana teknis
-                    Direktorat Metrologi, Kementerian Perdagangan RI.</p>
+                    Direktorat Metrologi.</p>
                 <address class="footer-address">Jl. Pasteur No. 27, Pasteur<br>Kec. Sukajadi, Kota Bandung<br>Jawa Barat
                     40161</address>
             </div>
@@ -3644,7 +3986,7 @@
             </div>
         </div>
         <div class="footer-bottom"><span class="footer-copy">© {{ date('Y') }} BPSUML — Direktorat Metrologi
-                RI</span><span class="footer-tagline">Mengukur dengan Adil, Melayani dengan Tepat</span></div>
+            </span><span class="footer-tagline">Mengukur dengan Adil, Melayani dengan Tepat</span></div>
     </footer>
 
     <script>
@@ -4021,7 +4363,7 @@
         const splitIntoWords = (elementId) => {
             const el = document.getElementById(elementId);
             if (!el) return;
-            
+
             // For hero-title, we need to handle nested .line spans
             if (elementId === 'hero-title-main') {
                 const lines = el.querySelectorAll('.line');
@@ -4029,12 +4371,12 @@
                     const text = line.innerText;
                     const words = text.split(' ');
                     const isItalic = line.querySelector('em');
-                    
+
                     let html = '';
                     words.forEach(word => {
                         html += `<span class="word-span">${word}</span> `;
                     });
-                    
+
                     if (isItalic) {
                         line.innerHTML = `<em>${html}</em>`;
                     } else {
@@ -4053,33 +4395,33 @@
 
         // Typing Timeline
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-        
+
         // Initial state for cursor
         gsap.set('.hero-title, .hero-subtitle', { opacity: 1 });
 
         tl.fromTo('.hero-eyebrow', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.8, delay: 0.2 })
-        .fromTo('.hero-eyebrow-line', { width: 0 }, { width: 28, duration: 0.8 }, "-=0.6")
-        .to('#hero-title-main .word-span', { 
-            opacity: 1, 
-            y: 0, 
-            filter: 'blur(0px)',
-            duration: 0.5, 
-            stagger: 0.08, 
-            ease: "back.out(1.7)",
-            delay: 0.5 
-        })
-        .to('#hero-subtitle-main .word-span', { 
-            opacity: 1, 
-            y: 0, 
-            filter: 'blur(0px)',
-            duration: 0.4, 
-            stagger: 0.04,
-            ease: "power2.out"
-        }, "-=0.3")
-        .to('.hero-cta', { opacity: 1, y: 0, duration: 0.7 }, '-=0.35')
-        .to('.hero-float-cards', { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5')
-        .to('.hero-badge', { opacity: 1, duration: 0.8 }, '-=0.4')
-        .to('.hero-scroll-hint', { opacity: 1, duration: 0.6 }, '-=0.2');
+            .fromTo('.hero-eyebrow-line', { width: 0 }, { width: 28, duration: 0.8 }, "-=0.6")
+            .to('#hero-title-main .word-span', {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                duration: 0.5,
+                stagger: 0.08,
+                ease: "back.out(1.7)",
+                delay: 0.5
+            })
+            .to('#hero-subtitle-main .word-span', {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                duration: 0.4,
+                stagger: 0.04,
+                ease: "power2.out"
+            }, "-=0.3")
+            .to('.hero-cta', { opacity: 1, y: 0, duration: 0.7 }, '-=0.35')
+            .to('.hero-float-cards', { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5')
+            .to('.hero-badge', { opacity: 1, duration: 0.8 }, '-=0.4')
+            .to('.hero-scroll-hint', { opacity: 1, duration: 0.6 }, '-=0.2');
 
         // ─── ENHANCED ANIMATIONS ───
 
@@ -4161,6 +4503,8 @@
         const spiralStage = document.getElementById('spiral-stage');
         const spiralCenter = document.getElementById('spiral-center');
         const spiralProgressEl = document.getElementById('spiral-progress');
+        const spiralBg3d = document.getElementById('spiral-bg-3d');
+        const bgPillsData = [];
 
         if (spiralContainer && spiralProgressEl) {
             // Build DOM items
@@ -4181,12 +4525,74 @@
             });
         }
 
+        // Initialize 3D Floating Background Pills dynamically
+        if (spiralBg3d) {
+            const numBgPills = 15;
+            for (let i = 0; i < numBgPills; i++) {
+                const el = document.createElement('div');
+                el.className = 'spiral-bg-pill';
+                
+                // Randomize sizes and aspect ratios (pill shapes)
+                const width = Math.random() * 150 + 90;
+                const height = width * (Math.random() * 0.35 + 0.25); // Pill shape
+                el.style.width = width + 'px';
+                el.style.height = height + 'px';
+                
+                spiralBg3d.appendChild(el);
+                
+                // Save random factors for scroll 3D zoom & translation
+                bgPillsData.push({
+                    el: el,
+                    startX: Math.random() * window.innerWidth,
+                    startY: Math.random() * window.innerHeight,
+                    // Starting depth (Z translation)
+                    startZ: Math.random() * -800 - 300, 
+                    // Floating directions/speeds
+                    speedX: (Math.random() - 0.5) * 350,
+                    speedY: (Math.random() - 0.5) * 350,
+                    rotX: Math.random() * 360,
+                    rotY: Math.random() * 360,
+                    rotZ: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 180
+                });
+            }
+        }
+
         // Spiral scroll logic
         const spiralSection = document.getElementById('spiral-section');
 
         function updateSpiral(progress) {
             const n = spiralData.length;
             const totalTurns = 2.5;
+
+            // Animate background 3D pills: they fly forward towards the camera (Z increases, scale grows)
+            bgPillsData.forEach(p => {
+                const currentZ = p.startZ + (progress * 1200); // Zoom in closer
+                const currentX = p.startX + (progress * p.speedX);
+                const currentY = p.startY + (progress * p.speedY);
+                
+                // Calculate scale so they get larger as they fly closer
+                const distanceRatio = (currentZ + 1100) / 1400; // Normalized 0 to 1
+                
+                // Fade in at the start, fade out as they get extremely close
+                let opacity = 0.4;
+                if (distanceRatio < 0.25) {
+                    opacity = (distanceRatio / 0.25) * 0.4;
+                } else if (distanceRatio > 0.75) {
+                    opacity = ((1 - distanceRatio) / 0.25) * 0.4;
+                }
+
+                gsap.set(p.el, {
+                    x: currentX - window.innerWidth / 2,
+                    y: currentY - window.innerHeight / 2,
+                    z: currentZ,
+                    rotationX: p.rotX + (progress * p.rotSpeed),
+                    rotationY: p.rotY + (progress * p.rotSpeed),
+                    rotationZ: p.rotZ + (progress * p.rotSpeed),
+                    opacity: Math.max(0, opacity),
+                    scale: 0.35 + (distanceRatio * 2.5) // Grows larger!
+                });
+            });
 
             spiralData.forEach((d, i) => {
                 const el = document.getElementById(`spiral-item-${i}`);
@@ -4371,7 +4777,7 @@
         // Portals reveal
         gsap.fromTo('.portal-card', { opacity: 0, scale: 0.95, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, stagger: 0.08, scrollTrigger: { trigger: '#portals', start: 'top 75%' } });
         gsap.fromTo('.portals-header > *', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, scrollTrigger: { trigger: '#portals', start: 'top 80%' } });
-        document.querySelectorAll('.portal-card').forEach(card => { card.addEventListener('mousemove', e => { const rect = card.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top; card.style.setProperty('--x', `${x}px`); card.style.setProperty('--y', `${y}px`); }); });
+        document.querySelectorAll('.portal-card, .stat-card, .tracking-flow, .doc-preview, .archive-item').forEach(card => { card.addEventListener('mousemove', e => { const rect = card.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top; card.style.setProperty('--x', `${x}px`); card.style.setProperty('--y', `${y}px`); }); });
 
         // ========== HORIZONTAL FEATURE SCROLLER (FIX) ==========
         const scrollerSection = document.getElementById('features-scroller');
@@ -4396,9 +4802,149 @@
                     scrub: 1.2,
                     pin: true,
                     anticipatePin: 1,
-                    invalidateOnRefresh: true
+                    invalidateOnRefresh: true,
+                    onUpdate: self => {
+                        const progressBar = document.getElementById('features-progress-bar');
+                        if (progressBar) {
+                            progressBar.style.width = (self.progress * 100) + '%';
+                        }
+                    }
                 }
             });
+
+            // SLA Chronometer Pulse Animation
+            const progressRing = document.querySelector('.timer-progress-ring');
+            if (progressRing) {
+                gsap.fromTo(progressRing, { scale: 0.96, opacity: 0.3 }, {
+                    scale: 1.04, opacity: 0.8, duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut'
+                });
+            }
+
+            // Live ticking down for SLA timer (1 second interval)
+            setInterval(() => {
+                const els = document.querySelectorAll('.timer-val');
+                els.forEach(el => {
+                    const parts = el.textContent.split(':');
+                    if (parts.length === 3) {
+                        let h = parseInt(parts[0]);
+                        let m = parseInt(parts[1]);
+                        let s = parseInt(parts[2]);
+                        s--;
+                        if (s < 0) {
+                            s = 59;
+                            m--;
+                            if (m < 0) {
+                                m = 59;
+                                h--;
+                                if (h < 0) {
+                                    h = 23;
+                                }
+                            }
+                        }
+                        el.textContent =
+                            String(h).padStart(2, '0') + ':' +
+                            String(m).padStart(2, '0') + ':' +
+                            String(s).padStart(2, '0');
+                    }
+                });
+            }, 1000);
+
+            // Side parallax entrance animations for each slide (Apple/Stripe Style)
+            slides.forEach((slide) => {
+                const textSide = slide.querySelector('.feature-text-side');
+                const visualSide = slide.querySelector('.feature-visual-side');
+                const introContent = slide.querySelector('.feature-content');
+
+                if (textSide) {
+                    gsap.fromTo(textSide, { x: 60, opacity: 0 }, {
+                        x: 0, opacity: 1, duration: 1.2, ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: slide,
+                            containerAnimation: horizontalScroll,
+                            start: 'left 90%',
+                            end: 'left 50%',
+                            scrub: true
+                        }
+                    });
+                }
+
+                if (visualSide) {
+                    gsap.fromTo(visualSide, { x: 120, scale: 0.9, rotationY: -10, opacity: 0 }, {
+                        x: 0, scale: 1, rotationY: 0, opacity: 1, duration: 1.2, ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: slide,
+                            containerAnimation: horizontalScroll,
+                            start: 'left 90%',
+                            end: 'left 45%',
+                            scrub: true
+                        }
+                    });
+                }
+
+                if (introContent) {
+                    gsap.fromTo(introContent, { x: -60, opacity: 0.4 }, {
+                        x: 0, opacity: 1, duration: 1.2, ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: slide,
+                            containerAnimation: horizontalScroll,
+                            start: 'left 85%',
+                            end: 'left 40%',
+                            scrub: true
+                        }
+                    });
+                }
+
+                // Staggered timeline tracking nodes entrance (Slide 1)
+                const flowSteps = slide.querySelectorAll('.flow-step');
+                if (flowSteps.length > 0) {
+                    gsap.fromTo(flowSteps, { scale: 0.6, opacity: 0, y: 30 }, {
+                        scale: 1, opacity: 1, y: 0, stagger: 0.1, duration: 0.8, ease: 'back.out(1.2)',
+                        scrollTrigger: {
+                            trigger: slide,
+                            containerAnimation: horizontalScroll,
+                            start: 'left 80%',
+                            end: 'left 45%',
+                            scrub: true
+                        }
+                    });
+                }
+
+                // Archive Stack fanning out on enter (Slide 4)
+                const archiveCards = slide.querySelectorAll('.archive-item');
+                if (archiveCards.length > 0) {
+                    gsap.fromTo(archiveCards[0], { x: 0, y: 0, rotation: 0 }, {
+                        x: 0, y: 0, rotation: -10, duration: 1.2, ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: slide,
+                            containerAnimation: horizontalScroll,
+                            start: 'left 85%',
+                            end: 'left 45%',
+                            scrub: true
+                        }
+                    });
+                    gsap.fromTo(archiveCards[1], { x: 0, y: 0, rotation: 0, opacity: 0 }, {
+                        x: 40, y: 30, rotation: 5, opacity: 0.85, duration: 1.2, ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: slide,
+                            containerAnimation: horizontalScroll,
+                            start: 'left 85%',
+                            end: 'left 45%',
+                            scrub: true
+                        }
+                    });
+                    gsap.fromTo(archiveCards[2], { x: 0, y: 0, rotation: 0, opacity: 0 }, {
+                        x: -30, y: 60, rotation: -5, opacity: 0.45, duration: 1.2, ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: slide,
+                            containerAnimation: horizontalScroll,
+                            start: 'left 85%',
+                            end: 'left 45%',
+                            scrub: true
+                        }
+                    });
+                }
+            });
+
             // Refresh ScrollTrigger saat resize
             window.addEventListener('resize', () => {
                 if (window.innerWidth > 768) {
@@ -4506,7 +5052,7 @@
             });
 
             // Add active class on interactive elements
-            const interactiveElements = document.querySelectorAll('a, button, .portal-card, .about-card, .stat-card, .chart-card, input, select, textarea');
+            const interactiveElements = document.querySelectorAll('a, button, .portal-card, .about-card, .stat-card, .chart-card, .nav-mobile-toggle, input, select, textarea');
 
             interactiveElements.forEach(el => {
                 el.addEventListener('mouseenter', () => {

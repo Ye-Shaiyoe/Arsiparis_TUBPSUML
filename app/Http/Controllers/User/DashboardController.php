@@ -24,60 +24,60 @@ class DashboardController extends Controller
         }
 
         $userId = $user->id;
-        
+
         $bulanSelected = (int) $request->input('bulan', now()->month);
         $tahunSelected = (int) $request->input('tahun', now()->year);
 
-        $totalSurat   = Surat::where('user_id', $userId)->whereMonth('created_at', $bulanSelected)->whereYear('created_at', $tahunSelected)->count();
+        $totalSurat = Surat::where('user_id', $userId)->whereMonth('created_at', $bulanSelected)->whereYear('created_at', $tahunSelected)->count();
         $suratSelesai = Surat::where('user_id', $userId)->whereMonth('created_at', $bulanSelected)->whereYear('created_at', $tahunSelected)->where('status', 'selesai')->count();
-        $suratProses  = Surat::where('user_id', $userId)->whereMonth('created_at', $bulanSelected)->whereYear('created_at', $tahunSelected)->where('status', 'proses')->count();
+        $suratProses = Surat::where('user_id', $userId)->whereMonth('created_at', $bulanSelected)->whereYear('created_at', $tahunSelected)->where('status', 'proses')->count();
         $suratDitolak = Surat::where('user_id', $userId)->whereMonth('created_at', $bulanSelected)->whereYear('created_at', $tahunSelected)->whereIn('status', ['ditolak', 'revisi', 'revisi_admin'])->count();
         $suratActionUrgent = Surat::where('user_id', $userId)->whereIn('status', ['ditolak', 'revisi', 'revisi_admin'])->count();
 
         // Surat terbaru + tahapan untuk tracking
         $suratTerbaru = Surat::where('user_id', $userId)
-                             ->with(['tahapans.diprosesByUser'])
-                             ->latest()
-                             ->limit(5)
-                             ->get();
+            ->with(['tahapans.diprosesByUser'])
+            ->latest()
+            ->limit(5)
+            ->get();
 
         // Surat aktif untuk SLA bar
         $suratAktif = Surat::where('user_id', $userId)
-                           ->whereIn('status', ['proses', 'revisi', 'revisi_admin'])
-                           ->latest()
-                           ->limit(3)
-                           ->get();
+            ->whereIn('status', ['proses', 'revisi', 'revisi_admin'])
+            ->latest()
+            ->limit(3)
+            ->get();
 
         // Data untuk chart: distribusi jenis surat (sesuai filter)
         $jenisSurat = Surat::where('user_id', $userId)
-                          ->whereMonth('created_at', $bulanSelected)
-                          ->whereYear('created_at', $tahunSelected)
-                          ->select('jenis', DB::raw('count(*) as total'))
-                          ->groupBy('jenis')
-                          ->pluck('total', 'jenis')
-                          ->toArray();
+            ->whereMonth('created_at', $bulanSelected)
+            ->whereYear('created_at', $tahunSelected)
+            ->select('jenis', DB::raw('count(*) as total'))
+            ->groupBy('jenis')
+            ->pluck('total', 'jenis')
+            ->toArray();
 
         // Data untuk chart: tren surat per bulan (6 bulan terakhir)
         $sixMonthsAgo = now()->subMonths(5)->startOfMonth();
         $trenBulanan = Surat::where('user_id', $userId)
-                           ->where('created_at', '>=', $sixMonthsAgo)
-                           ->select(
-                               DB::raw("DATE_FORMAT(created_at, '%M %Y') as month"),
-                               DB::raw('count(*) as total')
-                           )
-                           ->groupBy('month')
-                           ->orderBy('month', 'asc')
-                           ->pluck('total', 'month')
-                           ->toArray();
+            ->where('created_at', '>=', $sixMonthsAgo)
+            ->select(
+                DB::raw("DATE_FORMAT(created_at, '%M %Y') as month"),
+                DB::raw('count(*) as total')
+            )
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
+            ->pluck('total', 'month')
+            ->toArray();
 
         /** @var FilesystemAdapter $privateDisk */
         $privateDisk = Storage::disk('private');
         $templates = collect($privateDisk->files('templates'))
             ->map(fn($path) => [
                 'nama' => basename($path),
-                'url'  => route('user.template.download', ['nama' => basename($path)]),
+                'url' => route('user.template.download', ['nama' => basename($path)]),
                 'size' => round($privateDisk->size($path) / 1024, 1) . ' KB',
-                'ext'  => pathinfo($path, PATHINFO_EXTENSION),
+                'ext' => pathinfo($path, PATHINFO_EXTENSION),
             ])
             ->values();
 
@@ -108,9 +108,20 @@ class DashboardController extends Controller
         $weeklyActivity = $user->getWeeklyActivityData();
 
         return view('dashboard', compact(
-            'totalSurat', 'suratSelesai', 'suratProses', 'suratDitolak',
-            'suratTerbaru', 'suratAktif', 'templates',
-            'jenisSurat', 'trenBulanan', 'isLibur', 'bulanSelected', 'tahunSelected', 'weeklyActivity', 'suratActionUrgent'
+            'totalSurat',
+            'suratSelesai',
+            'suratProses',
+            'suratDitolak',
+            'suratTerbaru',
+            'suratAktif',
+            'templates',
+            'jenisSurat',
+            'trenBulanan',
+            'isLibur',
+            'bulanSelected',
+            'tahunSelected',
+            'weeklyActivity',
+            'suratActionUrgent'
         ));
     }
 
@@ -125,9 +136,9 @@ class DashboardController extends Controller
 
         // 1. Stats
         $stats = [
-            'totalSurat'   => Surat::where('user_id', $userId)->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->count(),
+            'totalSurat' => Surat::where('user_id', $userId)->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->count(),
             'suratSelesai' => Surat::where('user_id', $userId)->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->where('status', 'selesai')->count(),
-            'suratProses'  => Surat::where('user_id', $userId)->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->where('status', 'proses')->count(),
+            'suratProses' => Surat::where('user_id', $userId)->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->where('status', 'proses')->count(),
             'suratDitolak' => Surat::where('user_id', $userId)->whereMonth('created_at', $bulan)->whereYear('created_at', $tahun)->whereIn('status', ['ditolak', 'revisi', 'revisi_admin'])->count(),
             'suratActionUrgent' => Surat::where('user_id', $userId)->whereIn('status', ['ditolak', 'revisi', 'revisi_admin'])->count(),
         ];
@@ -135,10 +146,10 @@ class DashboardController extends Controller
         // 2. Notifications
         $allNotifications = $user->notifications()->latest()->limit(20)->get();
         $unreadCount = $user->unreadNotifications()->count();
-        
+
         $notifications = $allNotifications->whereNull('read_at')->merge($allNotifications->whereNotNull('read_at'))
             ->take(10)
-            ->map(function($n) {
+            ->map(function ($n) {
                 return [
                     'id' => $n->id,
                     'type' => $n->data['type'] ?? 'info',
@@ -156,13 +167,13 @@ class DashboardController extends Controller
             ->latest()
             ->limit(3)
             ->get()
-            ->map(function($s) {
+            ->map(function ($s) {
                 // Progress calculation
                 $pct = $s->deadline_sla
                     ? min(100, now()->diffInMinutes($s->created_at) /
                         max(1, $s->deadline_sla->diffInMinutes($s->created_at)) * 100)
                     : 50;
-                
+
                 return [
                     'id' => $s->id,
                     'judul_short' => \Illuminate\Support\Str::limit($s->judul, 30),
@@ -186,7 +197,7 @@ class DashboardController extends Controller
                 ->latest()
                 ->limit(5)
                 ->get()
-                ->map(function($s) {
+                ->map(function ($s) {
                     return [
                         'uuid' => $s->uuid,
                         'judul' => $s->judul,
@@ -198,7 +209,7 @@ class DashboardController extends Controller
                         'sla_status' => $s->sla_status,
                         'sla_color' => $s->sla_color, // Tambahkan ini
                         'show_url' => route('user.surat.show', $s),
-                        'tahapans' => $s->tahapans->map(function($t) {
+                        'tahapans' => $s->tahapans->map(function ($t) {
                             return [
                                 'tahap' => $t->tahap,
                                 'nama_tahap' => $t->nama_tahap,

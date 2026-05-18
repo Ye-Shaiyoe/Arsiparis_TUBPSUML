@@ -25,8 +25,8 @@ class SuratController extends Controller
     public function index(Request $request)
     {
         $query = Surat::where('user_id', Auth::id())
-                      ->with('tahapans')
-                      ->latest();
+            ->with('tahapans')
+            ->latest();
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -57,12 +57,12 @@ class SuratController extends Controller
     public function fileIndex(Request $request)
     {
         $query = Surat::where('user_id', Auth::id())
-                      ->where('status', 'selesai')
-                      ->where(function($q) {
-                          $q->whereNotNull('file_word')
-                            ->orWhereNotNull('file_lampiran');
-                      })
-                      ->latest();
+            ->where('status', 'selesai')
+            ->where(function ($q) {
+                $q->whereNotNull('file_word')
+                    ->orWhereNotNull('file_lampiran');
+            })
+            ->latest();
 
         if ($request->filled('search')) {
             $query->where('judul', 'like', '%' . $request->search . '%');
@@ -77,8 +77,8 @@ class SuratController extends Controller
     public function table(Request $request)
     {
         $query = Surat::where('user_id', Auth::id())
-                      ->with('tahapans')
-                      ->latest();
+            ->with('tahapans')
+            ->latest();
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -111,7 +111,7 @@ class SuratController extends Controller
     {
         $filters = $request->only(['status', 'jenis', 'tahun', 'bulan', 'search']);
         $fileName = 'Data_Surat_' . Auth::user()->name . '_' . date('Y-m-d_His') . '.xlsx';
-        
+
         return Excel::download(new UserSuratExport($filters), $fileName);
     }
 
@@ -121,7 +121,7 @@ class SuratController extends Controller
         $templates = collect(Storage::disk('private')->files('templates'))
             ->map(fn($path) => [
                 'nama' => basename($path),
-                'url'  => route('user.template.download', ['nama' => basename($path)]),
+                'url' => route('user.template.download', ['nama' => basename($path)]),
             ])->values();
 
         return view('user.surat.create', compact('templates', 'isLibur'));
@@ -136,13 +136,13 @@ class SuratController extends Controller
         }
 
         $rules = [
-            'judul'          => ($isDraft ? 'nullable' : 'required') . '|string|max:255',
-            'jenis'          => ($isDraft ? 'nullable' : 'required') . '|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
-            'sifat'          => ($isDraft ? 'nullable' : 'required') . '|in:biasa,segera,rahasia',
-            'tujuan'         => ($isDraft ? 'nullable' : 'required') . '|string|max:500',
+            'judul' => ($isDraft ? 'nullable' : 'required') . '|string|max:255',
+            'jenis' => ($isDraft ? 'nullable' : 'required') . '|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
+            'sifat' => ($isDraft ? 'nullable' : 'required') . '|in:biasa,segera,rahasia',
+            'tujuan' => ($isDraft ? 'nullable' : 'required') . '|string|max:500',
             'catatan_pengusul' => 'nullable|string|max:100',
-            'file_word'      => ($isDraft ? 'nullable' : 'required') . '|file|mimes:docx,doc|max:5120',
-            'file_lampiran'  => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc,xlsx,xls|max:10240',
+            'file_word' => ($isDraft ? 'nullable' : 'required') . '|file|mimes:docx,doc|max:5120',
+            'file_lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc,xlsx,xls|max:10240',
         ];
 
         $request->validate($rules, [
@@ -151,28 +151,28 @@ class SuratController extends Controller
         ]);
 
         // Upload file ke disk 'private'
-        $fileWord = $request->hasFile('file_word') 
+        $fileWord = $request->hasFile('file_word')
             ? $request->file('file_word')->store('surat/word', 'private')
             : null;
         $fileLamp = $request->hasFile('file_lampiran')
-                  ? $request->file('file_lampiran')->store('surat/lampiran', 'private')
-                  : null;
+            ? $request->file('file_lampiran')->store('surat/lampiran', 'private')
+            : null;
 
         // Hitung deadline SLA jika bukan draft
         $deadline = !$isDraft ? $this->hitungSLA(now()) : null;
 
         $surat = Surat::create([
-            'user_id'       => Auth::id(),
-            'judul'         => $request->judul ?? 'Draft Surat ' . now()->format('d/m/Y H:i'),
-            'jenis'         => $request->jenis ?? ('nota_dinas'), // Default for drafts
-            'sifat'         => $request->sifat ?? 'biasa',
-            'tujuan'        => $request->tujuan ?? '', // Default for drafts
-            'catatan_pengusul'=> $request->catatan_pengusul,
-            'file_word'     => $fileWord,
+            'user_id' => Auth::id(),
+            'judul' => $request->judul ?? 'Draft Surat ' . now()->format('d/m/Y H:i'),
+            'jenis' => $request->jenis ?? ('nota_dinas'), // Default for drafts
+            'sifat' => $request->sifat ?? 'biasa',
+            'tujuan' => $request->tujuan ?? '', // Default for drafts
+            'catatan_pengusul' => $request->catatan_pengusul,
+            'file_word' => $fileWord,
             'file_lampiran' => $fileLamp,
-            'tahap_sekarang'=> 1,
-            'status'        => $isDraft ? 'draft' : 'proses',
-            'deadline_sla'  => $deadline,
+            'tahap_sekarang' => 1,
+            'status' => $isDraft ? 'draft' : 'proses',
+            'deadline_sla' => $deadline,
         ]);
 
         if (!$isDraft) {
@@ -186,11 +186,11 @@ class SuratController extends Controller
                 ->each(fn($a) => $a->notify(new SuratMasukNotification($surat)));
 
             return redirect()->route('user.surat.show', $surat)
-                             ->with('success', 'Surat berhasil diajukan!');
+                ->with('success', 'Surat berhasil diajukan!');
         }
 
         return redirect()->route('user.surat.index')
-                         ->with('success', 'Draft surat berhasil disimpan.');
+            ->with('success', 'Draft surat berhasil disimpan.');
     }
 
     public function edit(Surat $surat)
@@ -201,7 +201,7 @@ class SuratController extends Controller
         $templates = collect(Storage::disk('private')->files('templates'))
             ->map(fn($path) => [
                 'nama' => basename($path),
-                'url'  => route('user.template.download', ['nama' => basename($path)]),
+                'url' => route('user.template.download', ['nama' => basename($path)]),
             ])->values();
 
         $isLibur = $this->isLayananTutup();
@@ -219,30 +219,32 @@ class SuratController extends Controller
         }
 
         $rules = [
-            'judul'          => ($isDraft ? 'nullable' : 'required') . '|string|max:255',
-            'jenis'          => ($isDraft ? 'nullable' : 'required') . '|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
-            'sifat'          => ($isDraft ? 'nullable' : 'required') . '|in:biasa,segera,rahasia',
-            'tujuan'         => ($isDraft ? 'nullable' : 'required') . '|string|max:500',
+            'judul' => ($isDraft ? 'nullable' : 'required') . '|string|max:255',
+            'jenis' => ($isDraft ? 'nullable' : 'required') . '|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
+            'sifat' => ($isDraft ? 'nullable' : 'required') . '|in:biasa,segera,rahasia',
+            'tujuan' => ($isDraft ? 'nullable' : 'required') . '|string|max:500',
             'catatan_pengusul' => 'nullable|string|max:100',
-            'file_word'      => ($isDraft || $surat->file_word ? 'nullable' : 'required') . '|file|mimes:docx,doc|max:5120',
-            'file_lampiran'  => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc,xlsx,xls|max:10240',
+            'file_word' => ($isDraft || $surat->file_word ? 'nullable' : 'required') . '|file|mimes:docx,doc|max:5120',
+            'file_lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc,xlsx,xls|max:10240',
         ];
 
         $request->validate($rules);
 
         if ($request->hasFile('file_word')) {
-            if ($surat->file_word) Storage::disk('private')->delete($surat->file_word);
+            if ($surat->file_word)
+                Storage::disk('private')->delete($surat->file_word);
             $surat->file_word = $request->file('file_word')->store('surat/word', 'private');
         }
 
         if ($request->hasFile('file_lampiran')) {
-            if ($surat->file_lampiran) Storage::disk('private')->delete($surat->file_lampiran);
+            if ($surat->file_lampiran)
+                Storage::disk('private')->delete($surat->file_lampiran);
             $surat->file_lampiran = $request->file('file_lampiran')->store('surat/lampiran', 'private');
         }
 
-        $surat->judul  = $request->judul  ?? $surat->judul;
-        $surat->jenis  = $request->jenis  ?? $surat->jenis;
-        $surat->sifat  = $request->sifat  ?? $surat->sifat;
+        $surat->judul = $request->judul ?? $surat->judul;
+        $surat->jenis = $request->jenis ?? $surat->jenis;
+        $surat->sifat = $request->sifat ?? $surat->sifat;
         $surat->tujuan = $request->tujuan ?? $surat->tujuan;
         if ($request->has('catatan_pengusul')) {
             $surat->catatan_pengusul = $request->catatan_pengusul;
@@ -261,7 +263,7 @@ class SuratController extends Controller
                 ->each(fn($a) => $a->notify(new SuratMasukNotification($surat)));
 
             return redirect()->route('user.surat.show', $surat)
-                             ->with('success', 'Draft berhasil diajukan!');
+                ->with('success', 'Draft berhasil diajukan!');
         }
 
         $surat->save();
@@ -278,17 +280,17 @@ class SuratController extends Controller
         }
 
         $request->validate([
-            'judul'  => 'required|string|max:255',
-            'jenis'  => 'required|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
-            'sifat'  => 'required|in:biasa,segera,rahasia',
+            'judul' => 'required|string|max:255',
+            'jenis' => 'required|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
+            'sifat' => 'required|in:biasa,segera,rahasia',
             'tujuan' => 'required|string|max:500',
             'catatan_pengusul' => 'nullable|string|max:100',
         ]);
 
         $surat->update([
-            'judul'  => $request->judul,
-            'jenis'  => $request->jenis,
-            'sifat'  => $request->sifat,
+            'judul' => $request->judul,
+            'jenis' => $request->jenis,
+            'sifat' => $request->sifat,
             'tujuan' => $request->tujuan,
             'catatan_pengusul' => $request->catatan_pengusul,
         ]);
@@ -308,7 +310,7 @@ class SuratController extends Controller
             $suratModel = Surat::where('id', $surat)
                 ->where('user_id', Auth::id())
                 ->first();
-            
+
             if ($suratModel) {
                 // Redirect otomatis ke URL versi UUID biar rapi
                 return redirect()->route('user.surat.show', $suratModel);
@@ -319,9 +321,11 @@ class SuratController extends Controller
             abort(404, 'Surat tidak ditemukan atau Anda tidak memiliki akses.');
         }
 
-        $suratModel->load(['tahapans' => function($query) {
-            $query->orderBy('tahap')->with('diprosesByUser');
-        }]);
+        $suratModel->load([
+            'tahapans' => function ($query) {
+                $query->orderBy('tahap')->with('diprosesByUser');
+            }
+        ]);
 
         return view('user.surat.show', ['surat' => $suratModel]);
     }
@@ -388,8 +392,8 @@ class SuratController extends Controller
             return back()->with('error', 'Permintaan hapus sudah pernah dikirim dan masih menunggu approval admin.');
         }
 
-        // Jika surat ditolak, selesai, atau SLA terlambat - bisa langsung hapus tanpa approval
-        $bisaLangsungHapus = in_array($surat->status, ['draft', 'ditolak', 'selesai']) || $surat->sla_status === 'terlambat';
+        // Jika surat ditolak, selesai, atau draft - bisa langsung hapus tanpa approval
+        $bisaLangsungHapus = in_array($surat->status, ['draft', 'ditolak', 'selesai']);
 
         if ($bisaLangsungHapus) {
             // Validasi ringan, alasan opsional
@@ -418,9 +422,9 @@ class SuratController extends Controller
 
         $deleteRequest = SuratDeleteRequest::create([
             'surat_id' => $surat->id,
-            'user_id'  => Auth::id(),
-            'alasan'   => $request->alasan,
-            'status'   => 'pending',
+            'user_id' => Auth::id(),
+            'alasan' => $request->alasan,
+            'status' => 'pending',
         ]);
 
         // Kirim notifikasi ke semua admin
@@ -465,7 +469,7 @@ class SuratController extends Controller
         }
 
         $request->validate([
-            'file_word'     => 'required|file|mimes:docx,doc|max:5120',
+            'file_word' => 'required|file|mimes:docx,doc|max:5120',
             'file_lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc,xlsx,xls|max:10240',
         ]);
 
@@ -479,17 +483,17 @@ class SuratController extends Controller
         // Upload file baru ke private disk
         $fileWord = $request->file('file_word')->store('surat/word', 'private');
         $fileLamp = $request->file('file_lampiran')
-                  ? $request->file('file_lampiran')->store('surat/lampiran', 'private')
-                  : null;
+            ? $request->file('file_lampiran')->store('surat/lampiran', 'private')
+            : null;
 
         $surat->update([
-            'file_word'         => $fileWord,
-            'file_lampiran'     => $fileLamp,
-            'status'            => 'revisi',
-            'tahap_sekarang'    => 2,
-            'status_revisi'     => true,
-            'revisi_count'      => $surat->revisi_count + 1,
-            'revisi_uploaded_at'=> now(),
+            'file_word' => $fileWord,
+            'file_lampiran' => $fileLamp,
+            'status' => 'revisi',
+            'tahap_sekarang' => 2,
+            'status_revisi' => true,
+            'revisi_count' => $surat->revisi_count + 1,
+            'revisi_uploaded_at' => now(),
         ]);
 
         // Reset tahap 1 ke status selesai (sudah lewat)
@@ -499,18 +503,18 @@ class SuratController extends Controller
 
         // Tahap 2 sedang di-verifikasi ulang - RESET TOTAL
         $surat->tahapans()->where('tahap', 2)->update([
-            'status'        => 'proses',
-            'selesai_pada'  => null,
+            'status' => 'proses',
+            'selesai_pada' => null,
             'diproses_oleh' => null,
-            'catatan'       => null,
+            'catatan' => null,
         ]);
 
         // Reset tahapan setelah tahap 2 menjadi 'menunggu' karena akan diverifikasi ulang
         $surat->tahapans()->where('tahap', '>', 2)->update([
-            'status'        => 'menunggu',
-            'selesai_pada'  => null,
+            'status' => 'menunggu',
+            'selesai_pada' => null,
             'diproses_oleh' => null,
-            'catatan'       => null,
+            'catatan' => null,
         ]);
 
         // Notif ke SEMUA admin
@@ -571,14 +575,14 @@ class SuratController extends Controller
 
         if (!Storage::disk('private')->exists($filePath)) {
             Log::error('File not found on disk for preview', ['fullPath' => $fullPath, 'filePath' => $filePath]);
-            
+
             // Jika file hilang tapi database masih punya reference, clear reference
             if ($tipe === 'word') {
                 $surat->update(['file_word' => null]);
             } else {
                 $surat->update(['file_lampiran' => null]);
             }
-            
+
             return back()->with('error', 'File tidak ditemukan. File mungkin sudah dihapus atau berhasil di-update dengan versi baru.');
         }
 
@@ -617,8 +621,8 @@ class SuratController extends Controller
             ]);
         }
 
-        // Jika .doc biasa, paksa download karena docx converter tidak support doc binary
-        if ($extension === 'doc') {
+        // Jika file tidak bisa di-preview di browser (seperti excel, zip, rar, doc), paksa download
+        if (in_array($extension, ['doc', 'xls', 'xlsx', 'csv', 'zip', 'rar'])) {
             return $this->download($surat, $tipe);
         }
 
@@ -626,7 +630,7 @@ class SuratController extends Controller
         if ($extension === 'docx') {
             $converter = new \App\Services\DocxToHtmlConverter($fullPath);
             $htmlRaw = $converter->convert();
-            
+
             // Sanitasi HTML sebelum ditampilkan ke browser
             $htmlContent = \App\Services\HtmlSanitizer::clean($htmlRaw);
 
@@ -638,7 +642,7 @@ class SuratController extends Controller
             ]);
         }
 
-        return Storage::disk('private')->download($filePath);
+        return $this->download($surat, $tipe);
     }
 
     /**
@@ -659,11 +663,28 @@ class SuratController extends Controller
         $originalName = $tipe === 'word' ? $surat->judul : 'lampiran';
         $downloadName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $originalName) . '.' . $extension;
 
+        $mimeTypes = [
+            'pdf'  => 'application/pdf',
+            'doc'  => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'webp' => 'image/webp',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'xls'  => 'application/vnd.ms-excel',
+            'csv'  => 'text/csv',
+        ];
+
+        $mimeType = $mimeTypes[$extension] ?? 'application/octet-stream';
+
         while (ob_get_level()) {
             ob_end_clean();
         }
 
-        return Storage::disk('private')->download($filePath, $downloadName);
+        return Storage::disk('private')->download($filePath, $downloadName, [
+            'Content-Type' => $mimeType,
+        ]);
     }
 
     /**
@@ -728,7 +749,8 @@ class SuratController extends Controller
     private function isLayananTutup(): bool
     {
         $now = now();
-        if ($now->isWeekend()) return true;
+        if ($now->isWeekend())
+            return true;
 
         $dayOfWeek = $now->dayOfWeek; // 1 (Mon) - 7 (Sun)
         $timeInMinutes = $now->hour * 60 + $now->minute;
@@ -736,14 +758,14 @@ class SuratController extends Controller
         // Senin–Kamis: 07:30 – 16:00
         if ($dayOfWeek >= 1 && $dayOfWeek <= 4) {
             $start = 7 * 60 + 30; // 07:30
-            $end   = 16 * 60; // 16:00
+            $end = 16 * 60; // 16:00
             return $timeInMinutes < $start || $timeInMinutes >= $end;
         }
 
         // Jumat: 07:30 – 16:30
         if ($dayOfWeek === 5) {
             $start = 7 * 60 + 30; // 07:30
-            $end   = 16 * 60 + 30; // 16:30
+            $end = 16 * 60 + 30; // 16:30
             return $timeInMinutes < $start || $timeInMinutes >= $end;
         }
 

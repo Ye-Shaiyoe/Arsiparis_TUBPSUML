@@ -51,21 +51,31 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        $recaptchaVerify = \Illuminate\Support\Facades\Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret'   => config('services.recaptcha.secret'),
-            'response' => $recaptchaToken,
-            'remoteip' => $this->ip(),
-        ]);
+        try {
+            $recaptchaVerify = \Illuminate\Support\Facades\Http::timeout(5)->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret'   => config('services.recaptcha.secret'),
+                'response' => $recaptchaToken,
+                'remoteip' => $this->ip(),
+            ]);
 
-        if (! $recaptchaVerify->json('success')) {
-            $errCodes = implode(', ', $recaptchaVerify->json('error-codes', []));
-            \Illuminate\Support\Facades\Log::warning('Login reCAPTCHA gagal', [
-                'error-codes' => $errCodes,
-                'ip'          => $this->ip(),
-            ]);
-            throw ValidationException::withMessages([
-                'recaptcha' => 'Verifikasi reCAPTCHA gagal atau kadaluarsa. Silakan coba lagi.',
-            ]);
+            if (! $recaptchaVerify->json('success')) {
+                $errCodes = implode(', ', $recaptchaVerify->json('error-codes', []));
+                \Illuminate\Support\Facades\Log::warning('Login reCAPTCHA gagal', [
+                    'error-codes' => $errCodes,
+                    'ip'          => $this->ip(),
+                ]);
+                throw ValidationException::withMessages([
+                    'recaptcha' => 'Verifikasi reCAPTCHA gagal atau kadaluarsa. Silakan coba lagi.',
+                ]);
+            }
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            if (app()->environment('local')) {
+                \Illuminate\Support\Facades\Log::warning('Login reCAPTCHA di-bypass karena koneksi timeout di environment local.');
+            } else {
+                throw ValidationException::withMessages([
+                    'recaptcha' => 'Tidak dapat terhubung ke server reCAPTCHA. Pastikan koneksi internet Anda stabil.',
+                ]);
+            }
         }
 
         // 2. Lanjut Login Biasa

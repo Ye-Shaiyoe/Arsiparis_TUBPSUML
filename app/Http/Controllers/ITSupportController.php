@@ -82,15 +82,15 @@ class ITSupportController extends Controller
     public function becomeITSupport(\Illuminate\Http\Request $request)
     {
         $code = $request->input('code');
-        $envCode = env('IT_SUPPORT_CODE');
+        $envCode = config('app.it_support_code');
 
-        if ($envCode && $code === $envCode) {
+        if ($envCode && $code === trim($envCode)) {
             $user = auth()->user();
             $user->role = 'it_support';
             $user->save();
             return redirect()->route('itsupport.dashboard')->with('success', 'You are now IT Support!');
         }
 
-        return redirect('/')->with('error', 'Invalid code.');
+        return redirect('/')->with('error', 'Invalid code or configuration error.');
     }
 }

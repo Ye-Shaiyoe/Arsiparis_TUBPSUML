@@ -360,6 +360,8 @@ table.ringkasan .num-cell { text-align: right; font-family: 'DM Mono', monospace
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+(function() {
+    let chartController = new AbortController();
 const CHART_DATA_URL = "{{ route('admin.chart.data') }}";
 
 const C = {
@@ -380,6 +382,8 @@ let isFetching = false;
 function loadCharts() {
   if (isFetching) return;
   isFetching = true;
+  
+  chartController = new AbortController();
 
   const tahun = document.getElementById('filter-tahun').value;
   const bulan = document.getElementById('filter-bulan').value;
@@ -390,6 +394,7 @@ function loadCharts() {
   debug.style.display = 'none';
 
   fetch(CHART_DATA_URL + '?tahun=' + tahun + '&bulan=' + bulan, {
+    signal: chartController.signal,
     headers: { 'X-Requested-With': 'XMLHttpRequest' }
   })
     .then(r => {
@@ -419,6 +424,7 @@ function loadCharts() {
       console.log('Charts auto-updated at:', new Date().toLocaleTimeString());
     })
     .catch(err => {
+      if (err.name === 'AbortError') return;
       console.error('Chart error:', err);
       debug.textContent = '⚠ Gagal load data: ' + err.message + '. Buka DevTools → Network untuk detail.';
       debug.style.display = 'block';
@@ -429,15 +435,21 @@ function loadCharts() {
     });
 }
 
-// Simple Polling: Refresh data tiap 30 detik secara otomatis
-setInterval(() => {
-    // Hanya refresh kalau tab sedang dibuka (biar hemat resource)
-    if (!document.hidden) {
-        loadCharts();
-    }
-}, 30000);
+function initCharts() {
+    // Execute immediately
+    loadCharts();
+}
 
-document.addEventListener('DOMContentLoaded', loadCharts);
+// Initial load
+initCharts();
+
+// Turbo compatibility
+document.addEventListener('turbo:load', initCharts);
+
+// Cleanup on Turbo navigation
+document.addEventListener('turbo:before-cache', () => {
+    chartController.abort();
+}, { once: true });
 
 function updateStatCards(d) {
   const b = d.suratPerBulan;
@@ -990,6 +1002,6 @@ function buildBottleneckChart(data) {
     }
   });
 }
+})();
 </script>
-
 @endsection

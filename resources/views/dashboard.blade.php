@@ -1119,8 +1119,10 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Chart: Distribusi Jenis Surat
+(function() {
+    // Function to run dashboard scripts
+    const initDashboard = () => {
+        // Mixed Chart: Distribusi Jenis Surat
     const jenisCtx = document.getElementById('jenisChart');
     if (jenisCtx) {
         const jenisData = @json($jenisSurat);
@@ -1128,90 +1130,182 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const labels = Object.keys(jenisData).map(key => jenisLabels[key] || key);
         const data = Object.values(jenisData);
-        const colors = [
-            'rgba(30, 58, 95, 0.8)', 
-            'rgba(37, 99, 235, 0.8)', 
-            'rgba(34, 197, 94, 0.8)', 
-            'rgba(245, 158, 11, 0.8)', 
-            'rgba(239, 68, 68, 0.8)', 
-            'rgba(139, 92, 246, 0.8)', 
-            'rgba(236, 72, 153, 0.8)'
-        ];
         
         new Chart(jenisCtx.getContext('2d'), {
-            type: 'doughnut',
+            type: 'bar',
             data: {
                 labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: colors.slice(0, data.length),
-                    borderWidth: 4,
-                    borderColor: '#ffffff',
-                    hoverOffset: 15,
-                    borderRadius: 10
-                }]
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Jumlah',
+                        data: data,
+                        backgroundColor: (context) => {
+                            const chart = context.chart;
+                            const { ctx, chartArea } = chart;
+                            if (!chartArea) return null;
+                            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                            gradient.addColorStop(0, 'rgba(139, 92, 246, 0.8)'); // Purple
+                            gradient.addColorStop(1, 'rgba(236, 72, 153, 0.8)'); // Pink
+                            return gradient;
+                        },
+                        borderRadius: 8,
+                        barPercentage: 0.5,
+                        categoryPercentage: 0.7,
+                        borderWidth: 0
+                    },
+                    {
+                        type: 'line',
+                        label: 'Garis Distribusi',
+                        data: data,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#8b5cf6',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '75%',
                 plugins: {
                     legend: {
-                        position: 'bottom',
+                        display: true,
+                        position: 'top',
                         labels: {
-                            padding: 20,
                             usePointStyle: true,
-                            pointStyle: 'circle',
-                            font: { size: 12, weight: '600' }
+                            boxWidth: 8,
+                            font: { size: 11, weight: '500' },
+                            color: '#64748b'
                         }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#e2e8f0',
+                        padding: 12,
+                        cornerRadius: 12,
+                        displayColors: true,
+                        usePointStyle: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, color: '#94a3b8', font: { size: 10 } },
+                        grid: { color: 'rgba(241, 245, 249, 0.5)', drawBorder: false }
+                    },
+                    x: {
+                        ticks: { color: '#64748b', font: { size: 10 } },
+                        grid: { display: false }
                     }
                 }
             }
         });
     }
 
-    // Chart: Tren Bulanan
+    // Premium Mixed Chart: Tren Pengajuan Surat (Bar + Line)
     const trenCtx = document.getElementById('trenChart');
     if (trenCtx) {
         const trenData = @json($trenBulanan);
         const labels = Object.keys(trenData);
         const data = Object.values(trenData);
         
+        // Compute cumulative values for line dataset
+        const cumulative = data.reduce((acc, val, idx) => {
+            acc.push((acc[idx - 1] || 0) + val);
+            return acc;
+        }, []);
+
         new Chart(trenCtx.getContext('2d'), {
             type: 'bar',
             data: {
                 labels: labels,
-                datasets: [{
-                    label: 'Jumlah Surat',
-                    data: data,
-                    backgroundColor: (context) => {
-                        const chart = context.chart;
-                        const {ctx, chartArea} = chart;
-                        if (!chartArea) return null;
-                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-                        gradient.addColorStop(0, '#1e3a5f');
-                        gradient.addColorStop(1, '#3b82f6');
-                        return gradient;
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Jumlah Surat',
+                        data: data,
+                        backgroundColor: (context) => {
+                            const chart = context.chart;
+                            const { ctx, chartArea } = chart;
+                            if (!chartArea) return null;
+                            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.8)'); // Emerald
+                            gradient.addColorStop(1, 'rgba(52, 211, 153, 0.8)'); // Light Emerald
+                            return gradient;
+                        },
+                        borderRadius: 8,
+                        barPercentage: 0.5,
+                        categoryPercentage: 0.7,
+                        borderWidth: 0,
+                        order: 2
                     },
-                    borderRadius: 10,
-                    barPercentage: 0.5,
-                    categoryPercentage: 0.8
-                }]
+                    {
+                        type: 'line',
+                        label: 'Kumulatif',
+                        data: cumulative,
+                        borderColor: '#10b981', // Emerald
+                        backgroundColor: 'transparent',
+                        borderWidth: 4,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#10b981',
+                        pointBorderWidth: 3,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        tension: 0.4,
+                        yAxisID: 'y1',
+                        order: 1
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 8,
+                            font: { size: 11, weight: '500' },
+                            color: '#64748b'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#e2e8f0',
+                        padding: 12,
+                        cornerRadius: 12,
+                        displayColors: true,
+                        usePointStyle: true
+                    }
                 },
                 scales: {
                     y: {
+                        type: 'linear',
+                        position: 'left',
                         beginAtZero: true,
-                        ticks: { stepSize: 1, color: '#94a3b8' },
+                        ticks: { stepSize: 1, color: '#94a3b8', font: { size: 10 } },
                         grid: { color: 'rgba(241, 245, 249, 0.5)', drawBorder: false }
                     },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        beginAtZero: true,
+                        grid: { drawOnChartArea: false },
+                        ticks: { color: '#10b981', font: { size: 10 } }
+                    },
                     x: {
-                        ticks: { color: '#94a3b8' },
+                        ticks: { color: '#64748b', font: { size: 10 } },
                         grid: { display: false }
                     }
                 }
@@ -1459,257 +1553,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     scheduleRefresh();
 
-    // ==========================================
-    // REAL-TIME POLLING DASHBOARD
-    // ==========================================
-    let isFetching = false;
-    const pollingInterval = 10000; // 10 detik
-
-    function updateDashboard() {
-        if (isFetching || document.hidden) return;
-        isFetching = true;
-
-        const liveIndicator = document.getElementById('live-indicator');
-        if (liveIndicator) liveIndicator.style.opacity = '1';
-
-        fetch('{{ route("dashboard.liveData") }}?bulan={{ $bulanSelected }}&tahun={{ $tahunSelected }}', {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            // 1. Update Stats
-            for (const [key, value] of Object.entries(data.stats)) {
-                const el = document.getElementById(`stat-${key}`);
-                if (el) {
-                    const currentVal = parseInt(el.innerText);
-                    if (currentVal !== value) {
-                        el.innerText = value;
-                        el.classList.add('animate__animated', 'animate__headShake');
-                        setTimeout(() => el.classList.remove('animate__animated', 'animate__headShake'), 1000);
-                    }
-                }
-            }
-
-            // 1.1 Update Banner Revisi/Action
-            const bannerRevisi = document.getElementById('banner-revisi');
-            const actionCount = data.stats.suratActionUrgent || 0;
-            if (actionCount > 0) {
-                if (bannerRevisi) {
-                    bannerRevisi.style.display = 'block';
-                    // Kita tidak update teksnya via JS secara mendalam agar tidak merusak tombol dinamis, 
-                    // tapi setidaknya pastikan banner tetap muncul.
-                }
-            } else if (bannerRevisi) {
-                bannerRevisi.style.display = 'none';
-            }
-
-            // 2. Update Unread Count Badge
-            const badgeContainer = document.getElementById('notif-badge-container');
-            if (badgeContainer) {
-                if (data.unreadCount > 0) {
-                    badgeContainer.innerHTML = `
-                        <button onclick="markAllAsRead()" class="btn btn-sm p-0 text-primary fw-semibold" style="font-size:11px; background:none; border:none;">
-                            Tandai semua dibaca
-                        </button>
-                        <span class="badge rounded-pill bg-danger" id="notif-unread-count" style="font-size:11px; padding:6px 10px;">
-                            ${data.unreadCount} baru
-                        </span>
-                    `;
-                } else {
-                    badgeContainer.innerHTML = '';
-                }
-            }
-
-            // 3. Update Notification List
-            const notifList = document.getElementById('dashboard-notif-list');
-            if (notifList && data.notifications.length > 0) {
-                // Hanya update jika ada perubahan (sederhananya cek ID notif pertama)
-                const firstNotifId = notifList.querySelector('.btn-delete-notif')?.dataset.id;
-                if (firstNotifId !== data.notifications[0].id) {
-                    let notifHtml = '';
-                    data.notifications.forEach(n => {
-                        const bgType = {
-                            'success': '#dcfce7',
-                            'warning': '#fef3c7',
-                            'danger': '#fee2e2',
-                            'info': '#dbeafe'
-                        }[n.type] || '#dbeafe';
-
-                        const iconClass = {
-                            'success': 'bi-check-circle-fill',
-                            'warning': 'bi-exclamation-triangle-fill',
-                            'danger': 'bi-x-circle-fill',
-                            'info': 'bi-info-circle-fill'
-                        }[n.type] || 'bi-info-circle-fill';
-
-                        const iconColor = {
-                            'success': '#15803d',
-                            'warning': '#b45309',
-                            'danger': '#b91c1c',
-                            'info': '#1d4ed8'
-                        }[n.type] || '#1d4ed8';
-
-                        notifHtml += `
-                            <div class="notification-item-wrapper position-relative" data-id="${n.id}">
-                                <a href="${n.url}" class="notification-item d-block text-decoration-none">
-                                    <div class="d-flex align-items-start gap-3">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                                             style="width:36px; height:36px; background:${bgType};">
-                                            <i class="bi ${iconClass}" style="color:${iconColor};"></i>
-                                        </div>
-                                        <div class="flex-grow-1 min-w-0">
-                                            <div class="fw-semibold mb-1" style="color:#1e293b; font-size:13px;">${n.title}</div>
-                                            <div class="text-muted" style="font-size:12px;">${n.message}</div>
-                                            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">${n.created_at_human}</div>
-                                        </div>
-                                        ${!n.read_at ? '<div class="flex-shrink-0 pe-4"><span class="badge rounded-circle" style="width:8px; height:8px; background:#3b82f6; padding:0;"></span></div>' : ''}
-                                    </div>
-                                </a>
-                                <button class="btn-delete-notif" data-id="${n.id}" onclick="event.preventDefault(); event.stopPropagation(); deleteNotif('${n.id}')" title="Hapus notifikasi">
-                                    <i class="bi bi-x"></i>
-                                </button>
-                            </div>
-                        `;
-                    });
-                    notifList.innerHTML = notifHtml;
-                }
-            }
-
-            // 4. Update SLA Surat Aktif
-            const slaList = document.getElementById('sla-surat-list');
-            if (slaList) {
-                if (data.suratAktif.length > 0) {
-                    let slaHtml = '';
-                    data.suratAktif.forEach(s => {
-                        // Warna berdasarkan sisa jam (bukan persentase)
-                        let barColor, badgeBg, badgeColor, slaIcon, badgeText;
-                        if (s.sla_status === 'terlambat') {
-                            barColor   = '#ef4444';
-                            badgeBg    = '#fee2e2';
-                            badgeColor = '#b91c1c';
-                            slaIcon    = '🔴';
-                            badgeText  = '⚠ Terlambat';
-                        } else if (s.sisa_jam_angka !== undefined && s.sisa_jam_angka <= 12) {
-                            barColor   = '#f59e0b';
-                            badgeBg    = '#fef3c7';
-                            badgeColor = '#92400e';
-                            slaIcon    = '🟡';
-                            badgeText  = `⚡ ${s.sisa_jam}`;
-                        } else {
-                            barColor   = '#22c55e';
-                            badgeBg    = '#dcfce7';
-                            badgeColor = '#15803d';
-                            slaIcon    = '🟢';
-                            badgeText  = `✔ ${s.sisa_jam}`;
-                        }
-
-                        slaHtml += `
-                            <div class="mb-3 sla-item p-2 rounded">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="fw-semibold" style="font-size:13px; color:#1e293b;">${s.judul_short}</span>
-                                    <span class="badge" style="font-size:11px; background:${badgeBg}; color:${badgeColor}; padding:4px 10px; border-radius:8px;">
-                                        ${slaIcon} ${badgeText}
-                                    </span>
-                                </div>
-                                <div class="progress" style="height:8px; background:#e2e8f0; border-radius:99px;">
-                                    <div class="progress-bar" style="width:${s.sla_status === 'terlambat' ? 100 : Math.max(2, s.pct)}%; background:${barColor}; border-radius:99px; transition: width 0.6s ease;"></div>
-                                </div>
-                                <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-                                    Tahap ${s.tahap}/10 · ${s.nama_tahap}
-                                </div>
-                            </div>
-                        `;
-                    });
-                    slaList.innerHTML = slaHtml;
-                } else {
-                    slaList.parentElement.style.display = 'none';
-                }
-            }
-            const terbaruList = document.getElementById('surat-terbaru-list');
-            if (terbaruList && data.suratTerbaru.length > 0) {
-                const firstSuratStatus = terbaruList.querySelector('.flex-shrink-0 .badge')?.innerText;
-                const firstSuratTahap = terbaruList.querySelector('.text-muted')?.innerText;
-                
-                if (firstSuratStatus !== data.suratTerbaru[0].status || firstSuratTahap !== `Tahap ${data.suratTerbaru[0].tahap_sekarang}/10`) {
-                    let terbaruHtml = '';
-                    data.suratTerbaru.forEach(s => {
-                        const statusColor = s.status === 'selesai' ? '#22c55e' : (s.status === 'ditolak' ? '#ef4444' : (s.status === 'revisi' ? '#f59e0b' : (s.status === 'revisi_admin' ? '#8b5cf6' : '#3b82f6')));
-                        
-                        let statusBadge = '';
-                        if (s.status === 'selesai') statusBadge = '<span class="badge rounded-pill" style="background:#dcfce7; color:#15803d; font-size:11px; padding:6px 12px;">✓ Selesai</span>';
-                        else if (s.status === 'ditolak') statusBadge = '<span class="badge rounded-pill" style="background:#fee2e2; color:#b91c1c; font-size:11px; padding:6px 12px;">✗ Ditolak</span>';
-                        else if (s.status === 'revisi') statusBadge = '<span class="badge rounded-pill" style="background:#fef3c7; color:#b45309; font-size:11px; padding:6px 12px;">📝 Revisi</span>';
-                        else if (s.status === 'revisi_admin') statusBadge = '<span class="badge rounded-pill" style="background:#f3e8ff; color:#6b21a8; font-size:11px; padding:6px 12px;">⚙️ Admin Revisi</span>';
-                        else if (s.sla_status === 'terlambat') statusBadge = '<span class="badge rounded-pill" style="background:#fee2e2; color:#b91c1c; font-size:11px; padding:6px 12px;">⚠ SLA!</span>';
-                        else statusBadge = '<span class="badge rounded-pill" style="background:#dbeafe; color:#1d4ed8; font-size:11px; padding:6px 12px;">⏱ Proses</span>';
-
-                        let stepsHtml = '';
-                        s.tahapans.forEach(t => {
-                            if (t.status === 'selesai' || t.tahap === s.tahap_sekarang || t.status === 'proses') {
-                                const stepBg = t.status === 'selesai' ? '#dcfce7' : (t.status === 'proses' ? '#dbeafe' : (t.status === 'ditolak' ? '#fee2e2' : '#f3f4f6'));
-                                const stepIcon = t.status === 'selesai' ? '<i class="bi bi-check-lg" style="color:#15803d; font-size:16px;"></i>' 
-                                               : (t.status === 'proses' ? '<i class="bi bi-hourglass-split" style="color:#1d4ed8; font-size:14px;"></i>' 
-                                               : (t.status === 'ditolak' ? '<i class="bi bi-x-lg" style="color:#b91c1c; font-size:14px;"></i>' 
-                                               : '<i class="bi bi-hourglass-split" style="color:#9ca3af; font-size:14px;"></i>'));
-                                
-                                stepsHtml += `
-                                    <div class="flex-shrink-0 text-center" style="min-width:80px;">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-1"
-                                             style="width:32px; height:32px; background:${stepBg};">
-                                            ${stepIcon}
-                                        </div>
-                                        <div style="font-size:10px; color:#64748b;">${t.nama_tahap}</div>
-                                    </div>
-                                `;
-                            }
-                        });
-
-                        terbaruHtml += `
-                            <div class="surat-item">
-                                <div class="d-flex align-items-start gap-3">
-                                    <div class="status-dot" style="background:${statusColor}; margin-top:6px;"></div>
-                                    <div class="flex-grow-1">
-                                        <div class="fw-semibold mb-1" style="color:#1e293b; font-size:14px;">${s.judul}</div>
-                                        <div class="d-flex gap-2 flex-wrap align-items-center">
-                                            <span class="badge rounded-pill" style="font-size:11px; background:#ede9fe; color:#6d28d9; padding:4px 10px;">${s.jenis_label}</span>
-                                            <span class="badge rounded-pill badge-${s.sifat}" style="font-size:11px; padding:4px 10px;">${s.sifat.charAt(0).toUpperCase() + s.sifat.slice(1)}</span>
-                                            <span class="text-muted" style="font-size:12px;">Tahap ${s.tahap_sekarang}/10</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-shrink-0">${statusBadge}</div>
-                                </div>
-                                <div class="mt-3 p-3" style="background:#f8fafc; border-radius:10px;">
-                                    <div class="d-flex align-items-center gap-2 mb-3">
-                                        <div class="progress flex-grow-1" style="height:8px; border-radius:99px; background:#e2e8f0;">
-                                            <div class="progress-bar" style="width:${s.proses_persen}%; background:linear-gradient(90deg, #1e3a5f, #2563eb); border-radius:99px;"></div>
-                                        </div>
-                                        <span class="fw-bold" style="font-size:13px; color:#1e3a5f;">${s.proses_persen}%</span>
-                                    </div>
-                                    <div class="d-flex gap-2 overflow-auto pb-2">${stepsHtml}</div>
-                                    <div class="text-end mt-2">
-                                        <a href="${s.show_url}" class="btn btn-sm" style="font-size:12px; color:#1e3a5f; border:1px solid #e2e8f0; border-radius:8px;">Detail lengkap →</a>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    terbaruList.innerHTML = terbaruHtml;
-                }
-            }
-        })
-        .catch(err => console.error('Polling Error:', err))
-        .finally(() => {
-            isFetching = false;
-        });
-    }
-
-    setInterval(updateDashboard, pollingInterval);
-    // Jalankan sekali saat load
-    setTimeout(updateDashboard, 2000);
-
     // Quick Track Logic
     const btnTrack = document.getElementById('btn-quick-track');
     const inputTrack = document.getElementById('quick-uuid-input');
@@ -1734,7 +1577,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.key === 'Enter') handleTrack();
         });
     }
-});
+};
+
+// Execute immediately since Turbo already swapped the content
+initDashboard();
+
+})();
 </script>
 
 

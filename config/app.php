@@ -74,6 +74,7 @@ return [
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
     'admin_secret_code' => env('ADMIN_SECRET_CODE', ''),
+    'it_support_code' => env('IT_SUPPORT_CODE', 'secret123'),
 
     /*
     |--------------------------------------------------------------------------
