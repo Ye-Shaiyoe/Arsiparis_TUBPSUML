@@ -1,17 +1,18 @@
-<section>
+{{-- Cropper.js CSS --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+<style>
+    #cropModal { display: none; position: fixed; inset: 0; z-index: 9999; align-items: center; justify-content: center; background: rgba(15,23,42,0.7); backdrop-filter: blur(4px); }
+    #cropModal.show { display: flex; }
+    .cropper-container-wrap { max-height: 400px; background: #0f172a; border-radius: 16px; overflow: hidden; }
+    .cropper-container { max-height: 400px !important; }
+</style>
+
+
+<section class="space-y-8">
     <header>
-        <div class="flex items-center gap-2 mb-2">
-            <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-900 tracking-tight">
-                {{ __('Profile Information') }}
-            </h2>
-        </div>
-        <p class="mt-1 text-sm text-gray-500">
-            {{ __("Update your account's profile information and email address. Keep it up to date to ensure everything runs smoothly.") }}
+        <h2 class="text-xl font-black text-slate-800 tracking-tight">Informasi Pribadi</h2>
+        <p class="mt-2 text-sm text-slate-500 leading-relaxed">
+            Perbarui foto profil dan detail identitas akun Anda. Foto profil yang jelas memudahkan rekan kerja mengenali Anda.
         </p>
     </header>
 
@@ -19,208 +20,270 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
+    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-8">
         @csrf
         @method('patch')
 
-        <!-- Include Cropper.js CSS -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
-        
-        <style>
-            /* Circular Crop Mask */
-            .cropper-view-box,
-            .cropper-face {
-                border-radius: 50%;
-            }
-            /* The cropper image container */
-            .img-container img {
-                max-width: 100%;
-                display: block;
-            }
-            
-            #cropperModal {
-                display: none;
-                position: fixed;
-                z-index: 50;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0,0,0,0.5);
-                align-items: center;
-                justify-content: center;
-            }
-        </style>
+        {{-- Input file tersembunyi + base64 dari cropper --}}
+        <input type="file" id="profile_photo_raw" name="profile_photo_raw" class="hidden" accept="image/*">
+        <input type="hidden" id="cropped_photo" name="cropped_photo">
 
-        <div>
-            <x-input-label for="profile_photo" :value="__('Profile Photo')" />
-            
-            <div class="mt-2 mb-4 flex items-center gap-4">
-                <img id="avatar-preview" src="{{ $user->profile_photo ? Storage::url($user->profile_photo) : asset('images/default-avatar.png') }}" 
-                     alt="Profile Photo" class="h-20 w-20 rounded-full object-cover border-2 border-indigo-200"
-                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=random';">
-                
-                <label for="profile_photo" class="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Change Picture
-                </label>
-                <!-- Actual file input is hidden -->
-                <input id="profile_photo" type="file" accept="image/*" class="hidden" />
-            </div>
-            
-            <!-- Hidden input to store cropped base64 data -->
-            <input type="hidden" name="cropped_photo" id="cropped_photo">
-            
-            <x-input-error class="mt-2" :messages="$errors->get('profile_photo')" />
-        </div>
+        {{-- Section: Foto Profil --}}
+        <div class="flex flex-col items-center sm:flex-row gap-8 pb-8 border-b border-slate-100/60">
+            {{-- Avatar Preview --}}
+            <div class="relative group flex-shrink-0">
+                <div class="w-36 h-36 rounded-[2rem] overflow-hidden ring-4 ring-white shadow-2xl shadow-slate-200 relative cursor-pointer"
+                     onclick="document.getElementById('profile_photo_raw').click()">
+                    @if($user->profile_photo)
+                        <img id="avatar-preview"
+                             src="{{ Storage::url($user->profile_photo) }}"
+                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                             alt="Avatar">
+                    @else
+                        <div id="avatar-initials"
+                             class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center text-white text-5xl font-black">
+                            {{ strtoupper(substr($user->name, 0, 2)) }}
+                        </div>
+                        <img id="avatar-preview" class="w-full h-full object-cover hidden absolute inset-0" alt="Avatar">
+                    @endif
 
-        <!-- Cropper Modal -->
-        <div id="cropperModal" style="display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; padding: 1rem;">
-            <div style="background: white; border-radius: 0.5rem; width: 100%; max-width: 500px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
-                <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center" style="flex-shrink: 0;">
-                    <h3 class="text-lg font-medium text-gray-900" style="margin:0;">Crop your new profile picture</h3>
-                    <button type="button" class="text-gray-400 hover:text-gray-500" onclick="closeCropperModal()" style="background:transparent;border:none;cursor:pointer;">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:24px;height:24px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="p-4" style="flex: 1; overflow-y: auto;">
-                    <div class="img-container" style="max-height: 50vh; display: flex; justify-content: center; background: #eee;">
-                        <img id="cropper-image" src="" alt="Picture to crop" style="max-width: 100%;">
+                    {{-- Hover overlay --}}
+                    <div class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        <i class="bi bi-camera-fill text-white text-3xl"></i>
+                        <span class="text-white text-[10px] font-bold mt-1">Ubah Foto</span>
                     </div>
                 </div>
-                <div class="px-4 py-3 bg-gray-50 flex justify-end gap-2 border-t border-gray-200" style="flex-shrink: 0; display:flex; gap:10px; justify-content:flex-end; background:#f9fafb;">
-                    <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50" onclick="closeCropperModal()">Cancel</button>
-                    <button type="button" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" id="btn-crop" style="background-color:#4f46e5;color:white;border:none;cursor:pointer;">
-                        Set new profile picture
-                    </button>
+
+                {{-- Badge online --}}
+                <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-emerald-500 border-4 border-white rounded-full flex items-center justify-center shadow-lg">
+                    <i class="bi bi-check-lg text-white text-xs font-black"></i>
                 </div>
+            </div>
+
+            {{-- Info & Upload Button --}}
+            <div class="space-y-3 text-center sm:text-left">
+                <p class="text-sm font-bold text-slate-700">{{ $user->name }}</p>
+                <p class="text-xs text-slate-400">Format: JPG, PNG, WebP · Maks. 2MB</p>
+                <button type="button"
+                        onclick="document.getElementById('profile_photo_raw').click()"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all hover:shadow-lg hover:shadow-blue-500/20 active:scale-95">
+                    <i class="bi bi-upload"></i> Pilih & Crop Foto
+                </button>
+                <p class="text-[10px] text-slate-400">Klik avatar atau tombol di atas untuk mengunggah</p>
+                <x-input-error :messages="$errors->get('profile_photo')" class="mt-1" />
             </div>
         </div>
 
-        <!-- Include Cropper.js Script -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-        <script>
-            let cropper;
-            const inputImage = document.getElementById('profile_photo');
-            const cropperModal = document.getElementById('cropperModal');
-            const cropperImage = document.getElementById('cropper-image');
-            const avatarPreview = document.getElementById('avatar-preview');
-            const croppedPhotoInput = document.getElementById('cropped_photo');
-            const btnCrop = document.getElementById('btn-crop');
+        {{-- Row: Nama & NIP --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-3">
+                <x-input-label for="name" value="Nama Lengkap" class="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1" />
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                        <i class="bi bi-person text-lg"></i>
+                    </div>
+                    <x-text-input id="name" name="name" type="text"
+                        class="block w-full pl-12 pr-5 py-4 bg-slate-50/50 border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-semibold text-slate-700"
+                        :value="old('name', $user->name)" required autofocus autocomplete="name" />
+                </div>
+                <x-input-error :messages="$errors->get('name')" class="text-xs font-bold" />
+            </div>
 
-            function closeCropperModal() {
-                cropperModal.style.display = 'none';
-                if (cropper) {
-                    cropper.destroy();
-                    cropper = null;
-                }
-                inputImage.value = ''; // Reset input so same file can be selected again
-            }
-
-            inputImage.addEventListener('change', function(e) {
-                const files = e.target.files;
-                if (files && files.length > 0) {
-                    const file = files[0];
-                    if (/^image\/\w+/.test(file.type)) {
-                        const reader = new FileReader();
-                        reader.onload = function(event) {
-                            cropperImage.src = event.target.result;
-                            cropperModal.style.display = 'flex';
-                            
-                            if (cropper) {
-                                cropper.destroy();
-                            }
-                            
-                            cropper = new Cropper(cropperImage, {
-                                aspectRatio: 1,
-                                viewMode: 1,
-                                dragMode: 'move',
-                                autoCropArea: 1,
-                                restore: false,
-                                guides: false,
-                                center: false,
-                                highlight: false,
-                                cropBoxMovable: true,
-                                cropBoxResizable: true,
-                                toggleDragModeOnDblclick: false,
-                            });
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        alert('Please select an image file.');
-                    }
-                }
-            });
-
-            btnCrop.addEventListener('click', function() {
-                if (!cropper) return;
-                
-                // Get cropped canvas
-                const canvas = cropper.getCroppedCanvas({
-                    width: 256,
-                    height: 256,
-                    imageSmoothingEnabled: true,
-                    imageSmoothingQuality: 'high',
-                });
-                
-                // Set preview and hidden input
-                const dataUrl = canvas.toDataURL('image/png');
-                avatarPreview.src = dataUrl;
-                croppedPhotoInput.value = dataUrl;
-                
-                closeCropperModal();
-            });
-        </script>
-
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            <div class="space-y-3">
+                <x-input-label for="nip" value="NIP (Opsional)" class="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1" />
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                        <i class="bi bi-card-text text-lg"></i>
+                    </div>
+                    <x-text-input id="nip" name="nip" type="text"
+                        class="block w-full pl-12 pr-5 py-4 bg-slate-50/50 border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-semibold text-slate-700"
+                        :value="old('nip', $user->nip)" autocomplete="username" placeholder="19xxxxxxxxxxxxxxx" />
+                </div>
+                <x-input-error :messages="$errors->get('nip')" class="text-xs font-bold" />
+            </div>
         </div>
 
-        <div>
-            <x-input-label for="nip" :value="__('NIP (Nomor Induk Pegawai)')" />
-            <x-text-input id="nip" name="nip" type="text" class="mt-1 block w-full" :value="old('nip', $user->nip)" autocomplete="off" placeholder="Masukkan NIP Anda (jika ada)" />
-            <x-input-error class="mt-2" :messages="$errors->get('nip')" />
-        </div>
-
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
+        {{-- Email --}}
+        <div class="space-y-3">
+            <x-input-label for="email" value="Alamat Email" class="text-[11px] font-black uppercase tracking-widest text-slate-400 ml-1" />
+            <div class="relative group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                    <i class="bi bi-envelope text-lg"></i>
+                </div>
+                <x-text-input id="email" name="email" type="email"
+                    class="block w-full pl-12 pr-5 py-4 bg-slate-50/50 border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-semibold text-slate-700"
+                    :value="old('email', $user->email)" required autocomplete="username" />
+            </div>
+            <x-input-error :messages="$errors->get('email')" class="text-xs font-bold" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
+                <div class="mt-3 p-4 rounded-xl bg-amber-50 border border-amber-100 flex items-center gap-3">
+                    <i class="bi bi-exclamation-triangle-fill text-amber-500"></i>
+                    <p class="text-sm text-amber-700 font-semibold">
+                        {{ __('Email belum terverifikasi.') }}
+                        <button form="send-verification" class="ml-1 underline hover:text-amber-900 transition-colors">Kirim ulang email verifikasi.</button>
                     </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
                 </div>
             @endif
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        {{-- Actions --}}
+        <div class="flex items-center gap-4 pt-2">
+            <button type="submit"
+                class="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm transition-all hover:shadow-xl hover:shadow-blue-500/20 active:scale-95">
+                <i class="bi bi-cloud-arrow-up-fill text-lg"></i>
+                <span>Simpan Perubahan</span>
+            </button>
 
             @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
+                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2500)"
+                   class="text-sm font-bold text-emerald-600 bg-emerald-50 px-4 py-2 rounded-lg flex items-center gap-2">
+                    <i class="bi bi-check-circle-fill"></i> Berhasil disimpan
+                </p>
             @endif
         </div>
     </form>
 </section>
+
+{{-- ===== CROP MODAL ===== --}}
+<div id="cropModal" class="items-center justify-center inset-0 bg-slate-900/70 backdrop-blur-sm">
+    <div class="relative bg-white w-full max-w-xl rounded-[28px] shadow-2xl overflow-hidden mx-4">
+        {{-- Header --}}
+        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
+                    <i class="bi bi-crop text-white font-bold"></i>
+                </div>
+                <div>
+                    <h3 class="font-black text-slate-800 text-base">Atur Foto Profil</h3>
+                    <p class="text-[11px] text-slate-400">Geser & zoom untuk mengatur posisi foto</p>
+                </div>
+            </div>
+            <button type="button" id="btnCancelCrop" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors">
+                <i class="bi bi-x-lg text-slate-500 text-sm"></i>
+            </button>
+        </div>
+
+        {{-- Cropper Area --}}
+        <div class="p-6">
+            <div class="cropper-container-wrap">
+                <img id="cropImage" src="" alt="Crop" style="max-width:100%; display:block;">
+            </div>
+
+            {{-- Crop Controls --}}
+            <div class="flex items-center justify-center gap-2 mt-4">
+                <button type="button" onclick="cropperInstance.zoom(0.1)" title="Zoom In"
+                    class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                    <i class="bi bi-zoom-in"></i>
+                </button>
+                <button type="button" onclick="cropperInstance.zoom(-0.1)" title="Zoom Out"
+                    class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                    <i class="bi bi-zoom-out"></i>
+                </button>
+                <button type="button" onclick="cropperInstance.rotate(-90)" title="Putar Kiri"
+                    class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+                <button type="button" onclick="cropperInstance.rotate(90)" title="Putar Kanan"
+                    class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+                <button type="button" onclick="cropperInstance.reset()" title="Reset"
+                    class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+                    <i class="bi bi-arrow-repeat"></i>
+                </button>
+            </div>
+        </div>
+
+        {{-- Footer Actions --}}
+        <div class="flex gap-3 px-6 pb-6">
+            <button type="button" id="btnApplyCrop"
+                class="flex-1 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm transition-all hover:shadow-lg hover:shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2">
+                <i class="bi bi-check2-circle text-lg"></i>
+                Gunakan Foto Ini
+            </button>
+            <button type="button" id="btnCancelCrop2"
+                class="flex-1 py-4 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl font-bold text-sm transition-all">
+                Batal
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- Cropper.js Script --}}
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+<script>
+(function () {
+    var cropModal      = document.getElementById('cropModal');
+    var cropImage      = document.getElementById('cropImage');
+    var fileInput      = document.getElementById('profile_photo_raw');
+    var croppedInput   = document.getElementById('cropped_photo');
+    var avatarPreview  = document.getElementById('avatar-preview');
+    var avatarInitials = document.getElementById('avatar-initials');
+    var cropperInstance = null;
+
+    // Expose cropperInstance to window so buttons (onclick="cropperInstance.zoom...") can access it
+    window.cropperInstance = null;
+
+    function openModal() { cropModal.classList.add('show'); }
+    function closeModal() {
+        cropModal.classList.remove('show');
+        if (window.cropperInstance) {
+            window.cropperInstance.destroy();
+            window.cropperInstance = null;
+        }
+        fileInput.value = '';
+    }
+
+    fileInput.addEventListener('change', function () {
+        var file = this.files[0];
+        if (!file) return;
+
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            cropImage.src = e.target.result;
+            openModal();
+
+            // Destroy existing cropper if any
+            if (window.cropperInstance) window.cropperInstance.destroy();
+
+            window.cropperInstance = new Cropper(cropImage, {
+                aspectRatio: 1,           // Square crop (cocok untuk foto profil lingkaran)
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 0.85,
+                restore: false,
+                guides: true,
+                center: true,
+                highlight: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+            });
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Apply Crop
+    document.getElementById('btnApplyCrop').addEventListener('click', function () {
+        if (!window.cropperInstance) return;
+
+        var canvas = window.cropperInstance.getCroppedCanvas({ width: 400, height: 400 });
+        var base64 = canvas.toDataURL('image/png');
+
+        // Set hidden input
+        croppedInput.value = base64;
+
+        // Update preview
+        avatarPreview.src = base64;
+        avatarPreview.classList.remove('hidden');
+        if (avatarInitials) avatarInitials.classList.add('hidden');
+
+        closeModal();
+    });
+
+    // Cancel buttons
+    document.getElementById('btnCancelCrop').addEventListener('click', closeModal);
+    document.getElementById('btnCancelCrop2').addEventListener('click', closeModal);
+})();
+</script>
