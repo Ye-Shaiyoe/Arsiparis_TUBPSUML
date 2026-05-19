@@ -90,46 +90,83 @@
     /* Premium Stat Cards */
     .stat-card-new {
         position: relative;
-        padding: 40px 24px;
-        border-radius: 24px;
+        padding: 30px 24px;
+        border-radius: 20px;
         overflow: hidden;
         display: flex;
         align-items: center;
-        gap: 24px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        gap: 20px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     }
-    .stat-card-new:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2); }
-    .stat-card-new.blue { background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); color: white; }
-    .stat-card-new.green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
-    .stat-card-new.amber { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; }
-    .stat-card-new.red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+    .stat-card-new:hover { 
+        transform: translateY(-6px); 
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Elegant Clean Gradients */
+    .stat-card-new.blue { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; }
+    .stat-card-new.green { background: linear-gradient(135deg, #065f46 0%, #10b981 100%); color: white; }
+    .stat-card-new.amber { background: linear-gradient(135deg, #9a3412 0%, #f59e0b 100%); color: white; }
+    .stat-card-new.red { background: linear-gradient(135deg, #991b1b 0%, #ef4444 100%); color: white; }
+
+    /* Modern Radial Glow Accents (Not Gaudy) */
+    .stat-card-glow {
+        position: absolute;
+        top: -40%;
+        right: -25%;
+        width: 130px;
+        height: 130px;
+        background: rgba(255, 255, 255, 0.15);
+        filter: blur(35px);
+        border-radius: 50%;
+        pointer-events: none;
+        transition: all 0.4s ease;
+    }
+    .stat-card-new:hover .stat-card-glow {
+        transform: scale(1.3);
+        background: rgba(255, 255, 255, 0.25);
+    }
     
     .stat-icon-box {
-        width: 64px;
-        height: 64px;
-        border-radius: 20px;
-        background: rgba(255, 255, 255, 0.2);
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.15);
         backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 28px;
-    }
-    .stat-value-new { font-size: 36px; font-weight: 900; line-height: 1; letter-spacing: -1.5px; }
-    .stat-label-new { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; opacity: 0.85; margin-bottom: 6px; }
-    .stat-sub-new { font-size: 11px; font-weight: 600; opacity: 0.7; }
-
-    .wave-bg {
-        position: absolute;
-        right: 0;
-        bottom: -5px;
-        opacity: 0.5;
-        width: 100%;
-        height: 80px;
-        pointer-events: none;
+        font-size: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
         transition: transform 0.4s ease;
+    }
+    .stat-card-new:hover .stat-icon-box {
+        transform: rotate(6deg) scale(1.05);
+    }
+    
+    .stat-value-new { 
+        font-size: 32px; 
+        font-weight: 850; 
+        line-height: 1.1; 
+        letter-spacing: -0.5px; 
+        margin-bottom: 2px;
+    }
+    .stat-label-new { 
+        font-size: 11px; 
+        font-weight: 750; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+        opacity: 0.9; 
+        margin-bottom: 4px; 
+    }
+    .stat-sub-new { 
+        font-size: 11px; 
+        font-weight: 500; 
+        opacity: 0.75; 
     }
 
     /* Fixed Grid Layout to prevent FOUC */
@@ -145,10 +182,6 @@
     @media (min-width: 1024px) {
         .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
-    .stat-card-new:hover .wave-bg {
-        transform: scaleY(1.2) translateY(-5px);
-    }
-    
     .card-modern {
         background: white;
         border-radius: 20px;
@@ -650,7 +683,7 @@
 <div class="stats-grid">
     {{-- TOTAL SURAT --}}
     <div class="stat-card-new blue animate-in" style="animation-delay: 0.1s;">
-        <svg class="wave-bg" viewBox="0 0 400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 120 C 50 120, 80 20, 130 80 C 180 140, 210 20, 260 80 C 310 140, 340 120, 400 120" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.4" /></svg>
+        <div class="stat-card-glow"></div>
         <div class="stat-icon-box shadow-sm"><i class="bi bi-envelope-paper-fill"></i></div>
         <div class="stat-info">
             <div class="stat-label-new">Total Surat</div>
@@ -661,7 +694,7 @@
 
     {{-- SELESAI --}}
     <div class="stat-card-new green animate-in" style="animation-delay: 0.15s;">
-        <svg class="wave-bg" viewBox="0 0 400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 140 L 100 100 L 200 120 L 300 40 L 400 60" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.4" /></svg>
+        <div class="stat-card-glow"></div>
         <div class="stat-icon-box shadow-sm"><i class="bi bi-check-circle-fill"></i></div>
         <div class="stat-info">
             <div class="stat-label-new">Selesai</div>
@@ -672,14 +705,7 @@
 
     {{-- PROSES --}}
     <div class="stat-card-new amber animate-in" style="animation-delay: 0.2s;">
-        <svg class="wave-bg" viewBox="0 0 400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="20" y="80" width="40" height="70" fill="white" opacity="0.3" rx="4"/>
-            <rect x="80" y="40" width="40" height="110" fill="white" opacity="0.3" rx="4"/>
-            <rect x="140" y="60" width="40" height="90" fill="white" opacity="0.3" rx="4"/>
-            <rect x="200" y="20" width="40" height="130" fill="white" opacity="0.3" rx="4"/>
-            <rect x="260" y="70" width="40" height="80" fill="white" opacity="0.3" rx="4"/>
-            <rect x="320" y="50" width="40" height="100" fill="white" opacity="0.3" rx="4"/>
-        </svg>
+        <div class="stat-card-glow"></div>
         <div class="stat-icon-box shadow-sm"><i class="bi bi-hourglass-split"></i></div>
         <div class="stat-info">
             <div class="stat-label-new">Sedang Proses</div>
@@ -690,7 +716,7 @@
 
     {{-- DITOLAK / REVISI --}}
     <div class="stat-card-new red animate-in" style="animation-delay: 0.25s;">
-        <svg class="wave-bg" viewBox="0 0 400 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 80 L 50 140 L 100 20 L 150 100 L 200 40 L 250 130 L 300 20 L 350 110 L 400 60" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.4" /></svg>
+        <div class="stat-card-glow"></div>
         <div class="stat-icon-box shadow-sm"><i class="bi bi-exclamation-triangle-fill"></i></div>
         <div class="stat-info">
             <div class="stat-label-new">Ditolak / Revisi</div>

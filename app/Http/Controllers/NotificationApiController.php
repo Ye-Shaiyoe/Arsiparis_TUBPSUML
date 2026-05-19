@@ -15,7 +15,13 @@ class NotificationApiController extends Controller
         $query = Auth::user()->notifications();
 
         if ($since) {
-            $query->where('created_at', '>', $since);
+            try {
+                // Parse ISO 8601 string dari frontend agar dicocokkan dengan timezone database yang benar
+                $carbonSince = \Illuminate\Support\Carbon::parse($since);
+                $query->where('created_at', '>', $carbonSince);
+            } catch (\Exception $e) {
+                $query->where('created_at', '>', $since);
+            }
         } else {
             // Pertama kali load: ambil yang unread saja
             $query->whereNull('read_at');

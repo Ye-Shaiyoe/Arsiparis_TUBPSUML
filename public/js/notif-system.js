@@ -1,13 +1,12 @@
 (function () {
     'use strict';
 
-    // ── Konfigurasi ──────────────────────────────────────────────────────
-    const POLL_INTERVAL = 30000;   // 30 detik
-    const TOAST_DURATION = 6000;   // auto-dismiss 6 detik
-    const MAX_TOAST = 3;           // max toast tampil bersamaan
-
     // URL endpoint (di-set dari layout via window.NOTIF_CONFIG)
     const cfg = window.NOTIF_CONFIG || {};
+    const POLL_INTERVAL = (cfg.pollInterval === false || cfg.pollInterval === 0) ? false : (cfg.pollInterval || 30000);
+    const TOAST_DURATION = cfg.toastDuration || 6000;   // auto-dismiss 6 detik
+    const MAX_TOAST = cfg.maxToast || 3;               // max toast tampil bersamaan
+
     const URL_POLL      = cfg.urlPoll      || '/notif/poll';
     const URL_READ      = cfg.urlRead      || '/notif/read/';
     const URL_READ_ALL  = cfg.urlReadAll   || '/notif/read-all';
@@ -16,24 +15,40 @@
     const CSRF          = cfg.csrf         || document.querySelector('meta[name=csrf-token]')?.content || '';
 
     let lastFetch = null;
-    let pollTimer = null;
     let toastCount = 0;
-    let bellBadgeEl = null;
-    let dropdownListEl = null;
+    const shownNotifIds = new Set(); // Double-safety: Simpan ID notifikasi yang sudah pernah ditampilkan sebagai toast
+
+    // ── Helper DOM Query Dinamis (Pencegahan Kebocoran Memori & Masalah SPA/Turbo) ──
+    function getDropdownEl() {
+        return document.getElementById('notif-dropdown-list') || document.querySelector('#offcanvasNotif .offcanvas-body');
+    }
+
+    // ── Manajemen Timer Polling yang Aman & Bebas Tumpang Tindih ────────────────────
+    function startPolling() {
+        stopPolling(); // Pastikan timer sebelumnya dibersihkan total
+        if (POLL_INTERVAL === false || POLL_INTERVAL <= 0) {
+            return; // Polling dinonaktifkan
+        }
+        window.notifPollTimer = setInterval(() => fetchNotifs(false), POLL_INTERVAL);
+    }
+
+    function stopPolling() {
+        if (window.notifPollTimer) {
+            clearInterval(window.notifPollTimer);
+            window.notifPollTimer = null;
+        }
+    }
 
     // ── Init ─────────────────────────────────────────────────────────────
     function init() {
         injectStyles();
         createToastContainer();
 
-        bellBadgeEl    = document.getElementById('notif-badge-count');
-        dropdownListEl = document.getElementById('notif-dropdown-list');
-
         // Pertama kali: langsung fetch
         fetchNotifs(true);
 
-        // Polling interval
-        pollTimer = setInterval(() => fetchNotifs(false), POLL_INTERVAL);
+        // Aktifkan timer polling tunggal
+        startPolling();
 
         // Tombol hapus semua
         const btnDelAll = document.getElementById('notif-delete-all');
@@ -41,6 +56,7 @@
             btnDelAll.addEventListener('click', () => {
                 if (!confirm('Hapus semua notifikasi?')) return;
                 apiPost(URL_DELETE_ALL);
+                const dropdownListEl = getDropdownEl();
                 if (dropdownListEl) dropdownListEl.innerHTML = emptyHtml();
                 updateBadge(0);
             });
@@ -51,12 +67,23 @@
         if (btnReadAll) {
             btnReadAll.addEventListener('click', () => {
                 apiPost(URL_READ_ALL);
-                document.querySelectorAll('.notif-drop-item.unread')
+                document.querySelectorAll('.notif-drop-item.unread, .notif-item.unread')
                         .forEach(el => el.classList.remove('unread'));
                 updateBadge(0);
             });
         }
     }
+
+    // Pahami perubahan visibilitas tab untuk menghemat performa server secara drastis
+    document.addEventListener('visibilitychange', () => {
+        if (POLL_INTERVAL === false || POLL_INTERVAL <= 0) return;
+        if (document.hidden) {
+            stopPolling();
+        } else {
+            fetchNotifs(false);
+            startPolling();
+        }
+    });
 
     // ── Fetch notifikasi ──────────────────────────────────────────────────
     function fetchNotifs(isFirst) {
@@ -73,10 +100,15 @@
                 if (isFirst) {
                     // Render dropdown list
                     renderDropdown(data.notifications);
+                    // Tandai semua notif awal sebagai "sudah ditampilkan" agar tidak menumpuk toast di awal
+                    data.notifications.forEach(n => shownNotifIds.add(n.id));
                 } else {
                     // Hanya notif baru → tampilkan toast
                     data.notifications.forEach(n => {
-                        if (!n.read) showToast(n);
+                        if (!n.read && !shownNotifIds.has(n.id)) {
+                            showToast(n);
+                            shownNotifIds.add(n.id);
+                        }
                     });
                     // Update dropdown jika ada notif baru
                     if (data.notifications.length > 0) {
@@ -89,6 +121,17 @@
 
     // ── Update badge angka di bell ────────────────────────────────────────
     function updateBadge(count) {
+        // Panggil fungsi layout bawaan jika tersedia
+        const nativeUpdateFn = window.updateNotifBadges || (typeof updateNotifBadges === 'function' ? updateNotifBadges : null);
+        if (typeof nativeUpdateFn === 'function') {
+            try {
+                nativeUpdateFn(count);
+            } catch(e) {
+                console.warn('Native updateNotifBadges failed, falling back:', e);
+            }
+        }
+
+        const bellBadgeEl = getBadgeEl();
         if (!bellBadgeEl) return;
         if (count > 0) {
             bellBadgeEl.textContent = count > 99 ? '99+' : count;
@@ -100,9 +143,10 @@
 
     // ── Render daftar notifikasi di dropdown ──────────────────────────────
     function renderDropdown(notifs) {
+        const dropdownListEl = getDropdownEl();
         if (!dropdownListEl) return;
         if (!notifs.length) {
-            dropdownListEl.innerHTML = emptyHtml();
+            // Biarkan blade template merender state kosong bawaan jika pertama kali
             return;
         }
         dropdownListEl.innerHTML = notifs.map(notifItemHtml).join('');
@@ -110,11 +154,15 @@
     }
 
     function prependDropdown(notifs) {
+        const dropdownListEl = getDropdownEl();
         if (!dropdownListEl) return;
-        const emptyEl = dropdownListEl.querySelector('.notif-empty');
+        const emptyEl = dropdownListEl.querySelector('.p-5.text-center, .notif-empty');
         if (emptyEl) dropdownListEl.innerHTML = '';
 
         notifs.forEach(n => {
+            // Cegah duplikasi item
+            if (dropdownListEl.querySelector(`[data-id="${n.id}"]`)) return;
+
             const div = document.createElement('div');
             div.innerHTML = notifItemHtml(n);
             dropdownListEl.insertBefore(div.firstElementChild, dropdownListEl.firstChild);
@@ -123,6 +171,55 @@
     }
 
     function notifItemHtml(n) {
+        const dropdownListEl = getDropdownEl();
+        // Gunakan layout premium offcanvas bawaan jika berada dalam offcanvas
+        const isOffcanvas = dropdownListEl && dropdownListEl.classList.contains('offcanvas-body');
+        
+        if (isOffcanvas) {
+            const icons = {
+                success: '<i class="bi bi-check-circle-fill text-success"></i>',
+                warning: '<i class="bi bi-exclamation-triangle-fill text-warning"></i>',
+                danger:  '<i class="bi bi-x-circle-fill text-danger"></i>',
+                info:    '<i class="bi bi-info-circle-fill text-primary"></i>'
+            };
+            const icon = icons[n.type] || icons.info;
+            
+            return `
+            <div class="notif-item-wrapper position-relative group" data-id="${n.id}">
+                <a href="/notif/read/${n.id}" class="notif-item ${n.read ? '' : 'unread'} pr-12">
+                    <div class="notif-icon ${n.type}">
+                        ${icon}
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.3;">
+                            ${escHtml(n.title)}
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                            ${escHtml(n.message)}
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-secondary); margin-top: 6px; opacity: 0.7;">
+                            <i class="bi bi-clock me-1"></i> ${n.time}
+                        </div>
+                    </div>
+                </a>
+                <div class="notif-actions position-absolute top-50 translate-middle-y end-0 pr-4 d-flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    ${!n.read ? `
+                    <button onclick="event.preventDefault(); event.stopPropagation(); markNotifRead('${n.id}')" 
+                            class="btn-notif-action text-primary" title="Tandai dibaca">
+                        <i class="bi bi-check2-circle"></i>
+                    </button>` : ''}
+                    <button onclick="event.preventDefault(); event.stopPropagation(); deleteNotif('${n.id}')" 
+                            class="btn-notif-action text-danger" title="Hapus">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                ${!n.read ? `
+                <div class="unread-dot position-absolute top-50 translate-middle-y end-0 mr-4 group-hover:opacity-0 transition-opacity" 
+                     style="width:8px; height:8px; border-radius:50%; background:#3b82f6;"></div>` : ''}
+            </div>`;
+        }
+
+        // Fallback untuk dropdown standar
         const icons = { success:'✅', danger:'❌', warning:'⚠️', info:'📨' };
         const icon  = icons[n.type] || '🔔';
         return `
@@ -141,6 +238,10 @@
     }
 
     function bindDropdownActions() {
+        const dropdownListEl = getDropdownEl();
+        const isOffcanvas = dropdownListEl && dropdownListEl.classList.contains('offcanvas-body');
+        if (isOffcanvas) return; // Menggunakan fungsi global bawaan layout
+
         // Klik "Lihat" → mark as read
         dropdownListEl?.querySelectorAll('.notif-drop-link').forEach(el => {
             el.addEventListener('click', () => {
@@ -169,6 +270,15 @@
     }
 
     function emptyHtml() {
+        const dropdownListEl = getDropdownEl();
+        const isOffcanvas = dropdownListEl && dropdownListEl.classList.contains('offcanvas-body');
+        if (isOffcanvas) {
+            return `<div class="p-5 text-center">
+                <i class="bi bi-bell-slash text-muted" style="font-size: 40px; opacity: 0.3;"></i>
+                <p class="text-muted mt-3 small">Belum ada notifikasi baru untuk Anda.</p>
+            </div>`;
+        }
+
         return `<div class="notif-empty">
             <span style="font-size:28px;display:block;margin-bottom:6px;">🔔</span>
             Belum ada notifikasi

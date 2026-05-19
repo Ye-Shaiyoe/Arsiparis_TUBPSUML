@@ -180,6 +180,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->prefix('notif')->name('notif.')->group(function () {
+    Route::get('/poll', [\App\Http\Controllers\NotificationApiController::class, 'poll'])->name('poll');
     Route::get('/read/{id}', [\App\Http\Controllers\User\NotifikasiController::class, 'read'])->name('read');
     Route::post('/read-all', [\App\Http\Controllers\User\NotifikasiController::class, 'readAll'])->name('readAll');
     Route::post('/mark-read/{id}', [\App\Http\Controllers\User\NotifikasiController::class, 'markAsRead'])->name('markRead');

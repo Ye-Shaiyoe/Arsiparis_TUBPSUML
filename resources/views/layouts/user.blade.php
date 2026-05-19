@@ -2221,5 +2221,18 @@
     </div>
 </div>
 
+<script>
+    window.NOTIF_CONFIG = {
+        urlPoll: '{{ route("notif.poll") }}',
+        urlRead: '/notif/mark-read/',
+        urlReadAll: '{{ route("notif.readAll") }}',
+        urlDelete: '/notif/delete/',
+        urlDeleteAll: '{{ route("notif.deleteAll") }}',
+        csrf: '{{ csrf_token() }}',
+        pollInterval: false // AJAX Polling disabled as per user request
+    };
+</script>
+<script src="{{ asset('js/notif-system.js') }}" defer></script>
+
 </body>
 </html>
