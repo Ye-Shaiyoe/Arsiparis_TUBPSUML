@@ -275,4 +275,76 @@ class ProfileController extends Controller
             'icon' => $isMobile ? 'bi-phone' : 'bi-laptop'
         ];
     }
+
+    /**
+     * Update the user's digital signature and TTE PIN.
+     */
+    public function updateTte(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        // 1. Validasi PIN lama jika sudah ada
+        if ($user->signature_pin && ($request->filled('signature_pin') || $request->filled('cropped_signature') || $request->hasFile('signature_file'))) {
+            $request->validate([
+                'current_signature_pin' => ['required', 'string'],
+            ]);
+
+            if (!\Illuminate\Support\Facades\Hash::check($request->current_signature_pin, $user->signature_pin)) {
+                return Redirect::to(route('profile.edit') . '#tte-section')->withErrors(['current_signature_pin' => 'PIN TTE saat ini tidak valid.']);
+            }
+        }
+
+        // 2. Validasi input PIN baru & file
+        $request->validate([
+            'signature_pin' => ['nullable', 'string', 'min:6', 'max:20', 'confirmed'],
+            'signature_file' => ['nullable', 'image', 'mimes:png', 'max:2048'], // png disarankan karena transparansi
+            'cropped_signature' => ['nullable', 'string'],
+        ]);
+
+        // 3. Proses Upload/Crop Tanda Tangan
+        if ($request->filled('cropped_signature')) {
+            $base64Image = $request->input('cropped_signature');
+            $imageParts = explode(';base64,', $base64Image);
+            
+            if (count($imageParts) === 2) {
+                $imageTypeAux = explode('image/', $imageParts[0]);
+                $imageType = isset($imageTypeAux[1]) ? explode(';', $imageTypeAux[1])[0] : 'png';
+                $imageBase64 = base64_decode($imageParts[1]);
+                
+                if (!$this->isValidImageMagicBytes($imageBase64)) {
+                    return Redirect::to(route('profile.edit') . '#tte-section')->withErrors(['signature_file' => 'File tanda tangan bukan gambar PNG/transparan yang valid.']);
+                }
+                
+                $fileName = 'signatures/' . uniqid() . '.' . $imageType;
+
+                if ($user->signature_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->signature_path)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($user->signature_path);
+                }
+
+                \Illuminate\Support\Facades\Storage::disk('public')->put($fileName, $imageBase64);
+                $user->signature_path = $fileName;
+            }
+        } elseif ($request->hasFile('signature_file')) {
+            if ($user->signature_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($user->signature_path)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->signature_path);
+            }
+            
+            $filePath = $request->file('signature_file')->path();
+            if (!$this->isValidImageMagicBytes(file_get_contents($filePath))) {
+                return Redirect::to(route('profile.edit') . '#tte-section')->withErrors(['signature_file' => 'File tanda tangan bukan gambar yang valid.']);
+            }
+            
+            $path = $request->file('signature_file')->store('signatures', 'public');
+            $user->signature_path = $path;
+        }
+
+        // 4. Proses PIN Baru
+        if ($request->filled('signature_pin')) {
+            $user->signature_pin = $request->signature_pin;
+        }
+
+        $user->save();
+
+        return Redirect::to(route('profile.edit') . '#tte-section')->with('status', 'tte-updated');
+    }
 }

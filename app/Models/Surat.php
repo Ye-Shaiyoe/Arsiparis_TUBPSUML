@@ -31,6 +31,7 @@ class Surat extends Model
         'status_revisi',
         'revisi_count',
         'revisi_uploaded_at',
+        'rating',
     ];
 
     protected static function boot()

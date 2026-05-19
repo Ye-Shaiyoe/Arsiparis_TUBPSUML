@@ -30,6 +30,8 @@ class WelcomeController extends Controller
         $totalPengguna = User::count();
         // Dokumen Terarsip = Status Selesai
         $totalDokumenTerarsip = Surat::where('status', 'selesai')->count();
+        // Average rating of finished letters (if any, default to 5.0)
+        $averageRating = Surat::whereNotNull('rating')->avg('rating') ?: 5.0;
 
         // Chart Mixed (6 Bulan Terakhir)
         $chartMixedMonths = [];
@@ -153,6 +155,7 @@ class WelcomeController extends Controller
             'totalSuratKeluar',
             'totalPengguna',
             'totalDokumenTerarsip',
+            'averageRating',
             'chartMixedMonths',
             'chartMixedMasuk',
             'chartMixedKeluar',

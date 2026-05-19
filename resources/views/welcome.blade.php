@@ -1158,7 +1158,7 @@
             color: var(--accent);
         }
 
-        .stat-number {
+        .stat-number, .stat-number-rating {
             font-family: var(--font-display);
             font-size: 62px;
             font-weight: 300;
@@ -3530,7 +3530,7 @@
                             d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <div class="stat-number" data-target="{{ $totalSuratKeluar }}">0</div>
+                <div class="stat-number" data-target="{{ $totalDokumenTerarsip }}">0</div>
                 <div class="stat-label">Total Surat<br> Selesai</div>
                 <span class="stat-trend positive">SLA 100% On-Time</span>
             </div>
@@ -3547,16 +3547,21 @@
                 <span class="stat-trend neutral">Pegawai Aktif</span>
             </div>
             <div class="stat-card">
-                <span class="stat-type">Terarsip</span>
+                <span class="stat-type">Rating</span>
                 <div class="stat-icon-wrapper">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="stat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="stat-icon" style="color: #f59e0b;">
                         <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                            d="M11.48 3.499c.15-.358.5-.6.87-.6s.72.242.87.6l1.867 4.475a.722.722 0 00.548.423l4.697.518c.397.044.555.52.282.788l-3.565 3.325a.722.722 0 00-.23.708l1.01 4.545c.085.385-.308.67-.665.485L12 16.747a.722.722 0 00-.67 0l-4.108 2.222c-.357.185-.75-.1-.665-.485l1.01-4.545a.722.722 0 00-.23-.708L3.982 10.61c-.273-.268-.115-.744.282-.788l4.697-.518a.722.722 0 00.548-.423L11.48 3.5z" />
                     </svg>
                 </div>
-                <div class="stat-number" data-target="{{ $totalDokumenTerarsip }}">0</div>
-                <div class="stat-label">Dokumen<br>Terarsip</div>
-                <span class="stat-trend positive">Terlindungi Aman</span>
+                <div style="display: flex; align-items: baseline; gap: 4px; justify-content: center; position: relative; z-index: 2;">
+                    <div class="stat-number-rating" id="rating-number" data-target="{{ $averageRating }}">0.0</div>
+                    <span style="font-family: var(--font-display); font-size: 24px; font-weight: 300; color: var(--muted2);">/ 5</span>
+                </div>
+                <div class="stat-label">Rating Pelayanan</div>
+                <span class="stat-trend positive" style="display: inline-flex; align-items: center; gap: 4px; color: #f59e0b !important;">
+                    <i class="bi bi-star-fill" style="color: #f59e0b;"></i> Kepuasan Layanan
+                </span>
             </div>
         </div>
     </section>
@@ -4470,6 +4475,31 @@
                 }
             });
         });
+
+        // Stat counter for rating
+        const ratingEl = document.getElementById('rating-number');
+        if (ratingEl) {
+            const targetRating = parseFloat(ratingEl.dataset.target) || 5.0;
+            ScrollTrigger.create({
+                trigger: ratingEl, start: 'top 85%', once: true,
+                onEnter: () => {
+                    const obj = { val: 0.0 };
+                    anime({
+                        targets: obj,
+                        val: targetRating,
+                        round: 10, // 1 decimal point precision
+                        duration: 2000,
+                        easing: 'easeOutExpo',
+                        update: function () {
+                            ratingEl.innerHTML = obj.val.toFixed(1);
+                        }
+                    });
+                    // Pulse glow on complete
+                    gsap.fromTo(ratingEl, { textShadow: '0 0 0px rgba(26,115,232,0)' }, { textShadow: '0 0 20px rgba(245,158,11,0.3)', duration: 0.8, delay: 1.5, yoyo: true, repeat: 1 });
+                }
+            });
+        }
+
         gsap.fromTo('.stat-card', { opacity: 0, y: 38, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, scrollTrigger: { trigger: '#stats', start: 'top 70%' } });
 
         // Dev section tech chips wave animation

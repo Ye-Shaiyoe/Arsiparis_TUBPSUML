@@ -54,6 +54,7 @@ class SuratDummySeeder extends Seeder
                 'tahap_sekarang' => $tahap,
                 'status' => $status,
                 'disetujui_pada' => ($status === 'selesai') ? $date->copy()->addDays(rand(1, 5)) : null,
+                'rating' => ($status === 'selesai' && rand(1, 100) <= 70) ? rand(3, 5) : null,
                 'created_at' => $date,
                 'updated_at' => $date,
             ]);

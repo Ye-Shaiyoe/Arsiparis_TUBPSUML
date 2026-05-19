@@ -358,6 +358,25 @@
                 <div class="h2 mb-2">✅</div>
                 <div class="fw-bold text-success">Surat Telah Selesai</div>
                 <div class="small text-muted">Semua validasi rampung</div>
+                @if(!is_null($surat->rating))
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                        <div style="font-size: 11px; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px;">Rating Layanan</div>
+                        <div style="display: flex; justify-content: center; gap: 4px; margin-bottom: 4px;">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= $surat->rating)
+                                    <i class="bi bi-star-fill text-warning fs-5"></i>
+                                @else
+                                    <i class="bi bi-star text-muted fs-5" style="color: var(--text-secondary) !important;"></i>
+                                @endif
+                            @endfor
+                        </div>
+                        <span style="font-size: 13px; font-weight: 700; color: var(--text-primary);">{{ $surat->rating }} / 5 Bintang</span>
+                    </div>
+                @else
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); font-size: 11px; color: var(--text-secondary); font-style: italic;">
+                        Belum dinilai oleh pengusul
+                    </div>
+                @endif
             </div>
         @endif
 

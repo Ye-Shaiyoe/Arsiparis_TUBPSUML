@@ -230,6 +230,73 @@
             </div>
         </div>
 
+        {{-- RATING SURAT --}}
+        @if($surat->status === 'selesai')
+        <div class="card card-custom mb-3" style="border-radius: 16px; border: 1px solid var(--border-color); background: var(--bg-secondary);">
+            <div class="card-body p-4">
+                <h6 class="fw-bold mb-3" style="color:var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-star-fill text-warning"></i> Penilaian Pelayanan Surat
+                </h6>
+                @if(is_null($surat->rating))
+                    <p class="text-muted small mb-3">Surat Anda telah selesai diproses. Bagaimana penilaian Anda terhadap kecepatan dan kualitas pelayanan kami?</p>
+                    <form action="{{ route('user.surat.rate', $surat) }}" method="POST">
+                        @csrf
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="star-rating d-flex flex-row-reverse justify-content-end gap-1">
+                                <input type="radio" id="star5" name="rating" value="5" class="d-none" />
+                                <label for="star5" class="bi bi-star-fill text-muted fs-4 cursor-pointer" style="transition: color 0.2s;" title="Sangat Baik"></label>
+                                
+                                <input type="radio" id="star4" name="rating" value="4" class="d-none" />
+                                <label for="star4" class="bi bi-star-fill text-muted fs-4 cursor-pointer" style="transition: color 0.2s;" title="Baik"></label>
+                                
+                                <input type="radio" id="star3" name="rating" value="3" class="d-none" />
+                                <label for="star3" class="bi bi-star-fill text-muted fs-4 cursor-pointer" style="transition: color 0.2s;" title="Cukup"></label>
+                                
+                                <input type="radio" id="star2" name="rating" value="2" class="d-none" />
+                                <label for="star2" class="bi bi-star-fill text-muted fs-4 cursor-pointer" style="transition: color 0.2s;" title="Buruk"></label>
+                                
+                                <input type="radio" id="star1" name="rating" value="1" class="d-none" />
+                                <label for="star1" class="bi bi-star-fill text-muted fs-4 cursor-pointer" style="transition: color 0.2s;" title="Sangat Buruk"></label>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary py-2 px-3" style="border-radius: 8px; font-weight: 600; font-size: 13px; background: #1e3a5f; border-color: #1e3a5f;">
+                                Kirim Rating
+                            </button>
+                        </div>
+                    </form>
+                    <style>
+                        .star-rating:hover label {
+                            color: #cbd5e1 !important;
+                        }
+                        .star-rating label:hover,
+                        .star-rating label:hover ~ label {
+                            color: #ffc107 !important;
+                        }
+                        .star-rating input:checked ~ label {
+                            color: #ffc107 !important;
+                        }
+                        .cursor-pointer {
+                            cursor: pointer;
+                        }
+                    </style>
+                @else
+                    <p class="text-muted small mb-2">Terima kasih atas penilaian Anda terhadap pelayanan kami!</p>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex gap-1">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= $surat->rating)
+                                    <i class="bi bi-star-fill text-warning fs-5"></i>
+                                @else
+                                    <i class="bi bi-star text-muted fs-5"></i>
+                                @endif
+                            @endfor
+                        </div>
+                        <span class="fw-bold text-muted ms-2" style="font-size: 14px;">({{ $surat->rating }} / 5 Bintang)</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+        @endif
+
         {{-- TRACKING TIMELINE --}}
         <div class="card card-custom mb-3 overflow-hidden">
             <div class="card-body p-4">

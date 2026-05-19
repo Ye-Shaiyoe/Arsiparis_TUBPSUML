@@ -741,6 +741,28 @@ class SuratController extends Controller
     }
 
     /**
+     * Berikan rating untuk surat yang sudah selesai
+     */
+    public function rate(Request $request, Surat $surat)
+    {
+        abort_if($surat->user_id !== Auth::id(), 403);
+        
+        if ($surat->status !== 'selesai') {
+            return back()->with('error', 'Rating hanya bisa diberikan untuk surat yang sudah selesai.');
+        }
+
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+        ]);
+
+        $surat->update([
+            'rating' => $request->rating,
+        ]);
+
+        return back()->with('success', 'Terima kasih atas penilaian Anda!');
+    }
+
+    /**
      * Cek apakah layanan sedang tutup.
      * Senin–Kamis: 07:30 – 16:00 WIB
      * Jumat       : 07:30 – 16:30 WIB

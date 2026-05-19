@@ -28,6 +28,8 @@ class User extends Authenticatable
         'nip',
         'role_selected',
         'profile_photo',
+        'signature_path',
+        'signature_pin',
         'switch_token',
         'switch_token_expires_at',
     ];
@@ -228,6 +230,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'switch_token_expires_at' => 'datetime',
             'password' => 'hashed',
+            'signature_pin' => 'hashed',
             'nip' => 'encrypted',
         ];
     }

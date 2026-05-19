@@ -162,7 +162,14 @@
                             </div>
                             <div class="d-flex align-items-center gap-2 flex-shrink-0">
                                 @if($surat->status==='selesai')
-                                    <span class="badge rounded-pill" style="background:#dcfce7;color:#15803d;font-size:11px;padding:4px 10px;">✓ Selesai</span>
+                                    <div class="d-flex flex-column align-items-end">
+                                        <span class="badge rounded-pill" style="background:#dcfce7;color:#15803d;font-size:11px;padding:4px 10px;margin-bottom:2px;">✓ Selesai</span>
+                                        @if(!is_null($surat->rating))
+                                            <div style="font-size:10px;color:#d97706;font-weight:700;display:flex;align-items:center;gap:2px;">
+                                                <i class="bi bi-star-fill text-warning" style="font-size:10px;color:#f59e0b !important;"></i> {{ $surat->rating }}/5
+                                            </div>
+                                        @endif
+                                    </div>
                                 @elseif($surat->status==='ditolak')
                                     <span class="badge rounded-pill" style="background:#fee2e2;color:#b91c1c;font-size:11px;padding:4px 10px;">✗ Ditolak</span>
                                 @elseif($surat->status==='revisi')

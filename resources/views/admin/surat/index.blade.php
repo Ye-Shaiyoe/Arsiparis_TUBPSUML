@@ -168,6 +168,11 @@
                         <td>
                             @if($surat->status === 'selesai')
                                 <span class="badge badge-green">Selesai</span>
+                                @if(!is_null($surat->rating))
+                                    <div style="font-size:10px; color:#d97706; margin-top:4px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:2px; background:rgba(251,191,36,0.1); padding:2px 4px; border-radius:4px; border:1px solid rgba(251,191,36,0.2);">
+                                        <i class="bi bi-star-fill text-warning" style="color:#f59e0b !important;"></i> {{ $surat->rating }}/5
+                                    </div>
+                                @endif
                             @elseif($surat->status === 'ditolak')
                                 <span class="badge badge-red">Ditolak</span>
                             @elseif($surat->status === 'revisi')

@@ -65,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{surat}/download/{tipe}', [UserSurat::class, 'download'])->name('download');
         Route::post('/{surat}/reupload', [UserSurat::class, 'reuploadFile'])->name('reupload');
         Route::post('/{surat}/purge-files', [UserSurat::class, 'purgeFiles'])->name('purgeFiles');
+        Route::post('/{surat}/rate', [UserSurat::class, 'rate'])->name('rate');
         Route::delete('/{surat}', [UserSurat::class, 'requestDelete'])->name('requestDelete');
     });
 });
@@ -195,6 +196,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::delete('/profile/sessions/{sessionId}', [ProfileController::class, 'revokeSession'])->name('profile.sessions.revoke');
     Route::post('/profile/sessions/revoke-others', [ProfileController::class, 'revokeAllOtherSessions'])->name('profile.sessions.revoke-others');
+    Route::patch('/profile/tte', [ProfileController::class, 'updateTte'])->name('profile.tte.update');
 });
 
 require __DIR__ . '/auth.php';
