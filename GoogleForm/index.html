@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tracking Pengajuan — BPSUML</title>
+  <style>
+    /* ===== KONFIGURASI WARNA — sesuaikan di sini ===== */
+    :root {
+      --brand       : #1a73e8;
+      --brand-light : #e8f0fe;
+      --brand-dark  : #1557b0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--brand-dark);
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(26,115,232,0.08);
+      padding: 32px;
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    input[type="text"]:focus { border-color: var(--brand); }
+
+    button {
+      background: var(--brand);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    button:hover  { background: var(--brand-dark); }
+    button:active { transform: scale(0.97); }
+
+    .hint { font-size: 12px; color: #999; padding-left: 2px; }
+
+    /* === HASIL TRACKING === */
+    #result { display: none; }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .kode-badge {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--brand);
+      background: var(--brand-light);
+      padding: 6px 14px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+    }
+
+    .result-name { font-size: 15px; font-weight: 600; color: #333; }
+    .result-time { font-size: 12px; color: #999; }
+
+    /* === STEPPER STATUS === */
+    .stepper {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 24px 0;
+      padding: 0 8px;
+    }
+
+    .stepper::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 40px;
+      right: 40px;
+      height: 2px;
+      background: #e0e0e0;
+      z-index: 0;
+    }
+
+    .stepper-progress {
+      position: absolute;
+      top: 20px;
+      left: 40px;
+      height: 2px;
+      background: var(--brand);
+      z-index: 1;
+      transition: width 0.6s ease;
+    }
+
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      z-index: 2;
+      flex: 1;
+    }
+
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      background: #e0e0e0;
+      transition: all 0.4s ease;
+    }
+
+    .step-circle.done    { background: #e8f5e9; }
+    .step-circle.active  { background: var(--brand-light); box-shadow: 0 0 0 4px rgba(26,115,232,0.15); }
+
+    .step-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #bbb;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .step-label.done   { color: #4caf50; }
+    .step-label.active { color: var(--brand); }
+
+    /* === CATATAN ADMIN === */
+    .catatan-box {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 16px;
+      border-left: 3px solid var(--brand);
+    }
+
+    .catatan-box p { font-size: 13px; color: #555; line-height: 1.5; }
+    .catatan-label { font-size: 11px; font-weight: 600; color: var(--brand); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* === ERROR === */
+    .error-box {
+      background: #fff3f3;
+      border: 1px solid #fcc;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      color: #c0392b;
+      font-size: 14px;
+    }
+
+    /* === LOADING === */
+    .loader {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #e0e0e0;
+      border-top-color: var(--brand);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer {
+      font-size: 12px;
+      color: #aaa;
+      text-align: center;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🔍 Cek Status Pengajuan</h1>
+    <p>Masukkan kode yang dikirim ke email kamu</p>
+  </header>
+
+  <div class="card">
+    <div class="input-group">
+      <input type="text" id="kodeInput" placeholder="Contoh: BPSUML-3F7K2X" maxlength="14" />
+      <button onclick="cekStatus()">Cek</button>
+    </div>
+    <p class="hint">Kode dikirim ke email setelah kamu submit form</p>
+
+    <div class="loader" id="loader">
+      <div class="spinner"></div>
+      <p style="font-size:13px; color:#888;">Mengecek status...</p>
+    </div>
+  </div>
+
+  <div class="card" id="result">
+    <!-- diisi oleh JS -->
+  </div>
+
+  <footer>BPSUML — Sistem Tracking Pengajuan</footer>
+
+  <script>
+    // ============================================================
+    // GANTI DENGAN URL WEB APP DARI APPS SCRIPT KAMU
+    // (Deploy → New deployment → Web app → copy URL-nya)
+    // ============================================================
+    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/GANTI_DENGAN_ID_DEPLOYMENT/exec";
+
+    // Ambil kode dari URL jika ada (?kode=BPSUML-XXXX)
+    window.addEventListener('DOMContentLoaded', function() {
+      var params = new URLSearchParams(window.location.search);
+      var kodeFromUrl = params.get('kode');
+      if (kodeFromUrl) {
+        document.getElementById('kodeInput').value = kodeFromUrl.toUpperCase();
+        cekStatus();
+      }
+    });
+
+    function cekStatus() {
+      var kode = document.getElementById('kodeInput').value.trim().toUpperCase();
+
+      if (!kode || kode.length < 5) {
+        alert("Masukkan kode pengajuan yang valid ya!");
+        return;
+      }
+
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('result').style.display = 'none';
+
+      fetch(APPS_SCRIPT_URL + "?kode=" + encodeURIComponent(kode))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          document.getElementById('loader').style.display = 'none';
+          tampilkanHasil(data);
+        })
+        .catch(function() {
+          document.getElementById('loader').style.display = 'none';
+          tampilkanError("Gagal terhubung. Coba lagi ya.");
+        });
+    }
+
+    function tampilkanHasil(data) {
+      var box = document.getElementById('result');
+      box.style.display = 'block';
+
+      if (!data.found) {
+        box.innerHTML = '<div class="error-box">❌ Kode <strong>' + document.getElementById('kodeInput').value + '</strong> tidak ditemukan.<br><small>Pastikan kode ditulis dengan benar.</small></div>';
+        return;
+      }
+
+      var status  = data.status || "Diajukan";
+      var steps   = ["Diajukan", "Diproses", "Selesai"];
+      var icons   = ["📤", "⚙️", "✅"];
+      var idx     = steps.indexOf(status);
+      var progress = idx === 0 ? "0%" : idx === 1 ? "50%" : "100%";
+
+      // Stepper HTML
+      var stepperHtml = '<div class="stepper">';
+      stepperHtml += '<div class="stepper-progress" id="sp"></div>';
+      steps.forEach(function(s, i) {
+        var cls = i < idx ? "done" : i === idx ? "active" : "";
+        stepperHtml += '<div class="step-item">';
+        stepperHtml += '<div class="step-circle ' + cls + '">' + icons[i] + '</div>';
+        stepperHtml += '<div class="step-label ' + cls + '">' + s + '</div>';
+        stepperHtml += '</div>';
+      });
+      stepperHtml += '</div>';
+
+      // Catatan admin (jika ada)
+      var catatanHtml = '';
+      if (data.catatan && data.catatan.trim()) {
+        catatanHtml = '<div class="catatan-box">'
+                    + '<p class="catatan-label">📝 Catatan dari Admin</p>'
+                    + '<p>' + data.catatan + '</p>'
+                    + '</div>';
+      }
+
+      box.innerHTML = `
+        <div class="result-header">
+          <div>
+            <div class="result-name">${data.nama || "—"}</div>
+            <div class="result-time">Diajukan: ${data.waktu || "—"}</div>
+          </div>
+          <div class="kode-badge">${data.kode}</div>
+        </div>
+        ${stepperHtml}
+        ${catatanHtml}
+      `;
+
+      // Animasi progress bar
+      setTimeout(function() {
+        document.getElementById('sp').style.width = progress;
+      }, 100);
+    }
+
+    function tampilkanError(msg) {
+      var box = document.getElementById('result');
+      box.style.display = 'block';
+      box.innerHTML = '<div class="error-box">⚠️ ' + msg + '</div>';
+    }
+  </script>
+
+</body>
+</html>

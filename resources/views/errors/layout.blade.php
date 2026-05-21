@@ -21,7 +21,7 @@
             --ink:    #1a2c4e;
             --steel:  #3b5278;
             --sky:    #4f7ec4;
-            --accent: #e8b84b;   /* gold accent — authoritative, gov vibes */
+            --accent: #e8b84b;
             --mist:   #f0f4fa;
             --white:  #ffffff;
             --code-size: clamp(7rem, 22vw, 14rem);

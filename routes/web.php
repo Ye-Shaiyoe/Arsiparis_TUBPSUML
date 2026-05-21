@@ -136,7 +136,7 @@ Route::prefix('Admin')->middleware(['auth', 'verified', 'admin'])->name('admin.'
             Route::get('/Users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
             Route::delete('/Users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
 
-            // Log System
+            // Log System admin 
             Route::get('/Logs', [\App\Http\Controllers\Admin\LogController::class, 'index'])->name('logs.index');
             Route::get('/Logs/download/{file}', [\App\Http\Controllers\Admin\LogController::class, 'download'])->name('logs.download');
             Route::post('/Logs/clear/{file}', [\App\Http\Controllers\Admin\LogController::class, 'clear'])->name('logs.clear');

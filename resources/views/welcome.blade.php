@@ -387,6 +387,62 @@
             align-items: flex-start;
             padding: 140px 60px 90px;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* ── HERO GLOW ORBS ── */ 
+        .hero-glow-orbs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(26, 115, 232, 0.18) 0%, rgba(26, 115, 232, 0) 70%);
+            top: -100px;
+            right: -100px;
+        }
+
+        .orb-2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(200, 169, 110, 0.15) 0%, rgba(200, 169, 110, 0) 70%);
+            bottom: -150px;
+            left: -150px;
+        }
+
+        .orb-3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(168, 85, 247, 0) 70%);
+            top: 30%;
+            left: 20%;
+        }
+
+        .hero-eyebrow,
+        .hero-title,
+        .hero-subtitle,
+        .hero-cta,
+        .hero-float-cards,
+        .hero-badge,
+        .hero-scroll-hint {
+            position: relative;
+            z-index: 1;
         }
 
         .hero-eyebrow {
@@ -631,6 +687,7 @@
 
         .btn-ghost:hover svg {
             transform: translateX(5px);
+            
         }
 
         .cta-divider {
@@ -2143,11 +2200,12 @@
             color: var(--accent-gold);
         }
 
-        /* TESTIMONIALS */
+        /* TESTIMONIALS - MODEREN SIDE SCROLL */
         #testimonials {
-            padding: 90px 60px;
+            padding: 100px 0;
             position: relative;
             overflow: hidden;
+            width: 100%;
         }
 
         .testimonials-header {
@@ -2156,6 +2214,7 @@
             align-items: center;
             text-align: center;
             margin-bottom: 60px;
+            padding: 0 60px;
         }
 
         .testimonials-label {
@@ -2189,27 +2248,68 @@
 
         .testimonials-subtitle {
             font-size: 16px;
-            color: var(--text-secondary);
+            color: var(--muted);
             max-width: 500px;
             line-height: 1.6;
         }
 
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        .testimonials-container {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            width: 100%;
+            position: relative;
+        }
+
+        .testimonials-row {
+            display: flex;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Gradient overlays at the edges of the testimonials slider for premium look */
+        .testimonials-container::before,
+        .testimonials-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 150px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .testimonials-container::before {
+            left: 0;
+            background: linear-gradient(90deg, var(--deep) 0%, transparent 100%);
+        }
+
+        .testimonials-container::after {
+            right: 0;
+            background: linear-gradient(270deg, var(--deep) 0%, transparent 100%);
+        }
+
+        .testimonials-track {
+            display: flex;
             gap: 24px;
-            max-width: 1200px;
-            margin: 0 auto;
+            width: max-content;
+            padding: 0 12px;
+            will-change: transform;
         }
 
         .testimonial-card {
+            flex-shrink: 0;
+            width: 380px;
             position: relative;
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 28px;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(26, 115, 232, 0.12);
+            border-radius: 24px;
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 10px 30px rgba(26, 115, 232, 0.03);
             overflow: hidden;
         }
 
@@ -2220,17 +2320,18 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0) 100%);
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.05) 0%, rgba(200, 169, 110, 0.05) 100%);
             opacity: 0;
             transition: opacity 0.4s ease;
             pointer-events: none;
+            z-index: 0;
         }
 
         .testimonial-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 193, 7, 0.3);
+            background: rgba(255, 255, 255, 0.85);
+            border-color: var(--accent-gold);
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(255, 193, 7, 0.1);
+            box-shadow: 0 20px 40px rgba(200, 169, 110, 0.15);
         }
 
         .testimonial-card:hover::before {
@@ -2238,9 +2339,9 @@
         }
 
         .testimonial-quote {
-            font-size: 15px;
-            line-height: 1.8;
-            color: var(--text-secondary);
+            font-size: 14.5px;
+            line-height: 1.7;
+            color: var(--muted);
             margin-bottom: 24px;
             font-style: italic;
             position: relative;
@@ -2249,35 +2350,35 @@
 
         .testimonial-quote::before {
             content: '"';
-            font-size: 40px;
+            font-size: 44px;
             color: var(--accent-gold);
-            opacity: 0.3;
+            opacity: 0.25;
             position: absolute;
-            top: -12px;
+            top: -16px;
             left: -8px;
+            font-family: var(--font-serif);
         }
 
         .testimonial-author {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             position: relative;
             z-index: 1;
-            margin-bottom: 12px;
         }
 
         .testimonial-avatar {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
+            font-weight: 700;
             color: white;
-            font-size: 18px;
-            border: 2px solid rgba(255, 193, 7, 0.3);
+            font-size: 16px;
+            border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             flex-shrink: 0;
         }
 
@@ -2288,21 +2389,23 @@
         }
 
         .testimonial-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--white);
         }
 
         .testimonial-role {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--accent-gold);
             font-family: var(--font-mono);
             letter-spacing: 0.05em;
+            font-weight: 600;
         }
 
         .testimonial-rating {
             display: flex;
-            gap: 4px;
+            gap: 3px;
+            margin-top: 14px;
             position: relative;
             z-index: 1;
         }
@@ -2314,6 +2417,249 @@
 
         .star.empty {
             opacity: 0.3;
+        }
+
+        /* SECURITY & COMPLIANCE BADGES */
+        #security {
+            padding: 100px 60px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.04) 0%, rgba(200, 169, 110, 0.04) 100%);
+        }
+
+        .security-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 70px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .security-label {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--accent-gold);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .security-label::before {
+            content: '🔒';
+        }
+
+        .security-title {
+            font-size: clamp(32px, 4vw, 48px);
+            font-family: var(--font-serif);
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+
+        .security-title em {
+            font-style: italic;
+            color: var(--accent-gold);
+        }
+
+        .security-subtitle {
+            font-size: 15px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .badge-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        .badge-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(200, 169, 110, 0.1) 0%, rgba(26, 115, 232, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .badge-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 193, 7, 0.3);
+            transform: translateY(-12px);
+            box-shadow: 0 20px 50px rgba(255, 193, 7, 0.12), 0 0 1px rgba(255, 193, 7, 0.2);
+        }
+
+        .badge-card:hover::before {
+            opacity: 1;
+        }
+
+        .badge-icon {
+            font-size: 42px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.12) 0%, rgba(200, 169, 110, 0.08) 100%);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge-card:hover .badge-icon {
+            background: linear-gradient(135deg, rgba(26, 115, 232, 0.2) 0%, rgba(200, 169, 110, 0.12) 100%);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .badge-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--white);
+            text-align: center;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge-description {
+            font-size: 12px;
+            color: var(--muted2);
+            text-align: center;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+
+        .security-footer {
+            text-align: center;
+            padding: 32px 24px;
+            background: rgba(26, 115, 232, 0.06);
+            border: 1px solid rgba(26, 115, 232, 0.12);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .security-footer::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(200, 169, 110, 0.06) 50%, transparent 100%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .security-footer-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .security-footer-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .security-footer-title::before {
+            content: '✓';
+            font-size: 20px;
+            color: var(--accent-gold);
+        }
+
+        .security-footer-desc {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            #security {
+                padding: 80px 40px;
+            }
+
+            .security-grid {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 20px;
+            }
+
+            .badge-card {
+                padding: 28px 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #security {
+                padding: 60px 30px;
+            }
+
+            .security-header {
+                margin-bottom: 50px;
+            }
+
+            .security-title {
+                font-size: clamp(24px, 6vw, 36px);
+            }
+
+            .security-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .badge-card {
+                padding: 24px 16px;
+            }
+
+            .badge-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 32px;
+            }
+
+            .badge-name {
+                font-size: 13px;
+            }
+
+            .badge-description {
+                font-size: 11px;
+            }
         }
 
         /* FOOTER */
@@ -4089,6 +4435,62 @@
     </section>
 
     {{-- TESTIMONIALS SECTION --}}
+    @php
+        $testimonialsGroup1 = [
+            [
+                'quote' => 'Sistem ini benar-benar mengubah cara kami mengelola dokumen. Proses yang biasanya memakan waktu berhari-hari kini hanya membutuhkan hitungan jam.',
+                'avatar' => 'SY',
+                'avatar_style' => '',
+                'name' => 'Siti Yuliana',
+                'role' => 'Admin Aspirasi',
+                'stars' => 5
+            ],
+            [
+                'quote' => 'Interface yang user-friendly membuat semua orang di divisi dapat menggunakan sistem tanpa kesulitan. Support tim juga sangat responsif.',
+                'avatar' => 'AR',
+                'avatar_style' => 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);',
+                'name' => 'Ahmad Riyanto',
+                'role' => 'Kasubbag TU',
+                'stars' => 4
+            ],
+            [
+                'quote' => 'Fitur tracking real-time sangat membantu kami memantau progres dokumen. Notifikasi otomatis memastikan tidak ada yang terlewat.',
+                'avatar' => 'HS',
+                'avatar_style' => 'background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);',
+                'name' => 'Hendra Setiawan',
+                'role' => 'User - Pengaju Surat',
+                'stars' => 5
+            ]
+        ];
+
+        $testimonialsGroup2 = [
+            [
+                'quote' => 'Keamanan data terjamin dan SLA yang jelas membuat kami percaya untuk menggunakan sistem ini untuk dokumen penting.',
+                'avatar' => 'DW',
+                'avatar_style' => 'background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);',
+                'name' => 'Dewi Wahyuningsih',
+                'role' => 'Kepala Balai',
+                'stars' => 5
+            ],
+            [
+                'quote' => 'Dashboard analytics memberikan insight berharga tentang performa tim kami. Membantu dalam evaluasi dan improvement berkelanjutan.',
+                'avatar' => 'RT',
+                'avatar_style' => 'background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);',
+                'name' => 'Rudi Taparia',
+                'role' => 'Admin - IT Support',
+                'stars' => 4
+            ],
+            [
+                'quote' => 'Migrasi dari sistem lama sangat smooth. Tim support memberikan training yang excellent dan dokumentasi yang lengkap.',
+                'avatar' => 'NI',
+                'avatar_style' => 'background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;',
+                'name' => 'Nurul Iffah',
+                'role' => 'User - Pengaju Surat',
+                'stars' => 5
+            ]
+        ];
+    @endphp
+
     <section id="testimonials">
         <div class="testimonials-header" data-reveal>
             <div class="testimonials-label">Kepuasan Pengguna</div>
@@ -4096,119 +4498,102 @@
             <p class="testimonials-subtitle">Ribuan pegawai telah merasakan manfaat sistem manajemen surat modern kami</p>
         </div>
 
-        <div class="testimonials-grid">
-            {{-- Testimonial 1 --}}
-            <div class="testimonial-card">
-                <p class="testimonial-quote">Sistem ini benar-benar mengubah cara kami mengelola dokumen. Proses yang biasanya memakan waktu berhari-hari kini hanya membutuhkan hitungan jam.</p>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar">SY</div>
-                    <div class="testimonial-info">
-                        <div class="testimonial-name">Siti Yuliana</div>
-                        <div class="testimonial-role">Admin Aspirasi</div>
-                    </div>
-                </div>
-                <div class="testimonial-rating">
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                </div>
-            </div>
-
-            {{-- Testimonial 2 --}}
-            <div class="testimonial-card">
-                <p class="testimonial-quote">Interface yang user-friendly membuat semua orang di divisi dapat menggunakan sistem tanpa kesulitan. Support tim juga sangat responsif.</p>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">AR</div>
-                    <div class="testimonial-info">
-                        <div class="testimonial-name">Ahmad Riyanto</div>
-                        <div class="testimonial-role">Kasubbag TU</div>
-                    </div>
-                </div>
-                <div class="testimonial-rating">
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star empty">★</span>
+        <div class="testimonials-container">
+            <div class="testimonials-row row-left">
+                <div class="testimonials-track track-1">
+                    @foreach(array_merge($testimonialsGroup1, $testimonialsGroup1, $testimonialsGroup1) as $item)
+                        <div class="testimonial-card">
+                            <p class="testimonial-quote">{{ $item['quote'] }}</p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar" style="{{ $item['avatar_style'] }}">{{ $item['avatar'] }}</div>
+                                <div class="testimonial-info">
+                                    <div class="testimonial-name">{{ $item['name'] }}</div>
+                                    <div class="testimonial-role">{{ $item['role'] }}</div>
+                                </div>
+                            </div>
+                            <div class="testimonial-rating">
+                                @for($i = 1; $i <= 5; $i++)
+                                    <span class="star {{ $i > $item['stars'] ? 'empty' : '' }}">★</span>
+                                @endfor
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
-
-            {{-- Testimonial 3 --}}
-            <div class="testimonial-card">
-                <p class="testimonial-quote">Fitur tracking real-time sangat membantu kami memantau progres dokumen. Notifikasi otomatis memastikan tidak ada yang terlewat.</p>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">HS</div>
-                    <div class="testimonial-info">
-                        <div class="testimonial-name">Hendra Setiawan</div>
-                        <div class="testimonial-role">User - Pengaju Surat</div>
-                    </div>
-                </div>
-                <div class="testimonial-rating">
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                </div>
-            </div>
-
-            {{-- Testimonial 4 --}}
-            <div class="testimonial-card">
-                <p class="testimonial-quote">Keamanan data terjamin dan SLA yang jelas membuat kami percaya untuk menggunakan sistem ini untuk dokumen penting.</p>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">DW</div>
-                    <div class="testimonial-info">
-                        <div class="testimonial-name">Dewi Wahyuningsih</div>
-                        <div class="testimonial-role">Kepala Balai</div>
-                    </div>
-                </div>
-                <div class="testimonial-rating">
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
+            <div class="testimonials-row row-right">
+                <div class="testimonials-track track-2">
+                    @foreach(array_merge($testimonialsGroup2, $testimonialsGroup2, $testimonialsGroup2) as $item)
+                        <div class="testimonial-card">
+                            <p class="testimonial-quote">{{ $item['quote'] }}</p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar" style="{{ $item['avatar_style'] }}">{{ $item['avatar'] }}</div>
+                                <div class="testimonial-info">
+                                    <div class="testimonial-name">{{ $item['name'] }}</div>
+                                    <div class="testimonial-role">{{ $item['role'] }}</div>
+                                </div>
+                            </div>
+                            <div class="testimonial-rating">
+                                @for($i = 1; $i <= 5; $i++)
+                                    <span class="star {{ $i > $item['stars'] ? 'empty' : '' }}">★</span>
+                                @endfor
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
+        </div>
+    </section>
 
-            {{-- Testimonial 5 --}}
-            <div class="testimonial-card">
-                <p class="testimonial-quote">Dashboard analytics memberikan insight berharga tentang performa tim kami. Membantu dalam evaluasi dan improvement berkelanjutan.</p>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">RT</div>
-                    <div class="testimonial-info">
-                        <div class="testimonial-name">Rudi Taparia</div>
-                        <div class="testimonial-role">Admin - IT Support</div>
-                    </div>
-                </div>
-                <div class="testimonial-rating">
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star empty">★</span>
-                </div>
+    {{-- SECURITY & COMPLIANCE BADGES --}}
+    <section id="security">
+        <div class="security-header" data-reveal>
+            <div class="security-label">Standar Keamanan</div>
+            <h2 class="security-title">Dibangun dengan <em>Keamanan Enterprise</em></h2>
+            <p class="security-subtitle">Kami mematuhi standar keamanan internasional dan melindungi data Anda dengan teknologi terdepan</p>
+        </div>
+
+        <div class="security-grid">
+            <div class="badge-card" data-badge="ssl">
+                <div class="badge-icon">🔒</div>
+                <div class="badge-name">SSL/TLS</div>
+                <div class="badge-description">Enkripsi komunikasi end-to-end</div>
             </div>
 
-            {{-- Testimonial 6 --}}
-            <div class="testimonial-card">
-                <p class="testimonial-quote">Migrasi dari sistem lama sangat smooth. Tim support memberikan training yang excellent dan dokumentasi yang lengkap.</p>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">NI</div>
-                    <div class="testimonial-info">
-                        <div class="testimonial-name">Nurul Iffah</div>
-                        <div class="testimonial-role">User - Pengaju Surat</div>
-                    </div>
-                </div>
-                <div class="testimonial-rating">
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                </div>
+            <div class="badge-card" data-badge="encryption">
+                <div class="badge-icon">🛡️</div>
+                <div class="badge-name">AES-256</div>
+                <div class="badge-description">Enkripsi data tersimpan military-grade</div>
+            </div>
+
+            <div class="badge-card" data-badge="2fa">
+                <div class="badge-icon">🔑</div>
+                <div class="badge-name">2FA/MFA</div>
+                <div class="badge-description">Autentikasi multi-faktor</div>
+            </div>
+
+            <div class="badge-card" data-badge="backup">
+                <div class="badge-icon">💾</div>
+                <div class="badge-name">Backup</div>
+                <div class="badge-description">Backup otomatis & redundansi</div>
+            </div>
+
+            <div class="badge-card" data-badge="gdpr">
+                <div class="badge-icon">⚖️</div>
+                <div class="badge-name">GDPR Ready</div>
+                <div class="badge-description">Kepatuhan regulasi privasi data</div>
+            </div>
+
+            <div class="badge-card" data-badge="iso">
+                <div class="badge-icon">✅</div>
+                <div class="badge-name">ISO 27001</div>
+                <div class="badge-description">Manajemen keamanan informasi</div>
+            </div>
+        </div>
+
+        <div class="security-footer">
+            <div class="security-footer-content">
+                <div class="security-footer-title">Audit & Monitoring 24/7</div>
+                <p class="security-footer-desc">Sistem kami dimonitor secara real-time dengan logging lengkap untuk memastikan integritas dan keamanan data Anda setiap saat.</p>
             </div>
         </div>
     </section>
@@ -4759,16 +5144,41 @@
         gsap.fromTo('.chart-card', { opacity: 0, y: 40, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.12, scrollTrigger: { trigger: '#charts', start: 'top 70%' } });
         gsap.fromTo('.charts-header > *', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, scrollTrigger: { trigger: '#charts', start: 'top 75%' } });
 
-        // Testimonials - staggered slide-in with scale
-        gsap.fromTo('.testimonial-card', { opacity: 0, y: 50, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.15, scrollTrigger: { trigger: '#testimonials', start: 'top 68%' } });
-        gsap.fromTo('.testimonials-header > *', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, scrollTrigger: { trigger: '#testimonials', start: 'top 72%' } });
+        // Testimonials - side scroll animations (horizontal scroll tracks moving in opposite directions)
+        gsap.fromTo('.track-1', 
+            { x: '5%' }, 
+            { 
+                x: '-30%', 
+                scrollTrigger: {
+                    trigger: '#testimonials',
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: 1.2
+                }
+            }
+        );
 
-        // Testimonial card hover animation enhancement
-        document.querySelectorAll('.testimonial-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                gsap.to(this, { duration: 0.4, ease: 'power2.out' });
-            });
-        });
+        gsap.fromTo('.track-2', 
+            { x: '-30%' }, 
+            { 
+                x: '5%', 
+                scrollTrigger: {
+                    trigger: '#testimonials',
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: 1.2
+                }
+            }
+        );
+
+        // Header and overall testimonials section fade in
+        gsap.fromTo('.testimonials-header > *', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, scrollTrigger: { trigger: '#testimonials', start: 'top 72%' } });
+        gsap.fromTo('.testimonials-row', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.9, stagger: 0.15, scrollTrigger: { trigger: '#testimonials', start: 'top 75%' } });
+
+        // SECURITY BADGES ANIMATIONS
+        gsap.fromTo('.security-header > *', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, scrollTrigger: { trigger: '#security', start: 'top 75%' } });
+        gsap.fromTo('.badge-card', { opacity: 0, y: 50, scale: 0.85 }, { opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.1, scrollTrigger: { trigger: '.security-grid', start: 'top 70%' } });
+        gsap.fromTo('.security-footer', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.8, scrollTrigger: { trigger: '.security-footer', start: 'top 80%' } });
 
         // Footer - wave entrance
         gsap.fromTo('#footer > *', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.13, scrollTrigger: { trigger: '#footer', start: 'top 80%' } });

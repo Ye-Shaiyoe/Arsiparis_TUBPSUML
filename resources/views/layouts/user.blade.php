@@ -55,6 +55,11 @@
             font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
             min-height: 100vh;
             overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         /* ===== APP SHELL (sidebar + content) ===== */
@@ -78,6 +83,19 @@
             align-self: flex-start;
             height: 100vh;
             overflow: hidden;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            animation: sidebarFadeIn 0.4s ease-out;
+        }
+
+        @keyframes sidebarFadeIn {
+            from {
+                opacity: 0.95;
+                transform: translateX(-2px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .user-sidebar::before {
@@ -1392,9 +1410,15 @@
                 document.documentElement.classList.remove('no-transition');
             }, 100);
         });
+
+        // ===== SMOOTH SCROLL BEHAVIOR =====
+        // Biarkan browser handle scroll restoration secara natural
+        if ('scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'auto';
+        }
     </script>
 </head>
-<body>
+<body data-turbo="false">
 
 @php
     $unreadNotif = auth()->user()->unreadNotifications->count();
@@ -1428,14 +1452,14 @@
                 <i class="bi bi-globe2"></i>
                 <span>Beranda Publik</span>
             </a>
-            <a href="{{ route('dashboard') }}" data-turbo="false"
+            <a href="{{ route('dashboard') }}" 
                class="user-sidebar-item {{ request()->routeIs('dashboard') ? 'is-active' : '' }}" data-tooltip="Dashboard">
                 <i class="bi bi-grid-1x2-fill"></i>
                 <span>Dashboard</span>
             </a>
 
             <div class="user-nav-label">Notification</div>
-            <a href="{{ route('user.notifikasi.index') }}"
+            <a href="{{ route('user.notifikasi.index') }}" 
                  class="user-sidebar-item {{ request()->routeIs('user.notifikasi.index') ? 'is-active' : '' }} {{ $unreadNotif > 0 ? 'sidebar-unread-pulse' : '' }}" data-tooltip="Notifikasi">
                     <span class="user-sidebar-icon-stack">
                         <i class="bi bi-bell{{ $unreadNotif > 0 ? '-fill' : '' }}"></i>
@@ -1491,7 +1515,7 @@
             </div>
 
             <div class="user-nav-label">Insight</div>
-            <a href="{{ route('user.statistik.index') }}"
+            <a href="{{ route('user.statistik.index') }}" 
                class="user-sidebar-item {{ request()->routeIs('user.statistik.index') ? 'is-active' : '' }}" data-tooltip="Statistik">
                 <i class="bi bi-graph-up-arrow"></i>
                 <span>Statistik</span>
@@ -1501,12 +1525,12 @@
                 <i class="bi bi-speedometer2"></i>
                 <span>Monitoring SLA</span>
             </a>
-            <a href="{{ route('user.template.index') }}"
+            <a href="{{ route('user.template.index') }}" 
                class="user-sidebar-item {{ request()->routeIs('user.template.*') ? 'is-active' : '' }}" data-tooltip="Template">
                 <i class="bi bi-file-earmark-word"></i>
                 <span>Template</span>
             </a>
-            <a href="{{ route('user.pegawai.index') }}" data-turbo="false"
+            <a href="{{ route('user.pegawai.index') }}" 
                class="user-sidebar-item {{ request()->routeIs('user.pegawai.*') ? 'is-active' : '' }}" data-tooltip="Cari Pegawai">
                 <i class="bi bi-people"></i>
                 <span>Cari Pegawai</span>
@@ -1624,7 +1648,6 @@
 
             <div class="user-topbar-title">
                 <h1>{{ $title ?? 'Dashboard Pegawai' }}</h1>
-                <p>Ringkasan aktivitas &amp; persuratan Anda</p>
             </div>
 
             <div class="d-flex align-items-center ms-auto">
@@ -2064,13 +2087,17 @@
             });
         };
 
-        // View Transitions
-        document.addEventListener('turbo:before-render', (event) => {
-            if (document.startViewTransition) {
-                event.preventDefault();
-                document.startViewTransition(() => event.detail.resume());
-            }
-        });
+        // ===== SMOOTH PAGE NAVIGATION =====
+        // Cukup biarkan browser handle scroll restoration natural
+        // Tidak perlu sessionStorage yang ribet
+
+        // View Transitions disabled to prevent visual glitches
+        // document.addEventListener('turbo:before-render', (event) => {
+        //     if (document.startViewTransition) {
+        //         event.preventDefault();
+        //         document.startViewTransition(() => event.detail.resume());
+        //     }
+        // });
 
         function showPublicVerificationModal(e) {
             if (e) e.preventDefault();
@@ -2124,16 +2151,8 @@
 
 
 <style>
-    /* View Transitions */
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-        animation-duration: 0.4s;
-    }
-
-    /* Target content area for smoother transition */
-    .main-content {
-        view-transition-name: main-content;
-    }
+    /* View Transitions disabled */
+    /* Smooth page transitions handled by Turbo only */
 </style>
 @stack('scripts')
 

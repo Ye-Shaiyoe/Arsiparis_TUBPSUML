@@ -10,9 +10,9 @@
         <div style="display: flex; align-items: center; gap: 20px;">
             @if ($user->profile_photo)
                 <img src="{{ Storage::url($user->profile_photo) }}" alt="{{ $user->name }}" 
-                     style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 4px solid white; shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+                     style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
             @else
-                <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; font-weight: bold; border: 4px solid white; shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); display: flex; align-items: center; justify-content: center; font-size: 32px; color: white; font-weight: bold; border: 4px solid white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
             @endif
