@@ -17,10 +17,17 @@ class ITSupportController extends Controller
 
         $notifications = auth()->user()->notifications()->latest()->limit(5)->get();
 
+        // Fetch all complete letters with their data including both files
+        $completeSurats = \App\Models\Surat::where('status', 'selesai')
+            ->with('user')
+            ->orderBy('disetujui_pada', 'desc')
+            ->paginate(15);
+
         return view('it_support.dashboard', [
             'title' => 'IT Support Dashboard',
             'aspirasis' => $aspirasis,
-            'notifications' => $notifications
+            'notifications' => $notifications,
+            'completeSurats' => $completeSurats
         ]);
     }
 
