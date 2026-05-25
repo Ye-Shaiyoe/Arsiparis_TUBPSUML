@@ -142,6 +142,114 @@
         </div>
     </div>
 
+    {{-- DASHBOARD SURAT LENGKAP --}}
+    <div class="card border-0 shadow-sm mt-5">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 style="margin: 0; font-weight: 700; color: #111827;">
+                    <i class="bi bi-file-check-fill me-2 text-success"></i> Dashboard Surat Lengkap
+                </h5>
+                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill" style="font-size: 11px;">{{ $completeSurats->total() }} Surat</span>
+            </div>
+
+            @if($completeSurats->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" style="font-size: 13px;">
+                        <thead style="background: #f9fafb;">
+                            <tr style="border-bottom: 2px solid #e5e7eb;">
+                                <th style="padding: 12px 15px; color: #6b7280; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">No. Surat</th>
+                                <th style="padding: 12px 15px; color: #6b7280; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Judul</th>
+                                <th style="padding: 12px 15px; color: #6b7280; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Jenis</th>
+                                <th style="padding: 12px 15px; color: #6b7280; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Pengusul</th>
+                                <th style="padding: 12px 15px; color: #6b7280; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;">Selesai</th>
+                                <th style="padding: 12px 15px; color: #6b7280; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; text-align: center;">File Fisik</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($completeSurats as $surat)
+                                <tr style="border-bottom: 1px solid #e5e7eb; transition: all 0.2s;">
+                                    <td style="padding: 12px 15px;">
+                                        <span style="font-weight: 600; color: #111827;">{{ $surat->nomor_surat ?? 'Pending' }}</span>
+                                    </td>
+                                    <td style="padding: 12px 15px;">
+                                        <div style="max-width: 250px;">
+                                            <div style="font-weight: 500; color: #1f2937; margin-bottom: 3px;">{{ $surat->judul }}</div>
+                                            <div style="font-size: 11px; color: #9ca3af;">{{ Str::limit($surat->tujuan, 60) }}</div>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 12px 15px;">
+                                        <span class="badge {{ 
+                                            match($surat->jenis) {
+                                                'nota_dinas' => 'bg-primary',
+                                                'surat_dinas' => 'bg-info',
+                                                'surat_keputusan' => 'bg-warning text-dark',
+                                                'surat_pernyataan' => 'bg-secondary',
+                                                default => 'bg-secondary'
+                                            }
+                                        }}" style="font-size: 10px;">
+                                            {{ \App\Models\Surat::JENIS_LABEL[$surat->jenis] ?? $surat->jenis }}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 12px 15px;">
+                                        <div style="font-size: 12px; color: #374151;">{{ $surat->user->name ?? '-' }}</div>
+                                        <div style="font-size: 10px; color: #9ca3af;">{{ $surat->user->nip ?? '-' }}</div>
+                                    </td>
+                                    <td style="padding: 12px 15px;">
+                                        <div style="font-size: 12px; color: #374151;">{{ $surat->disetujui_pada?->format('d/m/Y H:i') ?? '-' }}</div>
+                                    </td>
+                                    <td style="padding: 12px 15px; text-align: center;">
+                                        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                                            @if($surat->file_word)
+                                                <a href="{{ route('admin.surat.download', ['surat' => $surat, 'tipe' => 'file_word']) }}" 
+                                                   class="btn btn-sm btn-outline-primary" 
+                                                   style="font-size: 10px; padding: 5px 10px; border-radius: 6px; text-decoration: none;"
+                                                   title="Download File Word">
+                                                    <i class="bi bi-file-word me-1"></i> Word
+                                                </a>
+                                            @else
+                                                <span class="text-muted" style="font-size: 10px;">No Word</span>
+                                            @endif
+                                            
+                                            @if($surat->file_lampiran)
+                                                <a href="{{ route('admin.surat.download', ['surat' => $surat, 'tipe' => 'file_lampiran']) }}" 
+                                                   class="btn btn-sm btn-outline-success" 
+                                                   style="font-size: 10px; padding: 5px 10px; border-radius: 6px; text-decoration: none;"
+                                                   title="Download File Lampiran">
+                                                    <i class="bi bi-file-earmark me-1"></i> Lampiran
+                                                </a>
+                                            @else
+                                                <span class="text-muted" style="font-size: 10px;">No Lampiran</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px 15px;">
+                                        <i class="bi bi-inbox text-muted" style="font-size: 40px; opacity: 0.2;"></i>
+                                        <p class="text-muted mt-3">Belum ada surat yang selesai.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Pagination --}}
+                @if($completeSurats->hasPages())
+                    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 5px;">
+                        {{ $completeSurats->links('pagination::bootstrap-5') }}
+                    </div>
+                @endif
+            @else
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox text-muted" style="font-size: 50px; opacity: 0.2;"></i>
+                    <p class="text-muted mt-3">Belum ada surat yang selesai untuk ditampilkan.</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
     {{-- Modal Balas Aspirasi --}}
     <div class="modal fade" id="replyModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -304,7 +412,34 @@
         transform: translateX(5px);
         border-color: #f59e0b !important;
     }
+
+    /* Table styles for complete surats */
+    .table tbody tr:hover {
+        background-color: #f9fafb;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .table .btn-outline-primary {
+        border: 1px solid #3b82f6;
+        color: #3b82f6;
+    }
+
+    .table .btn-outline-primary:hover {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .table .btn-outline-success {
+        border: 1px solid #10b981;
+        color: #10b981;
+    }
+
+    .table .btn-outline-success:hover {
+        background: #10b981;
+        color: white;
+    }
 </style>
+
 
 <script>
     function openReplyModal(uuid, judul) {

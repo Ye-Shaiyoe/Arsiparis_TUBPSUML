@@ -118,6 +118,40 @@ class User extends Authenticatable
     }
 
     /**
+     * Relasi ke Activity Logs
+     */
+    public function activityLogs()
+    {
+        return $this->hasMany(\App\Models\ActivityLog::class);
+    }
+
+    /**
+     * Statistik surat pengguna (untuk halaman profil / detail surat).
+     */
+    public function getSuratStats(): array
+    {
+        $surats = $this->relationLoaded('surats')
+            ? $this->surats
+            : $this->surats()->get();
+
+        $completed = $surats->where('status', 'selesai');
+        $avgDays = 0;
+
+        if ($completed->isNotEmpty()) {
+            $totalDays = $completed->sum(fn ($surat) => $surat->updated_at->diffInDays($surat->created_at));
+            $avgDays = round($totalDays / $completed->count(), 2);
+        }
+
+        return [
+            'total_surats' => $surats->count(),
+            'surats_selesai' => $completed->count(),
+            'surats_proses' => $surats->where('status', 'proses')->count(),
+            'surats_ditolak' => $surats->where('status', 'ditolak')->count(),
+            'avg_processing_days' => $avgDays,
+        ];
+    }
+
+    /**
      * Data Heatmap untuk User (Pengajuan & Revisi)
      */
     public function getActivityHeatmapData($year = null)

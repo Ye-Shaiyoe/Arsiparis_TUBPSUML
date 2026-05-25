@@ -75,7 +75,14 @@
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; font-size:13px;">
                 <div>
                     <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px; font-weight:700; letter-spacing:0.5px; opacity: 0.8;">PENGUSUL</div>
-                    <div style="font-weight:600; color:var(--text-primary);">{{ $surat->user?->name ?? '—' }}</div>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <div style="font-weight:600; color:var(--text-primary);">{{ $surat->user?->name ?? '—' }}</div>
+                        @if($surat->user)
+                            <a href="{{ route('admin.users.show', $surat->user) }}" class="btn btn-sm btn-outline-primary" style="font-size:11px; padding:2px 10px;">
+                                <i class="bi bi-person-lines-fill me-1"></i>Detail
+                            </a>
+                        @endif
+                    </div>
                 </div>
                 <div>
                     <div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px; font-weight:700; letter-spacing:0.5px; opacity: 0.8;">TUJUAN SURAT</div>

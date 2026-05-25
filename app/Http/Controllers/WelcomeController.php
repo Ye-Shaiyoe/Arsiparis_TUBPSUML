@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Surat;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class WelcomeController extends Controller
@@ -21,87 +22,52 @@ class WelcomeController extends Controller
             return redirect()->route('dashboard');
         }
 
-        // Stats Dasar
-        // Surat Masuk = Total Surat
-        $totalSuratMasuk = Surat::count();
-        // Surat Keluar = Tahap 5 ke atas (Penomoran s/d Selesai)
-        $totalSuratKeluar = Surat::where('tahap_sekarang', '>=', 5)->count();
-        // Pengguna Terdaftar
+        $data = Cache::remember('welcome.page.stats', 300, fn () => $this->buildStats());
+
+        return view('welcome', $data);
+    }
+
+    private function buildStats(): array
+    {
+        $totals = Surat::query()->selectRaw('
+            COUNT(*) as total_masuk,
+            SUM(CASE WHEN tahap_sekarang >= 5 THEN 1 ELSE 0 END) as total_keluar,
+            SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as total_arsip
+        ', ['selesai'])->first();
+
+        $totalSuratMasuk = (int) ($totals->total_masuk ?? 0);
+        $totalSuratKeluar = (int) ($totals->total_keluar ?? 0);
+        $totalDokumenTerarsip = (int) ($totals->total_arsip ?? 0);
         $totalPengguna = User::count();
-        // Dokumen Terarsip = Status Selesai
-        $totalDokumenTerarsip = Surat::where('status', 'selesai')->count();
-        // Average rating of finished letters (if any, default to 5.0)
-        $averageRating = Surat::whereNotNull('rating')->avg('rating') ?: 5.0;
+        $averageRating = (float) (Surat::whereNotNull('rating')->avg('rating') ?: 5.0);
 
-        // Chart Mixed (6 Bulan Terakhir)
-        $chartMixedMonths = [];
-        $chartMixedMasuk = [];
-        $chartMixedKeluar = [];
-        $chartMixedSLA = [];
+        $from12 = now()->subMonths(11)->startOfMonth();
 
-        for ($i = 5; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
-            $chartMixedMonths[] = $date->translatedFormat('M');
-            
-            $countMasuk = Surat::whereMonth('created_at', $date->month)
-                ->whereYear('created_at', $date->year)
-                ->count();
-            
-            // Keluar di chart juga dihitung sebagai yang sudah mencapai tahap 5+ di bulan tersebut
-            $countKeluar = Surat::whereMonth('created_at', $date->month)
-                ->whereYear('created_at', $date->year)
-                ->where('tahap_sekarang', '>=', 5)
-                ->count();
-            
-            $chartMixedMasuk[] = $countMasuk;
-            $chartMixedKeluar[] = $countKeluar;
+        $monthlyCreated = Surat::query()
+            ->selectRaw('
+                YEAR(created_at) as y,
+                MONTH(created_at) as m,
+                COUNT(*) as masuk,
+                SUM(CASE WHEN tahap_sekarang >= 5 THEN 1 ELSE 0 END) as keluar
+            ')
+            ->where('created_at', '>=', $from12)
+            ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+            ->get()
+            ->keyBy(fn ($row) => sprintf('%04d-%02d', $row->y, $row->m));
 
-            // SLA Rate calculation
-            $totalSelesaiBulanIni = Surat::whereMonth('updated_at', $date->month)
-                ->whereYear('updated_at', $date->year)
-                ->where('status', 'selesai')
-                ->count();
+        $monthlySelesai = Surat::query()
+            ->selectRaw('
+                YEAR(updated_at) as y,
+                MONTH(updated_at) as m,
+                COUNT(*) as total,
+                SUM(CASE WHEN deadline_sla IS NULL OR updated_at <= deadline_sla THEN 1 ELSE 0 END) as on_time
+            ')
+            ->where('status', 'selesai')
+            ->where('updated_at', '>=', $from12)
+            ->groupByRaw('YEAR(updated_at), MONTH(updated_at)')
+            ->get()
+            ->keyBy(fn ($row) => sprintf('%04d-%02d', $row->y, $row->m));
 
-            $onTime = Surat::whereMonth('updated_at', $date->month)
-                ->whereYear('updated_at', $date->year)
-                ->where('status', 'selesai')
-                ->where(function($q) {
-                    $q->whereNull('deadline_sla')->orWhereColumn('updated_at', '<=', 'deadline_sla');
-                })
-                ->count();
-            
-            $chartMixedSLA[] = $totalSelesaiBulanIni > 0 ? (int) round(($onTime / $totalSelesaiBulanIni) * 100) : 100;
-        }
-
-        // Chart Doughnut (Distribusi Jenis)
-        $jenisCounts = Surat::select('jenis', DB::raw('count(*) as total'))
-            ->groupBy('jenis')
-            ->get();
-        
-        $doughnutLabels = [];
-        $doughnutData = [];
-        $totalAll = $totalSuratMasuk ?: 1;
-
-        foreach (Surat::JENIS_LABEL as $key => $label) {
-            $count = $jenisCounts->where('jenis', $key)->first()?->total ?? 0;
-            $doughnutLabels[] = $label;
-            $doughnutData[] = [
-                'count' => (int) $count,
-                'pct' => (int) round(($count / $totalAll) * 100)
-            ];
-        }
-
-        // Growth Percentage (Bulan ini vs Bulan lalu)
-        $thisMonth = Surat::whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count();
-        $lastMonth = Surat::whereMonth('created_at', now()->subMonth()->month)->whereYear('created_at', now()->subMonth()->year)->count();
-        $growth = 0;
-        if ($lastMonth > 0) {
-            $growth = (int) round((($thisMonth - $lastMonth) / $lastMonth) * 100);
-        } elseif ($thisMonth > 0) {
-            $growth = 100;
-        }
-
-        // Chart Area (12 Bulan)
         $chartAreaMonths = [];
         $chartAreaMasuk = [];
         $chartAreaKeluar = [];
@@ -109,48 +75,63 @@ class WelcomeController extends Controller
 
         for ($i = 11; $i >= 0; $i--) {
             $date = now()->subMonths($i);
+            $key = $date->format('Y-m');
+            $row = $monthlyCreated->get($key);
+
             $chartAreaMonths[] = $date->translatedFormat('M');
-            
-            $chartAreaMasuk[] = Surat::whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->count();
-            $chartAreaKeluar[] = Surat::whereMonth('created_at', $date->month)->whereYear('created_at', $date->year)->where('tahap_sekarang', '>=', 5)->count();
-            $chartAreaSelesai[] = Surat::whereMonth('updated_at', $date->month)->whereYear('updated_at', $date->year)->where('status', 'selesai')->count();
+            $chartAreaMasuk[] = (int) ($row->masuk ?? 0);
+            $chartAreaKeluar[] = (int) ($row->keluar ?? 0);
+            $chartAreaSelesai[] = (int) ($monthlySelesai->get($key)->total ?? 0);
         }
 
-        // SLA per Jenis (Bulan Ini)
-        $slaPerJenis = [];
-        foreach (Surat::JENIS_LABEL as $key => $label) {
-            $totalJenis = Surat::where('jenis', $key)->whereMonth('created_at', now()->month)->count();
-            $pct = 100;
-            if ($totalJenis > 0) {
-                $onTimeJenis = Surat::where('jenis', $key)
-                    ->whereMonth('created_at', now()->month)
-                    ->where(function($q) {
-                        $q->whereNull('deadline_sla')
-                          ->orWhere(function($sq) {
-                              $sq->where('status', 'selesai')->whereColumn('updated_at', '<=', 'deadline_sla');
-                          })
-                          ->orWhere(function($sq) {
-                              $sq->where('status', '!=', 'selesai')->where('deadline_sla', '>', now());
-                          });
-                    })
-                    ->count();
-                $pct = (int) round(($onTimeJenis / $totalJenis) * 100);
-            }
-            
-            $color = '#C8A96E';
-            if ($pct >= 90) $color = '#1D9E75';
-            elseif ($pct >= 80) $color = '#5DCAA5';
-            elseif ($pct >= 70) $color = '#EF9F27';
-            else $color = '#D85A30';
+        $chartMixedMonths = array_slice($chartAreaMonths, -6);
+        $chartMixedMasuk = array_slice($chartAreaMasuk, -6);
+        $chartMixedKeluar = array_slice($chartAreaKeluar, -6);
+        $chartMixedSLA = [];
 
-            $slaPerJenis[] = [
-                'name' => $label,
-                'pct' => $pct,
-                'color' => $color
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $key = $date->format('Y-m');
+            $selesai = $monthlySelesai->get($key);
+            $total = (int) ($selesai->total ?? 0);
+            $onTime = (int) ($selesai->on_time ?? 0);
+            $chartMixedSLA[] = $total > 0 ? (int) round(($onTime / $total) * 100) : 100;
+        }
+
+        $jenisCounts = Surat::query()
+            ->select('jenis', DB::raw('COUNT(*) as total'))
+            ->groupBy('jenis')
+            ->pluck('total', 'jenis');
+
+        $doughnutLabels = [];
+        $doughnutData = [];
+        $totalAll = $totalSuratMasuk ?: 1;
+
+        foreach (Surat::JENIS_LABEL as $key => $label) {
+            $count = (int) ($jenisCounts[$key] ?? 0);
+            $doughnutLabels[] = $label;
+            $doughnutData[] = [
+                'count' => $count,
+                'pct' => (int) round(($count / $totalAll) * 100),
             ];
         }
 
-        return view('welcome', compact(
+        $thisMonthKey = now()->format('Y-m');
+        $lastMonthKey = now()->subMonth()->format('Y-m');
+        $thisMonth = (int) ($monthlyCreated->get($thisMonthKey)->masuk ?? 0);
+        $lastMonth = (int) ($monthlyCreated->get($lastMonthKey)->masuk ?? 0);
+
+        if ($lastMonth > 0) {
+            $growth = (int) round((($thisMonth - $lastMonth) / $lastMonth) * 100);
+        } elseif ($thisMonth > 0) {
+            $growth = 100;
+        } else {
+            $growth = 0;
+        }
+
+        $slaPerJenis = $this->buildSlaPerJenis();
+
+        return compact(
             'totalSuratMasuk',
             'totalSuratKeluar',
             'totalPengguna',
@@ -168,6 +149,53 @@ class WelcomeController extends Controller
             'chartAreaKeluar',
             'chartAreaSelesai',
             'slaPerJenis'
-        ));
+        );
+    }
+
+    private function buildSlaPerJenis(): array
+    {
+        $now = now();
+        $rows = Surat::query()
+            ->select('jenis')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw('SUM(CASE
+                WHEN deadline_sla IS NULL THEN 1
+                WHEN status = ? AND updated_at <= deadline_sla THEN 1
+                WHEN status != ? AND deadline_sla > ? THEN 1
+                ELSE 0
+            END) as on_time', ['selesai', 'selesai', $now])
+            ->whereMonth('created_at', $now->month)
+            ->whereYear('created_at', $now->year)
+            ->groupBy('jenis')
+            ->get()
+            ->keyBy('jenis');
+
+        $slaPerJenis = [];
+
+        foreach (Surat::JENIS_LABEL as $key => $label) {
+            $row = $rows->get($key);
+            $total = (int) ($row->total ?? 0);
+            $pct = $total > 0
+                ? (int) round(((int) ($row->on_time ?? 0) / $total) * 100)
+                : 100;
+
+            if ($pct >= 90) {
+                $color = '#1D9E75';
+            } elseif ($pct >= 80) {
+                $color = '#5DCAA5';
+            } elseif ($pct >= 70) {
+                $color = '#EF9F27';
+            } else {
+                $color = '#D85A30';
+            }
+
+            $slaPerJenis[] = [
+                'name' => $label,
+                'pct' => $pct,
+                'color' => $color,
+            ];
+        }
+
+        return $slaPerJenis;
     }
 }

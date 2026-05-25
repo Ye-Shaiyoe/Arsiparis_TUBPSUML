@@ -21,6 +21,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    @vite(['resources/css/app.css'])
+
     <style>
         :root {
             --bg-primary: #f5f6fa;
@@ -83,19 +85,7 @@
             align-self: flex-start;
             height: 100vh;
             overflow: hidden;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            animation: sidebarFadeIn 0.4s ease-out;
-        }
-
-        @keyframes sidebarFadeIn {
-            from {
-                opacity: 0.95;
-                transform: translateX(-2px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
         }
 
         .user-sidebar::before {
@@ -178,6 +168,10 @@
             letter-spacing: 0.12em;
             color: rgba(255, 255, 255, 0.32);
             padding: 1rem 0.85rem 0.35rem;
+            border: none;
+            outline: none;
+            box-shadow: none;
+            background: transparent;
         }
 
         .user-sidebar-item {
@@ -359,7 +353,8 @@
             from { opacity: 0; transform: translateY(-4px); }
             to { opacity: 1; transform: translateY(0); }
         }        /* ===== SMOOTH MINI SIDEBAR TRANSITIONS & STYLING ===== */
-        .user-sidebar.is-mini {
+        .user-sidebar.is-mini,
+        html.is-sidebar-mini #userSidebar {
             width: 88px !important;
         }
 
@@ -387,9 +382,10 @@
 
         /* Section Labels: smooth fade out */
         .user-nav-label {
-            transition: all 0.2s ease;
+            transition: opacity 0.2s ease, max-height 0.2s ease, padding 0.2s ease, margin 0.2s ease, visibility 0.2s ease;
         }
-        .user-sidebar.is-mini .user-nav-label {
+        .user-sidebar.is-mini .user-nav-label,
+        html.is-sidebar-mini #userSidebar .user-nav-label {
             opacity: 0 !important;
             max-height: 0 !important;
             margin: 0 !important;
@@ -670,6 +666,36 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+        }
+
+        /* Turbo: smooth fade saat pindah halaman */
+        #userShell {
+            will-change: opacity, transform;
+        }
+        html.turbo-loading #userShell {
+            opacity: 0.5;
+            transform: translateY(6px);
+            pointer-events: none;
+        }
+        #userShell.is-entering {
+            animation: userPageEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes userPageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Turbo progress bar */
+        .turbo-progress-bar {
+            height: 3px;
+            background: linear-gradient(90deg, #06b6d4, #2563eb);
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.45);
         }
 
         .user-topbar {
@@ -1368,11 +1394,21 @@
             transition: none !important;
         }
 
-        /* Suppress Focus Ring Flicker */
-        .surat-item:focus, .notification-item:focus, .stat-card-modern:focus, .user-sidebar-item:focus, .user-nav-group-toggle:focus, a:focus, button:focus {
+        /* Suppress focus ring flicker (sidebar + main content) */
+        .user-sidebar *:focus,
+        .user-sidebar *:focus-visible {
+            outline: none !important;
+        }
+        .surat-item:focus, .notification-item:focus, .stat-card-modern:focus,
+        .user-sidebar-item:focus, .user-nav-group-toggle:focus,
+        .user-nav-label:focus, a:focus, button:focus {
             outline: none !important;
             box-shadow: none !important;
         }
+
+        /* Early mini-sidebar state (set in <head> before paint) */
+        html.is-sidebar-mini #userSidebar .user-sidebar-brand .logo-full { display: none !important; }
+        html.is-sidebar-mini #userSidebar .user-sidebar-brand .logo-mini { display: block !important; }
 
         /* ===== NESTED DROPDOWN (DROPEND) ===== */
         .dropdown-submenu {
@@ -1401,15 +1437,53 @@
                 transform: rotate(90deg);
             }
         }
+
+        /* ===== MODAL Z-INDEX FIX ===== */
+        /* Ensure modals are always clickable and not blocked by backdrop */
+        .modal {
+            z-index: 1060 !important;
+        }
+        .modal-backdrop {
+            z-index: 1059 !important;
+            pointer-events: none !important;
+        }
+        .modal-backdrop.show {
+            opacity: 0.5 !important;
+            pointer-events: none !important;
+        }
+        /* Ensure modal content is clickable */
+        .modal-dialog,
+        .modal-content,
+        .modal-body,
+        .modal-header,
+        .modal-footer {
+            pointer-events: auto !important;
+        }
     </style>
     <script>
-        // Disable transitions until page is fully loaded to prevent flicker
+        // Restore mini sidebar before first paint (avoids label/box flash)
+        (function () {
+            try {
+                if (localStorage.getItem('user_sidebar_mini') === 'true' && window.innerWidth >= 992) {
+                    document.documentElement.classList.add('is-sidebar-mini');
+                }
+            } catch (e) {}
+        })();
+
+        // Disable transitions until CSS (incl. Vite/Tailwind) is ready
         document.documentElement.classList.add('no-transition');
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.documentElement.classList.remove('no-transition');
-            }, 100);
-        });
+        function releaseNoTransition() {
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    document.documentElement.classList.remove('no-transition');
+                });
+            });
+        }
+        if (document.readyState === 'complete') {
+            releaseNoTransition();
+        } else {
+            window.addEventListener('load', releaseNoTransition, { once: true });
+        }
 
         // ===== SMOOTH SCROLL BEHAVIOR =====
         // Biarkan browser handle scroll restoration secara natural
@@ -1418,13 +1492,13 @@
         }
     </script>
 </head>
-<body data-turbo="false">
+<body>
 
 @php
     $unreadNotif = auth()->user()->unreadNotifications->count();
     $userSuratGroupOpen = request()->routeIs('user.surat.*')
         && !request()->routeIs('user.surat.create');
-    $userLainnyaOpen = request()->routeIs('user.faq.*', 'user.about.*', 'user.notifikasi.index', 'user.aspirasi.index');
+    $userLainnyaOpen = request()->routeIs('user.faq.*', 'user.about.*', 'user.notifikasi.index', 'user.aspirasi.index', 'user.activity-log.*');
     $userAspirasiOpen = request()->routeIs('user.aspirasi.index');
     $userProfilOpen = request()->routeIs('profile.edit');
 @endphp
@@ -1506,7 +1580,7 @@
                         <i class="bi bi-file-earmark-x"></i>
                         <span>Hapus File Surat</span>
                     </a>
-                    <a href="{{ route('user.surat.exportExcel') }}"
+                    <a href="{{ route('user.surat.exportExcel') }}" data-turbo="false"
                        class="user-sidebar-item {{ request()->routeIs('user.surat.exportExcel') ? 'is-active' : '' }}" data-tooltip="Ekspor Excel">
                         <i class="bi bi-download"></i>
                         <span>Ekspor Excel</span>
@@ -1575,12 +1649,7 @@
                 </button>
                 <div class="user-nav-group-body">
 
-                    <div class="user-nav-group {{ $userAspirasiOpen ? 'is-open' : '' }}">
-                        <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')" data-tooltip="Kotak aspirasi">
-                            <i class="bi bi-chat-heart"></i>
-                            <span class="flex-grow-1">Kotak aspirasi</span>
-                            <i class="bi bi-chevron-down chev"></i>
-                        </button>
+
                         <div class="user-nav-group-body">
                             <a href="{{ route('user.aspirasi.index', ['to' => 'admin']) }}"
                                class="user-sidebar-item {{ request()->routeIs('user.aspirasi.index') && request('to') === 'admin' ? 'is-active' : '' }}" data-tooltip="Ke Admin">
@@ -1592,8 +1661,7 @@
                                 <i class="bi bi-cpu"></i>
                                 <span>IT Support</span>
                             </a>
-                        </div>
-                    </div>
+
 
                     <a href="{{ route('user.faq.index') }}"
                        class="user-sidebar-item {{ request()->routeIs('user.faq.*') ? 'is-active' : '' }}" data-tooltip="FAQ">
@@ -1604,6 +1672,11 @@
                        class="user-sidebar-item {{ request()->routeIs('user.about.*') ? 'is-active' : '' }}" data-tooltip="Tentang">
                         <i class="bi bi-info-circle"></i>
                         <span>Tentang</span>
+                    </a>
+                    <a href="{{ route('user.activity-log.index') }}"
+                       class="user-sidebar-item {{ request()->routeIs('user.activity-log.*') ? 'is-active' : '' }}" data-tooltip="Log User">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Log User</span>
                     </a>
                     <a href="#" onclick="showPublicVerificationModal(event)"
                        class="user-sidebar-item" data-tooltip="Verifikasi Surat">
@@ -1639,7 +1712,7 @@
 
     <div id="userSidebarBackdrop" class="user-sidebar-backdrop" onclick="closeUserSidebar()" aria-hidden="true"></div>
 
-    <div class="user-shell">
+    <div id="userShell" class="user-shell">
 
         <header class="user-topbar">
             <button type="button" class="user-sidebar-toggle" onclick="openUserSidebar()" aria-label="Buka menu">
@@ -1750,9 +1823,6 @@
             @yield('content')
         </main>
 
-        {{-- Modals stack: dirender di luar <main> agar tidak terjebak stacking context dari transform animation --}}
-        @stack('modals')
-
         {{-- ===== FOOTER ===== --}}
         <footer class="py-4 mt-auto">
             <div class="container-fluid text-center">
@@ -1763,12 +1833,16 @@
         </footer>
 
     </div>{{-- /.user-shell --}}
+
+    {{-- Modals stack: dirender di LUAR user-shell untuk menghindari stacking context yang membuat modal terhalang --}}
+    @stack('modals')
+
 </div>{{-- /.user-app --}}
 
 {{-- Hidden forms --}}
-<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
-<form id="readall-form" action="{{ route('notif.readAll') }}" method="POST" class="d-none">@csrf</form>
-<form id="deleteall-form" action="{{ route('notif.deleteAll') }}" method="POST" class="d-none">@csrf</form>
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none" data-turbo-permanent>@csrf</form>
+<form id="readall-form" action="{{ route('notif.readAll') }}" method="POST" class="d-none" data-turbo-permanent>@csrf</form>
+<form id="deleteall-form" action="{{ route('notif.deleteAll') }}" method="POST" class="d-none" data-turbo-permanent>@csrf</form>
 
 {{-- Switch Account Modal --}}
 <div class="modal fade" id="switchAccountModal" tabindex="-1" aria-hidden="true">
@@ -1794,20 +1868,28 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <style>
     [x-cloak] { display: none !important; }
     .rotate-180 { transform: rotate(180deg); }
-</style>    @vite(['resources/js/app.js', 'resources/css/app.css'])
+</style>
+@vite(['resources/js/app.js'])
 
     <script>
         // ===== GLOBAL FUNCTIONS (Available to onclick) =====
+        var syncSidebarMiniState = function() {
+            var sidebar = document.getElementById('userSidebar');
+            var isMini = !!sidebar?.classList.contains('is-mini');
+            document.documentElement.classList.toggle('is-sidebar-mini', isMini);
+            return isMini;
+        };
+
         var openUserSidebar = function() {
             var sidebar = document.getElementById('userSidebar');
             if (window.innerWidth >= 992) {
                 sidebar?.classList.toggle('is-mini');
                 localStorage.setItem('user_sidebar_mini', sidebar?.classList.contains('is-mini'));
+                syncSidebarMiniState();
             } else {
                 sidebar?.classList.add('is-open');
                 document.getElementById('userSidebarBackdrop')?.classList.add('show');
@@ -1930,10 +2012,14 @@
                 // (This is important because Turbo only replaces the body/title)
                 CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || CSRF_TOKEN;
 
-                // Restore sidebar state
+                // Restore sidebar state (html class may already be set in <head>)
                 if (localStorage.getItem('user_sidebar_mini') === 'true' && window.innerWidth >= 992) {
                     document.getElementById('userSidebar')?.classList.add('is-mini');
+                } else {
+                    document.getElementById('userSidebar')?.classList.remove('is-mini');
+                    document.documentElement.classList.remove('is-sidebar-mini');
                 }
+                syncSidebarMiniState();
 
                 // Update active sidebar items
                 var currentPath = window.location.pathname;
@@ -1983,23 +2069,23 @@
                 saveCurrentAccount();
                 renderSavedAccounts();
 
-                // Dropdown auto-close
-                document.querySelectorAll('.dropdown-item').forEach(item => {
-                    item.addEventListener('click', function() {
-                        var dropdown = this.closest('.dropdown-menu');
-                        if(dropdown && window.innerWidth >= 992) {
-                            dropdown.style.display = 'none';
-                            setTimeout(() => dropdown.style.display = '', 100);
-                        }
-                    });
-                });
-
                 closeUserSidebar();
             };
 
-            document.addEventListener('turbo:load', initUserLayout);
-            if (document.readyState !== 'loading') initUserLayout();
-            else document.addEventListener('DOMContentLoaded', initUserLayout);
+            if (!window.__userLayoutEventsBound) {
+                window.__userLayoutEventsBound = true;
+                document.addEventListener('turbo:load', initUserLayout);
+                document.addEventListener('click', function (e) {
+                    var item = e.target.closest('.dropdown-item');
+                    if (!item) return;
+                    var dropdown = item.closest('.dropdown-menu');
+                    if (dropdown && window.innerWidth >= 992) {
+                        dropdown.style.display = 'none';
+                        setTimeout(function () { dropdown.style.display = ''; }, 100);
+                    }
+                });
+            }
+            initUserLayout();
         })();
 
         // ===== NOTIFICATION FUNCTIONS =====
@@ -2087,17 +2173,63 @@
             });
         };
 
-        // ===== SMOOTH PAGE NAVIGATION =====
-        // Cukup biarkan browser handle scroll restoration natural
-        // Tidak perlu sessionStorage yang ribet
+        // ===== SMOOTH PAGE NAVIGATION (Turbo Drive) =====
+        if (!window.__userTurboNavBound) {
+            window.__userTurboNavBound = true;
 
-        // View Transitions disabled to prevent visual glitches
-        // document.addEventListener('turbo:before-render', (event) => {
-        //     if (document.startViewTransition) {
-        //         event.preventDefault();
-        //         document.startViewTransition(() => event.detail.resume());
-        //     }
-        // });
+            document.addEventListener('turbo:before-visit', function () {
+                document.documentElement.classList.add('turbo-loading');
+            });
+
+            document.addEventListener('turbo:before-render', function () {
+                document.documentElement.classList.add('turbo-loading');
+                document.querySelectorAll('.modal-backdrop').forEach(function (el) { el.remove(); });
+                document.querySelectorAll('.modal.show').forEach(function (el) {
+                    el.classList.remove('show');
+                    el.style.display = '';
+                });
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            });
+
+            document.addEventListener('turbo:render', function () {
+                document.documentElement.classList.remove('turbo-loading');
+                var shell = document.getElementById('userShell');
+                if (shell) {
+                    shell.classList.remove('is-entering');
+                    void shell.offsetWidth;
+                    shell.classList.add('is-entering');
+                    setTimeout(function () { shell.classList.remove('is-entering'); }, 320);
+                }
+                window.scrollTo({ top: 0, behavior: 'auto' });
+            });
+
+            document.addEventListener('turbo:load', function () {
+                document.documentElement.classList.remove('turbo-loading');
+                document.querySelectorAll('form[enctype="multipart/form-data"]').forEach(function (f) {
+                    f.setAttribute('data-turbo', 'false');
+                });
+                document.querySelectorAll('a[download], a[target="_blank"]').forEach(function (a) {
+                    a.setAttribute('data-turbo', 'false');
+                });
+            });
+
+            document.addEventListener('turbo:submit-start', function (e) {
+                var form = e.target;
+                if (form && form.enctype === 'multipart/form-data') {
+                    e.detail.formSubmission.stop();
+                    form.removeAttribute('data-turbo');
+                    form.submit();
+                    return;
+                }
+                var modal = form ? form.closest('.modal') : null;
+                if (modal) {
+                    var instance = bootstrap.Modal.getInstance(modal);
+                    if (instance) instance.hide();
+                }
+            });
+        }
 
         function showPublicVerificationModal(e) {
             if (e) e.preventDefault();
@@ -2150,10 +2282,6 @@
     </script>
 
 
-<style>
-    /* View Transitions disabled */
-    /* Smooth page transitions handled by Turbo only */
-</style>
 @stack('scripts')
 
 {{-- ===== OFFCANVAS NOTIFIKASI ===== --}}

@@ -4,6 +4,7 @@
     // URL endpoint (di-set dari layout via window.NOTIF_CONFIG)
     const cfg = window.NOTIF_CONFIG || {};
     const POLL_INTERVAL = (cfg.pollInterval === false || cfg.pollInterval === 0) ? false : (cfg.pollInterval || 30000);
+    const POLL_ENABLED  = cfg.enablePoll !== false && POLL_INTERVAL !== false;
     const TOAST_DURATION = cfg.toastDuration || 6000;   // auto-dismiss 6 detik
     const MAX_TOAST = cfg.maxToast || 3;               // max toast tampil bersamaan
 
@@ -26,7 +27,7 @@
     // ── Manajemen Timer Polling yang Aman & Bebas Tumpang Tindih ────────────────────
     function startPolling() {
         stopPolling(); // Pastikan timer sebelumnya dibersihkan total
-        if (POLL_INTERVAL === false || POLL_INTERVAL <= 0) {
+        if (!POLL_ENABLED || POLL_INTERVAL <= 0) {
             return; // Polling dinonaktifkan
         }
         window.notifPollTimer = setInterval(() => fetchNotifs(false), POLL_INTERVAL);
@@ -44,11 +45,10 @@
         injectStyles();
         createToastContainer();
 
-        // Pertama kali: langsung fetch
-        fetchNotifs(true);
-
-        // Aktifkan timer polling tunggal
-        startPolling();
+        if (POLL_ENABLED) {
+            fetchNotifs(true);
+            startPolling();
+        }
 
         // Tombol hapus semua
         const btnDelAll = document.getElementById('notif-delete-all');
@@ -76,7 +76,7 @@
 
     // Pahami perubahan visibilitas tab untuk menghemat performa server secara drastis
     document.addEventListener('visibilitychange', () => {
-        if (POLL_INTERVAL === false || POLL_INTERVAL <= 0) return;
+        if (!POLL_ENABLED) return;
         if (document.hidden) {
             stopPolling();
         } else {
