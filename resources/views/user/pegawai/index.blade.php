@@ -231,9 +231,15 @@
                         <div class="pegawai-name" title="{{ $pegawai->name }}">{{ $pegawai->name }}</div>
                         <div class="pegawai-nip">NIP: {{ $pegawai->nip ?: '—' }}</div>
                         <div class="pegawai-role-badge">{{ $pegawai->getRoleLabel() }}</div>
-                        <a href="{{ route('user.pegawai.show', $pegawai->uuid) }}" class="pegawai-action">
-                            <i class="bi bi-person-lines-fill me-1"></i> Lihat Detail
-                        </a>
+                        @if($pegawai->uuid)
+                            <a href="{{ route('user.pegawai.show', $pegawai->uuid) }}" class="pegawai-action">
+                                <i class="bi bi-person-lines-fill me-1"></i> Lihat Detail
+                            </a>
+                        @else
+                            <button class="pegawai-action" disabled style="opacity: 0.5; cursor: not-allowed;">
+                                <i class="bi bi-person-lines-fill me-1"></i> Tidak Tersedia
+                            </button>
+                        @endif
                     </div>
                 </div>
             @endforeach

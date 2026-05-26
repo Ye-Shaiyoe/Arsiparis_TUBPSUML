@@ -12,7 +12,7 @@ class PegawaiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::whereNotNull('uuid');
 
         // Jika ada pencarian, filter berdasarkan nama atau NIP
         if ($request->filled('search')) {
