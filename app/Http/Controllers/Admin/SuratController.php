@@ -354,26 +354,11 @@ class SuratController extends Controller
             return $this->download($surat, $tipe);
         }
 
-        // Word (.docx) - Tampilkan View Preview dengan Caching
+        // Word (.docx) - Sama seperti user preview (langsung convert)
         if ($extension === 'docx') {
-            $fullFilePath = Storage::disk('private')->path($filePath);
-            
-            // Generate cache key berdasarkan file path + modified time
-            $fileModTime = filemtime($fullFilePath);
-            $cacheKey = 'docx_preview_' . md5($filePath . $fileModTime);
-            
-            // Cek cache dulu
-            $htmlContent = \Illuminate\Support\Facades\Cache::get($cacheKey);
-            
-            if ($htmlContent === null) {
-                // Belum cache, convert langsung
-                $converter = new \App\Services\DocxToHtmlConverter($fullFilePath);
-                $htmlRaw = $converter->convert();
-                $htmlContent = HtmlSanitizer::clean($htmlRaw);
-                
-                // Simpan ke cache 7 hari
-                \Illuminate\Support\Facades\Cache::put($cacheKey, $htmlContent, now()->addDays(7));
-            }
+            $converter = new \App\Services\DocxToHtmlConverter(Storage::disk('private')->path($filePath));
+            $htmlRaw = $converter->convert();
+            $htmlContent = HtmlSanitizer::clean($htmlRaw);
 
             return response()->view('admin.surat.preview-word', [
                 'surat' => $surat,
