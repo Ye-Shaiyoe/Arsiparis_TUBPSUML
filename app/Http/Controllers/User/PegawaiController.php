@@ -21,14 +21,25 @@ class PegawaiController extends Controller
         }
 
         $search = trim($request->search);
+        
+        \Log::info('Pegawai Index Search', [
+            'search' => $search,
+            'search_filled' => $request->filled('search'),
+            'request_all' => $request->all()
+        ]);
 
-        $users = \App\Models\User::where(function ($q) use ($search) {
+        $query = \App\Models\User::where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('nip', 'like', "%{$search}%");
-            })
-            ->latest()
+            });
+        
+        \Log::info('Pegawai Query SQL', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+        
+        $users = $query->latest()
             ->paginate(12)
             ->withQueryString();
+        
+        \Log::info('Pegawai Results Count', ['count' => $users->count(), 'total' => $users->total()]);
 
         return view('user.pegawai.index', [
             'title' => 'Direktori Pegawai',
