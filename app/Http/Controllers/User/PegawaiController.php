@@ -18,7 +18,7 @@ class PegawaiController extends Controller
         if ($request->filled('search')) {
             $search = trim($request->search);
             
-            \Log::info('Pegawai Index Search', [
+            \Log::info('Pegawai Index Search START', [
                 'search' => $search,
                 'search_filled' => $request->filled('search'),
                 'request_all' => $request->all()
@@ -29,14 +29,22 @@ class PegawaiController extends Controller
                   ->orWhere('nip', 'like', "%{$search}%");
             });
             
-            \Log::info('Pegawai Query SQL', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+            \Log::info('Pegawai Query SQL', [
+                'sql' => $query->toSql(), 
+                'bindings' => $query->getBindings()
+            ]);
         }
 
         $users = $query->latest()
             ->paginate(12)
             ->withQueryString();
         
-        \Log::info('Pegawai Results Count', ['count' => $users->count(), 'total' => $users->total()]);
+        \Log::info('Pegawai Results Count', [
+            'count' => $users->count(),
+            'total' => $users->total(),
+            'has_search' => $request->filled('search'),
+            'search_value' => $request->get('search', 'NONE')
+        ]);
 
         return view('user.pegawai.index', [
             'title' => 'Direktori Pegawai',
