@@ -10,7 +10,7 @@
             <p class="text-muted small mb-0">Daftar saran, keluhan, dan pertanyaan dari seluruh pegawai.</p>
         </div>
         <div>
-            <form action="{{ url()->current() }}" method="GET" id="filterForm">
+            <form action="{{ url()->current() }}" method="GET" id="filterForm" data-turbo="false">
                 <select name="tahun" class="form-select shadow-sm" onchange="this.form.submit()" style="width: 150px; border-radius: 10px; font-weight: 600; border-color: #e5e7eb; font-size: 13px;">
                     <option value="">Semua Tahun</option>
                     @php $startYear = 2024; $currentYear = date('Y'); @endphp

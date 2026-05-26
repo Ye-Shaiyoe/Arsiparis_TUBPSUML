@@ -73,7 +73,7 @@
                         <h5 class="fw-bold mb-0" style="color: var(--text-primary);">
                             <i class="bi bi-journal-text text-primary me-2"></i> Riwayat Aspirasi Saya
                         </h5>
-                        <form action="{{ url()->current() }}" method="GET">
+                        <form action="{{ url()->current() }}" method="GET" data-turbo="false">
                             <select name="tahun" class="form-select form-select-sm" onchange="this.form.submit()" style="width: 100px; border-radius: 8px; font-size: 12px; border-color: #e5e7eb;">
                                 <option value="">Semua</option>
                                 @php $startYear = 2024; $currentYear = date('Y'); @endphp

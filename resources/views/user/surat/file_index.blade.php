@@ -28,7 +28,7 @@
 {{-- FILTER --}}
 <div class="card card-custom mb-3 animate-in" style="animation-delay: 0.1s;">
     <div class="card-body py-3 px-4">
-        <form method="GET" action="{{ route('user.surat.file_index') }}"
+        <form method="GET" action="{{ route('user.surat.file_index') }}" data-turbo="false"
               class="d-flex gap-3 align-items-end flex-wrap">
             <div style="flex: 1; min-width: 250px;">
                 <label class="form-label mb-1" style="font-size:11px;color:#6b7280;font-weight:600;">CARI JUDUL</label>

@@ -96,7 +96,7 @@
 
 {{-- FILTER SECTION --}}
 <div class="card !p-4 mb-8 border-slate-200 dark:border-slate-800 shadow-sm">
-    <form method="GET" action="{{ route('admin.laporan.index') }}" class="flex flex-wrap items-end gap-4">
+    <form method="GET" action="{{ route('admin.laporan.index') }}" class="flex flex-wrap items-end gap-4" data-turbo="false">
         <div class="flex-1 min-w-[150px]">
             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Periode Bulan</label>
             <div class="relative">

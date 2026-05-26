@@ -16,7 +16,7 @@
 
 <div class="card card-custom mb-4">
     <div class="card-body p-4">
-        <form method="GET" action="{{ route('user.activity-log.index') }}" class="row g-3">
+        <form method="GET" action="{{ route('user.activity-log.index') }}" class="row g-3" data-turbo="false">
             {{-- Search --}}
             <div class="col-12 col-md-6">
                 <label class="form-label fw-bold" style="font-size:13px;color:var(--text-primary);">Pencarian</label>

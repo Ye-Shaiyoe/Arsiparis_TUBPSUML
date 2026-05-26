@@ -182,7 +182,7 @@
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 font-semibold opacity-80">Monitoring aktivitas persuratan secara real-time.</p>
         </div>
 
-        <form action="{{ route('admin.dashboard') }}" method="GET" class="filter-section">
+        <form action="{{ route('admin.dashboard') }}" method="GET" class="filter-section" data-turbo="false">
             <div class="flex items-center gap-2 px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
                 <i class="bi bi-calendar3 text-blue-500 text-xs"></i>
                 <select name="bulan"

@@ -11,7 +11,7 @@
             <p class="text-secondary mb-0" style="font-size: 13px;">Ringkasan dan visualisasi data pengajuan surat Anda.</p>
         </div>
         <div>
-            <form action="{{ route('user.statistik.index') }}" method="GET" id="yearForm">
+            <form action="{{ route('user.statistik.index') }}" method="GET" id="yearForm" data-turbo="false">
                 <select name="tahun" class="form-select" onchange="document.getElementById('yearForm').submit()" style="width: 140px; border-radius: 10px; font-weight: 600; border-color: #e5e7eb;">
                     @php $startYear = 2024; $currentYear = date('Y'); @endphp
                     @for($y = $currentYear; $y >= $startYear; $y--)

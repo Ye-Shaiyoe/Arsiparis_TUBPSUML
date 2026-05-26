@@ -177,7 +177,7 @@
 
     {{-- Search Bar --}}
     <div class="pegawai-search-wrap">
-        <form action="{{ route('user.pegawai.index') }}" method="GET">
+        <form action="{{ route('user.pegawai.index') }}" method="GET" data-turbo="false">
             <div class="d-flex align-items-center gap-3 flex-wrap">
                 <div style="flex: 1; min-width: 200px; position: relative;">
                     <i class="bi bi-search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 16px; z-index: 2;"></i>

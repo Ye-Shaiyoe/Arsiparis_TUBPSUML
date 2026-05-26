@@ -31,7 +31,7 @@
 
     {{-- FILTERS & SEARCH --}}
     <div class="card">
-        <form method="GET" style="display: flex; flex-direction: column; gap: 12px;">
+        <form method="GET" data-turbo="false" style="display: flex; flex-direction: column; gap: 12px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; align-items: end;">
                 {{-- Search --}}
                 <div>

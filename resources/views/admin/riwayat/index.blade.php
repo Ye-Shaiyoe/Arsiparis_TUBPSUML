@@ -454,7 +454,7 @@
 
     {{-- ── Filter ────────────────────────────────────────────────────── --}}
     <div class="filter-card">
-        <form method="GET" action="{{ route('admin.riwayat.index') }}">
+        <form method="GET" action="{{ route('admin.riwayat.index') }}" data-turbo="false">
             <div class="row g-2 align-items-end">
 
                 <div class="col-6 col-md-2">

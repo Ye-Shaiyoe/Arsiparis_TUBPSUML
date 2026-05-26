@@ -5,7 +5,7 @@
 
 {{-- FILTER BAR --}}
 <div class="card" style="margin-bottom:16px;">
-    <form method="GET" action="{{ url()->current() }}"
+    <form method="GET" action="{{ url()->current() }}" data-turbo="false"
           style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
 
         <div style="flex:2; min-width:180px;">

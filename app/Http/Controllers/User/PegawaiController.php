@@ -12,52 +12,20 @@ class PegawaiController extends Controller
 {
     public function index(Request $request)
     {
-        // Debug: Log semua request data
-        \Log::info('Pegawai Index - Full Request Debug', [
-            'method' => $request->method(),
-            'url' => $request->url(),
-            'query_string' => $request->getQueryString(),
-            'all' => $request->all(),
-            'query_params' => $request->query(),
-            'input_search' => $request->input('search'),
-            'request_search' => $request->get('search'),
-            'has_search' => $request->has('search'),
-            'filled_search' => $request->filled('search'),
-        ]);
-
         $query = User::whereNotNull('uuid');
 
         // Jika ada pencarian, filter berdasarkan nama atau NIP
         if ($request->filled('search')) {
             $search = trim($request->search);
-            
-            \Log::info('Pegawai Index Search START', [
-                'search' => $search,
-                'search_filled' => $request->filled('search'),
-                'request_all' => $request->all()
-            ]);
-
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('nip', 'like', "%{$search}%");
             });
-            
-            \Log::info('Pegawai Query SQL', [
-                'sql' => $query->toSql(), 
-                'bindings' => $query->getBindings()
-            ]);
         }
 
         $users = $query->latest()
             ->paginate(12)
             ->withQueryString();
-        
-        \Log::info('Pegawai Results Count', [
-            'count' => $users->count(),
-            'total' => $users->total(),
-            'has_search' => $request->filled('search'),
-            'search_value' => $request->get('search', 'NONE')
-        ]);
 
         return view('user.pegawai.index', [
             'title' => 'Direktori Pegawai',
