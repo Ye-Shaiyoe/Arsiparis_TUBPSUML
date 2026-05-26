@@ -12,29 +12,26 @@ class PegawaiController extends Controller
 {
     public function index(Request $request)
     {
-        // Hanya tampilkan hasil jika ada query pencarian
-        if (!$request->filled('search')) {
-            return view('user.pegawai.index', [
-                'title' => 'Direktori Pegawai',
-                'users' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 12)
+        $query = User::query();
+
+        // Jika ada pencarian, filter berdasarkan nama atau NIP
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            
+            \Log::info('Pegawai Index Search', [
+                'search' => $search,
+                'search_filled' => $request->filled('search'),
+                'request_all' => $request->all()
             ]);
-        }
 
-        $search = trim($request->search);
-        
-        \Log::info('Pegawai Index Search', [
-            'search' => $search,
-            'search_filled' => $request->filled('search'),
-            'request_all' => $request->all()
-        ]);
-
-        $query = \App\Models\User::where(function ($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('nip', 'like', "%{$search}%");
             });
-        
-        \Log::info('Pegawai Query SQL', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
-        
+            
+            \Log::info('Pegawai Query SQL', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+        }
+
         $users = $query->latest()
             ->paginate(12)
             ->withQueryString();
