@@ -22,8 +22,7 @@ class PegawaiController extends Controller
 
         $search = trim($request->search);
 
-        $users = \App\Models\User::where('id', '!=', auth()->id())
-            ->where(function ($q) use ($search) {
+        $users = \App\Models\User::where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('nip', 'like', "%{$search}%");
             })
