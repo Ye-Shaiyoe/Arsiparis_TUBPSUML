@@ -12,6 +12,19 @@ class PegawaiController extends Controller
 {
     public function index(Request $request)
     {
+        // Debug: Log semua request data
+        \Log::info('Pegawai Index - Full Request Debug', [
+            'method' => $request->method(),
+            'url' => $request->url(),
+            'query_string' => $request->getQueryString(),
+            'all' => $request->all(),
+            'query_params' => $request->query(),
+            'input_search' => $request->input('search'),
+            'request_search' => $request->get('search'),
+            'has_search' => $request->has('search'),
+            'filled_search' => $request->filled('search'),
+        ]);
+
         $query = User::whereNotNull('uuid');
 
         // Jika ada pencarian, filter berdasarkan nama atau NIP
