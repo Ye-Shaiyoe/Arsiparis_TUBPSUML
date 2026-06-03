@@ -576,11 +576,6 @@
             margin-top: 6px;
         }
         
-        #banner-revisi .d-flex {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            text-align: left !important;
-        }
         #banner-revisi .btn-danger {
             width: 100%;
             margin-top: 12px;
@@ -591,11 +586,77 @@
     .placeholder-white::placeholder {
         color: rgba(255,255,255,0.7) !important;
     }
+
+    /* Header Glassmorphism */
+    .dashboard-header-glass {
+        background: rgba(255, 255, 255, 0.45);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 24px;
+        padding: 32px;
+        color: var(--text-primary);
+        margin-bottom: 32px;
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .dashboard-header-glass:hover {
+        box-shadow: 0 15px 35px -8px rgba(0, 0, 0, 0.06);
+        border-color: rgba(255, 255, 255, 0.85);
+    }
+    
+    .dashboard-header-bg-glow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.12) 0%, transparent 45%);
+        pointer-events: none;
+        z-index: 0;
+        animation: headerGlowShift 8s infinite alternate ease-in-out;
+    }
+    
+    @keyframes headerGlowShift {
+        0% { transform: scale(1) translate(0, 0); }
+        100% { transform: scale(1.08) translate(1.5%, 1%); }
+    }
+    
+    /* Pulses for active SLA count downs */
+    @keyframes pulseGlowAmber {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.45); }
+        50% { box-shadow: 0 0 8px 3px rgba(245, 158, 11, 0.7); }
+    }
+    @keyframes pulseGlowRed {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45); }
+        50% { box-shadow: 0 0 10px 4px rgba(239, 68, 68, 0.75); }
+    }
+    .glow-pulse-amber {
+        animation: pulseGlowAmber 1.8s infinite;
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.45);
+    }
+    .glow-pulse-red {
+        animation: pulseGlowRed 1.4s infinite;
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45);
+    }
+    .bg-cyan-soft {
+        background-color: rgba(6, 182, 212, 0.12) !important;
+    }
+    .text-gradient-primary {
+        background: linear-gradient(135deg, #1e293b 0%, #2563eb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .transition-all-200 {
+        transition: all 0.2s ease;
+    }
 </style>
 
 {{-- HEADER --}}
-<div class="dashboard-header animate-in">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+<div class="dashboard-header-glass animate-in">
+    <div class="dashboard-header-bg-glow"></div>
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 position-relative" style="z-index: 1;">
         <div class="d-flex align-items-center gap-3">
             @if(Auth::user()->profile_photo)
                 <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile Photo" class="rounded-circle border border-white border-2 shadow-sm" style="width: 65px; height: 65px; object-fit: cover;">
@@ -606,23 +667,28 @@
             @endif
             <div>
                 <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-1">
-                    <h2 class="fw-bold mb-0">
-                        <i class="bi bi-hand-thumbs-up-fill me-2"></i>Halo, {{ Str::words(Auth::user()->name, 2, '') }}!
+                    <h2 class="fw-bold mb-0 text-gradient-primary" id="welcome-greeting-text" style="font-size: 24px; font-weight: 800;">
+                        <i class="bi bi-brightness-alt-high-fill text-primary me-2"></i>Halo, {{ Str::words(Auth::user()->name, 2, '') }}!
                     </h2>
                     <div id="live-indicator" class="badge rounded-pill bg-success d-flex align-items-center gap-1" style="font-size: 10px; padding: 4px 8px; opacity: 0; transition: opacity 0.5s;">
                         <span class="pulse-dot"></span> LIVE
                     </div>
                 </div>
-                <p class="mb-0" style="font-size:14px; opacity:0.85; font-weight: 500;">
-                    {{ now()->translatedFormat('l, d F Y') }} · Selamat datang di Monitoring Surat BP SUML
+                <p class="mb-0 text-secondary" style="font-size:14px; font-weight: 600;">
+                    <span id="live-header-date">{{ now()->translatedFormat('l, d F Y') }}</span> · <i class="bi bi-clock-fill text-cyan me-1"></i><span id="live-header-clock" class="fw-bold text-cyan" style="font-family: monospace;">--:--:--</span>
                 </p>
             </div>
         </div>
-        <a href="{{ $isLibur ? 'javascript:void(0)' : route('user.surat.create') }}" 
-           class="btn btn-primary-modern d-flex align-items-center gap-2 {{ $isLibur ? 'disabled' : '' }}"
-           @if($isLibur) onclick="Swal.fire({icon: 'info', title: 'Layanan Tutup', text: 'Pengajuan surat baru hanya tersedia pada hari kerja. Senin–Kamis: 07.30–16.00 WIB, Jumat: 07.30–16.30 WIB. Sabtu & Minggu: Libur.', confirmButtonColor: '#1e3a5f'})" @endif>
-            <i class="bi bi-plus-circle-fill"></i> Ajukan Surat Baru
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-cyan-soft text-cyan px-2.5 py-1.5 fw-bold d-none d-md-inline-block" style="font-size: 11px; border-radius: 8px;">
+                <i class="bi bi-lightning-charge-fill me-1"></i>SLA Aman
+            </span>
+            <a href="{{ $isLibur ? 'javascript:void(0)' : route('user.surat.create') }}" 
+               class="btn btn-primary-modern d-flex align-items-center gap-2 {{ $isLibur ? 'disabled' : '' }}"
+               @if($isLibur) onclick="Swal.fire({icon: 'info', title: 'Layanan Tutup', text: 'Pengajuan surat baru hanya tersedia pada hari kerja. Senin–Kamis: 07.30–16.00 WIB, Jumat: 07.30–16.30 WIB. Sabtu & Minggu: Libur.', confirmButtonColor: '#1e3a5f'})" @endif>
+                <i class="bi bi-plus-circle-fill"></i> Ajukan Surat Baru
+            </a>
+        </div>
     </div>
 </div>
 
@@ -938,57 +1004,29 @@
             </div>
             <div class="card-body-modern" id="sla-surat-list">
                 @foreach($suratAktif as $surat)
-                    <div class="mb-3 sla-item p-2 rounded">
+                    @php
+                        $createdIso = $surat->created_at->toIso8601String();
+                        $deadlineIso = $surat->deadline_sla ? $surat->deadline_sla->toIso8601String() : '';
+                    @endphp
+                    <div class="mb-3 sla-item p-2.5 rounded transition-all-200" 
+                         data-sla-item="true"
+                         data-created-at="{{ $createdIso }}"
+                         data-deadline-at="{{ $deadlineIso }}"
+                         style="border: 1px solid transparent;">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-semibold" style="font-size:13px; color:#1e293b;">
-                                {{ Str::limit($surat->judul, 30) }}
+                            <span class="fw-bold" style="font-size:13px; color:#1e293b;" title="{{ $surat->judul }}">
+                                {{ Str::limit($surat->judul, 28) }}
                             </span>
-                            @php
-                                $isTerlambat = $surat->sla_status === 'terlambat';
-                                $sisaJamNum  = $surat->deadline_sla ? now()->diffInHours($surat->deadline_sla, false) : 99;
-                                if ($isTerlambat) {
-                                    $slaBadgeBg   = '#fee2e2';
-                                    $slaBadgeColor = '#b91c1c';
-                                    $slaBarColor  = '#ef4444';
-                                    $slaIcon      = '🔴';
-                                } elseif ($sisaJamNum <= 12) {
-                                    $slaBadgeBg   = '#fef3c7';
-                                    $slaBadgeColor = '#92400e';
-                                    $slaBarColor  = '#f59e0b';
-                                    $slaIcon      = '🟡';
-                                } else {
-                                    $slaBadgeBg   = '#dcfce7';
-                                    $slaBadgeColor = '#15803d';
-                                    $slaBarColor  = '#22c55e';
-                                    $slaIcon      = '🟢';
-                                }
-                                // Paksa 100% kalau sudah terlambat, supaya progress bar merah penuh
-                                if ($isTerlambat) {
-                                    $pct = 100;
-                                } else {
-                                    $pct = $surat->deadline_sla
-                                        ? min(100, now()->diffInMinutes($surat->created_at) /
-                                            max(1, $surat->deadline_sla->diffInMinutes($surat->created_at)) * 100)
-                                        : 50;
-                                    $pct = max(2, $pct); // minimal 2% supaya bar selalu kelihatan
-                                }
-                            @endphp
-                            <span class="badge" style="font-size:11px; background:{{ $slaBadgeBg }}; color:{{ $slaBadgeColor }}; padding:4px 10px; border-radius:8px;">
-                                {{ $slaIcon }}
-                                @if($isTerlambat)
-                                    ⚠ Terlambat
-                                @elseif($sisaJamNum <= 12)
-                                    ⚡ {{ $surat->sisa_jam }}
-                                @else
-                                    ✔ {{ $surat->sisa_jam }}
-                                @endif
+                            <span class="badge sla-countdown-badge" style="font-size:11px; padding:4.5px 10px; border-radius:8px; font-weight: 700; transition: all 0.3s ease;">
+                                ⏱ Hitung mundur...
                             </span>
                         </div>
-                        <div class="progress" style="height:8px; background:#e2e8f0; border-radius:99px;">
-                            <div class="progress-bar" style="width:{{ $pct }}%; background:{{ $slaBarColor }}; border-radius:99px; transition: width 0.6s ease;"></div>
+                        <div class="progress" style="height:8px; background:#e2e8f0; border-radius:99px; overflow:hidden;">
+                            <div class="progress-bar sla-progress-bar" style="width:0%; border-radius:99px; transition: width 1s linear, background-color 0.5s ease;"></div>
                         </div>
-                        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
-                            Tahap {{ $surat->tahap_sekarang }}/10 · {{ $surat->nama_tahap }}
+                        <div class="d-flex justify-content-between align-items-center mt-1" style="font-size:11px; color:#94a3b8;">
+                            <span>Tahap {{ $surat->tahap_sekarang }}/10 · {{ $surat->nama_tahap }}</span>
+                            <span class="fw-semibold" style="font-size:10px;" id="sla-pct-text-{{ $surat->id }}">0%</span>
                         </div>
                     </div>
                 @endforeach
@@ -1578,6 +1616,161 @@
     }
 
     scheduleRefresh();
+
+    // 1. Live Header Dynamic Greeting & Real-time Clock
+    const updateHeaderGreetingAndClock = () => {
+        const now = new Date();
+        
+        // Format Clock: HH:MM:SS
+        const pad = (num) => String(num).padStart(2, '0');
+        const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        const clockEl = document.getElementById('live-header-clock');
+        if (clockEl) {
+            clockEl.textContent = timeStr;
+        }
+
+        // Adaptive greeting based on client hour
+        const hour = now.getHours();
+        let greeting = 'Halo';
+        let greetingIcon = 'bi-brightness-alt-high-fill';
+        
+        if (hour >= 5 && hour < 12) {
+            greeting = 'Selamat Pagi';
+            greetingIcon = 'bi-brightness-alt-high-fill';
+        } else if (hour >= 12 && hour < 15) {
+            greeting = 'Selamat Siang';
+            greetingIcon = 'bi-brightness-high-fill';
+        } else if (hour >= 15 && hour < 19) {
+            greeting = 'Selamat Sore';
+            greetingIcon = 'bi-cloud-sun-fill';
+        } else {
+            greeting = 'Selamat Malam';
+            greetingIcon = 'bi-moon-stars-fill';
+        }
+
+        const greetingEl = document.getElementById('welcome-greeting-text');
+        if (greetingEl) {
+            const userName = "{{ Str::words(Auth::user()->name, 2, '') }}";
+            greetingEl.innerHTML = `<i class="bi ${greetingIcon} text-primary me-2"></i>${greeting}, ${userName}!`;
+        }
+    };
+
+    updateHeaderGreetingAndClock();
+    const headerInterval = setInterval(updateHeaderGreetingAndClock, 1000);
+
+    // 2. Live SLA Countdown Timer & Glow Indicator
+    const updateSlaCountdowns = () => {
+        const now = new Date();
+        const slaItems = document.querySelectorAll('[data-sla-item="true"]');
+        
+        slaItems.forEach((item, index) => {
+            const createdStr = item.getAttribute('data-created-at');
+            const deadlineStr = item.getAttribute('data-deadline-at');
+            
+            if (!deadlineStr) {
+                const badge = item.querySelector('.sla-countdown-badge');
+                if (badge) {
+                    badge.innerHTML = '🟢 SLA Ok';
+                    badge.style.background = '#dcfce7';
+                    badge.style.color = '#15803d';
+                }
+                return;
+            }
+
+            const createdAt = new Date(createdStr);
+            const deadlineAt = new Date(deadlineStr);
+            const diffMs = deadlineAt - now;
+
+            const badge = item.querySelector('.sla-countdown-badge');
+            const progressBar = item.querySelector('.sla-progress-bar');
+            const pctText = item.querySelector('[id^="sla-pct-text-"]');
+
+            if (diffMs <= 0) {
+                // Expired SLA (Terlambat)
+                if (badge) {
+                    badge.innerHTML = '🔴 ⚠ Terlambat';
+                    badge.style.background = '#fee2e2';
+                    badge.style.color = '#b91c1c';
+                    badge.className = 'badge sla-countdown-badge'; // reset glow classes
+                }
+                if (progressBar) {
+                    progressBar.style.width = '100%';
+                    progressBar.style.backgroundColor = '#ef4444';
+                }
+                if (pctText) {
+                    pctText.textContent = '100%';
+                    pctText.className = 'fw-bold text-rose';
+                }
+                item.style.borderColor = 'rgba(239, 68, 68, 0.15)';
+                item.style.background = 'rgba(239, 68, 68, 0.02)';
+            } else {
+                // Active SLA (Running countdown)
+                const totalDuration = deadlineAt - createdAt;
+                const elapsed = now - createdAt;
+                let pct = Math.max(2, Math.min(100, (elapsed / totalDuration) * 100));
+                
+                // Format duration breakdown: H:m:s
+                const totalSeconds = Math.floor(diffMs / 1000);
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+                
+                const timeString = `${hours}j ${minutes}m ${seconds}s`;
+
+                if (progressBar) {
+                    progressBar.style.width = `${pct}%`;
+                }
+                if (pctText) {
+                    pctText.textContent = `${Math.round(pct)}%`;
+                }
+
+                // Theme and Pulse Glow conditions
+                if (hours < 3) {
+                    // Critical (under 3h) - Pulse Red Glow
+                    if (badge) {
+                        badge.innerHTML = `⚡ ${timeString}`;
+                        badge.style.background = '#fee2e2';
+                        badge.style.color = '#b91c1c';
+                        badge.className = 'badge sla-countdown-badge glow-pulse-red';
+                    }
+                    if (progressBar) progressBar.style.backgroundColor = '#ef4444';
+                    item.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                    item.style.background = 'rgba(239, 68, 68, 0.02)';
+                } else if (hours < 12) {
+                    // Warning (under 12h) - Pulse Amber Glow
+                    if (badge) {
+                        badge.innerHTML = `⚡ ${timeString}`;
+                        badge.style.background = '#fef3c7';
+                        badge.style.color = '#92400e';
+                        badge.className = 'badge sla-countdown-badge glow-pulse-amber';
+                    }
+                    if (progressBar) progressBar.style.backgroundColor = '#f59e0b';
+                    item.style.borderColor = 'rgba(245, 158, 11, 0.15)';
+                    item.style.background = 'rgba(245, 158, 11, 0.01)';
+                } else {
+                    // Healthy (above 12h)
+                    if (badge) {
+                        badge.innerHTML = `✔ ${timeString}`;
+                        badge.style.background = '#dcfce7';
+                        badge.style.color = '#15803d';
+                        badge.className = 'badge sla-countdown-badge';
+                    }
+                    if (progressBar) progressBar.style.backgroundColor = '#22c55e';
+                    item.style.borderColor = 'transparent';
+                    item.style.background = 'transparent';
+                }
+            }
+        });
+    };
+
+    updateSlaCountdowns();
+    const slaInterval = setInterval(updateSlaCountdowns, 1000);
+
+    // Clean up duplicate intervals on Hotwire Turbo load
+    if (window.activeDashboardIntervals) {
+        window.activeDashboardIntervals.forEach(clearInterval);
+    }
+    window.activeDashboardIntervals = [headerInterval, slaInterval];
 
     // Quick Track Logic
     const btnTrack = document.getElementById('btn-quick-track');
