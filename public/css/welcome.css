@@ -3330,6 +3330,19 @@
         }
 
         @media (max-width: 768px) {
+            html, body {
+                overflow-x: hidden !important;
+                width: 100% !important;
+            }
+
+            #threejs-canvas {
+                display: none !important;
+            }
+
+            #about, #charts, #portals, #developer, #testimonials, #security, footer {
+                overflow: hidden !important;
+                width: 100% !important;
+            }
 
             .nav-center,
             .nav-auth {
@@ -3423,7 +3436,7 @@
             }
 
             #features-scroller {
-                overflow: visible;
+                overflow: hidden !important;
             }
 
             .features-sticky-wrap {
@@ -3569,34 +3582,74 @@
             }
         }
 
-        /* Mobile Menu Overlay */
-        #mobile-menu {
+        /* Mobile Menu Backdrop */
+        #mobile-menu-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(250, 251, 255, 0.98);
+            background: rgba(15, 20, 25, 0.25);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        #mobile-menu-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Mobile Menu Sidebar Drawer */
+        #mobile-menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 300px;
+            background: rgba(250, 251, 255, 0.96);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-left: 1px solid var(--glass-border);
             z-index: 999;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            padding: 40px;
-            gap: 25px;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 100px 24px 40px;
+            gap: 12px;
             transform: translateX(100%);
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s;
+            overflow-y: auto;
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.05);
+            visibility: hidden;
         }
 
         #mobile-menu.open {
             transform: translateX(0);
+            visibility: visible;
         }
 
         .mobile-link {
-            font-family: var(--font-display);
-            font-size: 42px;
-            color: var(--white);
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--muted);
             text-decoration: none;
-            font-weight: 300;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 10px 16px;
+            border-radius: 8px;
+            width: 100%;
+            transition: all 0.3s ease;
             opacity: 0;
-            transform: translateX(30px);
-            transition: all 0.5s ease;
+            transform: translateX(20px);
+        }
+
+        .mobile-link:hover {
+            color: var(--white);
+            background: var(--accent-dim);
+            transform: translateX(5px);
         }
 
         #mobile-menu.open .mobile-link {
@@ -3665,8 +3718,10 @@
             --cursor-color: #1A73E8;
         }
 
-        body {
-            cursor: none;
+        @media (min-width: 769px) {
+            body {
+                cursor: none;
+            }
         }
 
         .custom-cursor {
@@ -3758,15 +3813,34 @@
             opacity: 0;
         }
 
-        /* Force default cursor to be hidden globally on all elements to ensure custom cursor is used */
-        *,
-        *::before,
-        *::after,
-        a,
-        button,
-        select,
-        input,
-        textarea,
-        [role="button"] {
-            cursor: none !important;
+        /* Force default cursor to be hidden globally on all elements to ensure custom cursor is used (Desktop only) */
+        @media (min-width: 769px) {
+            *,
+            *::before,
+            *::after,
+            a,
+            button,
+            select,
+            input,
+            textarea,
+            [role="button"] {
+                cursor: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .custom-cursor {
+                display: none !important;
+            }
+            *,
+            *::before,
+            *::after,
+            a,
+            button,
+            select,
+            input,
+            textarea,
+            [role="button"] {
+                cursor: auto !important;
+            }
         }

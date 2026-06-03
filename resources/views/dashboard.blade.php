@@ -505,23 +505,30 @@
 
     /* MOBILE RESPONSIVE TWEAKS */
     @media (max-width: 768px) {
-        .dashboard-header {
+        .dashboard-header-glass {
             padding: 24px 20px;
             text-align: center;
-            border-radius: 24px;
+            border-radius: 20px;
             margin-bottom: 24px;
         }
-        .dashboard-header .d-flex {
+        .dashboard-header-glass > .d-flex {
             flex-direction: column;
             align-items: center !important;
             justify-content: center;
+            text-align: center;
         }
-        .dashboard-header h2 {
+        .dashboard-header-glass .d-flex.align-items-center {
+            flex-direction: column;
+            align-items: center !important;
+        }
+        .dashboard-header-glass h2 {
             font-size: 20px;
             margin-top: 8px;
+            text-align: center;
         }
-        .dashboard-header p {
+        .dashboard-header-glass p {
             font-size: 12px !important;
+            text-align: center;
         }
         .btn-primary-modern {
             justify-content: center;
@@ -580,6 +587,66 @@
             width: 100%;
             margin-top: 12px;
             text-align: center;
+        }
+        
+        .border-end {
+            border-right: none !important;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 20px !important;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .template-grid {
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+        }
+        .doc-preview-top {
+            height: 110px;
+        }
+        .help-center-glass {
+            padding: 16px;
+        }
+        .help-center-glass > .d-flex {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .help-center-glass .btn-glass-primary {
+            width: 100%;
+            justify-content: center;
+        }
+        #banner-revisi .d-flex.gap-2 {
+            width: 100%;
+            flex-direction: column;
+        }
+        #banner-revisi .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .stat-card-new {
+            padding: 20px 16px;
+            gap: 12px;
+        }
+        .stat-icon-box {
+            width: 42px;
+            height: 42px;
+            font-size: 18px;
+            border-radius: 10px;
+        }
+        .stat-value-new {
+            font-size: 24px;
+        }
+        .stat-label-new {
+            font-size: 9px;
+            letter-spacing: 0.5px;
+        }
+        .stat-sub-new {
+            font-size: 10px;
         }
     }
 

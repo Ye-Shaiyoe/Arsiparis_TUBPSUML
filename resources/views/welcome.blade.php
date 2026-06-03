@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 
 <head>
@@ -20,16 +20,27 @@
     {{-- CUSTOM CURSOR --}}
     <div class="custom-cursor" id="customCursor"></div>
 
+    {{-- MOBILE MENU BACKDROP --}}
+    <div id="mobile-menu-backdrop"></div>
+
     {{-- MOBILE MENU --}}
     <div id="mobile-menu">
-        <a href="{{ url('/?home=1') }}" class="mobile-link" style="transition-delay: 0.1s;">Beranda</a>
-        <a href="#about" class="mobile-link" style="transition-delay: 0.15s;">Tentang</a>
-        <a href="#stats" class="mobile-link" style="transition-delay: 0.2s;">Statistik</a>
+        <a href="{{ url('/?home=1') }}" class="mobile-link" style="transition-delay: 0.05s;">Beranda</a>
+        <a href="#about" class="mobile-link" style="transition-delay: 0.1s;">Tentang</a>
+        <a href="#stats" class="mobile-link" style="transition-delay: 0.15s;">Statistik</a>
+        <a href="#spiral-section" class="mobile-link" style="transition-delay: 0.2s;">Jenis</a>
         <a href="#charts" class="mobile-link" style="transition-delay: 0.25s;">Grafik</a>
         <a href="#portals" class="mobile-link" style="transition-delay: 0.3s;">Portal</a>
         <a href="#features-scroller" class="mobile-link" style="transition-delay: 0.35s;">Fitur</a>
-        <a href="{{ route('login') }}" class="mobile-link"
-            style="color: var(--accent); margin-top: 20px; transition-delay: 0.4s;">Masuk</a>
+        <a href="#developer" class="mobile-link" style="transition-delay: 0.4s;">Developer</a>
+        <a href="#footer" class="mobile-link" style="transition-delay: 0.45s;">Kontak</a>
+        <div style="width: 100%; height: 1px; background: var(--glass-border); margin: 8px 0; opacity: 0.5;"></div>
+        @auth
+            <a href="{{ route('dashboard') }}" class="mobile-link" style="color: var(--accent); font-weight: 600; transition-delay: 0.5s;">Dashboard</a>
+        @else
+            <a href="{{ route('login') }}" class="mobile-link" style="color: var(--accent); font-weight: 600; transition-delay: 0.5s;">Sign In</a>
+            <a href="{{ route('register') }}" class="mobile-link" style="color: var(--accent-gold); font-weight: 600; transition-delay: 0.55s;">Sign Up</a>
+        @endauth
     </div>
     <div id="scroll-bar"></div>
     <canvas id="particles-canvas"></canvas>
@@ -905,16 +916,23 @@
         // Mobile Menu Logic
         const menuToggle = document.getElementById('menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
         if (menuToggle && mobileMenu) {
-            menuToggle.addEventListener('click', () => {
-                menuToggle.classList.toggle('active');
-                mobileMenu.classList.toggle('open');
-                document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
-            });
+            const toggleMenu = () => {
+                const isOpen = mobileMenu.classList.toggle('open');
+                menuToggle.classList.toggle('active', isOpen);
+                if (mobileMenuBackdrop) mobileMenuBackdrop.classList.toggle('open', isOpen);
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+            };
+            menuToggle.addEventListener('click', toggleMenu);
+            if (mobileMenuBackdrop) {
+                mobileMenuBackdrop.addEventListener('click', toggleMenu);
+            }
             mobileMenu.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', () => {
                     menuToggle.classList.remove('active');
                     mobileMenu.classList.remove('open');
+                    if (mobileMenuBackdrop) mobileMenuBackdrop.classList.remove('open');
                     document.body.style.overflow = '';
                 });
             });
@@ -1111,7 +1129,7 @@
 
             function animate() {
                 requestAnimationFrame(animate);
-                if (!canvasVisible) return;
+                if (!canvasVisible || !renderer) return;
 
                 boxes.forEach(box => {
                     box.rotation.x += box.velocity.x;
@@ -1160,6 +1178,7 @@
             }
 
             function bootThree() {
+                if (window.innerWidth <= 768) return;
                 if (window.THREE) {
                     initThreeJS();
                     return;
@@ -1821,43 +1840,6 @@
                 }
             });
 
-            // SLA Chronometer Pulse Animation
-            const progressRing = document.querySelector('.timer-progress-ring');
-            if (progressRing) {
-                gsap.fromTo(progressRing, { scale: 0.96, opacity: 0.3 }, {
-                    scale: 1.04, opacity: 0.8, duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut'
-                });
-            }
-
-            // Live ticking down for SLA timer (1 second interval)
-            setInterval(() => {
-                const els = document.querySelectorAll('.timer-val');
-                els.forEach(el => {
-                    const parts = el.textContent.split(':');
-                    if (parts.length === 3) {
-                        let h = parseInt(parts[0]);
-                        let m = parseInt(parts[1]);
-                        let s = parseInt(parts[2]);
-                        s--;
-                        if (s < 0) {
-                            s = 59;
-                            m--;
-                            if (m < 0) {
-                                m = 59;
-                                h--;
-                                if (h < 0) {
-                                    h = 23;
-                                }
-                            }
-                        }
-                        el.textContent =
-                            String(h).padStart(2, '0') + ':' +
-                            String(m).padStart(2, '0') + ':' +
-                            String(s).padStart(2, '0');
-                    }
-                });
-            }, 1000);
-
             // Side parallax entrance animations for each slide (Apple/Stripe Style)
             slides.forEach((slide) => {
                 const textSide = slide.querySelector('.feature-text-side');
@@ -1971,6 +1953,43 @@
             trackHorizontal.style.transform = 'none';
             trackHorizontal.style.flexDirection = 'column';
         }
+
+        // SLA Chronometer Pulse Animation (All devices)
+        const progressRing = document.querySelector('.timer-progress-ring');
+        if (progressRing) {
+            gsap.fromTo(progressRing, { scale: 0.96, opacity: 0.3 }, {
+                scale: 1.04, opacity: 0.8, duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut'
+            });
+        }
+
+        // Live ticking down for SLA timer (1 second interval - All devices)
+        setInterval(() => {
+            const els = document.querySelectorAll('.timer-val');
+            els.forEach(el => {
+                const parts = el.textContent.split(':');
+                if (parts.length === 3) {
+                    let h = parseInt(parts[0]);
+                    let m = parseInt(parts[1]);
+                    let s = parseInt(parts[2]);
+                    s--;
+                    if (s < 0) {
+                        s = 59;
+                        m--;
+                        if (m < 0) {
+                            m = 59;
+                            h--;
+                            if (h < 0) {
+                                h = 23;
+                            }
+                        }
+                    }
+                    el.textContent =
+                        String(h).padStart(2, '0') + ':' +
+                        String(m).padStart(2, '0') + ':' +
+                        String(s).padStart(2, '0');
+                }
+            });
+        }, 1000);
         // Developer Stack Loop
         (function () {
             const stacks = {
