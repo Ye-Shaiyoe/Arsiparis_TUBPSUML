@@ -198,12 +198,19 @@
                 @endif
             </div>
             @if(request('search'))
-                <p class="mb-0 mt-3" style="font-size: 13px; color: #64748b;">
-                    Menampilkan hasil untuk: <strong>"{{ request('search') }}"</strong>
-                    @if($users->total() > 0)
-                        — ditemukan <strong>{{ $users->total() }}</strong> pegawai
-                    @endif
-                </p>
+                @if(strlen(trim(request('search'))) < 2)
+                    <p class="mb-0 mt-3 text-danger" style="font-size: 13px;">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        Kata kunci pencarian minimal 2 karakter.
+                    </p>
+                @else
+                    <p class="mb-0 mt-3" style="font-size: 13px; color: #64748b;">
+                        Menampilkan hasil untuk: <strong>"{{ request('search') }}"</strong>
+                        @if($users->total() > 0)
+                            — ditemukan <strong>{{ $users->total() }}</strong> pegawai
+                        @endif
+                    </p>
+                @endif
             @else
                 <p class="mb-0 mt-3" style="font-size: 13px; color: #94a3b8;">
                     <i class="bi bi-info-circle me-1"></i>
@@ -229,7 +236,7 @@
                     </div>
                     <div class="pegawai-body">
                         <div class="pegawai-name" title="{{ $pegawai->name }}">{{ $pegawai->name }}</div>
-                        <div class="pegawai-nip">NIP: {{ $pegawai->nip ?: '—' }}</div>
+                        <div class="pegawai-nip">NIP: {{ $pegawai->nip ? (substr($pegawai->nip, 0, 3) . str_repeat('*', max(0, strlen($pegawai->nip) - 3))) : '—' }}</div>
                         <div class="pegawai-role-badge">{{ $pegawai->getRoleLabel() }}</div>
                         @if($pegawai->uuid)
                             <a href="{{ route('user.pegawai.show', $pegawai->uuid) }}" class="pegawai-action">
@@ -250,7 +257,7 @@
         </div>
     @else
         <div class="empty-state">
-            @if(request()->filled('search'))
+            @if(request()->filled('search') && strlen(trim(request('search'))) >= 2)
                 <div class="empty-state-icon">
                     <i class="bi bi-person-slash text-muted"></i>
                 </div>
