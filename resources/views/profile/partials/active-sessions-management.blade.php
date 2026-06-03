@@ -22,7 +22,19 @@
         </p>
     </header>
 
-    @if (config('session.driver') !== 'database')
+    @if (config('session.driver') === 'redis')
+        <div class="p-5 rounded-2xl border border-blue-100 bg-blue-50/50 text-blue-800 flex items-start gap-4">
+            <div class="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-600 flex items-center justify-center text-lg shrink-0">
+                <i class="bi bi-cpu-fill"></i>
+            </div>
+            <div>
+                <h4 class="font-bold text-sm">Mode Performa Tinggi Aktif (Redis)</h4>
+                <p class="text-xs text-blue-600/80 mt-1 leading-relaxed">
+                    Sistem menggunakan <strong>Redis</strong> untuk penyimpanan sesi super cepat. Dalam mode ini, pemantauan riwayat detail perangkat individu dan opsi untuk mengeluarkan sesi lain secara terpisah dinonaktifkan demi performa optimal server Anda.
+                </p>
+            </div>
+        </div>
+    @elseif (config('session.driver') !== 'database')
         <div class="p-4 bg-amber-50 border border-amber-100 text-amber-800 rounded-2xl text-xs font-bold flex items-center gap-3">
             <i class="bi bi-exclamation-triangle-fill text-lg"></i>
             <span>Driver sesi database harus diaktifkan untuk melihat sesi aktif.</span>
