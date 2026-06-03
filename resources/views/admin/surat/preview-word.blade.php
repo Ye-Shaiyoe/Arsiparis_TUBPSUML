@@ -12,17 +12,21 @@
     
     <style>
         :root {
-            --bg-color: #1a1c1e;
-            --paper-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            --primary-color: #2563eb;
+            --bg-color: #020617; /* slate-950 */
+            --bg-toolbar: rgba(15, 23, 42, 0.85); /* slate-900 with opacity */
+            --border-color: rgba(255, 255, 255, 0.08);
+            --paper-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            --primary-color: #4361ee; /* Modern Electric Blue */
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
             background-color: var(--bg-color);
-            color: #e2e8f0;
+            color: var(--text-primary);
             line-height: 1.5;
             height: 100vh;
             display: flex;
@@ -31,52 +35,71 @@
         }
 
         .header-toolbar {
-            background: #2d2f31;
-            border-bottom: 1px solid #3f4143;
-            padding: 0.75rem 2rem;
+            background: var(--bg-toolbar);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.85rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             z-index: 100;
             flex-shrink: 0;
         }
 
         .doc-info { display: flex; align-items: center; gap: 1rem; }
         .doc-icon {
-            width: 36px; height: 36px; background: #2563eb; color: white;
-            border-radius: 6px; display: flex; align-items: center; justify-content: center;
+            width: 38px; height: 38px; background: var(--primary-color); color: white;
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 15px rgba(67, 97, 238, 0.3);
         }
-        .doc-title { font-weight: 600; font-size: 0.95rem; color: #f8fafc; }
+        .doc-title { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); }
 
         .btn {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            padding: 0.5rem 1.25rem; border-radius: 6px;
-            font-weight: 500; font-size: 0.875rem; cursor: pointer;
-            transition: all 0.2s; border: 1px solid #4f5153;
-            text-decoration: none; background: #3f4143; color: #f8fafc;
+            padding: 0.5rem 1.25rem; border-radius: 8px;
+            font-weight: 600; font-size: 0.875rem; cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border-color);
+            text-decoration: none; 
+            background: rgba(255, 255, 255, 0.05); 
+            color: var(--text-primary);
         }
-        .btn:hover { background: #4f5153; }
+        .btn:hover { 
+            background: rgba(255, 255, 255, 0.1); 
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
 
         .main-viewport {
             flex: 1;
             overflow-y: auto;
-            padding: 2rem;
+            padding: 2.5rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #1a1c1e;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(67, 97, 238, 0.05) 0px, transparent 50%),
+                radial-gradient(at 50% 0%, rgba(30, 41, 59, 0.1) 0px, transparent 50%);
         }
 
         #docx-container { width: 100%; display: flex; justify-content: center; }
         
-        /* Docx Preview Styling */
+        /* Docx Preview Styling Override */
         .docx-wrapper { background: transparent !important; padding: 0 !important; }
         .docx { 
             box-shadow: var(--paper-shadow) !important; 
-            margin-bottom: 2rem !important;
+            margin-bottom: 3rem !important;
             background: white !important;
             color: black !important;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         #loading-overlay {
@@ -86,9 +109,11 @@
         }
 
         .spinner {
-            width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1);
+            width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.05);
             border-top-color: var(--primary-color); border-radius: 50%;
-            animation: spin 1s linear infinite; margin-bottom: 1rem;
+            animation: spin 1s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite; 
+            margin-bottom: 1.25rem;
+            box-shadow: 0 0 20px rgba(67, 97, 238, 0.1);
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -102,7 +127,7 @@
             </div>
             <div>
                 <div class="doc-title">{{ $fileName ?? 'Dokumen Surat' }}</div>
-                <div style="font-size: 0.75rem; color: #94a3b8;">High-Fidelity Client-Side Preview</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">High-Fidelity Client-Side Preview</div>
             </div>
         </div>
 
@@ -114,7 +139,7 @@
     <div class="main-viewport">
         <div id="loading-overlay">
             <div class="spinner"></div>
-            <div>Memuat dokumen...</div>
+            <div style="font-weight: 500; font-size: 0.95rem; color: var(--text-secondary); letter-spacing: 0.5px;">Memuat dokumen...</div>
         </div>
 
         <div id="docx-container"></div>
@@ -124,8 +149,8 @@
         const docxContainer = document.getElementById('docx-container');
         const loadingOverlay = document.getElementById('loading-overlay');
 
-        // URL untuk ambil file mentah (raw)
-        const rawUrl = "{{ route('admin.surat.preview', [$surat, $tipe]) }}?raw=1&v=" + new Date().getTime();
+        // Menggunakan relative URL (argumen ketiga = false) agar terhindar dari mixed content (http/https) di server produksi
+        const rawUrl = "{{ route('admin.surat.preview', [$surat, $tipe], false) }}?raw=1&v=" + new Date().getTime();
 
         function loadDocx() {
             fetch(rawUrl)
@@ -151,11 +176,11 @@
                 .catch(error => {
                     console.error('Preview error:', error);
                     loadingOverlay.innerHTML = `
-                        <div style="text-align:center; color:#ef4444; padding:20px;">
-                            <div style="font-size:48px; margin-bottom:10px;">❌</div>
-                            <div style="font-weight:600;">Gagal memuat dokumen</div>
-                            <div style="font-size:12px; margin-top:5px; opacity:0.8;">${error.message}</div>
-                            <button onclick="location.reload()" style="margin-top:15px; padding:8px 16px; background:#3b82f6; color:white; border:none; border-radius:6px; cursor:pointer;">Coba Lagi</button>
+                        <div style="text-align:center; color:#ef4444; padding:32px; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 12px; max-width: 400px;">
+                            <div style="font-size:48px; margin-bottom:12px;">❌</div>
+                            <div style="font-weight:700; font-size: 1.1rem; margin-bottom: 6px; color: #fca5a5;">Gagal memuat dokumen</div>
+                            <div style="font-size:12px; opacity:0.8; margin-bottom: 20px; line-height: 1.5;">${error.message}</div>
+                            <button onclick="location.reload()" class="btn" style="background:#ef4444; border-color:#ef4444; color:white; font-weight:700; width:100%; justify-content:center;">Coba Lagi</button>
                         </div>
                     `;
                 });

@@ -611,7 +611,7 @@ class SuratController extends Controller
         }
 
         // Image - return file directly (seperti admin)
-        if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'])) {
+        if (in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'bmp'])) {
             if (ob_get_level())
                 ob_end_clean();
             return response()->file($fullPath, [
@@ -693,7 +693,6 @@ class SuratController extends Controller
         return match (strtolower($extension)) {
             'jpg', 'jpeg' => 'image/jpeg',
             'png' => 'image/png',
-            'gif' => 'image/gif',
             'bmp' => 'image/bmp',
             'webp' => 'image/webp',
             default => 'application/octet-stream',

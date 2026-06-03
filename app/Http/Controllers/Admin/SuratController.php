@@ -341,7 +341,7 @@ class SuratController extends Controller
         }
 
         // Gambar
-        if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'])) {
+        if (in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'bmp'])) {
             if (ob_get_level())
                 ob_end_clean();
             return response()->file(Storage::disk('private')->path($filePath), [
@@ -354,9 +354,13 @@ class SuratController extends Controller
             return $this->download($surat, $tipe);
         }
 
-        // Word (.docx) - Download only untuk admin (preview terlalu berat di server)
+        // Word (.docx) - Tampilkan halaman preview client-side
         if ($extension === 'docx') {
-            return $this->download($surat, $tipe);
+            return response()->view('admin.surat.preview-word', [
+                'surat' => $surat,
+                'tipe' => $tipe,
+                'fileName' => basename($filePath),
+            ]);
         }
 
         // Fallback: download

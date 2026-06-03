@@ -1557,21 +1557,21 @@
                 hideClass: {
                     popup: 'animate__animated animate__fadeOut'
                 },
-                preConfirm: () => {
+                didOpen: () => {
                     const checkbox = document.getElementById('dontShowAgain');
-                    if (checkbox && checkbox.checked) {
-                        localStorage.setItem(faqPopupKey, 'true');
+                    if (checkbox) {
+                        checkbox.addEventListener('change', (e) => {
+                            if (e.target.checked) {
+                                localStorage.setItem(faqPopupKey, 'true');
+                            } else {
+                                localStorage.removeItem(faqPopupKey);
+                            }
+                        });
                     }
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = "{{ route('user.faq.index') }}";
-                } else {
-                    // Check checkbox state even if cancelled
-                    const checkbox = document.getElementById('dontShowAgain');
-                    if (checkbox && checkbox.checked) {
-                        localStorage.setItem(faqPopupKey, 'true');
-                    }
                 }
             });
         }, 1000); // Muncul setelah 1 detik dashboard terbuka
