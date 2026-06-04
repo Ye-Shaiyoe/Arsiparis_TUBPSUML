@@ -718,6 +718,129 @@
     .transition-all-200 {
         transition: all 0.2s ease;
     }
+
+    /* ===== FILTER BAR STAT CARDS ===== */
+    .stat-filter-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding: 14px 20px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        transition: box-shadow 0.3s ease;
+    }
+    .stat-filter-bar:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+    }
+    .stat-filter-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .stat-filter-selects {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .stat-filter-select {
+        appearance: none;
+        -webkit-appearance: none;
+        background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%2364748b' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") no-repeat right 10px center;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 7px 30px 7px 12px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #1e293b;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 110px;
+    }
+    .stat-filter-select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+    .stat-filter-select:hover {
+        border-color: #94a3b8;
+    }
+    .btn-filter-reset {
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 6px 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+    }
+    .btn-filter-reset:hover {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+    .stat-period-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        color: white;
+        letter-spacing: 0.3px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    /* Loading overlay for cards */
+    .stats-grid.loading .stat-card-new {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+    .stats-grid.loading .stat-value-new {
+        animation: cardLoading 0.8s ease infinite alternate;
+    }
+    @keyframes cardLoading {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
+    }
+    @keyframes countUp {
+        from { transform: translateY(8px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .stat-value-updated {
+        animation: countUp 0.35s ease forwards;
+    }
+    @media (max-width: 576px) {
+        .stat-filter-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .stat-filter-selects {
+            width: 100%;
+        }
+        .stat-filter-select {
+            flex: 1;
+            min-width: 0;
+        }
+    }
 </style>
 
 {{-- HEADER --}}
@@ -812,8 +935,49 @@
 
 <div class="container-fluid px-0">
 
+{{-- FILTER BULAN / TAHUN UNTUK STAT CARDS --}}
+<div class="stat-filter-bar animate-in" id="stat-filter-bar" style="animation-delay: 0.05s;">
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+        <span class="stat-filter-label">
+            <i class="bi bi-funnel-fill text-primary"></i> Filter Kartu Statistik
+        </span>
+        <span class="stat-period-badge" id="stat-period-badge">
+            <i class="bi bi-calendar3"></i>
+            <span id="stat-period-text">
+                @php
+                    $namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                @endphp
+                {{ $namaBulan[$bulanSelected] }} {{ $tahunSelected }}
+            </span>
+        </span>
+    </div>
+    <div class="stat-filter-selects">
+        <select class="stat-filter-select" id="filter-bulan" title="Pilih Bulan">
+            @php
+                $bulanList = [
+                    1=>'Januari', 2=>'Februari', 3=>'Maret', 4=>'April',
+                    5=>'Mei', 6=>'Juni', 7=>'Juli', 8=>'Agustus',
+                    9=>'September', 10=>'Oktober', 11=>'November', 12=>'Desember'
+                ];
+            @endphp
+            @foreach($bulanList as $num => $nama)
+                <option value="{{ $num }}" {{ $bulanSelected == $num ? 'selected' : '' }}>{{ $nama }}</option>
+            @endforeach
+        </select>
+        <select class="stat-filter-select" id="filter-tahun" title="Pilih Tahun">
+            @php $currentYear = now()->year; @endphp
+            @for($y = $currentYear; $y >= $currentYear - 3; $y--)
+                <option value="{{ $y }}" {{ $tahunSelected == $y ? 'selected' : '' }}>{{ $y }}</option>
+            @endfor
+        </select>
+        <button class="btn-filter-reset" id="btn-filter-reset" title="Reset ke bulan ini">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset
+        </button>
+    </div>
+</div>
+
 {{-- STAT CARDS --}}
-<div class="stats-grid">
+<div class="stats-grid" id="stats-grid">
     {{-- TOTAL SURAT --}}
     <div class="stat-card-new blue animate-in" style="animation-delay: 0.1s;">
         <div class="stat-card-glow"></div>
@@ -1838,6 +2002,114 @@
         window.activeDashboardIntervals.forEach(clearInterval);
     }
     window.activeDashboardIntervals = [headerInterval, slaInterval];
+
+    // ===== FILTER BULAN / TAHUN - STAT CARDS =====
+    (function() {
+        const filterBulan = document.getElementById('filter-bulan');
+        const filterTahun = document.getElementById('filter-tahun');
+        const btnReset    = document.getElementById('btn-filter-reset');
+        const statsGrid   = document.getElementById('stats-grid');
+        const periodText  = document.getElementById('stat-period-text');
+
+        const BULAN_NAMA = ['','Januari','Februari','Maret','April','Mei','Juni',
+                            'Juli','Agustus','September','Oktober','November','Desember'];
+
+        // Animated counter helper
+        function animateCount(el, newVal) {
+            if (!el) return;
+            const oldVal = parseInt(el.textContent) || 0;
+            if (oldVal === newVal) return;
+
+            const diff = newVal - oldVal;
+            const steps = 20;
+            const stepDuration = 180 / steps; // total ~180ms
+            let current = oldVal;
+            let step = 0;
+
+            const timer = setInterval(() => {
+                step++;
+                current = Math.round(oldVal + diff * (step / steps));
+                el.textContent = current;
+                if (step >= steps) {
+                    el.textContent = newVal;
+                    clearInterval(timer);
+                    el.classList.add('stat-value-updated');
+                    setTimeout(() => el.classList.remove('stat-value-updated'), 400);
+                }
+            }, stepDuration);
+        }
+
+        // Fetch stats and update cards
+        function fetchCardStats(bulan, tahun) {
+            if (!statsGrid) return;
+            statsGrid.classList.add('loading');
+
+            const url = `{{ route('dashboard.liveData') }}?bulan=${bulan}&tahun=${tahun}`;
+
+            fetch(url, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                statsGrid.classList.remove('loading');
+                const s = data.stats || {};
+
+                animateCount(document.getElementById('stat-totalSurat'),   s.totalSurat   ?? 0);
+                animateCount(document.getElementById('stat-suratSelesai'), s.suratSelesai ?? 0);
+                animateCount(document.getElementById('stat-suratProses'),  s.suratProses  ?? 0);
+                animateCount(document.getElementById('stat-suratDitolak'), s.suratDitolak ?? 0);
+
+                // Update period badge text
+                if (periodText) {
+                    periodText.textContent = `${BULAN_NAMA[parseInt(bulan)]} ${tahun}`;
+                }
+            })
+            .catch(err => {
+                statsGrid.classList.remove('loading');
+                console.error('Filter stats error:', err);
+            });
+        }
+
+        // On change handler (debounced)
+        let filterTimeout = null;
+        function onFilterChange() {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(() => {
+                const bulan = filterBulan?.value || new Date().getMonth() + 1;
+                const tahun = filterTahun?.value || new Date().getFullYear();
+                fetchCardStats(bulan, tahun);
+            }, 250);
+        }
+
+        if (filterBulan) filterBulan.addEventListener('change', onFilterChange);
+        if (filterTahun) filterTahun.addEventListener('change', onFilterChange);
+
+        // Reset to current month/year
+        if (btnReset) {
+            btnReset.addEventListener('click', () => {
+                const now = new Date();
+                const curBulan = now.getMonth() + 1;
+                const curTahun = now.getFullYear();
+
+                if (filterBulan) filterBulan.value = curBulan;
+                if (filterTahun) filterTahun.value = curTahun;
+
+                fetchCardStats(curBulan, curTahun);
+
+                // Button spin animation feedback
+                const icon = btnReset.querySelector('i');
+                if (icon) {
+                    icon.style.transition = 'transform 0.4s ease';
+                    icon.style.transform = 'rotate(-360deg)';
+                    setTimeout(() => { icon.style.transform = ''; }, 500);
+                }
+            });
+        }
+    })();
 
     // Quick Track Logic
     const btnTrack = document.getElementById('btn-quick-track');
