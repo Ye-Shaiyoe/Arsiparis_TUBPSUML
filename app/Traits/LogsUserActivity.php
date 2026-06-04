@@ -9,6 +9,45 @@ use Illuminate\Support\Facades\Request;
 trait LogsUserActivity
 {
     /**
+     * Boot the trait to automatically hook into Eloquent model events.
+     */
+    protected static function bootLogsUserActivity(): void
+    {
+        static::created(function ($model) {
+            self::logCreated(
+                get_class($model),
+                $model->id,
+                'Membuat ' . class_basename($model) . ': ' . ($model->judul ?? $model->name ?? $model->nomor_surat ?? $model->id)
+            );
+        });
+
+        static::updated(function ($model) {
+            $changes = $model->getChanges();
+            unset($changes['updated_at']);
+            if (empty($changes)) {
+                return;
+            }
+            // Remove sensitive fields
+            unset($changes['password'], $changes['remember_token']);
+            
+            self::logUpdated(
+                get_class($model),
+                $model->id,
+                'Mengubah ' . class_basename($model) . ': ' . ($model->judul ?? $model->name ?? $model->nomor_surat ?? $model->id),
+                $changes
+            );
+        });
+
+        static::deleted(function ($model) {
+            self::logDeleted(
+                get_class($model),
+                $model->id,
+                'Menghapus ' . class_basename($model) . ': ' . ($model->judul ?? $model->name ?? $model->nomor_surat ?? $model->id)
+            );
+        });
+    }
+
+    /**
      * Log aktivitas user
      *
      * @param string $action
@@ -16,6 +55,7 @@ trait LogsUserActivity
      * @param int|null $modelId
      * @param string|null $description
      * @param array|null $changes
+     * @return ActivityLog|null
      */
     public static function logActivity(
         string $action,
@@ -23,7 +63,7 @@ trait LogsUserActivity
         ?int $modelId = null,
         ?string $description = null,
         ?array $changes = null
-    ): ActivityLog {
+    ): ?ActivityLog {
         $user = Auth::user();
         
         if (!$user) {
@@ -45,7 +85,7 @@ trait LogsUserActivity
     /**
      * Helper untuk log create action
      */
-    public static function logCreated(?string $modelType = null, ?int $modelId = null, ?string $description = null): ActivityLog
+    public static function logCreated(?string $modelType = null, ?int $modelId = null, ?string $description = null): ?ActivityLog
     {
         return self::logActivity('create', $modelType, $modelId, $description);
     }
@@ -53,7 +93,7 @@ trait LogsUserActivity
     /**
      * Helper untuk log update action
      */
-    public static function logUpdated(?string $modelType = null, ?int $modelId = null, ?string $description = null, ?array $changes = null): ActivityLog
+    public static function logUpdated(?string $modelType = null, ?int $modelId = null, ?string $description = null, ?array $changes = null): ?ActivityLog
     {
         return self::logActivity('update', $modelType, $modelId, $description, $changes);
     }
@@ -61,7 +101,7 @@ trait LogsUserActivity
     /**
      * Helper untuk log delete action
      */
-    public static function logDeleted(?string $modelType = null, ?int $modelId = null, ?string $description = null): ActivityLog
+    public static function logDeleted(?string $modelType = null, ?int $modelId = null, ?string $description = null): ?ActivityLog
     {
         return self::logActivity('delete', $modelType, $modelId, $description);
     }
@@ -69,7 +109,7 @@ trait LogsUserActivity
     /**
      * Helper untuk log download action
      */
-    public static function logDownload(?string $modelType = null, ?int $modelId = null, ?string $description = null): ActivityLog
+    public static function logDownload(?string $modelType = null, ?int $modelId = null, ?string $description = null): ?ActivityLog
     {
         return self::logActivity('download', $modelType, $modelId, $description);
     }
@@ -77,7 +117,7 @@ trait LogsUserActivity
     /**
      * Helper untuk log view action
      */
-    public static function logView(?string $modelType = null, ?int $modelId = null, ?string $description = null): ActivityLog
+    public static function logView(?string $modelType = null, ?int $modelId = null, ?string $description = null): ?ActivityLog
     {
         return self::logActivity('view', $modelType, $modelId, $description);
     }
