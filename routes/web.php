@@ -41,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('activity-log')->name('user.activity-log.')->group(function () {
         Route::get('/', [\App\Http\Controllers\User\ActivityLogController::class, 'index'])->name('index');
         Route::get('/export', [\App\Http\Controllers\User\ActivityLogController::class, 'export'])->name('export');
+        Route::delete('/destroy-all', [\App\Http\Controllers\User\ActivityLogController::class, 'destroyAll'])->name('destroyAll');
         Route::get('/{log}', [\App\Http\Controllers\User\ActivityLogController::class, 'show'])->name('show');
     });
     

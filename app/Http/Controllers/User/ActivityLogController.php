@@ -78,6 +78,19 @@ class ActivityLogController extends Controller
     /**
      * Export activity logs ke CSV
      */
+    /**
+     * Hapus semua activity log milik user yang login
+     */
+    public function destroyAll(Request $request)
+    {
+        $user = Auth::user();
+
+        ActivityLog::where('user_id', $user->id)->delete();
+
+        return redirect()->route('user.activity-log.index')
+            ->with('success', 'Semua riwayat aktivitas berhasil dihapus.');
+    }
+
     public function export(Request $request)
     {
         $user = Auth::user();

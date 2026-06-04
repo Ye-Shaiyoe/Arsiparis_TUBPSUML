@@ -2,6 +2,15 @@
 @section('title', 'Activity Log')
 
 @section('content')
+
+{{-- Flash Messages --}}
+@if(session('success'))
+<div class="alert alert-success border-0 shadow-sm mb-4 d-flex align-items-center gap-2" style="border-radius:14px;border-left:4px solid #10b981 !important;" role="alert">
+    <i class="bi bi-check-circle-fill text-success fs-5"></i>
+    <span>{{ session('success') }}</span>
+</div>
+@endif
+
 <div class="d-flex align-items-center gap-2 mb-4">
     <div class="flex-grow-1">
         <h5 class="fw-bold mb-0" style="color:var(--text-primary);">
@@ -9,10 +18,23 @@
         </h5>
         <small class="text-muted">Pantau semua aksi dan aktivitas Anda di sistem</small>
     </div>
-    <a href="{{ route('user.activity-log.export', request()->query()) }}" class="btn btn-sm btn-outline-primary" style="border-radius:8px;font-size:13px;">
-        <i class="bi bi-download me-1"></i> Export CSV
-    </a>
+    <div class="d-flex align-items-center gap-2">
+        <a href="{{ route('user.activity-log.export', request()->query()) }}" class="btn btn-sm btn-outline-primary" style="border-radius:8px;font-size:13px;">
+            <i class="bi bi-download me-1"></i> Export CSV
+        </a>
+        @if($logs->total() > 0 || request()->hasAny(['search','action','model_type','date_from','date_to']))
+        <button type="button" id="btn-hapus-semua" class="btn btn-sm btn-outline-danger" style="border-radius:8px;font-size:13px;">
+            <i class="bi bi-trash3 me-1"></i> Hapus Semua Log
+        </button>
+        @endif
+    </div>
 </div>
+
+{{-- Hidden form for DELETE method --}}
+<form id="form-hapus-semua" method="POST" action="{{ route('user.activity-log.destroyAll') }}" style="display:none;">
+    @csrf
+    @method('DELETE')
+</form>
 
 <div class="card card-custom mb-4">
     <div class="card-body p-4">
@@ -144,5 +166,33 @@
         </div>
     </div>
 @endif
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('btn-hapus-semua');
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+        Swal.fire({
+            title: 'Hapus Semua Log?',
+            html: 'Seluruh riwayat aktivitas Anda akan <strong>dihapus permanen</strong> dan tidak dapat dikembalikan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="bi bi-trash3 me-1"></i> Ya, Hapus Semua',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            reverseButtons: true,
+            focusCancel: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('form-hapus-semua').submit();
+            }
+        });
+    });
+});
+</script>
+@endpush
 
 @endsection
