@@ -5,8 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
+use App\Traits\LogsUserActivity;
+
 class Surat extends Model
 {
+    use LogsUserActivity;
+
     protected $fillable = [
         'uuid',
         'user_id',
