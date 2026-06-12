@@ -14,12 +14,14 @@
   <img src="https://img.shields.io/badge/Alpine.js-8BC0D0?style=flat&logo=alpine.js&logoColor=black" />
 </p> <br>
 
+---
+
 <p align="center">
   <a href="https://tubpsuml.com"><strong>🌐 Live Demo (Production)</strong></a> | 
   <a href="https://drive.google.com/drive/folders/1UYCrUPZQjaQawTXM33jwFN9uRqLGoQh_?usp=sharing"><strong>🎬 Tonton Demo Video</strong></a>
 </p>
----
 
+---
 ## 📑 Daftar Isi
 
 - [Demo & Akses](#-demo--akses)
