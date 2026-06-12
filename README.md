@@ -12,7 +12,8 @@
   <img src="https://img.shields.io/badge/Redis-Cache-DC382D?style=flat&logo=redis&logoColor=white" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white" />
   <img src="https://img.shields.io/badge/Alpine.js-8BC0D0?style=flat&logo=alpine.js&logoColor=black" />
-</p>
+</p> <br>
+
 <p align="center">
   <a href="https://tubpsuml.com"><strong>🌐 Live Demo (Production)</strong></a> | 
   <a href="https://drive.google.com/drive/folders/1UYCrUPZQjaQawTXM33jwFN9uRqLGoQh_?usp=sharing"><strong>🎬 Tonton Demo Video</strong></a>
