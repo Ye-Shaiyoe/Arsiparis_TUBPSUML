@@ -3,6 +3,10 @@
 <p align="center">
   <b>Sistem manajemen surat digital berbasis web untuk Balai Pengujian (BP Suml)</b><br/>
   Dikembangkan sebagai proyek PKL oleh siswa SMK Al-Falah
+
+  Demo video
+
+    https://drive.google.com/drive/folders/1UYCrUPZQjaQawTXM33jwFN9uRqLGoQh_?usp=sharing
 </p>
 
 <p align="center">
@@ -13,6 +17,7 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white" />
   <img src="https://img.shields.io/badge/Alpine.js-8BC0D0?style=flat&logo=alpine.js&logoColor=black" />
 </p>
+
 
 ---
 
@@ -240,12 +245,6 @@ npm run build -> npm run dev
 - **Lampiran:** Opsional, maks. 20MB
 - **Jenis Surat:** Nota Dinas, Surat Dinas, Surat Keputusan, Surat Pernyataan, Surat Keterangan, Undangan, Lainnya
 - **Sifat Surat:** Biasa, Penting/Segera, Rahasia
-
----
-
-## 🎥 Demo Video
-
-https://drive.google.com/drive/folders/1UYCrUPZQjaQawTXM33jwFN9uRqLGoQh_?usp=sharing
 
 ---
 
