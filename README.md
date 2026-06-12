@@ -245,31 +245,7 @@ npm run build -> npm run dev
 
 ## 🎥 Demo Video
 
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <b>🔐 Halaman Autentikasi (Login/Register)</b><br/><br/>
-      <!-- Ganti link di bawah dengan video kamu -->
-      <a href="#"><img src="https://github.com/user-attachments/assets/06260828-aed4-4c3d-9da6-4fbba568c97c" /></a>
-    </td>
-    <td align="center" width="50%">
-      <b>🏠 Landing Page</b><br/><br/>
-      <a href="#"><img src="https://via.placeholder.com/480x270.png?text=Demo+Landing+Page" /></a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="50%">
-      <b>📊 User Dashboard</b><br/><br/>
-      <a href="#"><img src="https://via.placeholder.com/480x270.png?text=Demo+User+Dashboard" /></a>
-    </td>
-    <td align="center" width="50%">
-      <b>🛠️ Admin Dashboard</b><br/><br/>
-      <a href="#"><img src="https://via.placeholder.com/480x270.png?text=Demo+Admin+Dashboard" /></a>
-    </td>
-  </tr>
-</table>
 
-> 💡 Tips: ganti `href="#"` dengan link video (YouTube/Drive) dan `src` thumbnail dengan screenshot/GIF asli dari masing-masing halaman.
 
 ---
 
