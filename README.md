@@ -1,95 +1,291 @@
+# 📬 Persuratan BP Suml
+
 <p align="center">
-    <h2>Persuratan BPSUML</h2>
+  <b>Sistem manajemen surat digital berbasis web untuk Balai Pengujian (BP Suml)</b><br/>
+  Dikembangkan sebagai proyek PKL oleh siswa SMK Al-Falah
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" />
-  <img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white" />
-  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/Laravel-12-FF2D20?style=flat&logo=laravel&logoColor=white" />
+  <img src="https://img.shields.io/badge/PHP-8.x-777BB4?style=flat&logo=php&logoColor=white" />
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Redis-Cache-DC382D?style=flat&logo=redis&logoColor=white" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/Alpine.js-8BC0D0?style=flat&logo=alpine.js&logoColor=black" />
 </p>
-
-<p align="center">
-  <strong>Sistem Manajemen Surat Digital Berbasis Web untuk Balai Pengujian (BP Suml)</strong><br />
-  Dikembangkan sebagai proyek Praktik Kerja Lapangan (PKL) oleh siswa SMK Al-Falah.
-</p>
-
 <p align="center">
   <a href="https://tubpsuml.com"><strong>🌐 Live Demo (Production)</strong></a> | 
   <a href="https://drive.google.com/drive/folders/1UYCrUPZQjaQawTXM33jwFN9uRqLGoQh_?usp=sharing"><strong>🎬 Tonton Demo Video</strong></a>
 </p>
-
 ---
 
 ## 📑 Daftar Isi
-- [🌐 Demo & Akses](#-demo--akses)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [👥 Role Pengguna](#-role-pengguna)
-- [🔄 Alur Pemrosesan Surat](#-alur-pemrosesan-surat)
-- [✨ Fitur Unggulan](#-fitur-unggulan)
-- [📁 Struktur Halaman](#-struktur-halaman)
-- [🔒 Fitur Keamanan](#-fitur-keamanan)
-- [📄 Format & Jenis Surat](#-format--jenis-surat)
-- [📦 Panduan Instalasi Lokal](#-panduan-instalasi-lokal)
-- [👨‍💻 Tim Pengembang](#-tim-pengembang)
-- [📜 Lisensi](#-lisensi)
+
+- [Demo & Akses](#-demo--akses)
+- [Tech Stack](#️-tech-stack)
+- [Role Pengguna](#-role-pengguna)
+- [Alur Pemrosesan Surat](#-alur-pemrosesan-surat-10-tahap)
+- [Fitur Unggulan](#-fitur-unggulan)
+- [Struktur Halaman](#-struktur-halaman)
+- [Keamanan](#-keamanan)
+- [Instalasi Lokal](#-instalasi-lokal)
+- [Format Surat yang Didukung](#-format-surat-yang-didukung)
+- [Demo Video](#-demo-video)
+- [Tim Pengembang](#-tim-pengembang)
+- [Lisensi](#-lisensi)
 
 ---
 
 ## 🌐 Demo & Akses
 
-| Lingkungan | URL / Alamat Akses |
-| :--- | :--- |
-| **Production Server** | [tubpsuml.com](https://tubpsuml.com) |
-| **Local Development** | `http://127.0.0.1:8000` |
+| Lingkungan | URL |
+|---|---|
+| Production | [tubpsuml.com](https://tubpsuml.com) |
+| Local Dev | `http://127.0.0.1:8000` |
 
 ---
 
 ## 🛠️ Tech Stack
 
-### 🔹 Backend & Database
-* **Framework:** Laravel 12 + Laravel Breeze (Authentication)
-* **Language Runtime:** PHP 8.2+ & Node.js
-* **Database:** MySQL 8.0
-* **Cache & Queue:** Redis (Opsional untuk optimalisasi performa antrian)
-* **Document Processor:** PhpOffice (Word / Excel handling)
+### Backend
+- **Framework:** Laravel 12 + Breeze (Auth)
+- **Database:** MySQL
+- **Cache/Queue:** Redis
+- **API:** REST API
+- **Document:** PhpOffice (Word/Excel)
+- **Runtime:** Node.js
 
-### 🔹 Frontend & UI/UX
-* **Utility-First CSS:** Tailwind CSS & Bootstrap 5
-* **Reactivity:** Alpine.js
-* **Data Visualization:** Chart.js (Grafik Interaktif)
-* **Animation Libraries:** GSAP, Anime.js, & Three.js
+### Frontend
+- Bootstrap 5
+- Tailwind CSS
+- Alpine.js
+- Chart.js
+- GSAP + Anime.js
+- Three.js
 
-### 🔹 Infrastruktur & Integrasi
-* **Web Server:** Nginx (Linux OS Environment)
-* **Content Delivery Network (CDN):** Cloudflare CDN, jsDelivr, CDNJS
+### Infrastructure & Security
+- **Web Server:** Nginx
+- **OS:** Linux
+- **CDN:** Cloudflare CDN, jsDelivr, CDNJS
+- **Security:** Cloudflare WAF, Google reCAPTCHA v2, HSTS, SSL/TLS, Rate Limiting, CSRF & XSS Protection
 
----
-
-## 👥 Role Pengguna & Hak Akses
-
-| Role | Deskripsi Hak Akses |
-| :--- | :--- |
-| **User (Pegawai)** | Mengajukan surat baru (Tahap 1) & melakukan revisi surat jika ditolak. |
-| **Admin Aspirasi** | Verifikator awal (Tahap 2), penomoran, tanda tangan digital, pengiriman, dan pengarsipan (Tahap 5–10). |
-| **Admin Kassubagtu** | Melakukan verifikasi tingkat menengah (Tahap 3). |
-| **Admin Kaplai** | Melakukan verifikasi akhir / persetujuan Kepala Balai (Tahap 4). |
-| **IT Support** | Manajemen sistem eksternal & pengiriman notifikasi massal/penting. |
+### Tools Dev
+XAMPP · Cursor IDE · Bash · Postman · Git & GitHub · SSH · Antigravity
 
 ---
 
-## 🔄 Alur Pemrosesan Surat
+## 👥 Role Pengguna
 
-Sistem ini menerapkan workflow **10 Tahap** yang terintegrasi secara runtut:
+| Role | Akses |
+|---|---|
+| **User** | Mengajukan surat (tahap 1), revisi surat |
+| **Admin Aspirasi** | Mengelola surat di tahap 2, 5–10 |
+| **Admin Kassubagtu** | Mengelola surat di tahap 3 |
+| **Admin Kaplai** | Mengelola surat di tahap 4 |
+| **IT Support** | Mengirim notifikasi penting |
 
-```mermaid
-graph TD
-    A[1. Pengajuan oleh User] --> B[2. Verifikasi Admin Aspirasi]
-    B --> C[3. Verifikasi Kassubagtu]
-    C --> D[4. Verifikasi Kepala Balai]
-    D --> E[5. Penomoran Surat oleh Admin Aspirasi]
-    E --> F[6. Tanda Tangan Digital / DS]
-    F --> G[7. Pengiriman via TNDe]
-    G --> H[8. Pengiriman via Srikandi]
-    H --> I[9. Pengarsipan Otomatis]
-    I --> J[10. Selesai ✅]
+---
+
+## 🔄 Alur Pemrosesan Surat (10 Tahap)
+
+```
+1. Pengajuan              → User
+2. Verifikasi Aspirasi    → Admin Aspirasi
+3. Verifikasi Kassubagtu  → Admin Kassubagtu
+4. Verifikasi Kepala Balai→ Admin Kaplai
+5. Penomoran Surat        → Admin Aspirasi
+6. Tanda Tangan (DS)      → Admin Aspirasi
+7. Pengiriman via TNDe    → Admin Aspirasi
+8. Pengiriman via Srikandi→ Admin Aspirasi
+9. Pengarsipan            → Admin Aspirasi
+10. ✅ Selesai
+```
+
+---
+
+## ✨ Fitur Unggulan
+
+### 🔁 Beralih Akun (Switch Account)
+- Ganti akun tanpa perlu logout terlebih dahulu
+- Mendukung multi-akun dalam satu browser
+- Keamanan via `switch_token` (hash, expired 30 hari)
+
+### 📊 Dashboard Realtime
+- Update otomatis setiap 15–20 detik selama user berada di halaman dashboard (fitur ini berhenti otomatis saat pindah ke halaman lain untuk mengurangi beban server)
+- Chart statistik persuratan (Line, Bar, Pie, Donut, Mixed Chart)
+- Kartu ringkasan: Total Surat, Draft, Disetujui, Ditolak, Diproses, Revisi
+
+### 🔔 Notifikasi Lengkap
+- Trigger otomatis: surat baru, disetujui, ditolak, revisi, SLA
+- Mark as read, mark all, hapus per item atau semua
+- Notifikasi lama (>1 minggu) dihapus otomatis setiap Senin pukul 01.00
+
+### ⏱️ SLA (Service Level Agreement)
+- Durasi 24 jam per surat masuk
+- Notifikasi otomatis jika SLA terlampaui
+- Tampilan waktu terlambat, contoh: `-1.4 jam`
+- SLA dibekukan saat akhir pekan (contoh: surat masuk Jumat 15.00 → deadline Senin 15.00)
+
+### ♻️ Manajemen Revisi & Penghapusan
+- Revisi surat bisa diarahkan ke User atau kembali ke Admin Aspirasi
+- Surat selesai > 3 hari → file fisik otomatis dihapus (riwayat/tracking tetap tersimpan)
+- Surat ditolak yang tidak direvisi > 5 hari → dihapus otomatis termasuk tracking
+
+### 🔐 UUID-Based Verification
+- Setiap surat memiliki URL unik berbasis UUID
+- Bisa diverifikasi publik tanpa login
+- Dilengkapi QR Code verifikasi
+
+### 📝 Template Surat
+- Admin dapat mengunggah template custom
+- User bisa memilih template saat mengajukan surat
+
+### 🕐 Jam Operasional
+
+| Hari | Jam Operasional |
+|---|---|
+| Senin – Kamis | 07.30 – 16.00 |
+| Jumat | 07.30 – 16.30 |
+| Sabtu – Minggu | ❌ Libur |
+
+---
+
+## 📁 Struktur Halaman
+
+### User (`/`)
+
+| Path | Halaman |
+|---|---|
+| `/dashboard` | Dashboard & statistik |
+| `/surat` | Daftar surat (card & tabel) |
+| `/surat/ajukan` | Form pengajuan surat |
+| `/surat/{uuid}` | Detail & tracking surat |
+| `/statistik` | Grafik statistik |
+| `/notifikasi` | Pusat notifikasi |
+| `/aspirasi` | Kotak aspirasi |
+| `/faq` | Bantuan & dokumentasi |
+| `/about` | Tentang website |
+
+### Admin (`/Admin/`)
+
+| Path | Halaman |
+|---|---|
+| `/Admin/Dashboard` | Dashboard admin realtime |
+| `/Admin/surat` | Antrian & kelola surat |
+| `/Admin/Surat-Masuk` | Surat baru masuk |
+| `/Admin/Surat-Proses` | Surat sedang diproses |
+| `/Admin/Surat-Selesai` | Surat selesai |
+| `/Admin/Surat-Ditolak` | Surat ditolak/revisi |
+| `/Admin/Laporan` | Rekap bulanan (export Excel/PDF) |
+| `/Admin/Riwayat` | Riwayat pemrosesan (export CSV/Excel) |
+| `/Admin/Chart` | Statistik & chart lengkap |
+| `/Admin/Aspirasi` | Kelola aspirasi user |
+| `/Admin/Template` | Kelola template surat |
+| `/Admin/Settings/Users` | Data pegawai |
+| `/Admin/Settings/File-Surat` | Kelola file fisik surat |
+| `/Admin/Settings/Logs` | Log aktivitas sistem |
+| `/Admin/faq` | Pengelolaan FAQ |
+
+---
+
+## 🔒 Keamanan
+
+- ✅ Hashing password & NIP (bcrypt)
+- ✅ Google reCAPTCHA v2
+- ✅ Email verifikasi saat registrasi
+- ✅ CSRF Protection (Laravel built-in)
+- ✅ XSS Protection
+- ✅ SQL Injection Prevention
+- ✅ Rate Limit login: 5x/menit per IP
+- ✅ RBAC (Role Based Access Control)
+- ✅ Anti-Enumeration via UUID
+- ✅ Validasi MIME & ukuran file upload
+- ✅ HSTS (HTTP Strict Transport Security)
+- ✅ Cloudflare WAF
+
+---
+
+## 📦 Instalasi Lokal
+
+```bash
+# Clone repo
+git clone https://github.com/Ye-Shaiyoe/Surat-Laravel
+cd Surat-Laravel
+
+# Install dependencies
+composer install
+npm install
+
+# Setup environment
+cp .env.example .env
+php artisan key:generate
+
+# Konfigurasi database di .env
+# DB_DATABASE=persuratan
+# DB_USERNAME=root
+# DB_PASSWORD=
+
+# Migrasi & seeder
+php artisan migrate --seed
+
+# Jalankan server
+php artisan serve
+npm run build -> npm run dev
+```
+
+> **Requirement:** PHP 8.2+, Composer, Node.js, MySQL/MariaDB, Redis (opsional untuk queue)
+
+---
+
+## 📄 Format Surat yang Didukung
+
+- **Upload:** `.docx` (Word), maks. 10MB
+- **Lampiran:** Opsional, maks. 20MB
+- **Jenis Surat:** Nota Dinas, Surat Dinas, Surat Keputusan, Surat Pernyataan, Surat Keterangan, Undangan, Lainnya
+- **Sifat Surat:** Biasa, Penting/Segera, Rahasia
+
+---
+
+## 🎥 Demo Video
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <b>🔐 Halaman Autentikasi (Login/Register)</b><br/><br/>
+      <!-- Ganti link di bawah dengan video kamu -->
+      <a href="#"><img src="https://via.placeholder.com/480x270.png?text=Demo+Auth" /></a>
+    </td>
+    <td align="center" width="50%">
+      <b>🏠 Landing Page</b><br/><br/>
+      <a href="#"><img src="https://via.placeholder.com/480x270.png?text=Demo+Landing+Page" /></a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>📊 User Dashboard</b><br/><br/>
+      <a href="#"><img src="https://via.placeholder.com/480x270.png?text=Demo+User+Dashboard" /></a>
+    </td>
+    <td align="center" width="50%">
+      <b>🛠️ Admin Dashboard</b><br/><br/>
+      <a href="#"><img src="https://via.placeholder.com/480x270.png?text=Demo+Admin+Dashboard" /></a>
+    </td>
+  </tr>
+</table>
+
+> 💡 Tips: ganti `href="#"` dengan link video (YouTube/Drive) dan `src` thumbnail dengan screenshot/GIF asli dari masing-masing halaman.
+
+---
+
+## 👨‍💻 Tim Pengembang
+
+Dikembangkan oleh siswa PKL **SMK Al-Falah** sebagai proyek full stack development.
+
+---
+
+## 📜 Lisensi
+
+Proyek ini dibuat untuk keperluan **pendidikan dan PKL**. Hak cipta sepenuhnya milik tim pengembang dan instansi terkait.
+
+---
+
+<p align="center">Made with ❤️ by PKL SMK Al-Falah | Yusuf Akram | BP Suml</p>
