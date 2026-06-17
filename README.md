@@ -1,6 +1,41 @@
 # 📬 Persuratan BP Suml
 
-> Sistem manajemen surat digital berbasis web untuk **Balai Pengujian / BP Suml**, dikembangkan sebagai proyek PKL oleh siswa SMK Al-Falah.
+<p align="center">
+  <b>Sistem manajemen surat digital berbasis web untuk Balai Pengujian (BP Suml)</b><br/>
+  Dikembangkan sebagai proyek PKL oleh siswa SMK Al-Falah
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Laravel-12-FF2D20?style=flat&logo=laravel&logoColor=white" />
+  <img src="https://img.shields.io/badge/PHP-8.x-777BB4?style=flat&logo=php&logoColor=white" />
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Redis-Cache-DC382D?style=flat&logo=redis&logoColor=white" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/Alpine.js-8BC0D0?style=flat&logo=alpine.js&logoColor=black" />
+</p> <br>
+
+---
+
+<p align="center">
+  <a href="https://tubpsuml.com"><strong>🌐 Live Demo (Production)</strong></a> | 
+  <a href="https://drive.google.com/drive/folders/1UYCrUPZQjaQawTXM33jwFN9uRqLGoQh_?usp=sharing"><strong>🎬 Tonton Demo Video</strong></a>
+</p>
+
+---
+## 📑 Daftar Isi
+
+- [Demo & Akses](#-demo--akses)
+- [Tech Stack](#️-tech-stack)
+- [Role Pengguna](#-role-pengguna)
+- [Alur Pemrosesan Surat](#-alur-pemrosesan-surat-10-tahap)
+- [Fitur Unggulan](#-fitur-unggulan)
+- [Struktur Halaman](#-struktur-halaman)
+- [Keamanan](#-keamanan)
+- [Instalasi Lokal](#-instalasi-lokal)
+- [Format Surat yang Didukung](#-format-surat-yang-didukung)
+- [Demo Video](#-demo-video)
+- [Tim Pengembang](#-tim-pengembang)
+- [Lisensi](#-lisensi)
 
 ---
 
@@ -8,7 +43,7 @@
 
 | Lingkungan | URL |
 |---|---|
-| Production | [persuratan.bp.suml.com](https://persuratan.bp.suml.com) |
+| Production | [tubpsuml.com](https://tubpsuml.com) |
 | Local Dev | `http://127.0.0.1:8000` |
 
 ---
@@ -16,11 +51,6 @@
 ## 🛠️ Tech Stack
 
 ### Backend
-![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=flat&logo=laravel&logoColor=white)
-![PHP](https://img.shields.io/badge/PHP-8.x-777BB4?style=flat&logo=php&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?style=flat&logo=redis&logoColor=white)
-
 - **Framework:** Laravel 12 + Breeze (Auth)
 - **Database:** MySQL
 - **Cache/Queue:** Redis
@@ -43,7 +73,7 @@
 - **Security:** Cloudflare WAF, Google reCAPTCHA v2, HSTS, SSL/TLS, Rate Limiting, CSRF & XSS Protection
 
 ### Tools Dev
-- XAMPP, Cursor IDE, Bash, Postman, Git & GitHub, SSH, Antigravity
+XAMPP · Cursor IDE · Bash · Postman · Git & GitHub · SSH · Antigravity
 
 ---
 
@@ -62,15 +92,15 @@
 ## 🔄 Alur Pemrosesan Surat (10 Tahap)
 
 ```
-1. Pengajuan           → User
-2. Verifikasi Aspirasi → Admin Aspirasi
-3. Verifikasi Kassubagtu → Admin Kassubagtu
-4. Verifikasi Kepala Balai → Admin Kaplai
-5. Penomoran Surat     → Admin Aspirasi
-6. Tanda Tangan (DS)   → Admin Aspirasi
-7. Pengiriman via TNDe → Admin Aspirasi
-8. Pengiriman via Srikandi → Admin Aspirasi
-9. Pengarsipan         → Admin Aspirasi
+1. Pengajuan              → User
+2. Verifikasi Aspirasi    → Admin Aspirasi
+3. Verifikasi Kassubagtu  → Admin Kassubagtu
+4. Verifikasi Kepala Balai→ Admin Kaplai
+5. Penomoran Surat        → Admin Aspirasi
+6. Tanda Tangan (DS)      → Admin Aspirasi
+7. Pengiriman via TNDe    → Admin Aspirasi
+8. Pengiriman via Srikandi→ Admin Aspirasi
+9. Pengarsipan            → Admin Aspirasi
 10. ✅ Selesai
 ```
 
@@ -84,7 +114,7 @@
 - Keamanan via `switch_token` (hash, expired 30 hari)
 
 ### 📊 Dashboard Realtime
-- Update otomatis setiap 15–20 detik(contoh jika user berada di dashoard. itu akan berjalan tapi jika ganti misal ke template maka fitur update otomatis gk bekerja) untuk mngurangi beban server
+- Update otomatis setiap 15–20 detik selama user berada di halaman dashboard (fitur ini berhenti otomatis saat pindah ke halaman lain untuk mengurangi beban server)
 - Chart statistik persuratan (Line, Bar, Pie, Donut, Mixed Chart)
 - Kartu ringkasan: Total Surat, Draft, Disetujui, Ditolak, Diproses, Revisi
 
@@ -96,13 +126,13 @@
 ### ⏱️ SLA (Service Level Agreement)
 - Durasi 24 jam per surat masuk
 - Notifikasi otomatis jika SLA terlampaui
-- Tampilan waktu terlambat: contoh `-1.4 jam`
-- SLA dibekukan saat akhir pekan (contoh: surat Jumat 15.00 → deadline Senin 15.00)
+- Tampilan waktu terlambat, contoh: `-1.4 jam`
+- SLA dibekukan saat akhir pekan (contoh: surat masuk Jumat 15.00 → deadline Senin 15.00)
 
 ### ♻️ Manajemen Revisi & Penghapusan
 - Revisi surat bisa diarahkan ke User atau kembali ke Admin Aspirasi
-- Surat selesai >3 hari → file fisik otomatis dihapus (tracking tetap ada)
-- Surat ditolak yang tidak direvisi >5 hari → dihapus otomatis termasuk tracking
+- Surat selesai > 3 hari → file fisik otomatis dihapus (riwayat/tracking tetap tersimpan)
+- Surat ditolak yang tidak direvisi > 5 hari → dihapus otomatis termasuk tracking
 
 ### 🔐 UUID-Based Verification
 - Setiap surat memiliki URL unik berbasis UUID
@@ -114,6 +144,7 @@
 - User bisa memilih template saat mengajukan surat
 
 ### 🕐 Jam Operasional
+
 | Hari | Jam Operasional |
 |---|---|
 | Senin – Kamis | 07.30 – 16.00 |
@@ -125,6 +156,7 @@
 ## 📁 Struktur Halaman
 
 ### User (`/`)
+
 | Path | Halaman |
 |---|---|
 | `/dashboard` | Dashboard & statistik |
@@ -138,6 +170,7 @@
 | `/about` | Tentang website |
 
 ### Admin (`/Admin/`)
+
 | Path | Halaman |
 |---|---|
 | `/Admin/Dashboard` | Dashboard admin realtime |
@@ -213,6 +246,36 @@ npm run build -> npm run dev
 - **Lampiran:** Opsional, maks. 20MB
 - **Jenis Surat:** Nota Dinas, Surat Dinas, Surat Keputusan, Surat Pernyataan, Surat Keterangan, Undangan, Lainnya
 - **Sifat Surat:** Biasa, Penting/Segera, Rahasia
+
+---
+
+## 🎥 Demo Video
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <b>🔐 Halaman Autentikasi (Login/Register)</b><br/><br/>
+      <!-- Ganti link di bawah dengan video kamu -->
+      <a href="#"><img src="https://via.placeholder.com/480x270.png?text=Demo+Auth" /></a>
+    </td>
+    <td align="center" width="50%">
+      <b>🏠 Landing Page</b><br/><br/>
+      <a href="#"><img src="https://via.placeholder.com/480x270.png?text=Demo+Landing+Page" /></a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>📊 User Dashboard</b><br/><br/>
+      <a href="#"><img src="https://via.placeholder.com/480x270.png?text=Demo+User+Dashboard" /></a>
+    </td>
+    <td align="center" width="50%">
+      <b>🛠️ Admin Dashboard</b><br/><br/>
+      <a href="#"><img src="https://via.placeholder.com/480x270.png?text=Demo+Admin+Dashboard" /></a>
+    </td>
+  </tr>
+</table>
+
+> 💡 Tips: ganti `href="#"` dengan link video (YouTube/Drive) dan `src` thumbnail dengan screenshot/GIF asli dari masing-masing halaman.
 
 ---
 
