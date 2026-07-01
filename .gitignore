@@ -38,6 +38,9 @@ Thumbs.db
 GEMINI.md
 Homestead.json
 Homestead.yaml
-Surat-Metrologi
+Surat-Metrikos
 Buat_laporan_pkl.txt
 AGENT.md
+
+/database/seeders/data/*.csv
+/database/seeders/data/*.json
