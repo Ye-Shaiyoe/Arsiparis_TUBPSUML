@@ -392,8 +392,12 @@ class SuratController extends Controller
             return back()->with('error', 'Permintaan hapus sudah pernah dikirim dan masih menunggu approval admin.');
         }
 
-        // Jika surat ditolak, selesai, atau draft - bisa langsung hapus tanpa approval
-        $bisaLangsungHapus = in_array($surat->status, ['draft', 'ditolak', 'selesai']);
+        // Bisa langsung hapus tanpa persetujuan admin jika:
+        // - Surat masih draft (belum diajukan)
+        // - Surat sudah selesai atau ditolak
+        // - Surat sedang di proses tapi BARU sampai tahap 1-2 (Usulan / Verifikasi Arsiparis)
+        $bisaLangsungHapus = in_array($surat->status, ['draft', 'ditolak', 'selesai'])
+            || ($surat->status === 'proses' && $surat->tahap_sekarang <= 2);
 
         if ($bisaLangsungHapus) {
             // Validasi ringan, alasan opsional
