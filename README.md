@@ -17,7 +17,7 @@
 ---
 
 <p align="center">
-  <a href="https://tubpsuml.com"><strong>🌐 Live Demo (Production)</strong></a> | 
+  <a href="https://tubpsuml.go.id"><strong>🌐 Live Demo (Production)</strong></a> | 
   <a href="https://drive.google.com/drive/folders/1UYCrUPZQjaQawTXM33jwFN9uRqLGoQh_?usp=sharing"><strong>🎬 Tonton Demo Video</strong></a>
 </p>
 
@@ -43,7 +43,7 @@
 
 | Lingkungan | URL |
 |---|---|
-| Production | [tubpsuml.com](https://tubpsuml.com) |
+| Production | [tubpsuml.com](https://tubpsuml.go.id) |
 | Local Dev | `http://127.0.0.1:8000` |
 
 ---
