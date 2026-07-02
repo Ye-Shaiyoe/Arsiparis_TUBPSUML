@@ -48,8 +48,8 @@
     <div class="bg-orb bg-orb-3"></div>
 
     {{-- VIDEO BACKGROUND --}}
-    <video id="bg-video" autoplay loop muted playsinline>
-        <source src="{{ asset('videos/background.mp4') }}" type="video/mp4">
+    <video id="bg-video" loop muted playsinline preload="none">
+        <source data-src="{{ asset('videos/background.mp4') }}" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 
@@ -1125,68 +1125,107 @@
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
         });
 
-        // Particles (ringan: pause saat tab tidak aktif / mobile)
+        // Particles — optimized: no sqrt, reduced count, pause when hidden
         (function () {
             const cvs = document.getElementById('particles-canvas');
             if (!cvs) return;
             const ctx = cvs.getContext('2d');
             let running = true;
+            let rafId = null;
+
+            // Skip particles entirely on low-end or small screens
+            const isMobileOrLowEnd = window.innerWidth < 768 ||
+                (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2);
+            if (isMobileOrLowEnd) { cvs.style.display = 'none'; return; }
+
             function resize() { cvs.width = window.innerWidth; cvs.height = window.innerHeight; }
             resize();
-            window.addEventListener('resize', resize);
-            document.addEventListener('visibilitychange', () => { running = !document.hidden; });
-            const N = window.innerWidth < 768 ? 12 : 28;
+
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(resize, 200);
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                running = !document.hidden;
+                if (running && !rafId) loop();
+            });
+
+            const N = 20; // reduced from 28
+            const DIST_SQ = 8000; // threshold squared (no sqrt needed), ~89px
             const particles = Array.from({ length: N }, () => ({
                 x: Math.random() * window.innerWidth,
                 y: Math.random() * window.innerHeight,
                 r: Math.random() * 1.2 + 0.3,
-                vx: (Math.random() - 0.5) * 0.2,
-                vy: (Math.random() - 0.5) * 0.2,
-                a: Math.random() * 0.3 + 0.05
+                vx: (Math.random() - 0.5) * 0.18,
+                vy: (Math.random() - 0.5) * 0.18,
+                a: Math.random() * 0.25 + 0.05
             }));
-            function drawParticles() {
-                if (!running) {
-                    requestAnimationFrame(drawParticles);
-                    return;
-                }
+
+            // Pre-build fill styles to avoid string alloc each frame
+            const fillStyles = particles.map(p => `rgba(26,115,232,${p.a})`);
+
+            function loop() {
+                if (!running) { rafId = null; return; }
+                rafId = requestAnimationFrame(loop);
+
                 ctx.clearRect(0, 0, cvs.width, cvs.height);
-                particles.forEach(p => {
+
+                for (let i = 0; i < N; i++) {
+                    const p = particles[i];
                     p.x += p.vx; p.y += p.vy;
-                    if (p.x < 0) p.x = cvs.width; if (p.x > cvs.width) p.x = 0;
-                    if (p.y < 0) p.y = cvs.height; if (p.y > cvs.height) p.y = 0;
-                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(26,115,232,${p.a})`; ctx.fill();
-                });
-                if (window.innerWidth > 768) {
-                    for (let i = 0; i < N; i++) {
-                        for (let j = i + 1; j < N; j++) {
-                            const dx = particles[i].x - particles[j].x;
-                            const dy = particles[i].y - particles[j].y;
-                            const distSq = dx * dx + dy * dy;
-                            if (distSq < 10000) {
-                                const dist = Math.sqrt(distSq);
-                                ctx.beginPath();
-                                ctx.moveTo(particles[i].x, particles[i].y);
-                                ctx.lineTo(particles[j].x, particles[j].y);
-                                ctx.strokeStyle = `rgba(26,115,232,${0.06 * (1 - dist / 100)})`;
-                                ctx.lineWidth = 0.4; ctx.stroke();
-                            }
+                    if (p.x < 0) p.x = cvs.width;
+                    else if (p.x > cvs.width) p.x = 0;
+                    if (p.y < 0) p.y = cvs.height;
+                    else if (p.y > cvs.height) p.y = 0;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = fillStyles[i];
+                    ctx.fill();
+                }
+
+                // Draw lines — use distSq, skip sqrt entirely
+                ctx.lineWidth = 0.4;
+                for (let i = 0; i < N - 1; i++) {
+                    for (let j = i + 1; j < N; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dSq = dx * dx + dy * dy;
+                        if (dSq < DIST_SQ) {
+                            // opacity based on proximity, no sqrt
+                            const alpha = 0.06 * (1 - dSq / DIST_SQ);
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = `rgba(26,115,232,${alpha.toFixed(3)})`;
+                            ctx.stroke();
                         }
                     }
                 }
-                requestAnimationFrame(drawParticles);
             }
-            drawParticles();
+            loop();
         })();
 
-        /* ─── BACKGROUND VIDEO SCROLL FADE ─── */
+        /* ─── BACKGROUND VIDEO SCROLL FADE (lazy load source) ─── */
         (() => {
             const video = document.getElementById('bg-video');
             if (!video) return;
 
+            let videoLoaded = false;
             let isAboutInView = false;
             let isPortalsInView = false;
             let videoVisible = false;
+
+            function loadVideoSource() {
+                if (videoLoaded) return;
+                videoLoaded = true;
+                const source = video.querySelector('source[data-src]');
+                if (source) {
+                    source.src = source.dataset.src;
+                    video.load();
+                }
+            }
 
             function updateVideoVisibility() {
                 const shouldBeVisible = isAboutInView || isPortalsInView;
@@ -1194,7 +1233,8 @@
                     videoVisible = shouldBeVisible;
                     video.classList.toggle('visible', videoVisible);
                     if (videoVisible) {
-                        video.play().catch(err => console.log("Video auto-play prevented or failed: ", err));
+                        loadVideoSource();
+                        video.play().catch(err => console.log("Video play prevented:", err));
                     } else {
                         video.pause();
                     }
@@ -1206,26 +1246,18 @@
 
             if ('IntersectionObserver' in window) {
                 if (aboutSection) {
-                    const observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            isAboutInView = entry.isIntersecting;
-                            updateVideoVisibility();
-                        });
-                    }, { threshold: 0.5, rootMargin: '-50px' });
-                    observer.observe(aboutSection);
+                    new IntersectionObserver((entries) => {
+                        isAboutInView = entries[0].isIntersecting;
+                        updateVideoVisibility();
+                    }, { threshold: 0.3, rootMargin: '-30px' }).observe(aboutSection);
                 }
-
                 if (portalsSection) {
-                    const observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            isPortalsInView = entry.isIntersecting;
-                            updateVideoVisibility();
-                        });
-                    }, { threshold: 0.5, rootMargin: '-50px' });
-                    observer.observe(portalsSection);
+                    new IntersectionObserver((entries) => {
+                        isPortalsInView = entries[0].isIntersecting;
+                        updateVideoVisibility();
+                    }, { threshold: 0.3, rootMargin: '-30px' }).observe(portalsSection);
                 }
             } else {
-                // Fallback for older browsers
                 isAboutInView = true;
                 updateVideoVisibility();
             }
@@ -1407,10 +1439,10 @@
             ease: 'sine.inOut', stagger: 0.3
         });
 
-        // Ticker shimmer effect
+        // Ticker shimmer effect — sequential stagger (cheaper than random)
         gsap.fromTo('.ticker-dot',
             { scale: 0.5, opacity: 0.3 },
-            { scale: 1.5, opacity: 1, duration: 1.5, repeat: -1, yoyo: true, stagger: { each: 0.1, from: 'random' } }
+            { scale: 1.4, opacity: 1, duration: 1.5, repeat: -1, yoyo: true, stagger: { each: 0.15, from: 'start' } }
         );
 
         // About - enhanced with rotation micro-animation
@@ -1512,10 +1544,10 @@
         // Dev section tech chips wave animation
         gsap.fromTo('.dev-header-minimal > *', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, scrollTrigger: { trigger: '#developer', start: 'top 75%' } });
 
-        // Scroll-linked background orb movement (continuous)
-        gsap.to('.bg-orb-1', { x: 60, y: 40, scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 2 } });
-        gsap.to('.bg-orb-2', { x: -40, y: -60, scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 3 } });
-        gsap.to('.bg-orb-3', { x: 30, y: 80, scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 1.5 } });
+        // Scroll-linked background orb movement — scoped to hero only, not full body
+        gsap.to('.bg-orb-1', { x: 40, y: 30, scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2 } });
+        gsap.to('.bg-orb-2', { x: -30, y: -40, scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 3 } });
+        gsap.to('.bg-orb-3', { x: 20, y: 50, scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5 } });
 
         // ─── 3D SPIRAL SCROLL ANIMATION (Skip on Mobile) ───
         const isMobile = window.innerWidth < 768;
@@ -1772,7 +1804,20 @@
         // Portals reveal
         gsap.fromTo('.portal-card', { opacity: 0, scale: 0.95, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, stagger: 0.08, scrollTrigger: { trigger: '#portals', start: 'top 75%' } });
         gsap.fromTo('.portals-header > *', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, scrollTrigger: { trigger: '#portals', start: 'top 80%' } });
-        document.querySelectorAll('.portal-card, .stat-card, .tracking-flow, .doc-preview, .archive-item').forEach(card => { card.addEventListener('mousemove', e => { const rect = card.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top; card.style.setProperty('--x', `${x}px`); card.style.setProperty('--y', `${y}px`); }); });
+        // Tilt/glow mousemove — throttled with rAF
+        document.querySelectorAll('.portal-card, .stat-card, .tracking-flow, .doc-preview, .archive-item').forEach(card => {
+            let ticking = false;
+            card.addEventListener('mousemove', e => {
+                if (ticking) return;
+                ticking = true;
+                requestAnimationFrame(() => {
+                    const rect = card.getBoundingClientRect();
+                    card.style.setProperty('--x', `${e.clientX - rect.left}px`);
+                    card.style.setProperty('--y', `${e.clientY - rect.top}px`);
+                    ticking = false;
+                });
+            });
+        });
 
         // ========== HORIZONTAL FEATURE SCROLLER (FIX) ==========
         const scrollerSection = document.getElementById('features-scroller');
@@ -1960,20 +2005,25 @@
                 sentinel.style.cssText = 'height:1px;width:100%;pointer-events:none;position:absolute;top:0;left:0;';
                 alurHeader.style.position && document.querySelector('#alur-kerja .alur-kerja-container').prepend(sentinel);
 
-                // Use scroll event to detect sticky state (more reliable than IO for sticky)
+                // Use scroll event to detect sticky state — passive + rAF throttled
+                let stickyTicking = false;
                 const updateStickyState = () => {
-                    const headerRect = alurHeader.getBoundingClientRect();
-                    const isStuck = headerRect.top <= 32;
-                    alurHeader.classList.toggle('is-stuck', isStuck);
+                    if (stickyTicking) return;
+                    stickyTicking = true;
+                    requestAnimationFrame(() => {
+                        const headerRect = alurHeader.getBoundingClientRect();
+                        const isStuck = headerRect.top <= 32;
+                        alurHeader.classList.toggle('is-stuck', isStuck);
 
-                    // Update counter: count visible steps
-                    const steps = document.querySelectorAll('#alur-kerja .alur-step');
-                    let lastVisible = 0;
-                    steps.forEach((step, i) => {
-                        if (step.classList.contains('visible')) lastVisible = i + 1;
+                        const steps = document.querySelectorAll('#alur-kerja .alur-step');
+                        let lastVisible = 0;
+                        steps.forEach((step, i) => {
+                            if (step.classList.contains('visible')) lastVisible = i + 1;
+                        });
+                        const counterEl = stepCounter.querySelector('.counter-current');
+                        if (counterEl) counterEl.textContent = lastVisible;
+                        stickyTicking = false;
                     });
-                    const counterEl = stepCounter.querySelector('.counter-current');
-                    if (counterEl) counterEl.textContent = lastVisible;
                 };
 
                 window.addEventListener('scroll', updateStickyState, { passive: true });
@@ -2048,14 +2098,12 @@
                 'tm-row1': [
                     { name: 'Laravel', img: 'https://cdn.simpleicons.org/laravel/FF2D20' },
                     { name: 'Redis', img: 'https://cdn.simpleicons.org/redis/DC382D' },
-                    { name: 'PostgreSQL', img: 'https://cdn.simpleicons.org/postgresql/646CFF' },
+                    { name: 'MySQL', img: 'https://cdn.simpleicons.org/mysql/646CFF' },
                     { name: 'Eloquent ORM', dot: '#e11d48' },
                     { name: 'REST API', dot: '#0ea5e9' },
                     { name: 'Sanctum Auth', img: 'https://cdn.simpleicons.org/laravel/FF2D20' },
                     { name: 'Composer', img: 'https://cdn.simpleicons.org/composer/885630' },
                     { name: 'JQuery', img: 'https://cdn.simpleicons.org/jquery/1621A5' },
-                    { name: 'Golang', img: 'https://cdn.simpleicons.org/go/00ADD8' },
-                    { name: 'Python', img: 'https://cdn.simpleicons.org/python/3776AB' }
                 ],
                 'tm-row2': [
                     { name: 'Bootstrap 5', img: 'https://cdn.simpleicons.org/bootstrap/7952B3' },
