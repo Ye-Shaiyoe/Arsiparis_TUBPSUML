@@ -1,5 +1,5 @@
 <div align="center">
-# 📬 Persuratan BP Suml
+<h2> 📬 Persuratan BP Suml </h2>
 </div>
 
 <p align="center">
