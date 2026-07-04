@@ -23,6 +23,9 @@
   <a href="https://drive.google.com/drive/folders/1UYCrUPZQjaQawTXM33jwFN9uRqLGoQh_?usp=sharing"><strong>🎬 Tonton Demo Video</strong></a>
 </p>
 
+<img width="1920" height="1080" alt="photo-collage png" src="https://github.com/user-attachments/assets/3f48cd21-0327-4b98-8d6c-60520b35a9cd" />
+
+
 ---
 ## 📑 Daftar Isi
 
