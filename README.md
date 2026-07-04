@@ -280,8 +280,6 @@ npm run build -> npm run dev
   </tr>
 </table>
 
-> 💡 Tips: ganti `href="#"` dengan link video (YouTube/Drive) dan `src` thumbnail dengan screenshot/GIF asli dari masing-masing halaman.
-
 ---
 
 ## 👨‍💻 Tim Pengembang
@@ -296,4 +294,4 @@ Proyek ini dibuat untuk keperluan **pendidikan dan PKL**. Hak cipta sepenuhnya m
 
 ---
 
-<p align="center">Made with ❤️ by PKL SMK Al-Falah | Yusuf Akram | BP Suml</p>
+<p align="center">Made by | Yusuf Akram | PKL SMK Al-Falah | BP Suml | </p>
