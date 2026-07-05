@@ -363,8 +363,8 @@ class SuratController extends Controller
             break;
         }
 
-        // 2. Tambahkan 24 jam kalender (1 hari) melewati weekend
-        $hoursToAdd = 24;
+        // 2. Tambahkan 30 jam (1 hari + 6 jam) melewati weekend
+        $hoursToAdd = 30;
         while ($hoursToAdd > 0) {
             $sla->addHour();
             if (!$sla->isWeekend()) {

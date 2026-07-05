@@ -356,7 +356,7 @@ Audit trail seluruh aksi pengguna di sistem.
 |---|---|
 | UUID di public URL | `surats.uuid`, `users.uuid`, `aspirasis.uuid` — semua UNIQUE |
 | File auto-expire | `surats.file_expires_at` → diproses oleh `CleanupExpiredFiles` command |
-| SLA tracking | `surats.deadline_sla` (1 hari kerja), `alasan_keterlambatan` jika terlambat |
+| `surats.deadline_sla` | Diisi otomatis saat surat diajukan. Dihitung 1 hari kerja + 6 jam (30 jam kerja efektif) sejak submit, melewati weekend dan di luar jam operasional. |
 | Revisi terisolasi | `status_revisi`, `revisi_count`, `revisi_uploaded_at` di `surats` |
 | Delete butuh approval | Tabel `surat_delete_requests` memastikan tidak ada hard-delete langsung |
 | Audit trail lengkap | Tabel `activity_logs` dengan JSON diff di kolom `changes` |
