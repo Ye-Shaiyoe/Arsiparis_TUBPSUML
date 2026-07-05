@@ -282,9 +282,7 @@ docker run -p 8000:80 --env-file .env persuratan-bpsuml
 
 ## 🤝 Kontribusi
 
-Project ini dikembangkan dalam rangka PKL di Balai Perhubungan Sumatera Utara.
-
-Untuk kontribusi, silakan baca [`AGENT.md`](AGENT.md) terlebih dahulu — file tersebut berisi arsitektur, standar koding, dan aturan desain yang wajib diikuti.
+Project ini dikembangkan dalam rangka PKL di Direktorat Metrologi Bandung, BPSUML
 
 ```
 1. Fork repo
@@ -300,5 +298,9 @@ Untuk kontribusi, silakan baca [`AGENT.md`](AGENT.md) terlebih dahulu — file t
 
 Didistribusikan di bawah [MIT License](LICENSE). Lihat `LICENSE` untuk detail lebih lanjut.
 
+<p align="center">Made by | Muhammad Yusuf Akram | PKL From SMK Al-Falah | BPSUML | </p>
+
 ---
+
+
 
