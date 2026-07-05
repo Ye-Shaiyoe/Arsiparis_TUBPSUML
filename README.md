@@ -8,7 +8,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-336791?style=flat-square&logo=postgresql&logoColor=white)](https://postgresql.org)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Perhubungan Sumatera Utara. Menggantikan alur kerja manual dengan sistem tracking 10 tahap yang terintegrasi, SLA monitoring, tanda tangan digital, dan audit trail lengkap.
+Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Pengelolaan Standar Ukuran Metrologi Legal. Menggantikan alur kerja manual dengan sistem tracking 10 tahap yang terintegrasi, SLA monitoring, tanda tangan digital, dan audit trail lengkap.
 
 </div>
 
@@ -282,9 +282,7 @@ docker run -p 8000:80 --env-file .env persuratan-bpsuml
 
 ## 🤝 Kontribusi
 
-Project ini dikembangkan dalam rangka PKL di Balai Perhubungan Sumatera Utara.
-
-Untuk kontribusi, silakan baca [`AGENT.md`](AGENT.md) terlebih dahulu — file tersebut berisi arsitektur, standar koding, dan aturan desain yang wajib diikuti.
+Project ini dikembangkan dalam rangka PKL di Direktorat Metrologi Bandung, BPSUML
 
 ```
 1. Fork repo
@@ -300,5 +298,9 @@ Untuk kontribusi, silakan baca [`AGENT.md`](AGENT.md) terlebih dahulu — file t
 
 Didistribusikan di bawah [MIT License](LICENSE). Lihat `LICENSE` untuk detail lebih lanjut.
 
+<p align="center">Made by | Muhammad Yusuf Akram | PKL From SMK Al-Falah | BPSUML | </p>
+
 ---
+
+
 
