@@ -8,7 +8,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-336791?style=flat-square&logo=postgresql&logoColor=white)](https://postgresql.org)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Perhubungan Sumatera Utara. Menggantikan alur kerja manual dengan sistem tracking 10 tahap yang terintegrasi, SLA monitoring, tanda tangan digital, dan audit trail lengkap.
+Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Pengelolaan Standar Ukuran Metrologi Legal. Menggantikan alur kerja manual dengan sistem tracking 10 tahap yang terintegrasi, SLA monitoring, tanda tangan digital, dan audit trail lengkap.
 
 </div>
 
