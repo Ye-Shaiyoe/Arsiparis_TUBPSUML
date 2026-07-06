@@ -152,11 +152,14 @@ class Surat extends Model
         if (!$this->deadline_sla)
             return '-';
         if (now()->gt($this->deadline_sla)) {
-            $diff = round(now()->diffInHours($this->deadline_sla), 1);
-            return 'Terlambat ' . $diff . 'j';
+            $totalJam = (int) now()->diffInHours($this->deadline_sla);
+            return 'Terlambat ' . $totalJam . 'j';
         }
-        $diff = now()->diff($this->deadline_sla);
-        return $diff->h . 'j ' . $diff->i . 'm';
+        // Gunakan diffInMinutes agar akurat untuk > 24 jam
+        $totalMenit  = (int) now()->diffInMinutes($this->deadline_sla);
+        $totalJam    = (int) floor($totalMenit / 60);
+        $sisaMenit   = $totalMenit % 60;
+        return $totalJam . 'j ' . $sisaMenit . 'm';
     }
     public function getJamTerlambatAttribute(): float
     {

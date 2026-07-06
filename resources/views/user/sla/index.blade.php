@@ -96,35 +96,53 @@
                         <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
                             @forelse($suratAktif as $s)
                                 @php
-                                    $hoursElapsed = round($s->created_at->diffInHours(now()), 1);
-                                    $colorClass = 'bg-success';
+                                    // SLA = 30 jam kerja. Gunakan deadline_sla untuk akurasi.
+                                    $slaTotalJam = 30;
+                                    if ($s->deadline_sla) {
+                                        $hoursElapsed = round($s->created_at->diffInHours(now()), 1);
+                                        $isTerlambat  = now()->gt($s->deadline_sla);
+                                        $persen       = $s->deadline_sla
+                                            ? min(100, round(($s->created_at->diffInMinutes(now()) / $s->created_at->diffInMinutes($s->deadline_sla)) * 100))
+                                            : min(100, round(($hoursElapsed / $slaTotalJam) * 100));
+                                    } else {
+                                        $hoursElapsed = round($s->created_at->diffInHours(now()), 1);
+                                        $isTerlambat  = $hoursElapsed >= $slaTotalJam;
+                                        $persen       = min(100, round(($hoursElapsed / $slaTotalJam) * 100));
+                                    }
 
-                                    if ($hoursElapsed >= 24) {
+                                    $sisaJamText = $s->sisa_jam;
+                                    $hampirHabis = !$isTerlambat && ($s->deadline_sla
+                                        ? now()->diffInHours($s->deadline_sla, false) <= 6
+                                        : $hoursElapsed >= ($slaTotalJam - 6));
+
+                                    if ($isTerlambat) {
                                         $colorClass = 'bg-danger';
-                                    } elseif ($hoursElapsed >= 12) {
+                                    } elseif ($hampirHabis) {
                                         $colorClass = 'bg-warning text-dark';
+                                    } else {
+                                        $colorClass = 'bg-success';
                                     }
                                 @endphp
                                 <div class="col">
                                     <div class="p-3 border rounded-3 h-100 bg-white shadow-sm">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="fw-bold text-dark text-truncate me-2">{{ $s->judul }}</span>
-                                            @if($hoursElapsed >= 24)
+                                            @if($isTerlambat)
                                                 <span class="badge rounded-pill bg-danger-subtle text-danger px-2 py-1"
                                                     style="font-size: 10px;">
                                                     <i class="bi bi-exclamation-triangle-fill me-1"></i>Terlambat
                                                 </span>
-                                            @elseif($hoursElapsed >= 12)
+                                            @elseif($hampirHabis)
                                                 <span class="badge rounded-pill bg-warning-subtle text-warning px-2 py-1"
                                                     style="font-size: 10px; color: #92400e !important;">
                                                     <i class="bi bi-clock-history me-1"></i>Hampir
                                                 </span>
                                             @endif
                                         </div>
-                                        <!-- SLA Line -->
+                                        <!-- SLA Progress Bar (basis 30 jam kerja) -->
                                         <div class="rounded-pill overflow-hidden bg-light mb-2" style="height: 6px;">
                                             <div class="h-100 {{ $colorClass }}"
-                                                style="width: {{ min(100, ($hoursElapsed / 24) * 100) }}%; transition: width 1s ease-in-out;">
+                                                style="width: {{ $persen }}%; transition: width 1s ease-in-out;">
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center">
@@ -135,7 +153,7 @@
                                             <div class="text-end">
                                                 <span class="badge bg-light text-dark border fw-semibold"
                                                     style="font-size: 11px;">
-                                                    {{ $hoursElapsed }} Jam
+                                                    {{ $isTerlambat ? $sisaJamText : 'Sisa ' . $sisaJamText }}
                                                 </span>
                                             </div>
                                         </div>

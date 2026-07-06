@@ -330,40 +330,13 @@ class SuratController extends Controller
         return view('user.surat.show', ['surat' => $suratModel]);
     }
 
-    // Hitung SLA 1 Hari Kerja dengan mematuhi jam operasional
+    // Hitung SLA: 30 jam kalender, melewati weekend (Sabtu/Minggu tidak dihitung)
+    // Hasil: deadline = waktu_submit + 30 jam, hari Sabtu/Minggu dilewati
     private function hitungSLA(Carbon $dari): Carbon
     {
         $sla = $dari->copy();
 
-        // 1. Sesuaikan waktu mulai jika di luar jam kerja
-        while (true) {
-            if ($sla->isWeekend()) {
-                $sla->addDay()->setTime(7, 30, 0);
-                continue;
-            }
-
-            $isFriday = $sla->isFriday();
-            $startHour = $isFriday ? 7 : 7;
-            $startMinute = $isFriday ? 30 : 0;
-            $endHour = 16;
-            $endMinute = $isFriday ? 30 : 0;
-
-            $startTime = $sla->copy()->setTime($startHour, $startMinute, 0);
-            $endTime = $sla->copy()->setTime($endHour, $endMinute, 0);
-
-            if ($sla->greaterThanOrEqualTo($endTime)) {
-                // Lewat jam kerja, geser ke besok pagi
-                $isBesokJumat = $sla->copy()->addDay()->isFriday();
-                $sla->addDay()->setTime(7, $isBesokJumat ? 30 : 0, 0);
-                continue;
-            } elseif ($sla->lessThan($startTime)) {
-                // Sebelum jam kerja, geser ke jam buka hari ini
-                $sla->setTime($startHour, $startMinute, 0);
-            }
-            break;
-        }
-
-        // 2. Tambahkan 30 jam (1 hari + 6 jam) melewati weekend
+        // Tambahkan 30 jam, skip hari Sabtu & Minggu
         $hoursToAdd = 30;
         while ($hoursToAdd > 0) {
             $sla->addHour();
