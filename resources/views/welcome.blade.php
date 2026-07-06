@@ -12,7 +12,7 @@
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@300;400&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}?v=6">
+    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}?v=7">
 </head>
 
 <body>
@@ -1117,75 +1117,73 @@
             });
         }
 
-        // Scroll progress + nav
+        // Scroll progress + nav — throttled with rAF
+        const scrollBar = document.getElementById('scroll-bar');
+        const navbar = document.getElementById('navbar');
+        let scrollTicking = false;
         window.addEventListener('scroll', () => {
-            const p = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
-            const scrollBar = document.getElementById('scroll-bar');
-            if (scrollBar) scrollBar.style.width = p + '%';
-            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
-        });
+            if (scrollTicking) return;
+            scrollTicking = true;
+            requestAnimationFrame(() => {
+                const sy = window.scrollY;
+                const p = sy / (document.body.scrollHeight - window.innerHeight) * 100;
+                if (scrollBar) scrollBar.style.width = p + '%';
+                navbar.classList.toggle('scrolled', sy > 40);
+                scrollTicking = false;
+            });
+        }, { passive: true });
 
-        // Particles — optimized: no sqrt, reduced count, pause when hidden
+        // Particles — skip on low-end/mobile, pause when tab hidden
         (function () {
             const cvs = document.getElementById('particles-canvas');
             if (!cvs) return;
-            const ctx = cvs.getContext('2d');
-            let running = true;
-            let rafId = null;
-
-            // Skip particles entirely on low-end or small screens
             const isMobileOrLowEnd = window.innerWidth < 768 ||
                 (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2);
             if (isMobileOrLowEnd) { cvs.style.display = 'none'; return; }
 
+            const ctx = cvs.getContext('2d');
+            let running = true;
+            let rafId = null;
             function resize() { cvs.width = window.innerWidth; cvs.height = window.innerHeight; }
             resize();
 
             let resizeTimer;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(resize, 200);
-            });
-
+            window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 250); }, { passive: true });
             document.addEventListener('visibilitychange', () => {
                 running = !document.hidden;
                 if (running && !rafId) loop();
             });
 
-            const N = 20; // reduced from 28
-            const DIST_SQ = 8000; // threshold squared (no sqrt needed), ~89px
+            // Reduced to 15 particles — adequate density, lower CPU cost
+            const N = 15;
+            const DIST_SQ = 7000;
             const particles = Array.from({ length: N }, () => ({
                 x: Math.random() * window.innerWidth,
                 y: Math.random() * window.innerHeight,
                 r: Math.random() * 1.2 + 0.3,
-                vx: (Math.random() - 0.5) * 0.18,
-                vy: (Math.random() - 0.5) * 0.18,
-                a: Math.random() * 0.25 + 0.05
+                vx: (Math.random() - 0.5) * 0.15,
+                vy: (Math.random() - 0.5) * 0.15,
+                a: Math.random() * 0.2 + 0.05
             }));
-
-            // Pre-build fill styles to avoid string alloc each frame
             const fillStyles = particles.map(p => `rgba(26,115,232,${p.a})`);
 
+            // Batch all paths before stroke to reduce ctx state changes
             function loop() {
                 if (!running) { rafId = null; return; }
                 rafId = requestAnimationFrame(loop);
-
                 ctx.clearRect(0, 0, cvs.width, cvs.height);
 
                 for (let i = 0; i < N; i++) {
                     const p = particles[i];
                     p.x += p.vx; p.y += p.vy;
-                    if (p.x < 0) p.x = cvs.width;
-                    else if (p.x > cvs.width) p.x = 0;
-                    if (p.y < 0) p.y = cvs.height;
-                    else if (p.y > cvs.height) p.y = 0;
+                    if (p.x < 0) p.x = cvs.width; else if (p.x > cvs.width) p.x = 0;
+                    if (p.y < 0) p.y = cvs.height; else if (p.y > cvs.height) p.y = 0;
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                     ctx.fillStyle = fillStyles[i];
                     ctx.fill();
                 }
 
-                // Draw lines — use distSq, skip sqrt entirely
                 ctx.lineWidth = 0.4;
                 for (let i = 0; i < N - 1; i++) {
                     for (let j = i + 1; j < N; j++) {
@@ -1193,12 +1191,11 @@
                         const dy = particles[i].y - particles[j].y;
                         const dSq = dx * dx + dy * dy;
                         if (dSq < DIST_SQ) {
-                            // opacity based on proximity, no sqrt
-                            const alpha = 0.06 * (1 - dSq / DIST_SQ);
+                            const alpha = (0.06 * (1 - dSq / DIST_SQ)).toFixed(3);
                             ctx.beginPath();
                             ctx.moveTo(particles[i].x, particles[i].y);
                             ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.strokeStyle = `rgba(26,115,232,${alpha.toFixed(3)})`;
+                            ctx.strokeStyle = `rgba(26,115,232,${alpha})`;
                             ctx.stroke();
                         }
                     }
@@ -1263,19 +1260,22 @@
             }
         })();
 
-        // Lenis + GSAP (satu loop saja, hindari double RAF)
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smoothWheel: true,
-            wheelMultiplier: 1,
-            infinite: false,
-        });
+        gsap.registerPlugin(ScrollTrigger);
 
-        lenis.on('scroll', ScrollTrigger.update);
-        gsap.ticker.add((time) => {
-            lenis.raf(time * 1000);
-        });
+        // Lenis smooth scroll — hanya desktop, mobile pakai native scroll
+        let lenis;
+        const isDesktop = window.innerWidth > 768 && !('ontouchstart' in window);
+        if (isDesktop) {
+            lenis = new Lenis({
+                duration: 1.1,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                smoothWheel: true,
+                wheelMultiplier: 0.9,
+                infinite: false,
+            });
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+        }
         gsap.ticker.lagSmoothing(0);
 
         // Magnetic Effect Optimized with quickTo
@@ -1301,384 +1301,253 @@
         }
         initMagnetic();
 
-        gsap.registerPlugin(ScrollTrigger);
-        // Hero Parallax
+        // Hero Parallax — gunakan scrub value (bukan true) agar ada smoothing, kurangi jarak
         gsap.to('.hero-title', {
-            y: -80,
-            scrollTrigger: {
-                trigger: '#hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: true
-            }
+            y: -60,
+            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5 }
         });
-
         gsap.to('.hero-float-card', {
-            y: (i, target) => -120 - (i * 60),
-            scrollTrigger: {
-                trigger: '#hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: true
-            }
+            y: (i) => -80 - (i * 40),
+            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2 }
         });
-
         gsap.to('.hero-badge', {
-            y: -180,
-            rotation: 180,
-            scrollTrigger: {
-                trigger: '#hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: true
-            }
+            y: -120,
+            rotation: 120,
+            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2.5 }
         });
-
-        // Background Parallax
+        // Background parallax — digabung scrub agar tidak overwhelm compositor
         gsap.to('.bg-mesh', {
-            y: 120, // Reduced from 200 for subtler effect
-            opacity: 0.85, // Maintain more brightness
-            scrollTrigger: {
-                trigger: '#hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: true
-            }
+            y: 100,
+            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2 }
         });
-
         gsap.to('.bg-orb', {
-            y: (i) => 100 * (i + 1),
-            x: (i) => (i % 2 === 0 ? 50 : -50),
-            scrollTrigger: {
-                trigger: '#hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: true
-            }
+            y: (i) => 80 * (i + 1),
+            x: (i) => (i % 2 === 0 ? 40 : -40),
+            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 3 }
         });
+        // bg-grid & orbs individual dihapus — cukup .bg-orb batch di atas
 
-        gsap.to('.bg-grid', {
-            y: 50,
-            scrollTrigger: {
-                trigger: '#hero',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: true
-            }
-        });
-
-        // ─── TYPING ANIMATION LOGIC ───
+        // ─── HERO ENTRANCE ANIMATION ───
         const splitIntoWords = (elementId) => {
             const el = document.getElementById(elementId);
             if (!el) return;
-
-            // For hero-title, we need to handle nested .line spans
             if (elementId === 'hero-title-main') {
-                const lines = el.querySelectorAll('.line');
-                lines.forEach(line => {
-                    const text = line.innerText;
-                    const words = text.split(' ');
-                    const isItalic = line.querySelector('em');
-
-                    let html = '';
-                    words.forEach(word => {
-                        html += `<span class="word-span">${word}</span> `;
-                    });
-
-                    if (isItalic) {
-                        line.innerHTML = `<em>${html}</em>`;
-                    } else {
-                        line.innerHTML = html;
-                    }
+                el.querySelectorAll('.line').forEach(line => {
+                    const isItalic = !!line.querySelector('em');
+                    const html = line.innerText.split(' ').map(w => `<span class="word-span">${w}</span>`).join(' ');
+                    line.innerHTML = isItalic ? `<em>${html}</em>` : html;
                 });
             } else {
-                const text = el.innerText;
-                const words = text.split(' ');
-                el.innerHTML = words.map(word => `<span class="word-span">${word}</span>`).join(' ');
+                el.innerHTML = el.innerText.split(' ').map(w => `<span class="word-span">${w}</span>`).join(' ');
             }
         };
-
         splitIntoWords('hero-title-main');
         splitIntoWords('hero-subtitle-main');
 
-        // Typing Timeline
-        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-        // Initial state for cursor
         gsap.set('.hero-title, .hero-subtitle', { opacity: 1 });
 
-        tl.fromTo('.hero-eyebrow', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.8, delay: 0.2 })
-            .fromTo('.hero-eyebrow-line', { width: 0 }, { width: 28, duration: 0.8 }, "-=0.6")
-            .to('#hero-title-main .word-span', {
-                opacity: 1,
-                y: 0,
-                filter: 'blur(0px)',
-                duration: 0.5,
-                stagger: 0.08,
-                ease: "back.out(1.7)",
-                delay: 0.5
-            })
-            .to('#hero-subtitle-main .word-span', {
-                opacity: 1,
-                y: 0,
-                filter: 'blur(0px)',
-                duration: 0.4,
-                stagger: 0.04,
-                ease: "power2.out"
-            }, "-=0.3")
-            .to('.hero-cta', { opacity: 1, y: 0, duration: 0.7 }, '-=0.35')
-            .to('.hero-float-cards', { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5')
-            .to('.hero-badge', { opacity: 1, duration: 0.8 }, '-=0.4')
-            .to('.hero-scroll-hint', { opacity: 1, duration: 0.6 }, '-=0.2');
+        // Tidak pakai filter:blur — berat di GPU. Cukup opacity + y.
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        tl.fromTo('.hero-eyebrow', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.7, delay: 0.1 })
+          .fromTo('.hero-eyebrow-line', { width: 0 }, { width: 28, duration: 0.6 }, '-=0.5')
+          .to('#hero-title-main .word-span', { opacity: 1, y: 0, duration: 0.45, stagger: 0.06, ease: 'back.out(1.4)', delay: 0.3 })
+          .to('#hero-subtitle-main .word-span', { opacity: 1, y: 0, duration: 0.35, stagger: 0.03, ease: 'power2.out' }, '-=0.2')
+          .to('.hero-cta', { opacity: 1, y: 0, duration: 0.6 }, '-=0.3')
+          .to('.hero-float-cards', { opacity: 1, x: 0, duration: 0.7 }, '-=0.4')
+          .to('.hero-badge', { opacity: 1, duration: 0.6 }, '-=0.3')
+          .to('.hero-scroll-hint', { opacity: 1, duration: 0.5 }, '-=0.2');
 
-        // ─── ENHANCED ANIMATIONS ───
+        // Float cards — CSS animation lebih ringan dari GSAP repeat:-1
+        // (handled via CSS class, tidak perlu GSAP loop)
 
-        // Continuous subtle float on hero float cards
-        gsap.to('.hero-float-card', {
-            y: -8, duration: 2.5, repeat: -1, yoyo: true,
-            ease: 'sine.inOut', stagger: 0.3
-        });
+        // ─── SCROLL REVEAL ANIMATIONS ───
+        // About — hapus rotationY, cukup opacity + translate
+        gsap.fromTo('.about-card', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, scrollTrigger: { trigger: '#about', start: 'top 70%' } });
+        gsap.fromTo('.about-left > *', { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.65, stagger: 0.1, scrollTrigger: { trigger: '#about', start: 'top 70%' } });
 
-        // Ticker shimmer effect — sequential stagger (cheaper than random)
-        gsap.fromTo('.ticker-dot',
-            { scale: 0.5, opacity: 0.3 },
-            { scale: 1.4, opacity: 1, duration: 1.5, repeat: -1, yoyo: true, stagger: { each: 0.15, from: 'start' } }
-        );
-
-        // About - enhanced with rotation micro-animation
-        gsap.fromTo('.about-card', { opacity: 0, x: 50, rotationY: 8 }, { opacity: 1, x: 0, rotationY: 0, duration: 0.85, stagger: 0.15, scrollTrigger: { trigger: '#about', start: 'top 68%' } });
-        gsap.fromTo('.about-left > *', { opacity: 0, x: -35 }, { opacity: 1, x: 0, duration: 0.75, stagger: 0.1, scrollTrigger: { trigger: '#about', start: 'top 68%' } });
-
-        // About card icon animation on hover
         document.querySelectorAll('.about-card').forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                gsap.to(card.querySelector('.about-card-icon'), { rotation: 10, scale: 1.15, duration: 0.4, ease: 'back.out(1.7)' });
-            });
-            card.addEventListener('mouseleave', () => {
-                gsap.to(card.querySelector('.about-card-icon'), { rotation: 0, scale: 1, duration: 0.3 });
-            });
+            const icon = card.querySelector('.about-card-icon');
+            card.addEventListener('mouseenter', () => gsap.to(icon, { rotation: 10, scale: 1.12, duration: 0.35, ease: 'back.out(1.5)' }));
+            card.addEventListener('mouseleave', () => gsap.to(icon, { rotation: 0, scale: 1, duration: 0.3 }));
         });
 
-        // Charts - scale up effect
-        gsap.fromTo('.chart-card', { opacity: 0, y: 40, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.12, scrollTrigger: { trigger: '#charts', start: 'top 70%' } });
-        gsap.fromTo('.charts-header > *', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, scrollTrigger: { trigger: '#charts', start: 'top 75%' } });
+        // Stats
+        gsap.fromTo('.stat-card', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.55, stagger: 0.09, scrollTrigger: { trigger: '#stats', start: 'top 72%' } });
 
-        // Testimonials - side scroll animations (horizontal scroll tracks moving in opposite directions)
-        gsap.fromTo('.track-1', 
-            { x: '5%' }, 
-            { 
-                x: '-30%', 
-                scrollTrigger: {
-                    trigger: '#testimonials',
-                    start: 'top bottom',
-                    end: 'bottom top',
-                    scrub: 1.2
-                }
-            }
-        );
+        // Charts
+        gsap.fromTo('.chart-card', { opacity: 0, y: 35 }, { opacity: 1, y: 0, duration: 0.65, stagger: 0.1, scrollTrigger: { trigger: '#charts', start: 'top 72%' } });
+        gsap.fromTo('.charts-header > *', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.09, scrollTrigger: { trigger: '#charts', start: 'top 78%' } });
 
-        gsap.fromTo('.track-2', 
-            { x: '-30%' }, 
-            { 
-                x: '5%', 
-                scrollTrigger: {
-                    trigger: '#testimonials',
-                    start: 'top bottom',
-                    end: 'bottom top',
-                    scrub: 1.2
-                }
-            }
-        );
+        // Testimonials — kurangi jarak scrub agar lebih smooth saat fast scroll
+        gsap.fromTo('.track-1', { x: '0%' }, { x: '-20%', scrollTrigger: { trigger: '#testimonials', start: 'top bottom', end: 'bottom top', scrub: 2 } });
+        gsap.fromTo('.track-2', { x: '-20%' }, { x: '0%', scrollTrigger: { trigger: '#testimonials', start: 'top bottom', end: 'bottom top', scrub: 2 } });
+        gsap.fromTo('.testimonials-header > *', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, scrollTrigger: { trigger: '#testimonials', start: 'top 75%' } });
+        gsap.fromTo('.testimonials-row', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.75, stagger: 0.12, scrollTrigger: { trigger: '#testimonials', start: 'top 78%' } });
 
-        // Header and overall testimonials section fade in
-        gsap.fromTo('.testimonials-header > *', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, scrollTrigger: { trigger: '#testimonials', start: 'top 72%' } });
-        gsap.fromTo('.testimonials-row', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.9, stagger: 0.15, scrollTrigger: { trigger: '#testimonials', start: 'top 75%' } });
+        // Security
+        gsap.fromTo('.security-header > *', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, scrollTrigger: { trigger: '#security', start: 'top 78%' } });
+        gsap.fromTo('.badge-card', { opacity: 0, y: 35 }, { opacity: 1, y: 0, duration: 0.65, stagger: 0.08, scrollTrigger: { trigger: '.security-grid', start: 'top 72%' } });
+        gsap.fromTo('.security-footer', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, scrollTrigger: { trigger: '.security-footer', start: 'top 82%' } });
 
-        // SECURITY BADGES ANIMATIONS
-        gsap.fromTo('.security-header > *', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, scrollTrigger: { trigger: '#security', start: 'top 75%' } });
-        gsap.fromTo('.badge-card', { opacity: 0, y: 50, scale: 0.85 }, { opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.1, scrollTrigger: { trigger: '.security-grid', start: 'top 70%' } });
-        gsap.fromTo('.security-footer', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.8, scrollTrigger: { trigger: '.security-footer', start: 'top 80%' } });
+        // Footer
+        gsap.fromTo('#footer > *', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, scrollTrigger: { trigger: '#footer', start: 'top 82%' } });
 
-        // Footer - wave entrance
-        gsap.fromTo('#footer > *', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.13, scrollTrigger: { trigger: '#footer', start: 'top 80%' } });
+        // Dev section
+        gsap.fromTo('.dev-header-minimal > *', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.09, scrollTrigger: { trigger: '#developer', start: 'top 78%' } });
 
-        // Stat counters with enhanced pulsing glow
+        // ─── STAT COUNTERS ───
         document.querySelectorAll('.stat-number').forEach(el => {
             const target = parseInt(el.dataset.target) || 0;
             ScrollTrigger.create({
-                trigger: el, start: 'top 85%', once: true,
+                trigger: el, start: 'top 88%', once: true,
                 onEnter: () => {
-                    anime({ targets: el, innerHTML: [0, target], round: 1, duration: 2000, easing: 'easeOutExpo', update: function (a) { el.innerHTML = Math.round(a.animations[0].currentValue); } });
-                    // Pulse glow on complete
-                    gsap.fromTo(el, { textShadow: '0 0 0px rgba(26,115,232,0)' }, { textShadow: '0 0 20px rgba(26,115,232,0.3)', duration: 0.8, delay: 1.5, yoyo: true, repeat: 1 });
+                    anime({ targets: el, innerHTML: [0, target], round: 1, duration: 1800, easing: 'easeOutExpo',
+                        update: function (a) { el.innerHTML = Math.round(a.animations[0].currentValue); } });
                 }
             });
         });
-
-        // Stat counter for rating
         const ratingEl = document.getElementById('rating-number');
         if (ratingEl) {
             const targetRating = parseFloat(ratingEl.dataset.target) || 5.0;
             ScrollTrigger.create({
-                trigger: ratingEl, start: 'top 85%', once: true,
+                trigger: ratingEl, start: 'top 88%', once: true,
                 onEnter: () => {
                     const obj = { val: 0.0 };
-                    anime({
-                        targets: obj,
-                        val: targetRating,
-                        round: 10, // 1 decimal point precision
-                        duration: 2000,
-                        easing: 'easeOutExpo',
-                        update: function () {
-                            ratingEl.innerHTML = obj.val.toFixed(1);
-                        }
-                    });
-                    // Pulse glow on complete
-                    gsap.fromTo(ratingEl, { textShadow: '0 0 0px rgba(26,115,232,0)' }, { textShadow: '0 0 20px rgba(245,158,11,0.3)', duration: 0.8, delay: 1.5, yoyo: true, repeat: 1 });
+                    anime({ targets: obj, val: targetRating, round: 10, duration: 1800, easing: 'easeOutExpo',
+                        update: () => { ratingEl.innerHTML = obj.val.toFixed(1); } });
                 }
             });
         }
-
-        gsap.fromTo('.stat-card', { opacity: 0, y: 38, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, scrollTrigger: { trigger: '#stats', start: 'top 70%' } });
-
-        // Dev section tech chips wave animation
-        gsap.fromTo('.dev-header-minimal > *', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, scrollTrigger: { trigger: '#developer', start: 'top 75%' } });
-
-        // Scroll-linked background orb movement — scoped to hero only, not full body
-        gsap.to('.bg-orb-1', { x: 40, y: 30, scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2 } });
-        gsap.to('.bg-orb-2', { x: -30, y: -40, scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 3 } });
-        gsap.to('.bg-orb-3', { x: 20, y: 50, scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5 } });
-
-        // ─── 3D SPIRAL SCROLL ANIMATION (Skip on Mobile) ───
         const isMobile = window.innerWidth < 768;
 
-        const spiralData = [
-            { label: 'Surat Masuk', emoji: '📥' },
-            { label: 'Surat Selesai', emoji: '📤' },
-            { label: 'Chart Data', emoji: '📊' },
-            { label: 'Nota Dinas', emoji: '📝' },
-            { label: 'Notifikasi', emoji: '🔔' },
-            { label: 'Template Surat', emoji: '📋' },
-            { label: 'Revisi Surat', emoji: '📨' },
-            { label: 'Laporan Tahunan', emoji: '📊' },
-            { label: 'Laporan Bulanan', emoji: '📆' },
-            { label: 'Permohonan', emoji: '📌' },
-            { label: 'QR Verifikasi', emoji: '🔐' },
-            { label: '10 Tahap SLA', emoji: '⏱️' },
-            { label: 'Aplikasi', emoji: '📱' },
-            { label: 'Kontribusi', emoji: '🤝' },
+        // ─── 3D SPIRAL (Desktop only) ─── cache all refs upfront, no querySelector in loop
+        (() => {
+            if (isMobile) return;
+            const spiralContainer = document.getElementById('spiral-items-container');
+            const spiralCenter   = document.getElementById('spiral-center');
+            const spiralProgressEl = document.getElementById('spiral-progress');
+            const spiralSection  = document.getElementById('spiral-section');
+            if (!spiralContainer || !spiralSection) return;
 
-        ];
+            const spiralData = [
+                { label: 'Surat Masuk', emoji: '📥' },
+                { label: 'Surat Selesai', emoji: '📤' },
+                { label: 'Chart Data', emoji: '📊' },
+                { label: 'Nota Dinas', emoji: '📝' },
+                { label: 'Notifikasi', emoji: '🔔' },
+                { label: 'Template Surat', emoji: '📋' },
+                { label: 'Revisi Surat', emoji: '📨' },
+                { label: 'Laporan Tahunan', emoji: '📊' },
+                { label: 'Laporan Bulanan', emoji: '📆' },
+                { label: 'Permohonan', emoji: '📌' },
+                { label: 'QR Verifikasi', emoji: '🔐' },
+                { label: '10 Tahap SLA', emoji: '⏱️' },
+                { label: 'Aplikasi', emoji: '📱' },
+                { label: 'Kontribusi', emoji: '🤝' },
+            ];
+            const N = spiralData.length;
+            const TOTAL_TURNS = 2.5;
+            const RADIUS = 280;
+            const HEIGHT_SPREAD = 180;
 
-        const spiralContainer = document.getElementById('spiral-items-container');
-        const spiralStage = document.getElementById('spiral-stage');
-        const spiralCenter = document.getElementById('spiral-center');
-        const spiralProgressEl = document.getElementById('spiral-progress');
-
-
-        if (spiralContainer && spiralProgressEl && !isMobile) {
-            // Build DOM items
-            spiralData.forEach((d, i) => {
-                const el = document.createElement('div');
-                el.className = 'spiral-item-3d';
-                el.id = `spiral-item-${i}`;
-                el.innerHTML = `<div class="spiral-pill"><span class="sdot"></span>${d.emoji} ${d.label}</div>`;
-                spiralContainer.appendChild(el);
-            });
-
-            // Progress dots
-            spiralData.forEach((_, i) => {
-                const dot = document.createElement('div');
-                dot.className = 'sp-dot';
-                dot.id = `sp-dot-${i}`;
-                spiralProgressEl.appendChild(dot);
-            });
-        }
-
-        // Spiral scroll logic
-        const spiralSection = document.getElementById('spiral-section');
-
-        function updateSpiral(progress) {
-            const n = spiralData.length;
-            const totalTurns = 2.5;
+            // Build DOM + cache refs — no getElementById inside animation loop
+            const itemEls  = [];
+            const pillEls  = [];
+            const dotEls   = [];
 
             spiralData.forEach((d, i) => {
-                const el = document.getElementById(`spiral-item-${i}`);
-                if (!el) return;
+                const wrap = document.createElement('div');
+                wrap.className = 'spiral-item-3d';
+                const pill = document.createElement('div');
+                pill.className = 'spiral-pill';
+                pill.innerHTML = `<span class="sdot"></span>${d.emoji} ${d.label}`;
+                wrap.appendChild(pill);
+                spiralContainer.appendChild(wrap);
+                itemEls.push(wrap);
+                pillEls.push(pill);
+            });
 
-                const baseAngle = (i / n) * Math.PI * 2;
-                const currentRotation = progress * totalTurns * Math.PI * 2;
-                const angle = baseAngle - currentRotation;
+            if (spiralProgressEl) {
+                spiralData.forEach((_, i) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'sp-dot';
+                    spiralProgressEl.appendChild(dot);
+                    dotEls.push(dot);
+                });
+            }
 
-                const isMobile = window.innerWidth < 768;
-                const radius = isMobile ? 120 : 280;
-                const heightSpread = isMobile ? 100 : 180;
+            // Pre-cache center h2/p refs
+            const centerH2 = spiralCenter ? spiralCenter.querySelector('h2') : null;
+            const centerP  = spiralCenter ? spiralCenter.querySelector('p')  : null;
+            const centerTexts = [
+                { h: 'Scroll untuk<br><em>Melihat</em>',     p: 'Semua fitur sistem persuratan BPSUML' },
+                { h: 'Pengelolaan<br><em>Dokumen</em>',       p: 'Dari surat masuk hingga pengarsipan digital' },
+                { h: 'Keamanan<br><em>Terverifikasi</em>',    p: 'QR Code & SLA monitoring real-time' },
+                { h: 'Sistem<br><em>Terintegrasi</em>',       p: 'Seluruh alur kerja dalam satu platform' },
+            ];
+            let lastStep = -1;
+            let lastActiveIdx = -1;
 
-                const x = Math.cos(angle) * radius;
-                const yMapped = ((((i / n) - progress * (totalTurns)) % 1) + 1) % 1;
-                const y = (yMapped - 0.5) * heightSpread * (isMobile ? 4 : 3);
-                const z = Math.sin(angle) * radius;
+            function updateSpiral(progress) {
+                const TWO_PI = Math.PI * 2;
+                const currentRotation = progress * TOTAL_TURNS * TWO_PI;
 
-                const depth = (z + radius) / (radius * 2);
-                const scale = 0.6 + depth * 0.7;
-                const opacity = 0.15 + depth * 0.85;
+                for (let i = 0; i < N; i++) {
+                    const el   = itemEls[i];
+                    const pill = pillEls[i];
+                    const angle = (i / N) * TWO_PI - currentRotation;
 
-                const visible = Math.abs(y) < 500;
+                    const x = Math.cos(angle) * RADIUS;
+                    const yMapped = ((((i / N) - progress * TOTAL_TURNS) % 1) + 1) % 1;
+                    const y = (yMapped - 0.5) * HEIGHT_SPREAD * 3;
+                    const z = Math.sin(angle) * RADIUS;
 
-                // Use translate3d for hardware acceleration
-                el.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), 0) scale(${scale})`;
-                el.style.opacity = visible ? opacity : 0;
-                el.style.zIndex = Math.round(depth * 100);
+                    const depth   = (z + RADIUS) / (RADIUS * 2);
+                    const scale   = 0.6 + depth * 0.7;
+                    const opacity = Math.abs(y) < 500 ? 0.15 + depth * 0.85 : 0;
 
-                const pill = el.querySelector('.spiral-pill');
-                const isActive = Math.abs(y) < 60 && depth > 0.6;
-                if (pill) {
-                    if (isActive) {
-                        if (pill.style.borderColor !== 'var(--accent)') {
-                            pill.style.borderColor = 'var(--accent)';
-                            pill.style.color = 'var(--white)';
-                            pill.style.background = 'var(--accent-dim)';
-                        }
-                    } else {
-                        if (pill.style.borderColor !== '') {
-                            pill.style.borderColor = '';
-                            pill.style.color = '';
-                            pill.style.background = '';
-                        }
+                    el.style.transform = `translate3d(calc(-50% + ${x.toFixed(1)}px), calc(-50% + ${y.toFixed(1)}px), 0) scale(${scale.toFixed(3)})`;
+                    el.style.opacity   = opacity.toFixed(3);
+                    el.style.zIndex    = Math.round(depth * 100);
+
+                    const isActive = Math.abs(y) < 60 && depth > 0.6;
+                    if (isActive && pill.dataset.active !== '1') {
+                        pill.dataset.active = '1';
+                        pill.style.cssText += ';border-color:var(--accent);color:var(--white);background:var(--accent-dim)';
+                    } else if (!isActive && pill.dataset.active === '1') {
+                        pill.dataset.active = '';
+                        pill.style.borderColor = '';
+                        pill.style.color       = '';
+                        pill.style.background  = '';
                     }
                 }
-            });
 
-            const activeIdx = Math.floor(progress * n * totalTurns) % n;
-            spiralData.forEach((_, i) => {
-                const dot = document.getElementById(`sp-dot-${i}`);
-                if (dot) dot.classList.toggle('active', i === activeIdx);
-            });
+                // Progress dots — only update when active changes
+                const activeIdx = Math.floor(progress * N * TOTAL_TURNS) % N;
+                if (activeIdx !== lastActiveIdx) {
+                    if (lastActiveIdx >= 0 && dotEls[lastActiveIdx]) dotEls[lastActiveIdx].classList.remove('active');
+                    if (dotEls[activeIdx]) dotEls[activeIdx].classList.add('active');
+                    lastActiveIdx = activeIdx;
+                }
 
-            const step = Math.floor(progress * 4);
-            const texts = [
-                { h: 'Scroll untuk<br><em>Melihat</em>', p: 'Semua fitur sistem persuratan BPSUML' },
-                { h: 'Pengelolaan<br><em>Dokumen</em>', p: 'Dari surat masuk hingga pengarsipan digital' },
-                { h: 'Keamanan<br><em>Terverifikasi</em>', p: 'QR Code & SLA monitoring real-time' },
-                { h: 'Sistem<br><em>Terintegrasi</em>', p: 'Seluruh alur kerja dalam satu platform' },
-            ];
-            const t = texts[Math.min(step, texts.length - 1)];
-            if (spiralCenter) {
-                spiralCenter.querySelector('h2').innerHTML = t.h;
-                spiralCenter.querySelector('p').textContent = t.p;
+                // Center text — only rewrite DOM when step changes
+                const step = Math.min(Math.floor(progress * 4), centerTexts.length - 1);
+                if (step !== lastStep) {
+                    lastStep = step;
+                    if (centerH2) centerH2.innerHTML  = centerTexts[step].h;
+                    if (centerP)  centerP.textContent = centerTexts[step].p;
+                }
             }
-        }
 
-        if (spiralSection && !isMobile) {
             ScrollTrigger.create({
                 trigger: spiralSection,
                 start: 'top top',
                 end: 'bottom bottom',
-                scrub: 0.5,
+                scrub: 0.8,
                 onUpdate: self => updateSpiral(self.progress)
             });
             updateSpiral(0);
-        }
+        })();
 
         // Chart.js: init saat section terlihat (lazy)
         let chartsReady = false;
@@ -1804,14 +1673,15 @@
         // Portals reveal
         gsap.fromTo('.portal-card', { opacity: 0, scale: 0.95, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.6, stagger: 0.08, scrollTrigger: { trigger: '#portals', start: 'top 75%' } });
         gsap.fromTo('.portals-header > *', { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, scrollTrigger: { trigger: '#portals', start: 'top 80%' } });
-        // Tilt/glow mousemove — throttled with rAF
-        document.querySelectorAll('.portal-card, .stat-card, .tracking-flow, .doc-preview, .archive-item').forEach(card => {
+        // Tilt/glow mousemove — throttled rAF, getBoundingClientRect cached on enter only
+        document.querySelectorAll('.portal-card, .stat-card, .doc-preview, .archive-item').forEach(card => {
             let ticking = false;
+            let rect = null;
+            card.addEventListener('mouseenter', () => { rect = card.getBoundingClientRect(); });
             card.addEventListener('mousemove', e => {
-                if (ticking) return;
+                if (ticking || !rect) return;
                 ticking = true;
                 requestAnimationFrame(() => {
-                    const rect = card.getBoundingClientRect();
                     card.style.setProperty('--x', `${e.clientX - rect.left}px`);
                     card.style.setProperty('--y', `${e.clientY - rect.top}px`);
                     ticking = false;
@@ -1819,19 +1689,17 @@
             });
         });
 
-        // ========== HORIZONTAL FEATURE SCROLLER (FIX) ==========
+        // ========== HORIZONTAL FEATURE SCROLLER ==========
         const scrollerSection = document.getElementById('features-scroller');
         const trackHorizontal = document.getElementById('features-track');
         if (scrollerSection && trackHorizontal && window.innerWidth > 768) {
-            // Hitung total lebar track
-            let totalWidth = 0;
             const slides = trackHorizontal.querySelectorAll('.feature-slide');
-            slides.forEach(slide => {
-                totalWidth += slide.offsetWidth;
-            });
-            // Set lebar track secara eksplisit
+            let totalWidth = 0;
+            slides.forEach(s => { totalWidth += s.offsetWidth; });
             trackHorizontal.style.width = totalWidth + 'px';
-            // Buat ScrollTrigger untuk horizontal scroll
+
+            const progressBar = document.getElementById('features-progress-bar');
+
             const horizontalScroll = gsap.to(trackHorizontal, {
                 x: () => -(totalWidth - window.innerWidth),
                 ease: 'none',
@@ -1839,128 +1707,76 @@
                     trigger: scrollerSection,
                     start: 'top top',
                     end: () => `+=${totalWidth - window.innerWidth}`,
-                    scrub: 1.2,
+                    scrub: 1.5,
                     pin: true,
                     anticipatePin: 1,
                     invalidateOnRefresh: true,
                     onUpdate: self => {
-                        const progressBar = document.getElementById('features-progress-bar');
-                        if (progressBar) {
-                            progressBar.style.width = (self.progress * 100) + '%';
-                        }
+                        if (progressBar) progressBar.style.width = (self.progress * 100) + '%';
                     }
                 }
             });
 
-            // Side parallax entrance animations for each slide (Apple/Stripe Style)
-            slides.forEach((slide) => {
-                const textSide = slide.querySelector('.feature-text-side');
+            // Per-slide entrance — pakai containerAnimation tapi hanya opacity+x sederhana
+            // Tidak menggunakan rotationY/scale untuk menghindari new composite layers
+            slides.forEach(slide => {
+                const textSide   = slide.querySelector('.feature-text-side');
                 const visualSide = slide.querySelector('.feature-visual-side');
                 const introContent = slide.querySelector('.feature-content');
 
                 if (textSide) {
-                    gsap.fromTo(textSide, { x: 60, opacity: 0 }, {
-                        x: 0, opacity: 1, duration: 1.2, ease: 'power2.out',
+                    gsap.fromTo(textSide, { x: 50, opacity: 0 }, {
+                        x: 0, opacity: 1,
                         scrollTrigger: {
-                            trigger: slide,
-                            containerAnimation: horizontalScroll,
-                            start: 'left 90%',
-                            end: 'left 50%',
-                            scrub: true
+                            trigger: slide, containerAnimation: horizontalScroll,
+                            start: 'left 88%', end: 'left 52%', scrub: true
                         }
                     });
                 }
-
                 if (visualSide) {
-                    gsap.fromTo(visualSide, { x: 120, scale: 0.9, rotationY: -10, opacity: 0 }, {
-                        x: 0, scale: 1, rotationY: 0, opacity: 1, duration: 1.2, ease: 'power2.out',
+                    gsap.fromTo(visualSide, { x: 80, opacity: 0 }, {
+                        x: 0, opacity: 1,
                         scrollTrigger: {
-                            trigger: slide,
-                            containerAnimation: horizontalScroll,
-                            start: 'left 90%',
-                            end: 'left 45%',
-                            scrub: true
+                            trigger: slide, containerAnimation: horizontalScroll,
+                            start: 'left 90%', end: 'left 48%', scrub: true
                         }
                     });
                 }
-
                 if (introContent) {
-                    gsap.fromTo(introContent, { x: -60, opacity: 0.4 }, {
-                        x: 0, opacity: 1, duration: 1.2, ease: 'power2.out',
+                    gsap.fromTo(introContent, { x: -40, opacity: 0.5 }, {
+                        x: 0, opacity: 1,
                         scrollTrigger: {
-                            trigger: slide,
-                            containerAnimation: horizontalScroll,
-                            start: 'left 85%',
-                            end: 'left 40%',
-                            scrub: true
+                            trigger: slide, containerAnimation: horizontalScroll,
+                            start: 'left 85%', end: 'left 42%', scrub: true
                         }
                     });
                 }
 
-                // Staggered timeline tracking nodes entrance (Slide 1)
-                const flowSteps = slide.querySelectorAll('.flow-step');
-                if (flowSteps.length > 0) {
-                    gsap.fromTo(flowSteps, { scale: 0.6, opacity: 0, y: 30 }, {
-                        scale: 1, opacity: 1, y: 0, stagger: 0.1, duration: 0.8, ease: 'back.out(1.2)',
-                        scrollTrigger: {
-                            trigger: slide,
-                            containerAnimation: horizontalScroll,
-                            start: 'left 80%',
-                            end: 'left 45%',
-                            scrub: true
-                        }
-                    });
-                }
-
-                // Archive Stack fanning out on enter (Slide 4)
+                // Archive stack fan — hanya slide yang punya .archive-item
                 const archiveCards = slide.querySelectorAll('.archive-item');
-                if (archiveCards.length > 0) {
-                    gsap.fromTo(archiveCards[0], { x: 0, y: 0, rotation: 0 }, {
-                        x: 0, y: 0, rotation: -10, duration: 1.2, ease: 'power2.out',
-                        scrollTrigger: {
-                            trigger: slide,
-                            containerAnimation: horizontalScroll,
-                            start: 'left 85%',
-                            end: 'left 45%',
-                            scrub: true
-                        }
-                    });
-                    gsap.fromTo(archiveCards[1], { x: 0, y: 0, rotation: 0, opacity: 0 }, {
-                        x: 40, y: 30, rotation: 5, opacity: 0.85, duration: 1.2, ease: 'power2.out',
-                        scrollTrigger: {
-                            trigger: slide,
-                            containerAnimation: horizontalScroll,
-                            start: 'left 85%',
-                            end: 'left 45%',
-                            scrub: true
-                        }
-                    });
-                    gsap.fromTo(archiveCards[2], { x: 0, y: 0, rotation: 0, opacity: 0 }, {
-                        x: -30, y: 60, rotation: -5, opacity: 0.45, duration: 1.2, ease: 'power2.out',
-                        scrollTrigger: {
-                            trigger: slide,
-                            containerAnimation: horizontalScroll,
-                            start: 'left 85%',
-                            end: 'left 45%',
-                            scrub: true
-                        }
-                    });
+                if (archiveCards.length >= 3) {
+                    gsap.fromTo(archiveCards[0], { rotation: 0 }, { rotation: -10,
+                        scrollTrigger: { trigger: slide, containerAnimation: horizontalScroll, start: 'left 85%', end: 'left 45%', scrub: true } });
+                    gsap.fromTo(archiveCards[1], { x: 0, y: 0, opacity: 0 }, { x: 40, y: 30, opacity: 0.85,
+                        scrollTrigger: { trigger: slide, containerAnimation: horizontalScroll, start: 'left 85%', end: 'left 45%', scrub: true } });
+                    gsap.fromTo(archiveCards[2], { x: 0, y: 0, opacity: 0 }, { x: -30, y: 60, opacity: 0.45,
+                        scrollTrigger: { trigger: slide, containerAnimation: horizontalScroll, start: 'left 85%', end: 'left 45%', scrub: true } });
                 }
             });
 
-            // Refresh ScrollTrigger saat resize
+            let resizeTimer;
             window.addEventListener('resize', () => {
-                if (window.innerWidth > 768) {
-                    ScrollTrigger.refresh();
-                    let newTotal = 0;
-                    slides.forEach(slide => { newTotal += slide.offsetWidth; });
-                    trackHorizontal.style.width = newTotal + 'px';
-                    horizontalScroll.vars.x = () => -(newTotal - window.innerWidth);
-                    horizontalScroll.invalidate();
-                }
-            });
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    if (window.innerWidth > 768) {
+                        let newTotal = 0;
+                        slides.forEach(s => { newTotal += s.offsetWidth; });
+                        trackHorizontal.style.width = newTotal + 'px';
+                        ScrollTrigger.refresh();
+                    }
+                }, 200);
+            }, { passive: true });
         } else if (trackHorizontal) {
-            // Fallback for mobile: reset width and transforms
             trackHorizontal.style.width = '100%';
             trackHorizontal.style.transform = 'none';
             trackHorizontal.style.flexDirection = 'column';
@@ -2026,6 +1842,7 @@
                     });
                 };
 
+                // Use passive scroll + rAF for sticky detection (already throttled above via scrollTicking)
                 window.addEventListener('scroll', updateStickyState, { passive: true });
                 updateStickyState();
             }
@@ -2056,42 +1873,42 @@
             });
         }
 
-        // SLA Chronometer Pulse Animation (All devices)
+        // SLA Chronometer — hanya pulse, tidak ada GSAP repeat:-1 yang berat
         const progressRing = document.querySelector('.timer-progress-ring');
         if (progressRing) {
+            // CSS animation lebih ringan dari GSAP infinite. Add via class.
+            progressRing.style.animation = 'none'; // reset any existing
             gsap.fromTo(progressRing, { scale: 0.96, opacity: 0.3 }, {
                 scale: 1.04, opacity: 0.8, duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut'
             });
         }
 
-        // Live ticking down for SLA timer (1 second interval - All devices)
-        setInterval(() => {
-            const els = document.querySelectorAll('.timer-val');
-            els.forEach(el => {
-                const parts = el.textContent.split(':');
-                if (parts.length === 3) {
-                    let h = parseInt(parts[0]);
-                    let m = parseInt(parts[1]);
-                    let s = parseInt(parts[2]);
-                    s--;
-                    if (s < 0) {
-                        s = 59;
-                        m--;
-                        if (m < 0) {
-                            m = 59;
-                            h--;
-                            if (h < 0) {
-                                h = 23;
-                            }
-                        }
-                    }
-                    el.textContent =
-                        String(h).padStart(2, '0') + ':' +
-                        String(m).padStart(2, '0') + ':' +
-                        String(s).padStart(2, '0');
-                }
-            });
-        }, 1000);
+        // SLA Timer countdown — pause saat tab hidden, pause saat slide tidak visible
+        (() => {
+            const timerEl = document.querySelector('.timer-val');
+            if (!timerEl) return;
+            let h = 23, m = 54, s = 12;
+            let timerId = null;
+            const tick = () => {
+                s--;
+                if (s < 0) { s = 59; m--; if (m < 0) { m = 59; h--; if (h < 0) h = 23; } }
+                timerEl.textContent =
+                    String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+            };
+            const start = () => { if (!timerId) timerId = setInterval(tick, 1000); };
+            const stop  = () => { if (timerId) { clearInterval(timerId); timerId = null; } };
+
+            // Only run when timer section is visible
+            const featureSection = document.getElementById('features-scroller');
+            if (featureSection && 'IntersectionObserver' in window) {
+                new IntersectionObserver(entries => {
+                    entries[0].isIntersecting ? start() : stop();
+                }, { threshold: 0.1 }).observe(featureSection);
+            } else {
+                start();
+            }
+            document.addEventListener('visibilitychange', () => { document.hidden ? stop() : start(); });
+        })();
 
         (function () {
             const stacks = {
@@ -2197,31 +2014,28 @@
 
         /* ─── BACK TO TOP BUTTON ─── */
         (() => {
-            const btn = document.getElementById('backToTop');
+            const btn    = document.getElementById('backToTop');
             const circle = document.getElementById('bttCircle');
             if (!btn) return;
+            const CIRCUMFERENCE = 2 * Math.PI * 25;
 
-            const CIRCUMFERENCE = 2 * Math.PI * 25; // r=25
-
-            window.addEventListener('scroll', () => {
-                const scrollTop = window.scrollY;
-                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-                const progress = docHeight > 0 ? scrollTop / docHeight : 0;
-
-                // Show/hide
-                btn.classList.toggle('visible', scrollTop > 400);
-
-                // Update progress circle
+            // Reuse the same scroll RAF as the navbar scroll listener
+            // (tidak perlu tambah scroll listener baru)
+            const updateBTT = () => {
+                const sy = window.scrollY;
+                const docH = document.documentElement.scrollHeight - window.innerHeight;
+                btn.classList.toggle('visible', sy > 400);
                 if (circle) {
-                    const offset = CIRCUMFERENCE - (progress * CIRCUMFERENCE);
-                    circle.style.strokeDashoffset = offset;
+                    circle.style.strokeDashoffset = CIRCUMFERENCE - ((sy / docH) * CIRCUMFERENCE);
                 }
+            };
+            window.addEventListener('scroll', () => {
+                requestAnimationFrame(updateBTT);
             }, { passive: true });
 
             btn.addEventListener('click', () => {
-                // Smooth scroll using Lenis if available
-                if (typeof lenis !== 'undefined' && lenis.scrollTo) {
-                    lenis.scrollTo(0, { duration: 2 });
+                if (typeof lenis !== 'undefined' && lenis && lenis.scrollTo) {
+                    lenis.scrollTo(0, { duration: 1.8 });
                 } else {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }

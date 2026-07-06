@@ -789,11 +789,20 @@
             gap: 14px;
             min-width: 220px;
             box-shadow: 0 12px 36px rgba(200, 169, 110, 0.12);
-            transition: all 0.3s ease;
+            transition: box-shadow 0.3s ease;
+            /* CSS float animation lebih ringan dari GSAP repeat:-1 */
+            animation: floatCard 3s ease-in-out infinite;
+            will-change: transform;
+        }
+        .hero-float-card:nth-child(2) { animation-delay: 0.4s; }
+        .hero-float-card:nth-child(3) { animation-delay: 0.8s; }
+
+        @keyframes floatCard {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-8px); }
         }
 
         .hero-float-card:hover {
-            transform: translateY(-3px);
             box-shadow: 0 16px 48px rgba(200, 169, 110, 0.15);
         }
 
@@ -924,6 +933,13 @@
             height: 5px;
             border-radius: 50%;
             background: var(--accent-gold);
+            /* CSS pulse — jauh lebih ringan dari GSAP stagger repeat:-1 */
+            animation: tickerDotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes tickerDotPulse {
+            0%, 100% { transform: scale(1);   opacity: 0.5; }
+            50%       { transform: scale(1.4); opacity: 1;   }
         }
 
         @keyframes tickerScroll {
@@ -2180,6 +2196,7 @@
             position: relative;
             overflow: hidden;
             width: 100%;
+            contain: layout style;
         }
 
         .testimonials-header {
@@ -2399,6 +2416,7 @@
             position: relative;
             overflow: hidden;
             background: linear-gradient(135deg, rgba(26, 115, 232, 0.04) 0%, rgba(200, 169, 110, 0.04) 100%);
+            contain: layout style;
         }
 
         .security-header {
@@ -3913,9 +3931,8 @@
         .word-span {
             display: inline-block;
             opacity: 0;
-            filter: blur(8px);
-            transform: translateY(15px);
-            will-change: opacity, transform, filter;
+            transform: translateY(12px);
+            will-change: opacity, transform;
         }
 
         .typing-cursor {
