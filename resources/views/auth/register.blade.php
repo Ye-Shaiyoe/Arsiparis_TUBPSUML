@@ -861,6 +861,17 @@
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') closeCaptchaModal();
         });
+
+        // Jika ada akun tersimpan di localStorage, ini adalah flow "Tambah Akun"
+        // Simpan flag agar setelah redirect ke dashboard, user tahu ada akun lain
+        (function() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('bpsuml_saved_accounts') || '[]');
+                if (saved.length > 0) {
+                    sessionStorage.setItem('bpsuml_has_other_accounts', '1');
+                }
+            } catch(e) {}
+        })();
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

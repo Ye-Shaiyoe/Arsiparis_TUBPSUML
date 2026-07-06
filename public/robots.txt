@@ -1,2 +1,6 @@
+# Sistem Informasi Persuratan Digital - BP Suml
+# Aplikasi internal — tidak untuk diindeks mesin pencari
+
 User-agent: *
-Disallow:
+Disallow: /
+
