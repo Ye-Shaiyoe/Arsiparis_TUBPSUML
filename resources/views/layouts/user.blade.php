@@ -1528,7 +1528,7 @@
             </a>
         </div>
 
-        <nav class="user-sidebar-nav">
+        <nav class="user-sidebar-nav" id="userSidebarNav">
             <div class="user-nav-label">Utama</div>
             <a href="{{ url('/?home=1') }}" data-turbo="false" class="user-sidebar-item" data-tooltip="Beranda Publik">
                 <i class="bi bi-globe2"></i>
@@ -2082,11 +2082,37 @@
                 saveCurrentAccount();
                 renderSavedAccounts();
 
-                closeUserSidebar();
+                // Only close sidebar on mobile; desktop sidebar scroll should be preserved
+                if (window.innerWidth < 992) {
+                    closeUserSidebar();
+                }
             };
 
             if (!window.__userLayoutEventsBound) {
                 window.__userLayoutEventsBound = true;
+
+                // Save sidebar scroll position before Turbo navigates away
+                document.addEventListener('turbo:before-visit', function () {
+                    var nav = document.getElementById('userSidebarNav');
+                    if (nav) {
+                        sessionStorage.setItem('sidebar_scroll', nav.scrollTop);
+                    }
+                });
+
+                // Restore sidebar scroll position after Turbo renders
+                document.addEventListener('turbo:load', function () {
+                    var nav = document.getElementById('userSidebarNav');
+                    var savedScroll = sessionStorage.getItem('sidebar_scroll');
+                    if (nav && savedScroll !== null) {
+                        // Disable smooth scroll temporarily to avoid visible jump
+                        nav.style.scrollBehavior = 'auto';
+                        nav.scrollTop = parseInt(savedScroll, 10);
+                        requestAnimationFrame(function () {
+                            nav.style.scrollBehavior = '';
+                        });
+                    }
+                });
+
                 document.addEventListener('turbo:load', initUserLayout);
                 document.addEventListener('click', function (e) {
                     var item = e.target.closest('.dropdown-item');
