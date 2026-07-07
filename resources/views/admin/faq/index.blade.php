@@ -470,8 +470,8 @@
             <div class="faq-answer">
                 <p>Sistem mengawasi standar layanan melalui fitur <strong>SLA (Service Level Agreement)</strong>:</p>
                 <ul>
-                    <li>Batas maksimal proses SLA normal adalah <strong>24 jam kerja</strong> per tahap.</li>
-                    <li>Jika dokumen tidak disetujui lebih dari 24 jam di satu tahap, sistem akan mengindikasikan keterlambatan (<span class="badge-warning-inline">-0.1 jam</span>, dll).</li>
+                    <li>Batas maksimal proses SLA normal adalah <strong>30 jam kerja</strong> per tahap.</li>
+                    <li>Jika dokumen tidak disetujui lebih dari 30 jam di satu tahap, sistem akan mengindikasikan keterlambatan (<span class="badge-warning-inline">-0.1 jam</span>, dll).</li>
                     <li>Kepatuhan SLA dicatat dan ditampilkan dalam <strong>laporan grafik (Chart)</strong>.</li>
                 </ul>
                 <div class="info-box"><i class="bi bi-info-circle-fill"></i>Perhitungan SLA hanya berlaku pada <strong>jam operasional kerja</strong>: Senin–Kamis 07:30–16:00, Jumat 07:30–16:30. Upload di luar jam kerja akan ditandai sebagai <em>di luar jam operasional</em>.</div>
@@ -551,7 +551,7 @@
                 <span class="icon"><i class="bi bi-chevron-down"></i></span>
             </div>
             <div class="faq-answer">
-                <p>Jika surat melewati batas <strong>24 jam kerja</strong> di tahap Anda tanpa diproses, indikator SLA akan berwarna merah. Saat Anda melakukan verifikasi pada surat yang sudah terlambat, sistem akan meminta Anda mengisi <strong>"Alasan Keterlambatan"</strong>.</p>
+                <p>Jika surat melewati batas <strong>30 jam kerja</strong> di tahap Anda tanpa diproses, indikator SLA akan berwarna merah. Saat Anda melakukan verifikasi pada surat yang sudah terlambat, sistem akan meminta Anda mengisi <strong>"Alasan Keterlambatan"</strong>.</p>
                 <div class="info-box"><i class="bi bi-info-circle-fill"></i>Alasan ini akan tersimpan dalam riwayat proses dan dapat dilihat oleh user sebagai bentuk transparansi layanan.</div>
             </div>
         </div>

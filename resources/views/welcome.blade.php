@@ -70,6 +70,7 @@
             <li><a href="#alur-kerja">Alur</a></li>
             <li><a href="#developer">Developer</a></li>
             <li><a href="#footer">Kontak</a></li>
+            <li><a href="{{ route('panduan') }}" target="_blank" style="font-weight:700;color:#06b6d4;">📖 Panduan</a></li>
         </ul>
         <div class="nav-auth">
             @auth
@@ -157,7 +158,7 @@
                         <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg></div>
                 <div>
-                    <div class="hero-float-text">SLA 24 Jam Kerja</div>
+                    <div class="hero-float-text">SLA 30 Jam Kerja</div>
                     <div class="hero-float-sub">Real-time countdown</div>
                 </div>
             </div>
@@ -474,7 +475,7 @@
                             <div class="feature-card-num">01</div>
                             <h3 class="feature-card-title">Akurasi Waktu Pelayanan</h3>
                             <p class="feature-card-text">Setiap dokumen dipantau dengan presisi melalui sistem
-                                SLA 24 jam. Memastikan komitmen pelayanan tetap terjaga dan akuntabel.</p>
+                                SLA 30 jam. Memastikan komitmen pelayanan tetap terjaga dan akuntabel.</p>
                             <div class="feature-card-footer">Chronometer Monitoring</div>
                         </div>
                     </div>

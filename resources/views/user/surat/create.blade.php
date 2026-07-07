@@ -195,7 +195,7 @@
                         <div class="alert py-2 px-3 mb-4" style="background:#eff6ff;border:none;border-radius:8px;">
                             <div style="font-size:12px; color:#1d4ed8;">
                                 <i class="bi bi-clock me-1"></i>
-                                <strong>SLA 24 Jam Kerja</strong> — surat akan diproses maksimal 24 jam kerja (Senin-Jumat, skip weekend) setelah diajukan.
+                                <strong>SLA 30 Jam Kerja</strong> — surat akan diproses maksimal 30 jam kerja (Senin-Jumat, skip weekend) setelah diajukan.
                             </div>
                         </div>
 

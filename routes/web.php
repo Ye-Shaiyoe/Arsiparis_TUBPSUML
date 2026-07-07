@@ -17,6 +17,11 @@ use App\Http\Controllers\WelcomeController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
+// Panduan Pengguna (Public — no login required)
+Route::get('/panduan', function () {
+    return view('panduan');
+})->name('panduan');
+
 // Verifikasi Surat (Public)
 Route::get('/v/{uuid}', [\App\Http\Controllers\VerifikasiSuratController::class, 'index'])->name('surat.verifikasi');
 

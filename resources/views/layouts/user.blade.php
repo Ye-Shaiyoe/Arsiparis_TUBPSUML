@@ -1452,11 +1452,10 @@
         }
         .modal-backdrop {
             z-index: 1059 !important;
-            pointer-events: none !important;
+            background-color: rgba(15, 23, 42, 0.35) !important;
         }
         .modal-backdrop.show {
-            opacity: 0.5 !important;
-            pointer-events: none !important;
+            opacity: 1 !important;
         }
         /* Ensure modal content is clickable */
         .modal-dialog,

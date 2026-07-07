@@ -630,7 +630,7 @@
                 </div>
                 <div class="faq-stat-divider"></div>
                 <div class="faq-stat">
-                    <div class="faq-stat-num">24 <span style="font-size:13px;font-weight:600">jam</span></div>
+                    <div class="faq-stat-num">30 <span style="font-size:13px;font-weight:600">jam</span></div>
                     <div class="faq-stat-label">Waktu SLA</div>
                 </div>
             </div>
@@ -900,7 +900,7 @@
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Waktu proses maksimal adalah <strong>24 jam kerja</strong> (Hanya dihitung hari kerja: Senin–Kamis pukul 07.30–16.00 WIB, Jumat pukul 07.30–16.30 WIB). Jika proses melebihi 24 jam kerja, sistem akan memberikan indikasi <strong>"Terlambat -1.4 jam"</strong> sebagai tanda bahwa surat telah melewati batas waktu SLA yang ditentukan.
+                        Waktu proses maksimal adalah <strong>30 jam kerja</strong> (Hanya dihitung hari kerja: Senin–Kamis pukul 07.30–16.00 WIB, Jumat pukul 07.30–16.30 WIB). Jika proses melebihi 30 jam kerja, sistem akan memberikan indikasi <strong>"Terlambat"</strong> sebagai tanda bahwa surat telah melewati batas waktu SLA yang ditentukan.
                     </div>
                 </div>
             </div>
@@ -956,7 +956,7 @@
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Jam operasional hari <strong>Jumat adalah 07.30 – 16.30 WIB</strong>. Jika Anda mengajukan lewat dari jam tersebut atau pada hari Sabtu/Minggu, sistem akan menandai layanan sebagai <strong>TUTUP</strong>. Anda baru bisa mengajukan kembali pada hari Senin mulai pukul 07.30 WIB. Hitungan SLA 24 jam juga akan "dibekukan" selama hari libur dan dilanjutkan kembali saat jam kerja aktif.
+                        Jam operasional hari <strong>Jumat adalah 07.30 – 16.30 WIB</strong>. Jika Anda mengajukan lewat dari jam tersebut atau pada hari Sabtu/Minggu, sistem akan menandai layanan sebagai <strong>TUTUP</strong>. Anda baru bisa mengajukan kembali pada hari Senin mulai pukul 07.30 WIB. Hitungan SLA 30 jam juga akan "dibekukan" selama hari libur dan dilanjutkan kembali saat jam kerja aktif.
                     </div>
                 </div>
             </div>
@@ -1127,7 +1127,7 @@
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Jika Anda mengajukan surat di luar jam kerja (misal: Jumat jam 15.00), maka perhitungan **SLA akan dibekukan (frozen)** selama hari Sabtu dan Minggu. SLA 24 jam Anda akan dilanjutkan kembali pada hari Senin pukul 07.30 pagi. Contoh: Deadline pengajuan Jumat jam 15.00 adalah Senin jam 15.00.
+                        Jika Anda mengajukan surat di luar jam kerja (misal: Jumat jam 15.00), maka perhitungan **SLA akan dibekukan (frozen)** selama hari Sabtu dan Minggu. SLA 30 jam Anda akan dilanjutkan kembali pada hari Senin pukul 07.30 pagi. Contoh: Deadline pengajuan Jumat jam 15.00 adalah Senin jam 21.00.
                     </div>
                 </div>
             </div>
