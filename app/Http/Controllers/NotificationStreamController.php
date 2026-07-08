@@ -36,7 +36,7 @@ class NotificationStreamController extends Controller
             // Connection keep-alive
             $heartbeatInterval = 30; // detik
             $lastHeartbeat = time();
-            $maxDuration = 55 * 60; // 55 menit max connection
+            $maxDuration = 20 * 60; // 20 menit max — browser auto-reconnect, PHP worker lebih sering bebas
             $startTime = time();
 
             // Flag untuk track notif yang sudah dikirim
@@ -62,10 +62,9 @@ class NotificationStreamController extends Controller
                         break;
                     }
 
-                    // Query notifikasi baru (optimal interval: 1-2 detik bukan 0.25s)
                     $currentTime = time();
                     $timeSinceLastCheck = $currentTime - $lastCheckTime;
-                    $checkInterval = 1; // Query setiap 1 detik (bukan 0.25-2)
+                    $checkInterval = 3; // Query setiap 3 detik — cukup responsif, 3x lebih hemat
                     
                     if ($timeSinceLastCheck >= $checkInterval) {
                         try {
@@ -103,12 +102,7 @@ class NotificationStreamController extends Controller
                                     }
                                 }
 
-                                // Send unread count
-                                $unreadCount = DB::table('notifications')
-                                    ->where('notifiable_id', $userId)
-                                    ->where('notifiable_type', 'App\\Models\\User')
-                                    ->whereNull('read_at')
-                                    ->count();
+                                $unreadCount = $notifications->filter(fn($n) => is_null($n->read_at))->count();
 
                                 echo "event: unread_count\n";
                                 echo "data: " . json_encode(['count' => (int)$unreadCount]) . "\n\n";
@@ -135,8 +129,7 @@ class NotificationStreamController extends Controller
                     }
                     flush();
 
-                    // Sleep lebih lama (prevent CPU spinning) - 1 detik
-                    sleep(1);
+                    sleep(3);
 
                 } catch (Exception $e) {
                     error_log("[SSE] Error: " . $e->getMessage() . ", user {$userId}");
