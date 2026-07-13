@@ -282,7 +282,7 @@ Aktifkan di production:
 **1. Clone dan install dependencies**
 
 ```bash
-git clone https://github.com/username/persuratan-bpsuml.git
+git clone https://github.com/Ye-Shaiyoe/Surat-Laravel.git
 cd persuratan-bpsuml
 composer install
 npm install
