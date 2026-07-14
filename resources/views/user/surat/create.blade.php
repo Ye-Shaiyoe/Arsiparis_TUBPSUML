@@ -158,7 +158,7 @@
                                     <i class="bi bi-file-earmark-word" style="font-size:28px; color:#2563eb; display:block; margin-bottom:6px;"></i>
                                     <span id="nama_word" style="font-size:12px;color:#6b7280;">
                                         Klik atau drag file .docx ke sini<br>
-                                        <span style="font-size:11px; color:#6b7280;">Maks. 10MB</span>
+                                        <span style="font-size:11px; color:#6b7280;">Maks. 5MB</span>
                                     </span>
                                 </label>
                                 @error('file_word')
@@ -180,7 +180,7 @@
                                     <i class="bi bi-paperclip" style="font-size:24px; display:block; margin-bottom:6px;"></i>
                                     <span id="nama_lampiran" style="font-size:12px;color:#6b7280;">
                                         Klik untuk upload lampiran<br>
-                                        <span style="font-size:11px; color:#6b7280;">Maks. 20MB</span>
+                                        <span style="font-size:11px; color:#6b7280;">Maks. 10MB</span>
                                     </span>
                                 </label>
                                 @error('file_lampiran')

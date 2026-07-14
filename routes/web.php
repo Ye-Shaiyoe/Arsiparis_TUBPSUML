@@ -70,15 +70,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/tabel', [UserSurat::class, 'table'])->name('table');
         Route::get('/export-excel', [UserSurat::class, 'exportExcel'])->name('exportExcel');
         Route::get('/ajukan', [UserSurat::class, 'create'])->name('create');
-        Route::post('/ajukan', [UserSurat::class, 'store'])->name('store');
+        Route::post('/ajukan', [UserSurat::class, 'store'])
+            ->middleware('throttle:5,1') // Maks 5 pengajuan per menit per user
+            ->name('store');
         Route::get('/manajemen/file-fisik-surat', [UserSurat::class, 'fileIndex'])->name('file_index');
         Route::get('/{surat}', [UserSurat::class, 'show'])->name('show');
         Route::get('/{surat}/edit', [UserSurat::class, 'edit'])->name('edit');
-        Route::patch('/{surat}', [UserSurat::class, 'update'])->name('update');
+        Route::patch('/{surat}', [UserSurat::class, 'update'])
+            ->middleware('throttle:5,1') // Maks 5 update draft per menit
+            ->name('update');
         Route::patch('/{surat}/metadata', [UserSurat::class, 'updateMetadata'])->name('updateMetadata');
         Route::get('/{surat}/preview/{tipe}', [UserSurat::class, 'preview'])->name('preview');
         Route::get('/{surat}/download/{tipe}', [UserSurat::class, 'download'])->name('download');
-        Route::post('/{surat}/reupload', [UserSurat::class, 'reuploadFile'])->name('reupload');
+        Route::post('/{surat}/reupload', [UserSurat::class, 'reuploadFile'])
+            ->middleware('throttle:5,1') // Maks 5 reupload per menit
+            ->name('reupload');
         Route::post('/{surat}/purge-files', [UserSurat::class, 'purgeFiles'])->name('purgeFiles');
         Route::post('/{surat}/rate', [UserSurat::class, 'rate'])->name('rate');
         Route::delete('/{surat}', [UserSurat::class, 'requestDelete'])->name('requestDelete');

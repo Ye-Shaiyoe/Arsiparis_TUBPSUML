@@ -12,6 +12,8 @@ use App\Notifications\DeleteRequestNotification;
 use App\Notifications\SuratDeletedNotification;
 use App\Notifications\FileRevisiNotification;
 use App\Notifications\SuratPurgedNotification;
+use App\Http\Requests\StoreSuratRequest;
+use App\Http\Requests\UpdateSuratRequest;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -127,30 +129,15 @@ class SuratController extends Controller
         return view('user.surat.create', compact('templates', 'isLibur'));
     }
 
-    public function store(Request $request)
+    public function store(StoreSuratRequest $request)
     {
-        $isDraft = $request->input('action') === 'draft';
+        $isDraft = $request->isDraft();
 
         if ($this->isLayananTutup() && !$isDraft) {
             return back()->with('error', 'Mohon maaf, pengajuan surat baru hanya tersedia pada hari kerja. Senin–Kamis pukul 07.00–16.00 WIB, Jumat pukul 07.30–16.30 WIB. Sabtu & Minggu libur. Namun Anda tetap bisa menyimpan sebagai draf.');
         }
 
-        $rules = [
-            'judul' => ($isDraft ? 'nullable' : 'required') . '|string|max:255',
-            'jenis' => ($isDraft ? 'nullable' : 'required') . '|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
-            'sifat' => ($isDraft ? 'nullable' : 'required') . '|in:biasa,segera,rahasia',
-            'tujuan' => ($isDraft ? 'nullable' : 'required') . '|string|max:500',
-            'catatan_pengusul' => 'nullable|string|max:100',
-            'file_word' => ($isDraft ? 'nullable' : 'required') . '|file|mimes:docx,doc|max:5120',
-            'file_lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc,xlsx,xls|max:10240',
-        ];
-
-        $request->validate($rules, [
-            'file_word.mimes' => 'File harus berupa dokumen Word (.docx, .doc)',
-            'file_lampiran.mimes' => 'File lampiran harus berupa PDF, Gambar (JPG, PNG), Word (DOCX/DOC), atau Excel (XLSX/XLS)',
-        ]);
-
-        // Upload file ke disk 'private'
+        // Upload file ke disk 'private' (validated & sanitized oleh StoreSuratRequest)
         $fileWord = $request->hasFile('file_word')
             ? $request->file('file_word')->store('surat/word', 'private')
             : null;
@@ -164,7 +151,7 @@ class SuratController extends Controller
         $surat = Surat::create([
             'user_id' => Auth::id(),
             'judul' => $request->judul ?? 'Draft Surat ' . now()->format('d/m/Y H:i'),
-            'jenis' => $request->jenis ?? ('nota_dinas'), // Default for drafts
+            'jenis' => $request->jenis ?? 'nota_dinas', // Default for drafts
             'sifat' => $request->sifat ?? 'biasa',
             'tujuan' => $request->tujuan ?? '', // Default for drafts
             'catatan_pengusul' => $request->catatan_pengusul,
@@ -208,27 +195,14 @@ class SuratController extends Controller
         return view('user.surat.edit', compact('surat', 'templates', 'isLibur'));
     }
 
-    public function update(Request $request, Surat $surat)
+    public function update(UpdateSuratRequest $request, Surat $surat)
     {
-        abort_if($surat->user_id !== Auth::id() || $surat->status !== 'draft', 403);
-
-        $isDraft = $request->input('action') === 'draft';
+        // Otorisasi sudah ditangani oleh UpdateSuratRequest::authorize()
+        $isDraft = $request->isDraft();
 
         if ($this->isLayananTutup() && !$isDraft) {
             return back()->with('error', 'Mohon maaf, pengajuan surat baru hanya tersedia pada hari kerja. Senin–Kamis pukul 07.00–16.00 WIB, Jumat pukul 07.30–16.30 WIB. Sabtu & Minggu libur. Namun Anda tetap bisa menyimpan draf ini.');
         }
-
-        $rules = [
-            'judul' => ($isDraft ? 'nullable' : 'required') . '|string|max:255',
-            'jenis' => ($isDraft ? 'nullable' : 'required') . '|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
-            'sifat' => ($isDraft ? 'nullable' : 'required') . '|in:biasa,segera,rahasia',
-            'tujuan' => ($isDraft ? 'nullable' : 'required') . '|string|max:500',
-            'catatan_pengusul' => 'nullable|string|max:100',
-            'file_word' => ($isDraft || $surat->file_word ? 'nullable' : 'required') . '|file|mimes:docx,doc|max:5120',
-            'file_lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc,xlsx,xls|max:10240',
-        ];
-
-        $request->validate($rules);
 
         if ($request->hasFile('file_word')) {
             if ($surat->file_word)
@@ -288,11 +262,11 @@ class SuratController extends Controller
         ]);
 
         $surat->update([
-            'judul' => $request->judul,
+            'judul' => strip_tags(trim($request->judul)),
             'jenis' => $request->jenis,
             'sifat' => $request->sifat,
-            'tujuan' => $request->tujuan,
-            'catatan_pengusul' => $request->catatan_pengusul,
+            'tujuan' => strip_tags(trim($request->tujuan)),
+            'catatan_pengusul' => $request->catatan_pengusul ? strip_tags(trim($request->catatan_pengusul)) : null,
         ]);
 
         return back()->with('success', 'Detail surat berhasil diperbarui.');
