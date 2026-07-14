@@ -64,8 +64,6 @@
             <li><a href="#about">Tentang</a></li>
             <li><a href="#stats">Statistik</a></li>
             <li><a href="#spiral-section">Jenis</a></li>
-            <li><a href="#charts">Grafik</a></li>
-            <li><a href="#portals">Portal</a></li>
             <li><a href="#features-scroller">Fitur</a></li>
             <li><a href="#alur-kerja">Alur</a></li>
             <li><a href="#developer">Developer</a></li>
@@ -80,8 +78,8 @@
                         <span class="user-role">Dashboard</span>
                     </div>
                     <div class="user-avatar-small">
-                        @if(Auth::user()->profile_photo)
-                            <img src="{{ Storage::url(Auth::user()->profile_photo) }}" alt="Profile">
+                        @if(Auth::user()->getAvatarUrl())
+                            <img src="{{ Auth::user()->getAvatarUrl() }}" alt="Profile">
                         @else
                             {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                         @endif
