@@ -34,10 +34,10 @@ class StoreSuratRequest extends FormRequest
 
         return [
             // Teks
-            'judul'             => [$req, 'string', 'max:255'],
+            'judul'             => [$req, 'string', 'max:50'],
             'jenis'             => [$req, 'string', 'in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya'],
             'sifat'             => [$req, 'string', 'in:biasa,segera,rahasia'],
-            'tujuan'            => [$req, 'string', 'max:500'],
+            'tujuan'            => [$req, 'string', 'max:50'],
             'catatan_pengusul'  => ['nullable', 'string', 'max:100'],
 
             // File — tipe & ukuran SELALU divalidasi jika file dikirim (nullable tidak skip mime check)
@@ -65,12 +65,13 @@ class StoreSuratRequest extends FormRequest
     {
         return [
             'judul.required'            => 'Judul surat wajib diisi.',
+            'judul.max'                 => 'Judul surat maksimal 50 karakter.',
             'jenis.required'            => 'Jenis surat wajib dipilih.',
             'jenis.in'                  => 'Jenis surat yang dipilih tidak valid.',
             'sifat.required'            => 'Sifat surat wajib dipilih.',
             'sifat.in'                  => 'Sifat surat yang dipilih tidak valid.',
             'tujuan.required'           => 'Tujuan surat wajib diisi.',
-            'tujuan.max'                => 'Tujuan surat maksimal 500 karakter.',
+            'tujuan.max'                => 'Tujuan surat maksimal 50 karakter.',
             'catatan_pengusul.max'      => 'Catatan maksimal 100 karakter.',
             'file_word.required'        => 'File surat Word (.docx) wajib diupload.',
             'file_word.mimes'           => 'File surat harus berformat Word (.docx / .doc).',

@@ -52,7 +52,12 @@
                                 <label class="form-label" style="font-size:13px;font-weight:500;color:#111827;">
                                     Judul Surat <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" name="judul" value="{{ old('judul', $surat->judul) }}"
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span></span>
+                                    <span id="judulCount" class="text-muted" style="font-size:11px;">{{ strlen(old('judul', $surat->judul)) }} / 50</span>
+                                </div>
+                                <input type="text" name="judul" id="judul" value="{{ old('judul', $surat->judul) }}"
+                                    maxlength="50"
                                     class="form-control @error('judul') is-invalid @enderror"
                                     placeholder="..."
                                     style="font-size:13px; border-radius:8px;background:#ffffff;color:#111827;border-color:#e5e7eb;">
@@ -99,7 +104,12 @@
                                 <label class="form-label" style="font-size:13px;font-weight:500;color:#111827;">
                                     Tujuan Surat <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" name="tujuan" value="{{ old('tujuan', $surat->tujuan) }}"
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span></span>
+                                    <span id="tujuanCount" class="text-muted" style="font-size:11px;">{{ strlen(old('tujuan', $surat->tujuan)) }} / 50</span>
+                                </div>
+                                <input type="text" name="tujuan" id="tujuan" value="{{ old('tujuan', $surat->tujuan) }}"
+                                    maxlength="50"
                                     class="form-control @error('tujuan') is-invalid @enderror"
                                     placeholder="..."
                                     style="font-size:13px; border-radius:8px;background:#ffffff;color:#111827;border-color:#e5e7eb;">
@@ -251,6 +261,26 @@ document.getElementById('formEdit')?.addEventListener('submit', function(e) {
     }
 });
 
+// ── Char counter generik ────────────────────────────────────────────
+function initCharCounter(inputId, counterId, max) {
+    const input   = document.getElementById(inputId);
+    const counter = document.getElementById(counterId);
+    if (!input || !counter) return;
+    const update = () => {
+        const len = input.value.length;
+        counter.innerText = `${len} / ${max}`;
+        if (len >= max) {
+            counter.classList.add('text-danger');
+            counter.classList.remove('text-muted');
+        } else {
+            counter.classList.remove('text-danger');
+            counter.classList.add('text-muted');
+        }
+    };
+    input.addEventListener('input', update);
+    update(); // initial
+}
+
 // Character Counter logic
 const catatanInput = document.getElementById('catatan_pengusul');
 const charCount = document.getElementById('charCount');
@@ -271,6 +301,9 @@ if (catatanInput && charCount) {
     catatanInput.addEventListener('input', updateCount);
     updateCount(); // Initial count
 }
+
+initCharCounter('judul',  'judulCount',  50);
+initCharCounter('tujuan', 'tujuanCount', 50);
 </script>
 @endpush
 

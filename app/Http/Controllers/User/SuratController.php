@@ -254,10 +254,10 @@ class SuratController extends Controller
         }
 
         $request->validate([
-            'judul' => 'required|string|max:255',
+            'judul' => 'required|string|max:50',
             'jenis' => 'required|in:nota_dinas,surat_dinas,surat_keputusan,surat_pernyataan,surat_keterangan,surat_undangan,surat_lainnya',
             'sifat' => 'required|in:biasa,segera,rahasia',
-            'tujuan' => 'required|string|max:500',
+            'tujuan' => 'required|string|max:50',
             'catatan_pengusul' => 'nullable|string|max:100',
         ]);
 

@@ -101,6 +101,23 @@ class User extends Authenticatable
     }
 
     /**
+     * Mendapatkan URL avatar user.
+     * Mengembalikan URL foto profil jika ada, atau null jika tidak.
+     */
+    public function getAvatarUrl(): ?string
+    {
+        if ($this->profile_photo) {
+            // Jika sudah berupa URL lengkap
+            if (str_starts_with($this->profile_photo, 'http')) {
+                return $this->profile_photo;
+            }
+            return asset('storage/' . $this->profile_photo);
+        }
+
+        return null;
+    }
+
+    /**
      * Cek apakah user bisa approve tahap tertentu
      */
     public function canApproveTahap(int $tahap): bool
