@@ -51,14 +51,9 @@
                                 <label class="form-label" style="font-size:13px;font-weight:500;color:#111827;">
                                     Judul Surat <span class="text-danger">*</span>
                                 </label>
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <span></span>
-                                    <span id="judulCount" class="text-muted" style="font-size:11px;">{{ strlen(old('judul','')) }} / 50</span>
-                                </div>
-                                <input type="text" name="judul" id="judul" value="{{ old('judul') }}"
-                                    maxlength="50"
+                                <input type="text" name="judul" value="{{ old('judul') }}"
                                     class="form-control @error('judul') is-invalid @enderror"
-                                    placeholder="Contoh: Permohonan Kalibrasi Alat Ukur"
+                                    placeholder="Contoh: Permohonan Kalibrasi Alat Ukur Timbangan"
                                     style="font-size:13px; border-radius:8px;background:#ffffff;color:#111827;border-color:#e5e7eb;">
                                 @error('judul')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -103,14 +98,9 @@
                                 <label class="form-label" style="font-size:13px;font-weight:500;color:#111827;">
                                     Tujuan Surat <span class="text-danger">*</span>
                                 </label>
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <span></span>
-                                    <span id="tujuanCount" class="text-muted" style="font-size:11px;">{{ strlen(old('tujuan','')) }} / 50</span>
-                                </div>
-                                <input type="text" name="tujuan" id="tujuan" value="{{ old('tujuan') }}"
-                                    maxlength="50"
+                                <input type="text" name="tujuan" value="{{ old('tujuan') }}"
                                     class="form-control @error('tujuan') is-invalid @enderror"
-                                    placeholder="Contoh: Kepala Dinas Perdagangan"
+                                    placeholder="Contoh: Kepala Dinas Perdagangan Provinsi Jawa Barat"
                                     style="font-size:13px; border-radius:8px;background:#ffffff;color:#111827;border-color:#e5e7eb;">
                                 @error('tujuan')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -272,26 +262,6 @@ document.addEventListener('turbo:load', function() {
         });
     }
 
-    // ── Char counter generik ────────────────────────────────────────────
-    function initCharCounter(inputId, counterId, max) {
-        const input   = document.getElementById(inputId);
-        const counter = document.getElementById(counterId);
-        if (!input || !counter) return;
-        const update = () => {
-            const len = input.value.length;
-            counter.innerText = `${len} / ${max}`;
-            if (len >= max) {
-                counter.classList.add('text-danger');
-                counter.classList.remove('text-muted');
-            } else {
-                counter.classList.remove('text-danger');
-                counter.classList.add('text-muted');
-            }
-        };
-        input.addEventListener('input', update);
-        update(); // initial
-    }
-
     // Character Counter logic
     const catatanInput = document.getElementById('catatan_pengusul');
     const charCount = document.getElementById('charCount');
@@ -312,9 +282,6 @@ document.addEventListener('turbo:load', function() {
         catatanInput.addEventListener('input', updateCount);
         updateCount(); // Initial count
     }
-
-    initCharCounter('judul',  'judulCount',  50);
-    initCharCounter('tujuan', 'tujuanCount', 50);
 });
 </script>
 @endpush
