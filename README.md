@@ -1,7 +1,7 @@
 <div align="center">
 
 # 📬 Sistem Informasi Persuratan Digital
-### Balai Perhubungan Sumatera Utara (BP Suml)
+### BALAI PENGELOLAAN SUML
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat-square&logo=php&logoColor=white)](https://php.net)
