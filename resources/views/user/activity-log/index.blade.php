@@ -169,7 +169,7 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+function initDeleteAllLogs() {
     const btn = document.getElementById('btn-hapus-semua');
     if (!btn) return;
 
@@ -191,7 +191,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-});
+}
+
+document.addEventListener('turbo:load', initDeleteAllLogs);
+if (document.readyState !== 'loading') initDeleteAllLogs();
+else document.addEventListener('DOMContentLoaded', initDeleteAllLogs);
 </script>
 @endpush
 
