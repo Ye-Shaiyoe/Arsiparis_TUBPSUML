@@ -1469,6 +1469,334 @@
     }
 </script>
 
+{{-- ============================================================
+     FAB ANTRIAN SURAT (Floating Quick-View per Sifat)
+============================================================ --}}
+@php
+    $fabUser = Auth::user();
+    $fabQuery = \App\Models\Surat::query()
+        ->whereIn('status', ['proses', 'revisi', 'revisi_admin'])
+        ->with('user');
+
+    if ($fabUser->role === 'admin_aspirasi') {
+        $fabQuery->where(function($q){
+            $q->where('tahap_sekarang', 2)->orWhere('tahap_sekarang', '>=', 5);
+        });
+    } elseif ($fabUser->role === 'admin_kasubbag_tu') {
+        $fabQuery->where('tahap_sekarang', 3);
+    } elseif ($fabUser->role === 'admin_kepala_balai') {
+        $fabQuery->where('tahap_sekarang', 4);
+    }
+
+    $fabSuratAll    = (clone $fabQuery)->orderByRaw("CASE sifat WHEN 'segera' THEN 0 WHEN 'rahasia' THEN 1 ELSE 2 END")->orderBy('created_at','asc')->get();
+    $fabCountSegera  = $fabSuratAll->where('sifat','segera')->count();
+    $fabCountRahasia = $fabSuratAll->where('sifat','rahasia')->count();
+    $fabCountBiasa   = $fabSuratAll->where('sifat','biasa')->count();
+    $fabTotal        = $fabSuratAll->count();
+@endphp
+
+{{-- FAB Button --}}
+<div id="fab-antrian-wrap" class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3" style="user-select:none;">
+
+    {{-- Badge counts beside button --}}
+    <div id="fab-badge-row" class="flex items-center gap-2 transition-all duration-300">
+        @if($fabCountSegera > 0)
+        <div class="flex items-center gap-1 bg-red-500/90 backdrop-blur text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-lg shadow-red-500/30 border border-red-400/30 animate-pulse">
+            <i class="bi bi-lightning-fill text-[10px]"></i> Segera {{ $fabCountSegera }}
+        </div>
+        @endif
+        @if($fabCountRahasia > 0)
+        <div class="flex items-center gap-1 bg-amber-500/90 backdrop-blur text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-lg shadow-amber-500/30 border border-amber-400/30">
+            <i class="bi bi-shield-lock-fill text-[10px]"></i> Rahasia {{ $fabCountRahasia }}
+        </div>
+        @endif
+        @if($fabCountBiasa > 0)
+        <div class="flex items-center gap-1 bg-slate-600/90 backdrop-blur text-white text-[11px] font-black px-2.5 py-1 rounded-full shadow-lg shadow-slate-500/20 border border-slate-500/30">
+            <i class="bi bi-envelope-fill text-[10px]"></i> Biasa {{ $fabCountBiasa }}
+        </div>
+        @endif
+    </div>
+
+    {{-- FAB Main Button --}}
+    <button id="fab-antrian-btn" onclick="toggleFabAntrian()"
+        class="relative w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white transition-all duration-300 hover:scale-110 active:scale-95"
+        style="background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); box-shadow: 0 8px 32px rgba(67,97,238,0.45), 0 0 0 1px rgba(255,255,255,0.1);"
+        title="Antrian Surat">
+        <i class="bi bi-envelope-fill text-xl" id="fab-icon"></i>
+        @if($fabTotal > 0)
+        <span class="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-white shadow-lg shadow-red-500/40 animate-pulse">
+            {{ $fabTotal > 99 ? '99+' : $fabTotal }}
+        </span>
+        @endif
+    </button>
+</div>
+
+{{-- FAB Popup Panel --}}
+<div id="fab-popup"
+    class="fixed bottom-24 right-6 z-50 hidden"
+    style="width: min(92vw, 380px);">
+    <div class="rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+         style="background: linear-gradient(145deg, rgba(15,23,42,0.97) 0%, rgba(30,41,59,0.99) 100%); backdrop-filter: blur(24px);">
+
+        {{-- Header --}}
+        <div class="px-4 pt-4 pb-3 border-b border-white/8 flex items-center justify-between">
+            <div>
+                <div class="text-white font-bold text-[14px] flex items-center gap-2">
+                    <i class="bi bi-stack text-blue-400"></i>
+                    Antrian Perlu Dikerjakan
+                </div>
+                <div class="text-slate-400 text-[11px] mt-0.5">{{ $fabTotal }} surat menunggu aksimu</div>
+            </div>
+            <button onclick="toggleFabAntrian()" class="w-7 h-7 rounded-full bg-white/8 hover:bg-white/15 flex items-center justify-center text-slate-400 hover:text-white transition-all text-sm">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+
+        {{-- Filter Tabs --}}
+        <div class="flex gap-1 px-3 pt-3 pb-2">
+            <button onclick="setFabFilter('semua')" id="fab-tab-semua"
+                class="fab-tab flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all duration-200 fab-tab-active">
+                Semua <span class="ml-1 opacity-70">{{ $fabTotal }}</span>
+            </button>
+            <button onclick="setFabFilter('segera')" id="fab-tab-segera"
+                class="fab-tab flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all duration-200 flex items-center justify-center gap-1">
+                <i class="bi bi-lightning-fill"></i> Segera
+                @if($fabCountSegera > 0)<span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-0.5">{{ $fabCountSegera }}</span>@endif
+            </button>
+            <button onclick="setFabFilter('rahasia')" id="fab-tab-rahasia"
+                class="fab-tab flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all duration-200 flex items-center justify-center gap-1">
+                <i class="bi bi-shield-lock-fill"></i> Rahasia
+                @if($fabCountRahasia > 0)<span class="bg-amber-500 text-white text-[9px] px-1.5 py-0.5 rounded-full ml-0.5">{{ $fabCountRahasia }}</span>@endif
+            </button>
+            <button onclick="setFabFilter('biasa')" id="fab-tab-biasa"
+                class="fab-tab flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all duration-200">
+                Biasa <span class="ml-1 opacity-70">{{ $fabCountBiasa }}</span>
+            </button>
+        </div>
+
+        {{-- Card List --}}
+        <div id="fab-card-list" class="overflow-y-auto overflow-x-hidden px-3 pb-3 space-y-2" style="max-height: 380px; scrollbar-width: thin; scrollbar-color: #334155 transparent;">
+            @forelse($fabSuratAll as $fs)
+            <a href="{{ route('admin.surat.show', $fs->uuid) }}"
+               data-turbo="false"
+               data-sifat="{{ $fs->sifat }}"
+               onclick="closeFabAntrian()"
+               class="fab-card block rounded-xl p-3 border transition-all duration-200 hover:translate-x-[-2px] hover:border-blue-500/40 group"
+               style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); text-decoration: none;">
+
+                <div class="flex items-start gap-3">
+                    {{-- Sifat Indicator --}}
+                    <div class="fab-sifat-dot shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5
+                        {{ $fs->sifat === 'segera' ? 'bg-red-500/20 border border-red-500/30' : ($fs->sifat === 'rahasia' ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-slate-600/30 border border-slate-600/30') }}">
+                        @if($fs->sifat === 'segera')
+                            <i class="bi bi-lightning-fill text-red-400 text-[13px]"></i>
+                        @elseif($fs->sifat === 'rahasia')
+                            <i class="bi bi-shield-lock-fill text-amber-400 text-[13px]"></i>
+                        @else
+                            <i class="bi bi-envelope-fill text-slate-400 text-[13px]"></i>
+                        @endif
+                    </div>
+
+                    {{-- Content --}}
+                    <div class="flex-1 min-w-0">
+                        {{-- Judul scrollable on overflow --}}
+                        <div class="fab-judul-wrap overflow-x-auto pb-0.5" style="scrollbar-width: none;">
+                            <div class="text-white text-[13px] font-semibold whitespace-nowrap group-hover:text-blue-300 transition-colors" style="min-width: max-content;">
+                                {{ $fs->judul }}
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 mt-1 flex-wrap">
+                            {{-- Jenis --}}
+                            <span class="text-[10px] text-slate-400 bg-white/5 px-1.5 py-0.5 rounded-md border border-white/8 whitespace-nowrap">
+                                {{ $fs->jenis_label }}
+                            </span>
+                            {{-- Sifat badge --}}
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md whitespace-nowrap
+                                {{ $fs->sifat === 'segera' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : ($fs->sifat === 'rahasia' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-slate-600/20 text-slate-400 border border-slate-600/30') }}">
+                                {{ ucfirst($fs->sifat) }}
+                            </span>
+                            {{-- Tahap --}}
+                            <span class="text-[10px] text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md border border-blue-500/20 whitespace-nowrap">
+                                Tahap {{ $fs->tahap_sekarang }}
+                            </span>
+                            {{-- SLA --}}
+                            @if($fs->deadline_sla)
+                                @if(now()->gt($fs->deadline_sla))
+                                    <span class="text-[10px] font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded-md border border-red-500/20 whitespace-nowrap">
+                                        <i class="bi bi-alarm-fill"></i> Terlambat
+                                    </span>
+                                @elseif(now()->diffInHours($fs->deadline_sla) <= 6)
+                                    <span class="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-md border border-amber-500/20 whitespace-nowrap animate-pulse">
+                                        <i class="bi bi-clock-fill"></i> {{ $fs->sisa_jam }}
+                                    </span>
+                                @endif
+                            @endif
+                        </div>
+
+                        {{-- Pengusul + tanggal --}}
+                        <div class="flex items-center justify-between mt-1.5">
+                            <span class="text-[11px] text-slate-500 truncate max-w-[160px]">
+                                <i class="bi bi-person text-[10px]"></i> {{ $fs->user->name ?? '-' }}
+                            </span>
+                            <span class="text-[10px] text-slate-600 whitespace-nowrap ml-2">
+                                {{ $fs->created_at->diffForHumans() }}
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- Arrow --}}
+                    <i class="bi bi-arrow-right-circle text-slate-600 group-hover:text-blue-400 transition-colors text-base shrink-0 mt-0.5"></i>
+                </div>
+            </a>
+            @empty
+            <div class="text-center py-8">
+                <i class="bi bi-check-circle text-emerald-500 text-3xl opacity-60"></i>
+                <p class="text-slate-400 text-[12px] mt-2">Tidak ada antrian saat ini</p>
+            </div>
+            @endforelse
+        </div>
+
+        {{-- Footer --}}
+        @if($fabTotal > 0)
+        <div class="px-3 pb-3">
+            <a href="{{ route('admin.surat.index') }}" data-turbo="false" onclick="closeFabAntrian()"
+               class="block w-full text-center py-2 rounded-xl text-[12px] font-bold text-blue-400 border border-blue-500/25 hover:bg-blue-500/10 transition-all duration-200">
+                Lihat Semua Antrian <i class="bi bi-arrow-right ml-1"></i>
+            </a>
+        </div>
+        @endif
+
+    </div>
+</div>
+
+<style>
+    /* FAB Popup animation */
+    #fab-popup.fab-open {
+        animation: fabPopIn 0.25s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    #fab-popup.fab-close {
+        animation: fabPopOut 0.18s ease-in forwards;
+    }
+    @keyframes fabPopIn {
+        from { opacity: 0; transform: translateY(16px) scale(0.95); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes fabPopOut {
+        from { opacity: 1; transform: translateY(0) scale(1); }
+        to   { opacity: 0; transform: translateY(10px) scale(0.96); }
+    }
+
+    /* FAB Tab styles */
+    .fab-tab {
+        color: #64748b;
+        background: transparent;
+        border: 1px solid transparent;
+    }
+    .fab-tab:hover {
+        background: rgba(255,255,255,0.06);
+        color: #94a3b8;
+    }
+    .fab-tab-active {
+        background: rgba(67,97,238,0.18) !important;
+        color: #60a5fa !important;
+        border-color: rgba(67,97,238,0.35) !important;
+    }
+
+    /* Judul scrollable on hover */
+    .fab-judul-wrap { cursor: default; }
+    .fab-card:hover .fab-judul-wrap { overflow-x: auto; cursor: pointer; }
+    .fab-judul-wrap::-webkit-scrollbar { height: 2px; }
+    .fab-judul-wrap::-webkit-scrollbar-thumb { background: #4361ee; border-radius: 99px; }
+
+    /* FAB Button pulse ring */
+    #fab-antrian-btn::after {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 2px solid rgba(67,97,238,0.35);
+        animation: fabRing 2.5s ease-out infinite;
+    }
+    @keyframes fabRing {
+        0%   { transform: scale(1); opacity: 0.6; }
+        70%  { transform: scale(1.18); opacity: 0; }
+        100% { opacity: 0; }
+    }
+</style>
+
+<script>
+    var fabOpen = false;
+
+    function toggleFabAntrian() {
+        fabOpen ? closeFabAntrian() : openFabAntrian();
+    }
+
+    function openFabAntrian() {
+        const popup = document.getElementById('fab-popup');
+        const icon  = document.getElementById('fab-icon');
+        popup.classList.remove('hidden', 'fab-close');
+        popup.classList.add('fab-open');
+        icon.className = 'bi bi-x-lg text-xl';
+        fabOpen = true;
+    }
+
+    function closeFabAntrian() {
+        const popup = document.getElementById('fab-popup');
+        const icon  = document.getElementById('fab-icon');
+        popup.classList.remove('fab-open');
+        popup.classList.add('fab-close');
+        setTimeout(() => { popup.classList.add('hidden'); popup.classList.remove('fab-close'); }, 180);
+        icon.className = 'bi bi-envelope-fill text-xl';
+        fabOpen = false;
+    }
+
+    function setFabFilter(sifat) {
+        // Update active tab
+        ['semua','segera','rahasia','biasa'].forEach(s => {
+            document.getElementById('fab-tab-' + s)?.classList.remove('fab-tab-active');
+        });
+        document.getElementById('fab-tab-' + sifat)?.classList.add('fab-tab-active');
+
+        // Filter cards
+        document.querySelectorAll('.fab-card').forEach(card => {
+            if (sifat === 'semua' || card.dataset.sifat === sifat) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Empty state
+        const visible = document.querySelectorAll('.fab-card:not([style*="display: none"])').length;
+        const emptyEl = document.getElementById('fab-empty-state');
+        if (visible === 0 && !emptyEl) {
+            const list = document.getElementById('fab-card-list');
+            const el = document.createElement('div');
+            el.id = 'fab-empty-state';
+            el.className = 'text-center py-6';
+            el.innerHTML = '<i class="bi bi-check-circle text-emerald-500 text-2xl opacity-60"></i><p class="text-slate-400 text-[12px] mt-2">Tidak ada antrian ' + sifat + '</p>';
+            list.appendChild(el);
+        } else if (visible > 0 && emptyEl) {
+            emptyEl.remove();
+        }
+    }
+
+    // Close popup when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!fabOpen) return;
+        const wrap = document.getElementById('fab-antrian-wrap');
+        const popup = document.getElementById('fab-popup');
+        if (wrap && !wrap.contains(e.target) && popup && !popup.contains(e.target)) {
+            closeFabAntrian();
+        }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && fabOpen) closeFabAntrian();
+    });
+</script>
 {{-- Form untuk Tandai Semua Dibaca --}}
 <form id="readall-form" action="{{ route('notif.readAll') }}" method="POST" class="d-none">@csrf</form>
 <form id="deleteall-form" action="{{ route('notif.deleteAll') }}" method="POST" class="d-none">@csrf</form>

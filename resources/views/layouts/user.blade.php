@@ -1551,14 +1551,6 @@
                     <span>Notifikasi</span>
                 </a>
                 
-            <div class="user-nav-label">Upload Surat</div>
-            <a href="{{ route('user.surat.create') }}"
-               class="user-sidebar-cta {{ request()->routeIs('user.surat.create') ? 'is-active' : '' }}" data-tooltip="Ajukan Surat">
-                <i class="bi bi-plus-lg"></i>
-                <span>Ajukan Surat</span>
-            </a>
-            
-
             <div class="user-nav-label">Surat</div>
             <div class="user-nav-group {{ $userSuratGroupOpen ? 'is-open' : '' }}">
                 <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')" data-tooltip="Surat Saya">
@@ -2383,7 +2375,203 @@
 
 @stack('scripts')
 
-{{-- ===== OFFCANVAS NOTIFIKASI ===== --}}
+{{-- ============================================================
+     FAB AJUKAN SURAT — Desktop (pojok kanan bawah) + Mobile Bottom Nav
+============================================================ --}}
+
+{{-- ── Desktop FAB ── --}}
+<a href="{{ route('user.surat.create') }}"
+   id="user-fab-btn"
+   data-turbo="false"
+   title="Ajukan Surat Baru"
+   class="d-none d-lg-flex"
+   style="
+       position: fixed;
+       bottom: 28px;
+       right: 28px;
+       z-index: 1055;
+       width: 60px;
+       height: 60px;
+       border-radius: 50%;
+       background: linear-gradient(135deg, #2563eb 0%, #0284c7 60%, #06b6d4 100%);
+       color: #fff;
+       text-decoration: none;
+       align-items: center;
+       justify-content: center;
+       font-size: 1.5rem;
+       box-shadow: 0 8px 28px rgba(6,182,212,0.45), 0 2px 8px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.15);
+       transition: transform 0.2s ease, box-shadow 0.2s ease;
+   "
+   onmouseover="this.style.transform='translateY(-3px) scale(1.07)'; this.style.boxShadow='0 14px 36px rgba(6,182,212,0.55), 0 4px 12px rgba(0,0,0,0.18)';"
+   onmouseout="this.style.transform=''; this.style.boxShadow='0 8px 28px rgba(6,182,212,0.45), 0 2px 8px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.15)';"
+   onmousedown="this.style.transform='scale(0.95)';"
+   onmouseup="this.style.transform='translateY(-3px) scale(1.07)';">
+    {{-- Pulse ring --}}
+    <span style="
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        border: 2px solid rgba(6,182,212,0.35);
+        animation: userFabRing 2.8s ease-out infinite;
+        pointer-events: none;
+    "></span>
+    <i class="bi bi-plus-lg"></i>
+</a>
+
+{{-- ── Mobile Bottom Navigation Bar ── --}}
+<nav id="user-mobile-nav"
+     class="d-lg-none"
+     style="
+         position: fixed;
+         bottom: 0; left: 0; right: 0;
+         z-index: 1050;
+         height: 64px;
+         background: rgba(255,255,255,0.88);
+         backdrop-filter: blur(20px);
+         -webkit-backdrop-filter: blur(20px);
+         border-top: 1px solid rgba(0,0,0,0.06);
+         box-shadow: 0 -4px 24px rgba(15,23,42,0.08);
+         display: flex;
+         align-items: center;
+         justify-content: space-around;
+         padding: 0 8px;
+     ">
+
+    {{-- Dashboard --}}
+    <a href="{{ route('dashboard') }}" data-turbo="false"
+       class="mob-nav-item {{ request()->routeIs('dashboard') ? 'mob-nav-active' : '' }}">
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span>Beranda</span>
+    </a>
+
+    {{-- Surat --}}
+    <a href="{{ route('user.surat.index') }}" data-turbo="false"
+       class="mob-nav-item {{ request()->routeIs('user.surat.*') && !request()->routeIs('user.surat.create') ? 'mob-nav-active' : '' }}">
+        <i class="bi bi-envelope-paper"></i>
+        <span>Surat</span>
+    </a>
+
+    {{-- ── Tombol Plus Hexagon di Tengah ── --}}
+    <a href="{{ route('user.surat.create') }}" data-turbo="false"
+       class="mob-nav-plus {{ request()->routeIs('user.surat.create') ? 'mob-nav-plus-active' : '' }}"
+       title="Ajukan Surat">
+        <i class="bi bi-plus"></i>
+    </a>
+
+    {{-- Notifikasi --}}
+    <a href="{{ route('user.notifikasi.index') }}" data-turbo="false"
+       class="mob-nav-item {{ request()->routeIs('user.notifikasi.*') ? 'mob-nav-active' : '' }}" style="position:relative;">
+        <i class="bi bi-bell{{ $unreadNotif > 0 ? '-fill' : '' }}"></i>
+        @if($unreadNotif > 0)
+            <span style="
+                position: absolute;
+                top: 2px; right: calc(50% - 18px);
+                min-width: 16px; height: 16px;
+                background: #ef4444; color: #fff;
+                font-size: 9px; font-weight: 800;
+                border-radius: 99px;
+                display: flex; align-items: center; justify-content: center;
+                padding: 0 4px;
+                border: 2px solid #fff;
+                line-height: 1;
+            ">{{ $unreadNotif > 9 ? '9+' : $unreadNotif }}</span>
+        @endif
+        <span>Notif</span>
+    </a>
+
+    {{-- Statistik --}}
+    <a href="{{ route('user.statistik.index') }}" data-turbo="false"
+       class="mob-nav-item {{ request()->routeIs('user.statistik.*') ? 'mob-nav-active' : '' }}">
+        <i class="bi bi-graph-up-arrow"></i>
+        <span>Statistik</span>
+    </a>
+
+</nav>
+
+{{-- Spacer agar konten tidak tertutup bottom nav di HP --}}
+<div class="d-lg-none" style="height: 64px;" aria-hidden="true"></div>
+
+<style>
+    /* ── Mobile Bottom Nav Items ── */
+    .mob-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        text-decoration: none;
+        color: #94a3b8;
+        font-size: 10px;
+        font-weight: 600;
+        min-width: 48px;
+        padding: 4px 0;
+        border-radius: 12px;
+        transition: color 0.2s ease, transform 0.15s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .mob-nav-item i {
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+    .mob-nav-item:hover,
+    .mob-nav-item:active {
+        color: #0284c7;
+        transform: translateY(-2px);
+    }
+    .mob-nav-item.mob-nav-active {
+        color: #0284c7;
+    }
+    .mob-nav-item.mob-nav-active i {
+        filter: drop-shadow(0 0 4px rgba(6,182,212,0.5));
+    }
+
+    /* ── Hexagon Plus Button ── */
+    .mob-nav-plus {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        margin-bottom: 16px; /* lift above nav bar */
+        background: linear-gradient(135deg, #2563eb 0%, #0284c7 50%, #06b6d4 100%);
+        color: #fff !important;
+        text-decoration: none;
+        font-size: 1.7rem;
+        border-radius: 16px; /* slightly rounded square, swap to polygon below if you want hex */
+        box-shadow: 0 6px 22px rgba(6,182,212,0.45), 0 2px 6px rgba(0,0,0,0.15);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        flex-shrink: 0;
+        /* Hexagon clip-path */
+        clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+        -webkit-tap-highlight-color: transparent;
+        position: relative;
+    }
+    .mob-nav-plus:active {
+        transform: scale(0.92);
+        box-shadow: 0 3px 14px rgba(6,182,212,0.35);
+    }
+    .mob-nav-plus:hover {
+        transform: translateY(-3px) scale(1.06);
+        box-shadow: 0 10px 28px rgba(6,182,212,0.55);
+    }
+    .mob-nav-plus.mob-nav-plus-active {
+        box-shadow: 0 0 0 3px rgba(6,182,212,0.3), 0 6px 22px rgba(6,182,212,0.45);
+    }
+
+    /* ── Desktop FAB pulse ring keyframe ── */
+    @keyframes userFabRing {
+        0%   { transform: scale(1); opacity: 0.55; }
+        70%  { transform: scale(1.22); opacity: 0; }
+        100% { opacity: 0; }
+    }
+
+    /* ── Make sure bottom nav doesn't overlap modals/offcanvas ── */
+    @media (max-width: 991px) {
+        .offcanvas, .modal { z-index: 1060 !important; }
+        /* Prevent FAB ring from showing on mobile */
+        #user-fab-btn span { display: none; }
+    }
+</style>
 <div class="offcanvas offcanvas-end offcanvas-notif" tabindex="-1" id="offcanvasNotif" aria-labelledby="offcanvasNotifLabel">
     <div class="offcanvas-header d-flex align-items-center justify-content-between">
         <h5 class="offcanvas-title fw-bold" id="offcanvasNotifLabel" style="font-size: 16px; color: var(--text-primary);">

@@ -845,13 +845,13 @@
 
                <!-- Bagian Email/NIP -->
                 <div class="field-group">
-                    <label class="field-label" for="email">Email, Username, atau NIP</label>
+                    <label class="field-label" for="email">Email atau NIP</label>
                     <div class="input-wrap">
                         <input
                             class="field-input"
                             id="email" type="text" name="email"
                             value="{{ old('email') }}"
-                            placeholder="Email, username, atau NIP"
+                            placeholder="Email atau NIP"
                             required autofocus autocomplete="username">
                         <i class="bi bi-person input-icon"></i>
                     </div>
