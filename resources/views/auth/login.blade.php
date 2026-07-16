@@ -7,6 +7,9 @@
     <link rel="icon" href="{{ asset('images/metrologi.png') }}">
 
 
+    {{-- reCAPTCHA v3 — invisible, auto-execute on page load --}}
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
@@ -560,6 +563,9 @@
             font-size: 10.5px;
         }
 
+        /* ── Hide reCAPTCHA badge (Google allow ini selama ada notice di halaman) ── */
+        .grecaptcha-badge { visibility: hidden !important; }
+
         /* ── Mobile ── */
         @media (max-width: 640px) {
             body { overflow-y: auto; align-items: flex-start; padding: 24px 0; }
@@ -774,7 +780,7 @@
 
             <div class="brand-title">Balai Pengelolaan SUML</div>
             <div class="divider-line"></div>
-            <div class="brand-sub">Sistem Informasi<br>Monitoring Surat<br>Balai Pengelolaan SUML</div>
+            <div class="brand-sub">Sistem Informasi<br>Adminstrasi<br>Balai Pengelolaan SUML</div>
 
             <div class="divider-line"></div>
 
@@ -831,8 +837,11 @@
                 </div>
             </div>
             @endif
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('login') }}" id="loginForm">
                 @csrf
+
+                {{-- reCAPTCHA v3 token (diisi otomatis oleh JS sebelum submit) --}}
+                <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
 
                <!-- Bagian Email/NIP -->
                 <div class="field-group">
@@ -902,12 +911,60 @@
         </div>
 
         <div class="footer-bar">
-            <span>&copy; {{ date('Y') }} Balai Pengelolaan SUML &mdash; Hak cipta dilindungi undang-undang</span>
+            <span>
+                &copy; {{ date('Y') }} Balai Pengelolaan SUML &mdash; Dilindungi oleh
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener"
+                   style="color:rgba(255,255,255,0.45); text-decoration:underline;">reCAPTCHA</a>
+                &amp;
+                <a href="https://policies.google.com/terms" target="_blank" rel="noopener"
+                   style="color:rgba(255,255,255,0.45); text-decoration:underline;">Google</a>
+            </span>
         </div>
     </div>
 
-    <!-- Password toggle + Account Switcher script -->
+    <!-- Password toggle + Account Switcher + reCAPTCHA v3 script -->
     <script>
+        // ── reCAPTCHA v3 — invisible auto-execute ──
+        // Token di-refresh setiap 90 detik (token Google berlaku 2 menit)
+        const RECAPTCHA_SITE_KEY = '{{ config('services.recaptcha.site_key') }}';
+        let recaptchaToken = null;
+        let recaptchaRefreshTimer = null;
+
+        function refreshRecaptchaToken() {
+            if (typeof grecaptcha === 'undefined') return;
+            grecaptcha.ready(function () {
+                grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' })
+                    .then(function (token) {
+                        recaptchaToken = token;
+                        document.getElementById('g-recaptcha-response').value = token;
+                    })
+                    .catch(function (err) {
+                        console.warn('reCAPTCHA execute failed:', err);
+                    });
+            });
+        }
+
+        // Execute on page load — wait until grecaptcha is ready
+        window.addEventListener('load', function () {
+            if (typeof grecaptcha !== 'undefined') {
+                refreshRecaptchaToken();
+            } else {
+                // Retry a few times in case script is slow
+                let retries = 0;
+                const interval = setInterval(function () {
+                    if (typeof grecaptcha !== 'undefined') {
+                        clearInterval(interval);
+                        refreshRecaptchaToken();
+                        recaptchaRefreshTimer = setInterval(refreshRecaptchaToken, 90000);
+                    } else if (++retries > 10) {
+                        clearInterval(interval);
+                    }
+                }, 500);
+            }
+            // Auto-refresh every 90s to keep token fresh
+            recaptchaRefreshTimer = setInterval(refreshRecaptchaToken, 90000);
+        });
+
         // ── Password toggle ──
         const toggle = document.getElementById('pwToggle');
         const pwInput = document.getElementById('password');
@@ -918,16 +975,35 @@
             pwIcon.className = shown ? 'bi bi-eye' : 'bi bi-eye-slash';
         });
 
-        // Mencegah double click login
-        const loginForm = document.querySelector('form');
+        // Mencegah double click login — refresh token tepat sebelum submit
+        const loginForm = document.getElementById('loginForm');
         const submitBtn = document.getElementById('btnLogin');
 
-        loginForm.addEventListener('submit', () => {
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
             submitBtn.disabled = true;
             submitBtn.innerHTML = `
                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                 Mohon Tunggu...
             `;
+
+            // Refresh token then submit — ensures freshest token
+            if (typeof grecaptcha !== 'undefined') {
+                grecaptcha.ready(function () {
+                    grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' })
+                        .then(function (token) {
+                            document.getElementById('g-recaptcha-response').value = token;
+                            loginForm.submit();
+                        })
+                        .catch(function () {
+                            // If recaptcha fails, submit anyway with existing token
+                            loginForm.submit();
+                        });
+                });
+            } else {
+                loginForm.submit();
+            }
         });
 
         // ── Account Switcher ──

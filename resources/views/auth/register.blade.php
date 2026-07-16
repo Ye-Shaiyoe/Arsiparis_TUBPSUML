@@ -512,7 +512,7 @@
 
             <div class="brand-title">Balai Pengelolaan SUML</div>
             <div class="divider-line"></div>
-            <div class="brand-sub">Sistem Informasi<br>Monitoring Surat<br>Balai Pengelolaan SUML</div>
+            <div class="brand-sub">Sistem Informasi<br>Adminstrasi<br>Balai Pengelolaan SUML</div>
             <div class="divider-line"></div>
 
             <div class="info-badge">
@@ -783,7 +783,7 @@
             box.innerHTML = '';
             try {
                 recaptchaWidgetId = grecaptcha.render(box, {
-                    sitekey  : '{{ config("services.recaptcha.site_key") }}',
+                    sitekey  : '{{ config("services.recaptcha.v2_site_key") }}',
                     callback : onCaptchaSuccess,
                     theme    : 'light',   // 'light' | 'dark' (kotak google selalu terang)
                     size     : 'normal',

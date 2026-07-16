@@ -24,8 +24,6 @@ Thumbs.db
 # IDE and Tooling
 /.vscode
 /.idea
-/.fleet
-/.nova
 /.zed
 /.phpunit.cache
 /auth.json
@@ -44,3 +42,5 @@ AGENT.md
 
 /database/seeders/data/*.csv
 /database/seeders/data/*.json
+helloworld.adb
+READMESERVER.md

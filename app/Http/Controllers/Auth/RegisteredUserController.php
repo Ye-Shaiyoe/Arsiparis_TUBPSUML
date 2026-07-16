@@ -60,7 +60,7 @@ class RegisteredUserController extends Controller
             : Http::asForm();
 
         $recaptchaVerify = $recaptchaHttp->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret'   => config('services.recaptcha.secret'),
+            'secret'   => config('services.recaptcha.v2_secret'),
             'response' => $recaptchaToken,
             'remoteip' => $request->ip(),
         ]);

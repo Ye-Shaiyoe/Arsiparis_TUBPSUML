@@ -1,16 +1,17 @@
-<div align="center">
+﻿<div align="center">
 
 # 📬 Sistem Informasi Persuratan Digital
 ### BALAI PENGELOLAAN SUML
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-777BB4?style=flat-square&logo=php&logoColor=white)](https://php.net)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-336791?style=flat-square&logo=postgresql&logoColor=white)](https://postgresql.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-336791?style=flat-square&logo=postgresql&logoColor=white)](https://postgresql.org)
 [![Redis](https://img.shields.io/badge/Redis-Cache%20%26%20Queue-DC382D?style=flat-square&logo=redis&logoColor=white)](https://redis.io)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Pengelolaan Standar Ukuran Metrologi Legal. Menggantikan alur kerja manual dengan sistem tracking 10 tahap yang terintegrasi, SLA monitoring otomatis, tanda tangan elektronik, audit trail lengkap, dan dashboard analitik real-time.
+Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Pengelolaan Standar Ukuran Metrologi Legal.  
+Menggantikan alur kerja manual dengan sistem tracking 10 tahap terintegrasi, SLA monitoring otomatis, tanda tangan elektronik, audit trail lengkap, dan dashboard analitik real-time.
 
 </div>
 
@@ -26,10 +27,13 @@ Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Pengelolaan
 - [Struktur Database](#-struktur-database)
 - [Keamanan](#-keamanan)
 - [Sistem Otomasi](#-sistem-otomasi-cron-jobs)
-- [Instalasi Lokal](#-instalasi-lokal)
-- [Deployment](#-deployment)
-- [Environment Variables](#-environment-variables)
+- [Prasyarat Sistem](#-prasyarat-sistem)
+- [Instalasi Lokal (XAMPP)](#-instalasi-lokal-xampp)
+- [Instalasi Lokal (Artisan Serve)](#-instalasi-lokal-artisan-serve)
+- [Konfigurasi Environment](#-konfigurasi-environment)
+- [Troubleshooting](#-troubleshooting)
 - [Kontribusi](#-kontribusi)
+- [📖 Deployment Server →](READMESERVER.md)
 
 ---
 
@@ -39,7 +43,7 @@ Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Pengelolaan
 |---|---|
 | **Alur Surat** | Tracking 10 tahap dari pengajuan hingga pengarsipan dengan status real-time |
 | **SLA Monitoring** | Batas waktu kerja otomatis, skip weekend, alarm tiap 30 menit, laporan kepatuhan |
-| **Multi-Role RBAC** | 5 role dengan kewenangan terisolasi per tahap — tidak bisa lintas tahap |
+| **Multi-Role RBAC** | 5 role dengan kewenangan terisolasi per tahap |
 | **Realtime** | Server-Sent Events (SSE) untuk notifikasi push tanpa polling |
 | **Tanda Tangan Elektronik** | Gambar di canvas atau upload PNG, PIN bcrypt untuk verifikasi ganda |
 | **Audit Trail** | Log semua aktivitas dengan JSON diff (before/after), IP address, user agent |
@@ -52,7 +56,7 @@ Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Pengelolaan
 | **Aspirasi & IT Tiket** | Modul feedback dua arah dan pelaporan bug/fitur ke IT Support |
 | **Ekspor Multi-Format** | Excel (.xlsx) dan CSV di semua modul laporan, statistik, riwayat, activity log |
 | **Broadcast Notifikasi** | IT Support kirim notifikasi massal ke semua/admin/user |
-| **Delete Request Flow** | Hapus surat yang sedang diproses butuh persetujuan admin |
+| **reCAPTCHA** | v2 checkbox di registrasi + v3 invisible di login |
 
 ---
 
@@ -61,28 +65,22 @@ Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Pengelolaan
 **Backend**
 - [Laravel 12](https://laravel.com) — PHP framework utama
 - [PHP 8.2+](https://php.net) — Runtime
-- [PostgreSQL 16+](https://postgresql.org) — Database production
-- [Redis](https://redis.io) — Cache (konversi DOCX, stats landing page) + Queue
-- [Laravel Queue](https://laravel.com/docs/queues) — Async job konversi DOCX
-- [Laravel Task Scheduling](https://laravel.com/docs/scheduling) — 5 cron job otomatis
-- [maatwebsite/excel](https://laravel-excel.com) — Ekspor Excel & CSV
-- PHP `ZipArchive` + `DOMDocument` — Konversi DOCX ke HTML (native, tanpa LibreOffice)
+- [PostgreSQL 14+](https://postgresql.org) — Database production
+- [Redis](https://redis.io) — Cache + Queue (opsional, fallback ke `file`/`database`)
+- [maatwebsite/excel ^3.1](https://laravel-excel.com) — Ekspor Excel & CSV
+- [phpoffice/phpword ^1.1](https://phpword.readthedocs.io) — Konversi DOCX ke HTML
 
 **Frontend**
 - [Bootstrap 5](https://getbootstrap.com) — Layout & komponen dasar
-- [Tailwind CSS](https://tailwindcss.com) — Utility classes
-- [Alpine.js](https://alpinejs.dev) — State management & interaktivitas ringan
-- [Hotwire Turbo](https://turbo.hotwired.dev) — SPA-like navigation tanpa reload penuh
+- [Tailwind CSS 3.x](https://tailwindcss.com) — Utility classes
+- [Alpine.js 3.x](https://alpinejs.dev) — State management ringan
+- [Vite 7](https://vite.dev) — Build tool & HMR
 - [Chart.js](https://chartjs.org) — Visualisasi data (16+ dataset)
-- [GSAP](https://gsap.com) & [Anime.js](https://animejs.com) — Animasi landing page & profil
-- Desain Glassmorphism — tema *Midnight Indigo* (`#1e293b`) + *Professional Blue* (`#4361ee`)
-- Tipografi: **Sora** (heading) + **Plus Jakarta Sans** (body)
 
-**Infrastruktur & Keamanan**
-- [Cloudflare](https://cloudflare.com) — WAF, DDoS protection, CDN, SSL/TLS
-- Google reCAPTCHA v2 — proteksi bot di registrasi
-- [Nginx](https://nginx.org) — Web server production
-- Docker — containerization
+**Keamanan**
+- Google reCAPTCHA v2 — proteksi bot di halaman registrasi (checkbox)
+- Google reCAPTCHA v3 — proteksi bot di halaman login (invisible, auto-detect)
+- Cloudflare — WAF, DDoS protection, CDN, SSL/TLS (production)
 
 ---
 
@@ -99,10 +97,6 @@ Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Pengelolaan
 │ it_support           │ Broadcast notif, balas aspirasi, lihat data│
 └──────────────────────┴────────────────────────────────────────────┘
 ```
-
-- **Admin Role Selection** — admin wajib pilih role aktif sebelum masuk dasbor jika memiliki lebih dari satu tugas
-- **Middleware isolasi**: `AdminMiddleware` + `RedirectIfAdminRoleNotSelected` + `EnsureIsITSupport`
-- **`canApproveTahap(int $tahap)`** — method di model `User` sebagai single source of truth untuk authorization
 
 ---
 
@@ -121,108 +115,26 @@ Aplikasi pengelolaan surat-menyurat digital berbasis web untuk Balai Pengelolaan
           [4. Verifikasi Kepala Balai] ◀── admin_kepala_balai
                         │
                         ▼
-              [5. Penomoran Surat]  ◀──┐
-                        │             │
-                        ▼             │
-           [6. Tanda Tangan Digital]  │ admin_aspirasi
-                        │             │ (tahap 5–9)
-                        ▼             │
-           [7. Pengiriman via TNDe]  ─┤
-                        │             │
-                        ▼             │
-        [8. Pengiriman via Srikandi] ─┤
-                        │             │
-                        ▼             │
-               [9. Pengarsipan]  ─────┘
+              [5. Penomoran Surat]  ◀-┐
+                        │              │
+                        ▼              │ admin_aspirasi
+           [6. Tanda Tangan Digital]   │ (tahap 5–9)
+                        │              │
+                        ▼              │
+           [7. Pengiriman via TNDe]   ─┤
+                        │              │
+                        ▼              │
+        [8. Pengiriman via Srikandi]  ─┤
+                        │              │
+                        ▼              │
+               [9. Pengarsipan]   ─────┘
                         │
                         ▼
                [10. ✅ Selesai]
 
   Ditolak → Revisi ke User  (kembali ke tahap 1)
-         → Revisi ke Admin Aspirasi  (kembali ke tahap 2, internal)
+         → Revisi ke Admin Aspirasi  (kembali ke tahap 2)
 ```
-
-**Status surat:** `draft` · `proses` · `revisi` · `revisi_admin` · `ditolak` · `selesai`
-
-**Edit window:** 15 menit setelah diajukan user masih bisa ubah judul, jenis, sifat, tujuan.
-
----
-
-## 📱 Halaman & Modul
-
-### Publik (tanpa login)
-| URL | Deskripsi |
-|---|---|
-| `/` | Landing page dengan statistik real-time, chart 12 bulan, SLA per jenis surat |
-| `/panduan` | Panduan penggunaan sistem |
-| `/v/{uuid}` | Verifikasi keaslian surat (UUID-based, tanpa login) |
-
-### User
-| URL | Deskripsi |
-|---|---|
-| `/dashboard` | Ringkasan surat, SLA aktif, notifikasi, template |
-| `/surat` | Daftar surat (card/tabel), filter, export |
-| `/surat/ajukan` | Form pengajuan surat baru |
-| `/surat/{uuid}` | Detail surat, tracking tahap, preview DOCX, rating |
-| `/statistik` | Chart personal + GitHub-style contribution heatmap |
-| `/sla` | SLA monitoring dengan progress bar dinamis |
-| `/agenda` | Kalender bulanan event surat (pengajuan/deadline/selesai) |
-| `/activity-log` | Riwayat semua aksi user, export CSV |
-| `/pegawai` | Direktori pegawai + profil statistik per individu |
-| `/notifikasi` | Semua notifikasi, tandai baca, hapus |
-| `/aspirasi` | Kirim aspirasi/saran/keluhan ke admin atau IT Support |
-| `/faq` | FAQ dengan search, filter kategori, accordion |
-| `/about` | Info tim dan kontak resmi |
-
-### Admin
-| URL | Deskripsi |
-|---|---|
-| `/Admin/Dashboard` | Dasbor antrian, chart mixed, heatmap admin |
-| `/Admin/Surat` | Antrian surat sesuai role, filter lengkap |
-| `/Admin/Surat/{uuid}` | Setujui/tolak surat, catatan, rating user |
-| `/Admin/Surat-Masuk|Proses|Selesai|Ditolak` | Tabel surat per status |
-| `/Admin/Laporan` | Rekap bulanan, export Excel/CSV (13 kolom) |
-| `/Admin/Riwayat` | Histori pemrosesan siapa-apa-kapan |
-| `/Admin/Chart` | 16 dataset chart statistik real-time |
-| `/Admin/Analytics/SLA` | Trend kecepatan respon per divisi (line chart) |
-| `/Admin/Aspirasi` | Balas aspirasi user |
-| `/Admin/Template` | Upload/kelola template surat |
-| `/Admin/Settings/Users` | Manajemen data pegawai |
-| `/Admin/Settings/File-Surat` | Manajemen file fisik surat |
-| `/Admin/Settings/Logs` | System logs dengan filter lengkap |
-| `/Admin/Bantuan-IT-Support` | Laporan bug/fitur ke IT Support |
-
-### IT Support
-| URL | Deskripsi |
-|---|---|
-| `/become-it-support` | Naik role via kode rahasia (`.env`) |
-| `/IT-Support/Dashboard` | Dashboard + list surat selesai |
-| `/IT-Support/Notification/Create` | Broadcast notifikasi massal |
-
----
-
-## 🗄 Struktur Database
-
-**Tabel utama:**
-
-```
-users                 → Semua pengguna (multi-role, NIP dienkripsi AES-256)
-surats                → Data surat + SLA + status + rating
-surat_tahapans        → Riwayat per tahap (10 tahap)
-surat_delete_requests → Permintaan hapus butuh approval admin
-aspirasis             → Feedback & aspirasi pengguna
-it_support_tickets    → Tiket teknis ke IT Support
-activity_logs         → Audit trail (JSON diff, IP, user agent)
-notifications         → Notifikasi database Laravel (semua channel)
-```
-
-**Field penting di `surats`:**
-- `uuid` — primary key publik, anti-enumeration
-- `deadline_sla`, `alasan_keterlambatan` — SLA tracking
-- `revisi_count`, `revisi_uploaded_at` — tracking revisi
-- `file_expires_at`, `file_dihapus_pada` — lifecycle file fisik
-- `rating` — feedback bintang 1–5 dari user
-- `perlu_follow_up`, `catatan_follow_up` — flag tindak lanjut
 
 ---
 
@@ -230,25 +142,19 @@ notifications         → Notifikasi database Laravel (semua channel)
 
 | Lapisan | Implementasi |
 |---|---|
-| **Anti-Enumeration** | UUID di semua public URL (`/v/{uuid}`, `/surat/{uuid}`) |
+| **Anti-Enumeration** | UUID di semua public URL |
 | **File Private** | Semua file surat di disk `private`, akses via controller + auth |
 | **NIP Encryption** | Laravel `encrypted` cast — AES-256-CBC di database |
-| **Password** | bcrypt via Laravel Auth |
-| **Signature PIN** | bcrypt hash, verifikasi PIN lama sebelum update |
-| **Switch Token** | 64-char random, bcrypt stored, plaintext hanya di response JSON |
-| **Magic Bytes Validation** | Cek struktur byte file upload untuk cegah RCE |
-| **Security Headers** | `X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection`, `Referrer-Policy`, `Permissions-Policy`, HSTS, CSP — via middleware global |
-| **Rate Limiting** | Login 5/menit, registrasi, aspirasi, switch account, IT support code |
+| **reCAPTCHA v2** | Di form registrasi (checkbox widget) |
+| **reCAPTCHA v3** | Di form login (invisible, score-based) |
+| **Rate Limiting** | Login 5/menit, registrasi, aspirasi, switch account |
+| **Security Headers** | `X-Frame-Options`, HSTS, CSP, `X-Content-Type-Options` via middleware global |
 | **CSRF** | Aktif di semua form mutation |
-| **reCAPTCHA v2** | Di form registrasi |
-| **Session Revocation** | Logout per perangkat atau semua perangkat lain |
 | **Cloudflare WAF** | DDoS protection + Web Application Firewall di production |
 
 ---
 
 ## ⚙️ Sistem Otomasi (Cron Jobs)
-
-5 artisan commands berjalan otomatis via Laravel Task Scheduling:
 
 | Command | Jadwal | Fungsi |
 |---|---|---|
@@ -256,49 +162,209 @@ notifications         → Notifikasi database Laravel (semua channel)
 | `notifications:cleanup` | Setiap hari 01.00 | Hapus notifikasi > 7 hari |
 | `surat:cleanup-rejected` | Setiap hari 01.15 | Hapus surat ditolak tidak direvisi > 5 hari |
 | `surat:cleanup-orphaned-references` | Mingguan | Bersihkan referensi DB ke file yang sudah tidak ada |
-| `surat:remind-sla` | Tiap 30 menit (Senin–Jumat 07–17) | Kirim notifikasi SLA mendekati (≤6 jam) dan terlewat |
-
-Aktifkan di production:
+| `surat:remind-sla` | Tiap 30 menit (Senin–Jumat 07–17) | Kirim notifikasi SLA mendekati deadline |
 
 ```bash
-# Tambahkan ke crontab server
+# Tambahkan ke crontab server (production)
 * * * * * cd /path/to/project && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 ---
 
-## 🚀 Instalasi Lokal
+---
 
-### Prasyarat
+## 💻 Prasyarat Sistem
 
-- PHP 8.2+ dengan ekstensi: `pdo_pgsql`, `pgsql`, `gd`, `zip`, `fileinfo`
-- PostgreSQL 14+
-- Composer 2.x
-- Node.js 18+ & NPM
-- Redis (opsional untuk cache & queue, bisa fallback ke `file`)
+Pastikan semua software berikut sudah terpasang sebelum instalasi:
 
-### Langkah Instalasi
+| Software | Versi Minimum | Cek Versi |
+|---|---|---|
+| PHP | 8.2+ | `php -v` |
+| Composer | 2.x | `composer -V` |
+| Node.js | 18+ | `node -v` |
+| NPM | 9+ | `npm -v` |
+| PostgreSQL | 14+ | `psql --version` |
+| Git | 2.x | `git --version` |
+| Redis *(opsional)* | 6+ | `redis-cli --version` |
 
-**1. Clone dan install dependencies**
+**PHP Extensions yang wajib aktif:**
+
+```
+pdo_pgsql    pgsql       gd          zip
+fileinfo     mbstring    openssl     tokenizer
+xml          ctype       bcmath
+```
+
+Cek ekstensi aktif:
+```bash
+php -m | grep -E "pdo_pgsql|pgsql|gd|zip|fileinfo"
+```
+
+---
+
+## 🖥 Instalasi Lokal (XAMPP)
+
+Cocok untuk development di Windows menggunakan XAMPP.
+
+### 1. Persiapan XAMPP
+
+1. Download dan install [XAMPP](https://www.apachefriends.org) versi 8.2+
+2. Buka **XAMPP Control Panel**, start **Apache** dan **PostgreSQL** (atau gunakan PostgreSQL terpisah)
+3. Pastikan PHP 8.2 aktif — edit `C:\xampp\apache\conf\httpd.conf` jika perlu
+
+> **Catatan:** XAMPP default menggunakan MySQL/MariaDB. Aplikasi ini menggunakan **PostgreSQL** — install terpisah dari [postgresql.org](https://www.postgresql.org/download/windows/) jika belum ada.
+
+### 2. Clone Repository
 
 ```bash
-git clone https://github.com/Ye-Shaiyoe/Surat-Laravel.git
-cd persuratan-bpsuml
+cd C:\xampp\htdocs
+git clone https://github.com/Ye-Shaiyoe/Arsiparis_TUBPSUML.git TUBPSUML
+cd persuratan.bpsuml.com
+```
+
+### 3. Install Dependencies
+
+```bash
 composer install
 npm install
 ```
 
-**2. Konfigurasi environment**
+### 4. Setup Environment
 
 ```bash
-cp .env.example .env
+copy .env.example .env
 php artisan key:generate
 ```
 
-Edit `.env`:
+### 5. Buat Database PostgreSQL
 
-```env
+Buka **pgAdmin** atau **psql**:
+
+```sql
+CREATE DATABASE db_persuratan_bpsuml
+    WITH ENCODING 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8';
+```
+
+Atau via psql command line:
+```bash
+psql -U postgres -c "CREATE DATABASE db_persuratan_bpsuml;"
+```
+
+### 6. Konfigurasi `.env` untuk XAMPP
+
+Edit file `.env`:
+
+```dotenv
+APP_NAME="Persuratan BP SUML"
 APP_ENV=local
+APP_KEY=                          # sudah terisi otomatis dari step 4
+APP_DEBUG=true   #Jadikan false
+APP_URL=
+
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=db_persuratan_bpsuml
+DB_USERNAME=postgres
+DB_PASSWORD=your_postgres_password
+
+SESSION_DRIVER=database
+CACHE_STORE=file
+QUEUE_CONNECTION=sync             # sync = tidak butuh Redis untuk lokal
+
+# reCAPTCHA v2 — untuk halaman register
+RECAPTCHA_V2_SITE_KEY=your_v2_site_key
+RECAPTCHA_V2_SECRET_KEY=your_v2_secret_key
+
+# reCAPTCHA v3 — untuk halaman login (invisible)
+RECAPTCHA_V3_SITE_KEY=your_v3_site_key
+RECAPTCHA_V3_SECRET_KEY=your_v3_secret_key
+
+ADMIN_SECRET_CODE="kode_rahasia_admin"
+
+MAIL_MAILER=log                   # log = tidak kirim email sungguhan saat dev
+```
+
+### 7. Migrasi Database & Seed
+
+```bash
+php artisan migrate --seed
+```
+
+### 8. Storage Link & Build Assets
+
+```bash
+php artisan storage:link
+npm run build
+```
+
+### 9. Konfigurasi Virtual Host XAMPP (opsional)
+
+Agar bisa akses via `http://persuratan.local` tanpa `/public`:
+
+Edit `C:\xampp\apache\conf\extra\httpd-vhosts.conf`:
+
+```apache
+<VirtualHost *:80>
+    DocumentRoot "C:/xampp/htdocs/persuratan.bpsuml.com/public"
+    ServerName persuratan.local
+    <Directory "C:/xampp/htdocs/persuratan.bpsuml.com/public">
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
+
+Tambahkan di `C:\Windows\System32\drivers\etc\hosts`:
+```
+127.0.0.1   persuratan.local
+```
+
+Restart Apache, akses di `http://persuratan.local`
+
+---
+
+## 🚀 Instalasi Lokal (Artisan Serve)
+
+Cara tercepat tanpa perlu konfigurasi web server.
+
+### 1. Clone & Install
+
+```bash
+git clone https://github.com/Ye-Shaiyoe/Surat-Laravel.git persuratan-bpsuml
+cd persuratan-bpsuml
+
+composer install
+npm install
+```
+
+Atau gunakan script setup yang sudah tersedia:
+
+```bash
+composer run setup
+```
+
+> Script ini otomatis: `composer install` → copy `.env` → `key:generate` → `migrate` → `npm install` → `npm run build`
+
+### 2. Buat Database PostgreSQL
+
+```bash
+psql -U postgres -c "CREATE DATABASE db_persuratan_bpsuml;"
+```
+
+### 3. Setup `.env`
+
+```bash
+cp .env.example .env   # Linux/Mac
+copy .env.example .env  # Windows
+php artisan key:generate
+```
+
+Edit `.env` — minimal yang wajib diisi:
+
+```dotenv
 APP_URL=http://127.0.0.1:8000
 
 DB_CONNECTION=pgsql
@@ -308,138 +374,261 @@ DB_DATABASE=db_persuratan_bpsuml
 DB_USERNAME=postgres
 DB_PASSWORD=your_password
 
-CACHE_DRIVER=file
-QUEUE_CONNECTION=sync
+RECAPTCHA_V2_SITE_KEY=your_v2_site_key
+RECAPTCHA_V2_SECRET_KEY=your_v2_secret_key
+RECAPTCHA_V3_SITE_KEY=your_v3_site_key
+RECAPTCHA_V3_SECRET_KEY=your_v3_secret_key
 
-RECAPTCHA_SITE_KEY=your_site_key
-RECAPTCHA_SECRET_KEY=your_secret_key
-ADMIN_SECRET_CODE=your_admin_code
-IT_SUPPORT_CODE=your_it_support_code
-
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=your_email
-MAIL_PASSWORD=your_app_password
-MAIL_FROM_ADDRESS=your_email
-MAIL_FROM_NAME="Persuratan BP Suml"
+ADMIN_SECRET_CODE=kode_rahasia_admin
 ```
 
-**3. Buat database di PostgreSQL**
-
-```bash
-psql -U postgres -c "CREATE DATABASE db_persuratan_bpsuml;"
-```
-
-**4. Migrasi dan seeder**
+### 4. Migrate, Storage Link, Build
 
 ```bash
 php artisan migrate --seed
-```
-
-**5. Buat symlink storage dan build assets**
-
-```bash
 php artisan storage:link
 npm run build
 ```
 
-**6. Jalankan server**
+### 5. Jalankan Semua Service Sekaligus
 
 ```bash
+composer run dev
+```
+
+Perintah ini menjalankan secara paralel:
+- `php artisan serve` — web server di `http://127.0.0.1:8000`
+- `php artisan queue:listen` — memproses job queue (konversi DOCX, dll)
+- `php artisan pail` — live log viewer
+- `npm run dev` — Vite HMR untuk asset development
+
+Atau jalankan manual satu per satu di terminal terpisah:
+
+```bash
+# Terminal 1 — Web server
 php artisan serve
+
+# Terminal 2 — Queue worker (untuk konversi DOCX)
+php artisan queue:listen --tries=1 --timeout=0
+
+# Terminal 3 — Vite dev server (HMR)
+npm run build
+npm run dev
 ```
 
-Akses di `http://127.0.0.1:8000`
+Akses di: **`http://127.0.0.1:8000`**
 
-> **Catatan lokal:** `APP_ENV=local` otomatis menonaktifkan pembatasan jam kerja dan membypass SSL verify untuk reCAPTCHA.
 
 ---
 
-## 🐳 Deployment
+## 🌐 Instalasi di Server Production
 
-### Docker
+Panduan lengkap deployment ke server production (Ubuntu/Nginx/PostgreSQL/Redis) tersedia di dokumen terpisah:
+
+**[📖 Baca READMESERVER.md →](READMESERVER.md)**
+
+Mencakup: install PHP 8.2, PostgreSQL, Redis & Nginx, SSL Certbot, Queue Worker (Supervisor), Cron Scheduler, Firewall, Docker Compose, Prosedur update, Monitoring & Troubleshooting.
+
+---
+
+## ⚙️ Konfigurasi Environment
+
+### Variabel Wajib
+
+| Variable | Deskripsi | Contoh |
+|---|---|---|
+| `APP_KEY` | Application key (auto-generate) | `base64:xxx...` |
+| `APP_ENV` | Environment aktif | `local` / `production` |
+| `APP_URL` | URL lengkap aplikasi | `https://persuratan.bpsuml.com` |
+| `DB_CONNECTION` | Driver database | `pgsql` |
+| `DB_HOST` | Host PostgreSQL | `127.0.0.1` |
+| `DB_PORT` | Port PostgreSQL | `5432` |
+| `DB_DATABASE` | Nama database | `db_persuratan_bpsuml` |
+| `DB_USERNAME` | Username PostgreSQL | `postgres` |
+| `DB_PASSWORD` | Password PostgreSQL | `your_password` |
+| `ADMIN_SECRET_CODE` | Kode rahasia registrasi admin | `kode_rahasia_kuat` |
+
+### reCAPTCHA (Wajib)
+
+| Variable | Deskripsi | Halaman |
+|---|---|---|
+| `RECAPTCHA_V2_SITE_KEY` | Site key reCAPTCHA v2 | Register (checkbox) |
+| `RECAPTCHA_V2_SECRET_KEY` | Secret key reCAPTCHA v2 | Register (backend) |
+| `RECAPTCHA_V3_SITE_KEY` | Site key reCAPTCHA v3 | Login (invisible) |
+| `RECAPTCHA_V3_SECRET_KEY` | Secret key reCAPTCHA v3 | Login (backend) |
+| `RECAPTCHA_MIN_SCORE` | Skor minimum v3 (0.0–1.0) | Default: `0.5` |
+
+> **Cara mendapatkan key:** [https://www.google.com/recaptcha/admin](https://www.google.com/recaptcha/admin)
+> - v2: pilih **"I'm not a robot" Checkbox**
+> - v3: pilih **Score based (v3)**
+> - Daftarkan domain yang sesuai (lokal bisa pakai `localhost` atau `127.0.0.1`)
+
+### Mail / SMTP
+
+| Variable | Deskripsi |
+|---|---|
+| `MAIL_MAILER` | `smtp` (production) atau `log` (dev) |
+| `MAIL_HOST` | SMTP host (`smtp.gmail.com`) |
+| `MAIL_PORT` | `465` (SSL) atau `587` (TLS) |
+| `MAIL_USERNAME` | Alamat email pengirim |
+| `MAIL_PASSWORD` | App password Gmail (bukan password login) |
+| `MAIL_ENCRYPTION` | `ssl` atau `tls` |
+
+> Gmail: aktifkan 2FA → buat App Password di [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+
+### Cache & Queue
+
+| Variable | Lokal | Production |
+|---|---|---|
+| `CACHE_STORE` | `file` | `redis` |
+| `QUEUE_CONNECTION` | `sync` | `redis` |
+| `SESSION_DRIVER` | `database` | `database` |
+
+### Opsional
+
+| Variable | Deskripsi |
+|---|---|
+| `GEMINI_API_KEY` | Google Gemini API (fitur AI, opsional) |
+| `GOOGLE_CLIENT_ID` | OAuth Google login |
+| `GOOGLE_CLIENT_SECRET` | OAuth Google login |
+| `WA_NUMBER` | Nomor WhatsApp kontak |
+| `TELEGRAM_ADMIN_USERNAME` | Username Telegram admin |
+| `RECAPTCHA_MIN_SCORE` | Skor minimum reCAPTCHA v3 (default: `0.5`) |
+
+---
+
+## 🔧 Troubleshooting
+
+### `php artisan migrate` gagal — "could not connect to server"
 
 ```bash
-docker build -t persuratan-bpsuml .
-docker run -p 8000:80 --env-file .env persuratan-bpsuml
+# Pastikan PostgreSQL berjalan
+sudo systemctl status postgresql
+
+# Atau di Windows/XAMPP — cek service PostgreSQL di task manager
+# Verifikasi koneksi
+psql -h 127.0.0.1 -U postgres -d db_persuratan_bpsuml
 ```
 
-### Manual (Nginx + PHP-FPM)
-
-Konfigurasi Nginx yang diperlukan untuk SSE agar tidak di-buffer:
-
-```nginx
-location /notif/stream {
-    proxy_pass http://127.0.0.1:8000;
-    proxy_read_timeout 1200s;
-    proxy_buffering off;
-    proxy_cache off;
-    proxy_set_header X-Accel-Buffering no;
-}
-```
-
-Untuk production dengan banyak concurrent user, naikkan `pm.max_children` di PHP-FPM:
-
-```ini
-# /etc/php-fpm.d/www.conf
-pm = dynamic
-pm.max_children = 50
-pm.start_servers = 10
-pm.min_spare_servers = 5
-pm.max_spare_servers = 20
-```
-
-### Railway
-
-1. Fork repo ini ke GitHub
-2. Buat project baru di [Railway](https://railway.app)
-3. Tambahkan service **PostgreSQL** dan **Redis** dari Railway
-4. Set environment variables
-5. Deploy otomatis dari branch `main`
+Cek juga `.env` — pastikan `DB_PORT=5432` dan `DB_CONNECTION=pgsql`.
 
 ---
 
-## ⚙️ Environment Variables
+### Error `Class "PDO" not found` atau `pdo_pgsql`
 
-| Variable | Wajib | Deskripsi |
-|---|---|---|
-| `APP_KEY` | ✅ | Application key (`php artisan key:generate`) |
-| `APP_ENV` | ✅ | `local` atau `production` |
-| `APP_URL` | ✅ | URL lengkap aplikasi |
-| `DB_CONNECTION` | ✅ | `pgsql` |
-| `DB_HOST` | ✅ | Host PostgreSQL |
-| `DB_DATABASE` | ✅ | Nama database |
-| `DB_USERNAME` | ✅ | Username PostgreSQL |
-| `DB_PASSWORD` | ✅ | Password PostgreSQL |
-| `RECAPTCHA_SITE_KEY` | ✅ | Google reCAPTCHA v2 site key |
-| `RECAPTCHA_SECRET_KEY` | ✅ | Google reCAPTCHA v2 secret key |
-| `ADMIN_SECRET_CODE` | ✅ | Kode rahasia registrasi akun admin |
-| `IT_SUPPORT_CODE` | ✅ | Kode rahasia naik role IT Support |
-| `MAIL_*` | ✅ | Konfigurasi SMTP (reset password, verifikasi email) |
-| `CACHE_DRIVER` | ✅ | `redis` (production) atau `file` (lokal) |
-| `QUEUE_CONNECTION` | ✅ | `redis` (production) atau `sync` (lokal) |
-| `SESSION_ENCRYPT` | ⚠️ | `true` di production |
-| `GEMINI_API_KEY` | ❌ | API key Google Gemini (fitur AI, opsional) |
+```bash
+# Linux
+sudo apt install php8.2-pgsql
+sudo systemctl restart php8.2-fpm
+
+# Windows XAMPP — edit php.ini, uncomment baris:
+# extension=pdo_pgsql
+# extension=pgsql
+# Lalu restart Apache
+```
 
 ---
 
-## 📊 Fitur Monitoring & Analitik
+### `storage:link` gagal di Windows
 
-- **SLA Dashboard User** — progress bar dinamis berubah warna (hijau→kuning→merah)
-- **SLA Analytics Admin** — trend kecepatan respon per divisi per bulan
-- **Activity Heatmap** — kontribusi aktivitas 365 hari ala GitHub (user & admin)
-- **Direktori Pegawai** — statistik per individu: monthly chart, sparkline, SLA rate, jenis surat
-- **Kalender Agenda** — event surat pada kalender bulanan, navigasi AJAX
-- **16 Dataset Chart** — surat per bulan, per jenis, per status, SLA compliance, dll
-- **Audit Log** — setiap aksi tercatat dengan IP, user agent, dan diff data
-- **Landing Page Stats** — statistik publik ter-cache 5 menit: masuk, keluar, arsip, rating rata-rata
+```bash
+# Jalankan Command Prompt sebagai Administrator
+php artisan storage:link
+```
+
+---
+
+### reCAPTCHA selalu gagal di lokal
+
+Karena `APP_ENV=local`, validasi reCAPTCHA v3 otomatis di-skip di `LoginRequest.php`. Tapi untuk v2 di register, Google butuh domain terdaftar. Solusi:
+
+1. Di [console reCAPTCHA](https://www.google.com/recaptcha/admin), tambahkan `localhost` dan `127.0.0.1` ke daftar domain
+2. Atau sementara gunakan key "test" dari Google (selalu lolos):
+   - v2 test site key: `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`
+   - v2 test secret: `6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe`
+
+---
+
+### `npm run build` error — Vite tidak ditemukan
+
+```bash
+# Hapus node_modules dan install ulang
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
+
+---
+
+### Queue job tidak berjalan (konversi DOCX lambat/tidak jalan)
+
+```bash
+# Pastikan queue worker aktif
+php artisan queue:listen --tries=1
+
+# Atau di production, restart supervisor
+sudo supervisorctl restart persuratan-worker:*
+
+# Cek failed jobs
+php artisan queue:failed
+php artisan queue:retry all
+```
+
+---
+
+### `php artisan config:cache` error setelah update `.env`
+
+```bash
+php artisan config:clear
+php artisan cache:clear
+php artisan config:cache
+```
+
+---
+
+### Permission error di storage (Linux/production)
+
+```bash
+sudo chown -R www-data:www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+php artisan storage:link
+```
+
+---
+
+## 📱 Halaman & Modul
+
+### Publik (tanpa login)
+
+| URL | Deskripsi |
+|---|---|
+| `/` | Landing page dengan statistik real-time |
+| `/panduan` | Panduan penggunaan sistem |
+| `/v/{uuid}` | Verifikasi keaslian surat (UUID-based) |
+
+### User
+
+| URL | Deskripsi |
+|---|---|
+| `/dashboard` | Ringkasan surat, SLA aktif, notifikasi |
+| `/surat` | Daftar surat dengan filter dan export |
+| `/surat/ajukan` | Form pengajuan surat baru |
+| `/statistik` | Chart personal + heatmap aktivitas |
+| `/agenda` | Kalender bulanan event surat |
+| `/sla` | SLA monitoring real-time |
+
+### Admin
+
+| URL | Deskripsi |
+|---|---|
+| `/Admin/Dashboard` | Dasbor antrian + chart analitik |
+| `/Admin/Surat` | Antrian surat sesuai role |
+| `/Admin/Laporan` | Rekap bulanan, export Excel/CSV |
+| `/Admin/Analytics/SLA` | Trend kecepatan respon per divisi |
 
 ---
 
 ## 🤝 Kontribusi
-
-Project ini dikembangkan dalam rangka PKL di BP Suml — Balai Pengelolaan Standar Ukuran Metrologi Legal.
 
 ```bash
 # 1. Fork repo

@@ -36,8 +36,13 @@ return [
     ],
 
     'recaptcha' => [
-        'site_key' => env('RECAPTCHA_SITE_KEY'),
-        'secret'   => env('RECAPTCHA_SECRET_KEY'),
+        // v2 — register page (checkbox widget)
+        'v2_site_key'  => env('RECAPTCHA_V2_SITE_KEY'),
+        'v2_secret'    => env('RECAPTCHA_V2_SECRET_KEY'),
+        // v3 — login page (invisible, auto-execute)
+        'site_key'     => env('RECAPTCHA_V3_SITE_KEY'),
+        'secret'       => env('RECAPTCHA_V3_SECRET_KEY'),
+        'min_score'    => env('RECAPTCHA_MIN_SCORE', 0.5),
     ],
 
     'whatsapp' => [
