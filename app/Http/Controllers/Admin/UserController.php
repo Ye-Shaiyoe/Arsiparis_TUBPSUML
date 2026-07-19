@@ -134,18 +134,18 @@ class UserController extends Controller
 
         // Kirim email info login ke akun baru
         try {
-            Mail::to($user->email)->send(new NewAccountMail(
+            Mail::to($user->email)->queue(new NewAccountMail(
                 user:          $user,
                 plainPassword: $plainPassword,
                 createdByName: auth()->user()->name,
             ));
-            $mailStatus = 'berhasil dikirim ke ' . $user->email;
+            $mailStatus = 'berhasil dimasukkan ke antrean kirim untuk ' . $user->email;
         } catch (\Throwable $e) {
             // Jangan gagalkan pembuatan akun hanya karena email gagal
-            \Illuminate\Support\Facades\Log::error('Gagal kirim email akun baru: ' . $e->getMessage(), [
+            \Illuminate\Support\Facades\Log::error('Gagal memasukkan email ke antrean: ' . $e->getMessage(), [
                 'user_id' => $user->id,
             ]);
-            $mailStatus = 'gagal dikirim (cek konfigurasi SMTP)';
+            $mailStatus = 'gagal diantrekan';
         }
 
         return redirect()
