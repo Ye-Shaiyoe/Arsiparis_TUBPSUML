@@ -104,46 +104,6 @@ class UserController extends Controller
     }
 
     /**
-     * Update role user (hanya untuk user dengan role 'user').
-     */
-    public function updateRole(Request $request, User $user)
-    {
-        // Hanya boleh ubah role user biasa, bukan sesama admin
-        if ($user->role !== 'user') {
-            return redirect()->route('admin.users.index')
-                ->with('error', 'Hanya role pengguna biasa (User) yang dapat diubah dari halaman ini.');
-        }
-
-        // Tidak boleh ubah role diri sendiri
-        if ($user->id === auth()->id()) {
-            return redirect()->route('admin.users.index')
-                ->with('error', 'Anda tidak dapat mengubah role akun sendiri.');
-        }
-
-        $request->validate([
-            'role' => ['required', 'string', 'in:user,admin_aspirasi,admin_kasubbag_tu,admin_kepala_balai'],
-        ]);
-
-        $oldRole = $user->role;
-        $user->update([
-            'role'          => $request->role,
-            // role_selected = true karena role sudah dipilihkan admin,
-            // user tidak perlu ke halaman Role-Selection lagi
-            'role_selected' => true,
-        ]);
-
-        \Illuminate\Support\Facades\Log::info('Role user diubah oleh admin', [
-            'target_user_id' => $user->id,
-            'old_role'       => $oldRole,
-            'new_role'       => $request->role,
-            'by_admin_id'    => auth()->id(),
-        ]);
-
-        return redirect()->route('admin.users.index')
-            ->with('success', "Role '{$user->name}' berhasil diubah dari {$oldRole} menjadi {$request->role}.");
-    }
-
-    /**
      * Buat akun pengguna baru dari panel admin.
      * Password di-generate otomatis dan dikirim ke email target.
      */
@@ -191,6 +151,63 @@ class UserController extends Controller
         return redirect()
             ->route('admin.users.index')
             ->with('success', "Akun '{$user->name}' berhasil dibuat. Email info login {$mailStatus}.");
+    }
+
+    /**
+     * Update role user (hanya untuk user dengan role 'user').
+     * Role spesifik admin langsung di-set role_selected = true,
+     * sehingga user tidak perlu melewati halaman Role-Selection lagi.
+     */
+    public function updateRole(Request $request, User $user)
+    {
+        // Tidak boleh ubah role diri sendiri
+        if ($user->id === auth()->id()) {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Anda tidak dapat mengubah role akun sendiri.');
+        }
+
+        // Hanya boleh ubah role user biasa, bukan sesama admin
+        if ($user->role !== 'user') {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Hanya role pengguna biasa (User) yang dapat diubah dari halaman ini.');
+        }
+
+        $request->validate([
+            'role' => ['required', 'string', 'in:user,admin_aspirasi,admin_kasubbag_tu,admin_kepala_balai'],
+        ]);
+
+        $oldRole  = $user->role;
+        $newRole  = $request->role;
+
+        // Kalau dinaikan ke admin spesifik → role_selected = true
+        // agar tidak diarahkan ke halaman Role-Selection saat login
+        $roleSelected = in_array($newRole, [
+            'admin_aspirasi',
+            'admin_kasubbag_tu',
+            'admin_kepala_balai',
+        ]) ? true : $user->role_selected;
+
+        $user->update([
+            'role'          => $newRole,
+            'role_selected' => $roleSelected,
+        ]);
+
+        \Illuminate\Support\Facades\Log::info('Role user diubah oleh admin', [
+            'target_user_id' => $user->id,
+            'old_role'       => $oldRole,
+            'new_role'       => $newRole,
+            'by_admin_id'    => auth()->id(),
+        ]);
+
+        $roleLabel = match($newRole) {
+            'admin_aspirasi'     => 'Arsiparis',
+            'admin_kasubbag_tu'  => 'Kasubbag TU',
+            'admin_kepala_balai' => 'Kepala Balai',
+            default              => 'User',
+        };
+
+        return redirect()->route('admin.users.index')
+            ->with('success', "Role '{$user->name}' berhasil diubah menjadi {$roleLabel}.");
     }
 
     /**
