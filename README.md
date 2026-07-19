@@ -285,12 +285,21 @@ RECAPTCHA_V3_SECRET_KEY=your_v3_secret_key
 ADMIN_SECRET_CODE="kode_rahasia_admin"
 
 MAIL_MAILER=log                   # log = tidak kirim email sungguhan saat dev
+
+ADMIN_SEED_NAME="Nama Admin"
+ADMIN_SEED_EMAIL=admin@bpsuml.go.id
+ADMIN_SEED_PASSWORD=PasswordKuat123!
+ADMIN_SEED_NIP=
+
+
 ```
 
 ### 7. Migrasi Database & Seed
 
 ```bash
 php artisan migrate --seed
+php artisan db:seed --class=AdminSeeder
+
 ```
 
 ### 8. Storage Link & Build Assets
@@ -386,6 +395,7 @@ ADMIN_SECRET_CODE=kode_rahasia_admin
 
 ```bash
 php artisan migrate --seed
+php artisan db:seed --class=AdminSeeder
 php artisan storage:link
 npm run build
 ```
@@ -417,8 +427,11 @@ npm run dev
 ```
 
 Akses di: **`http://127.0.0.1:8000`**
+Akses User: **`http://127.0.0.1:8000/dashboard`**
+Akses Admin: **`http://127.0.0.1:8000/Admin/Dashboard`**
 
-
+cara ke it_support
+**`http://127.0.0.1:8000/become-it-support?code=secret123`** # seuaikan secret123 di .env IT_SUPPORT_CODE=
 ---
 
 ## 🌐 Instalasi di Server Production
