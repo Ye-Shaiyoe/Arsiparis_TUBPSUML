@@ -24,6 +24,19 @@ class LoginRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     * Sanitasi input email/NIP: hapus karakter ' " = dan spasi.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('email')) {
+            $this->merge([
+                'email' => preg_replace("/['\"=\s]/u", '', $this->input('email')),
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>

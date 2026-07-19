@@ -593,6 +593,7 @@
                             <input class="field-input" id="nip" type="text" name="nip"
                                 value="{{ old('nip') }}" placeholder="18 digit angka"
                                 maxlength="18"
+                                inputmode="numeric"
                                 autocomplete="off"
                                 oninput="onNipInput(this)">
                             <i class="bi bi-person-badge input-icon"></i>

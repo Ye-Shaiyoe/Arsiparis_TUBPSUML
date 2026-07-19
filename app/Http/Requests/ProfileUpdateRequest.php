@@ -29,11 +29,18 @@ class ProfileUpdateRequest extends FormRequest
             'nip' => [
                 'nullable',
                 'string',
-                'max:50',
+                'regex:/^\d{18}$/',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
             'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
             'cropped_photo' => ['nullable', 'string'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'nip.regex' => 'NIP harus tepat 18 digit angka.',
         ];
     }
 }

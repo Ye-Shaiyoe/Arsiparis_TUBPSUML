@@ -853,7 +853,8 @@
                             value="{{ old('email') }}"
                             placeholder="Email atau NIP"
                             required autofocus autocomplete="username"
-                            oninput="onLoginInput(this)">
+                            oninput="onLoginInput(this)"
+                            onpaste="sanitasiEmailInput(this)">
                         <i class="bi bi-person input-icon"></i>
                         {{-- Counter muncul saat input terdeteksi sebagai NIP (≥3 digit angka) --}}
                         <span id="login-nip-counter" style="
@@ -936,9 +937,26 @@
     <script>
         // ── NIP counter (login) ──
         // Counter muncul hanya ketika input terdeteksi sebagai NIP (≥3 digit angka, tidak ada @ atau huruf)
+        function sanitasiEmailInput(input) {
+            // Hapus karakter berbahaya: ' " = dan spasi
+            // Dipakai saat paste, oninput sudah handle ketikan langsung
+            setTimeout(() => {
+                input.value = input.value.replace(/['"\s=]/g, '');
+            }, 0);
+        }
+
         function onLoginInput(input) {
-            const val     = input.value;
-            const isNip   = /^\d{3,}$/.test(val);   // minimal 3 digit angka, tidak ada karakter lain
+            // Hapus karakter yang tidak boleh: ' " = spasi
+            const cleaned = input.value.replace(/['"\s=]/g, '');
+            if (cleaned !== input.value) {
+                // Preserve cursor position
+                const pos = input.selectionStart - (input.value.length - cleaned.length);
+                input.value = cleaned;
+                input.setSelectionRange(pos, pos);
+            }
+
+            const val   = input.value;
+            const isNip = /^\d{3,}$/.test(val);   // minimal 3 digit angka, tidak ada karakter lain
             const counter = document.getElementById('login-nip-counter');
 
             if (!isNip) {
