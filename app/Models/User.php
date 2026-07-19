@@ -28,6 +28,7 @@ class User extends Authenticatable
         'password',
         'role',
         'nip',
+        'nip_hash',
         'role_selected',
         'profile_photo',
         'signature_path',
@@ -88,11 +89,30 @@ class User extends Authenticatable
     }
 
     /**
-     * Cek apakah format input adalah NIP yang valid (hanya angka)
+     * Cek apakah format input adalah NIP yang valid (hanya angka, 16-20 digit)
      */
     public static function isValidNipFormat(string $nip): bool
     {
-        return preg_match('/^\d+$/', $nip) === 1;
+        return preg_match('/^\d{16,20}$/', $nip) === 1;
+    }
+
+    /**
+     * Buat HMAC-SHA256 dari NIP menggunakan APP_KEY.
+     * Hasil deterministik sehingga bisa dipakai sebagai index DB.
+     * Tidak bisa di-reverse tanpa APP_KEY.
+     */
+    public static function hashNip(string $nip): string
+    {
+        return hash_hmac('sha256', $nip, config('app.key'));
+    }
+
+    /**
+     * Cari user berdasarkan NIP (via nip_hash index — O(1), tidak scan semua baris).
+     */
+    public static function findByNip(string $nip): ?self
+    {
+        $hash = self::hashNip($nip);
+        return self::where('nip_hash', $hash)->first();
     }
 
     public function isITSupport(): bool

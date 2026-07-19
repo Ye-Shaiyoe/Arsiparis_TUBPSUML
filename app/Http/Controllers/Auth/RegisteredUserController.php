@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -31,7 +32,17 @@ class RegisteredUserController extends Controller
      * @throws ValidationException
      */
     
-        public function store(Request $request): RedirectResponse {
+    public function store(Request $request): RedirectResponse {
+        // Rate limiting: max 5 percobaan registrasi per IP per 5 menit
+        $throttleKey = 'register|' . $request->ip();
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            return back()->withErrors([
+                'email' => "Terlalu banyak percobaan registrasi. Coba lagi dalam {$seconds} detik.",
+            ])->withInput();
+        }
+        RateLimiter::hit($throttleKey, 300); // decay 5 menit
+
         $request->validate([
             'name'          => ['required', 'string', 'max:255'],
             'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -40,10 +51,11 @@ class RegisteredUserController extends Controller
             'admin_code'    => ['nullable', 'string'],
         ]);
 
-        // Cek secret code admin (sebelum hit Google API)
+        // Cek secret code admin menggunakan hash_equals (constant-time, cegah timing attack)
         $role = 'user';
         if ($request->filled('admin_code')) {
-            if ($request->admin_code !== config('app.admin_secret_code')) {
+            $secret = config('app.admin_secret_code', '');
+            if (!hash_equals($secret, $request->admin_code)) {
                 return back()->withErrors(['admin_code' => 'Kode admin tidak valid.']);
             }
             $role = 'admin';
@@ -78,6 +90,7 @@ class RegisteredUserController extends Controller
             'name'     => $request->name,
             'email'    => $request->email,
             'nip'      => $request->nip,
+            'nip_hash' => $request->filled('nip') ? User::hashNip($request->nip) : null,
             'password' => Hash::make($request->password),
             'role'     => $role,
         ]);

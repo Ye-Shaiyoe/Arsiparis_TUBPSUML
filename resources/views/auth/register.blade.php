@@ -591,13 +591,24 @@
                         </label>
                         <div class="input-wrap">
                             <input class="field-input" id="nip" type="text" name="nip"
-                                value="{{ old('nip') }}" placeholder="16-20 digit angka (contoh: 1234567890123456)"
-                                autocomplete="off">
+                                value="{{ old('nip') }}" placeholder="18 digit angka"
+                                maxlength="18"
+                                autocomplete="off"
+                                oninput="onNipInput(this)">
                             <i class="bi bi-person-badge input-icon"></i>
+                            {{-- Counter digit --}}
+                            <span id="nip-counter" style="
+                                display:none;
+                                position:absolute; right:12px; top:50%;
+                                transform:translateY(-50%);
+                                font-size:10.5px; font-weight:600;
+                                color:rgba(255,255,255,0.38);
+                                pointer-events:none; letter-spacing:0.03em;
+                            ">0/18</span>
                         </div>
                         <p class="field-hint" style="color: rgba(255,255,255,0.45); font-size:10.5px; margin-top:4px;">
                             <i class="bi bi-info-circle" style="font-size:10px;"></i>
-                            NIP harus 16-20 digit angka (opsional). Gunakan untuk login dengan username/NIP + password
+                            NIP harus 18 digit angka (opsional). Gunakan untuk login dengan NIP + password
                         </p>
                         @error('nip')
                             <p class="error-text"><i class="bi bi-x-circle-fill" style="font-size:10px;"></i> {{ $message }}</p>
@@ -738,6 +749,33 @@
     </div>
 
     <script>
+        /* ── NIP counter (register) ── */
+        function onNipInput(input) {
+            // Hanya izinkan angka
+            input.value = input.value.replace(/\D/g, '').slice(0, 18);
+
+            const len     = input.value.length;
+            const counter = document.getElementById('nip-counter');
+
+            counter.style.display = len > 0 ? 'block' : 'none';
+            counter.textContent   = len + '/18';
+
+            // Warna: merah kalau belum 18, hijau kalau tepat 18
+            if (len === 18) {
+                counter.style.color = '#34d399';   // hijau
+                input.style.borderColor = 'rgba(52,211,153,0.55)';
+            } else if (len > 0) {
+                counter.style.color = 'rgba(255,255,255,0.38)'; // netral
+                input.style.borderColor = '';
+            }
+        }
+
+        // Init counter jika ada old value (setelah validation error)
+        document.addEventListener('DOMContentLoaded', function () {
+            const nipInput = document.getElementById('nip');
+            if (nipInput && nipInput.value.length > 0) onNipInput(nipInput);
+        });
+
         /* ── Password toggle ── */
         function togglePw(inputId, iconId) {
             const input = document.getElementById(inputId);

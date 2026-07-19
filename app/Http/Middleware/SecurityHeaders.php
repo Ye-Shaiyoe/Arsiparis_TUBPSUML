@@ -33,10 +33,18 @@ class SecurityHeaders
         }
 
         // Content Security Policy (CSP)
-        // unsafe-inline dipertahankan untuk script karena Turbo/Alpine masih butuh inline event,
-        // namun unsafe-eval dihapus untuk mencegah eval() / new Function() dari script injeksi.
+        // Halaman admin masih memakai Tailwind CDN yang butuh unsafe-eval untuk parse config JS.
+        // Halaman auth & user memakai CSP lebih ketat tanpa unsafe-eval karena tidak pakai CDN Tailwind.
+        $isAdminOrSupport = $request->is('Admin/*') || $request->is('IT-Support/*') || $request->is('become-it-support');
+
+        $scriptSrc = $isAdminOrSupport
+            // Admin & IT Support: perlu unsafe-eval untuk cdn.tailwindcss.com
+            ? "'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://cdn.tailwindcss.com"
+            // Auth & User pages: tanpa unsafe-eval, tanpa CDN Tailwind — CSP lebih ketat
+            : "'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com";
+
         $csp = "default-src 'self'; " .
-               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://cdn.tailwindcss.com; " .
+               "script-src {$scriptSrc}; " .
                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
                "img-src 'self' data: https: blob:; " .
                "font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .

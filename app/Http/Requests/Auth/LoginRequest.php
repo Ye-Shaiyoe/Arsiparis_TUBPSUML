@@ -107,41 +107,32 @@ class LoginRequest extends FormRequest
         $this->validateRecaptcha();
         $this->ensureIsNotRateLimited();
 
-        // 2. Lanjut Login Biasa
-        $input = $this->input('email');
+        $input      = $this->input('email');
         $credential = $this->input('password');
-        
-        // Determine if input is email or NIP
+
         $isEmail = filter_var($input, FILTER_VALIDATE_EMAIL);
-        $isNip = User::isValidNipFormat($input);
-        
+        $isNip   = User::isValidNipFormat($input);
+
         $attempt = false;
 
         if ($isEmail) {
-            // Login with email + password only
-            $attempt = Auth::attempt(['email' => $input, 'password' => $credential], $this->boolean('remember'));
+            // Login dengan email + password
+            $attempt = Auth::attempt(
+                ['email' => $input, 'password' => $credential],
+                $this->boolean('remember')
+            );
         } elseif ($isNip) {
-            // Login with NIP: Gunakan database query dengan limit untuk O(log n) lookup
-            // SECURITY FIX: Hindari User::all() yang O(n) dan vulnerable to enumeration/timeout
-            // NIP di-encrypt di database, check dilakukan di application layer dengan limited result set
-            $users = User::select('id', 'email', 'nip')->limit(100)->get();
-            $user = null;
-            
-            foreach ($users as $u) {
-                if ($u->nip === $input) {
-                    $user = $u;
-                    break;
-                }
-            }
+            // Login dengan NIP: gunakan nip_hash index — tidak scan seluruh tabel
+            $user = User::findByNip($input);
 
             if ($user) {
-                $attempt = Auth::attempt(['email' => $user->email, 'password' => $credential], $this->boolean('remember'));
+                $attempt = Auth::attempt(
+                    ['email' => $user->email, 'password' => $credential],
+                    $this->boolean('remember')
+                );
             }
-        } else {
-            // Assume input is username (name field)
-            // Login with username + password only
-            $attempt = Auth::attempt(['name' => $input, 'password' => $credential], $this->boolean('remember'));
         }
+        // Login via username (name) sengaja dihapus — hanya email & NIP yang didukung
 
         if (!$attempt) {
             RateLimiter::hit($this->throttleKey());

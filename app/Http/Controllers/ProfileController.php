@@ -54,7 +54,10 @@ class ProfileController extends Controller
 
         // Set NIP explicitly (encrypted cast handles encryption automatically)
         if ($request->has('nip')) {
-            $user->nip = $request->input('nip') ?: null;
+            $nipValue = $request->input('nip') ?: null;
+            $user->nip = $nipValue;
+            // Selalu sync nip_hash agar lookup via NIP tetap akurat
+            $user->nip_hash = $nipValue ? \App\Models\User::hashNip($nipValue) : null;
         }
 
         // Handle base64 encoded profile photo from cropper

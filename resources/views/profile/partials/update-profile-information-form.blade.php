@@ -96,8 +96,17 @@
                         <i class="bi bi-card-text text-lg"></i>
                     </div>
                     <x-text-input id="nip" name="nip" type="text"
-                        class="block w-full pl-12 pr-5 py-4 bg-slate-50/50 border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-semibold text-slate-700"
-                        :value="old('nip', $user->nip)" autocomplete="username" placeholder="19xxxxxxxxxxxxxxx" />
+                        class="block w-full pl-12 pr-16 py-4 bg-slate-50/50 border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-semibold text-slate-700"
+                        :value="old('nip', $user->nip)" autocomplete="username" placeholder="18 digit angka"
+                        maxlength="18" oninput="onNipInputProfile(this)" />
+                    <span id="nip-counter-profile" style="
+                        display:none;
+                        position:absolute; right:14px; top:50%;
+                        transform:translateY(-50%);
+                        font-size:10.5px; font-weight:600;
+                        color:#94a3b8;
+                        pointer-events:none; letter-spacing:0.03em;
+                    ">0/18</span>
                 </div>
                 <x-input-error :messages="$errors->get('nip')" class="text-xs font-bold" />
             </div>
@@ -212,6 +221,31 @@
 
 {{-- Cropper.js Script --}}
 <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+<script>
+function onNipInputProfile(input) {
+    // Hanya izinkan angka
+    input.value = input.value.replace(/\D/g, '');
+
+    var counter = document.getElementById('nip-counter-profile');
+    var len = input.value.length;
+
+    if (len > 0) {
+        counter.style.display = 'block';
+        counter.textContent = len + '/18';
+        counter.style.color = len === 18 ? '#22c55e' : '#94a3b8';
+    } else {
+        counter.style.display = 'none';
+    }
+}
+
+// Inisialisasi counter saat halaman dimuat (jika NIP sudah terisi)
+document.addEventListener('DOMContentLoaded', function () {
+    var nipInput = document.getElementById('nip');
+    if (nipInput && nipInput.value.length > 0) {
+        onNipInputProfile(nipInput);
+    }
+});
+</script>
 <script>
 (function () {
     var cropModal      = document.getElementById('cropModal');

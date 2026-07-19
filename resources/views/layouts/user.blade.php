@@ -898,7 +898,7 @@
             position: fixed;
             inset: 0;
             background: rgba(15, 23, 42, 0.45);
-            z-index: 1034;
+            z-index: 1054; /* above bottom nav (1050), below sidebar (1055) */
             backdrop-filter: blur(3px);
             -webkit-backdrop-filter: blur(3px);
             opacity: 0;
@@ -1310,14 +1310,18 @@
                 position: fixed;
                 left: 0;
                 top: 0;
+                height: 100vh !important;
+                height: 100dvh !important;
+                max-height: 100vh !important;
+                max-height: 100dvh !important;
                 transform: translateX(-100%);
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 box-shadow: none;
+                z-index: 1055; /* above bottom nav (1050) */
             }
             .user-sidebar.is-open {
                 transform: translateX(0);
                 box-shadow: 16px 0 48px rgba(0, 0, 0, 0.35);
-                z-index: 1036;
             }
             .user-sidebar-toggle {
                 display: inline-flex;

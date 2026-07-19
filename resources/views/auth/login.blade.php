@@ -852,8 +852,18 @@
                             id="email" type="text" name="email"
                             value="{{ old('email') }}"
                             placeholder="Email atau NIP"
-                            required autofocus autocomplete="username">
+                            required autofocus autocomplete="username"
+                            oninput="onLoginInput(this)">
                         <i class="bi bi-person input-icon"></i>
+                        {{-- Counter muncul saat input terdeteksi sebagai NIP (≥3 digit angka) --}}
+                        <span id="login-nip-counter" style="
+                            display:none;
+                            position:absolute; right:12px; top:50%;
+                            transform:translateY(-50%);
+                            font-size:10.5px; font-weight:600;
+                            color:rgba(255,255,255,0.38);
+                            pointer-events:none; letter-spacing:0.03em;
+                        ">0/18</span>
                     </div>
                     @error('email')
                         <p class="error-text"><i class="bi bi-x-circle-fill" style="font-size:10px;"></i> {{ $message }}</p>
@@ -924,6 +934,36 @@
 
     <!-- Password toggle + Account Switcher + reCAPTCHA v3 script -->
     <script>
+        // ── NIP counter (login) ──
+        // Counter muncul hanya ketika input terdeteksi sebagai NIP (≥3 digit angka, tidak ada @ atau huruf)
+        function onLoginInput(input) {
+            const val     = input.value;
+            const isNip   = /^\d{3,}$/.test(val);   // minimal 3 digit angka, tidak ada karakter lain
+            const counter = document.getElementById('login-nip-counter');
+
+            if (!isNip) {
+                counter.style.display = 'none';
+                input.style.borderColor = '';
+                return;
+            }
+
+            // Batasi input angka max 18 digit
+            const stripped = val.replace(/\D/g, '').slice(0, 18);
+            if (stripped !== val) input.value = stripped;
+
+            const len = stripped.length;
+            counter.style.display = 'block';
+            counter.textContent   = len + '/18';
+
+            if (len === 18) {
+                counter.style.color = '#34d399';
+                input.style.borderColor = 'rgba(52,211,153,0.55)';
+            } else {
+                counter.style.color = 'rgba(255,255,255,0.38)';
+                input.style.borderColor = '';
+            }
+        }
+
         // ── reCAPTCHA v3 — invisible auto-execute ──
         // Token di-refresh setiap 90 detik (token Google berlaku 2 menit)
         const RECAPTCHA_SITE_KEY = '{{ config('services.recaptcha.site_key') }}';
