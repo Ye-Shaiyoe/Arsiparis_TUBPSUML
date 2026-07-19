@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewAccountMail;
 use App\Models\User;
 use App\Models\Surat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
@@ -96,6 +101,96 @@ class UserController extends Controller
         });
 
         return round($totalDays / $completedSurats->count(), 2);
+    }
+
+    /**
+     * Update role user (hanya untuk user dengan role 'user').
+     */
+    public function updateRole(Request $request, User $user)
+    {
+        // Hanya boleh ubah role user biasa, bukan sesama admin
+        if ($user->role !== 'user') {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Hanya role pengguna biasa (User) yang dapat diubah dari halaman ini.');
+        }
+
+        // Tidak boleh ubah role diri sendiri
+        if ($user->id === auth()->id()) {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Anda tidak dapat mengubah role akun sendiri.');
+        }
+
+        $request->validate([
+            'role' => ['required', 'string', 'in:user,admin_aspirasi,admin_kasubbag_tu,admin_kepala_balai'],
+        ]);
+
+        $oldRole = $user->role;
+        $user->update([
+            'role'          => $request->role,
+            // role_selected = true karena role sudah dipilihkan admin,
+            // user tidak perlu ke halaman Role-Selection lagi
+            'role_selected' => true,
+        ]);
+
+        \Illuminate\Support\Facades\Log::info('Role user diubah oleh admin', [
+            'target_user_id' => $user->id,
+            'old_role'       => $oldRole,
+            'new_role'       => $request->role,
+            'by_admin_id'    => auth()->id(),
+        ]);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', "Role '{$user->name}' berhasil diubah dari {$oldRole} menjadi {$request->role}.");
+    }
+
+    /**
+     * Buat akun pengguna baru dari panel admin.
+     * Password di-generate otomatis dan dikirim ke email target.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'  => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'nip'   => ['nullable', 'string', 'regex:/^\d{18}$/', 'unique:' . User::class],
+            'role'  => ['required', 'string', 'in:user,admin_aspirasi,admin_kasubbag_tu,admin_kepala_balai'],
+        ], [
+            'nip.regex'  => 'NIP harus tepat 18 digit angka.',
+            'nip.unique' => 'NIP sudah digunakan oleh pengguna lain.',
+            'role.in'    => 'Role tidak valid.',
+        ]);
+
+        // Generate password acak 12 karakter (huruf + angka + simbol)
+        $plainPassword = Str::password(12, letters: true, numbers: true, symbols: true, spaces: false);
+
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'nip'      => $request->filled('nip') ? $request->nip : null,
+            'nip_hash' => $request->filled('nip') ? User::hashNip($request->nip) : null,
+            'password' => Hash::make($plainPassword),
+            'role'     => $request->role,
+        ]);
+
+        // Kirim email info login ke akun baru
+        try {
+            Mail::to($user->email)->send(new NewAccountMail(
+                user:          $user,
+                plainPassword: $plainPassword,
+                createdByName: auth()->user()->name,
+            ));
+            $mailStatus = 'berhasil dikirim ke ' . $user->email;
+        } catch (\Throwable $e) {
+            // Jangan gagalkan pembuatan akun hanya karena email gagal
+            \Illuminate\Support\Facades\Log::error('Gagal kirim email akun baru: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+            ]);
+            $mailStatus = 'gagal dikirim (cek konfigurasi SMTP)';
+        }
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', "Akun '{$user->name}' berhasil dibuat. Email info login {$mailStatus}.");
     }
 
     /**

@@ -155,7 +155,11 @@ Route::prefix('Admin')->middleware(['auth', 'verified', 'admin'])->name('admin.'
         Route::prefix('Settings')->group(function () {
             // Users / Pegawai
             Route::get('/Users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+            Route::post('/Users', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
+            // Route 'create' eksplisit harus di atas {user} agar tidak tertangkap sebagai wildcard
+            Route::get('/Users/create', fn() => redirect()->route('admin.users.index'))->name('users.create');
             Route::get('/Users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
+            Route::patch('/Users/{user}/role', [\App\Http\Controllers\Admin\UserController::class, 'updateRole'])->name('users.updateRole');
             Route::delete('/Users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
 
             // Log System admin 

@@ -31,8 +31,8 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    
-    public function store(Request $request): RedirectResponse {
+    public function store(Request $request): RedirectResponse
+    {
         // Rate limiting: max 5 percobaan registrasi per IP per 5 menit
         $throttleKey = 'register|' . $request->ip();
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
@@ -44,24 +44,15 @@ class RegisteredUserController extends Controller
         RateLimiter::hit($throttleKey, 300); // decay 5 menit
 
         $request->validate([
-            'name'          => ['required', 'string', 'max:255'],
-            'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'nip'           => ['nullable', 'string', 'max:50', 'unique:'.User::class],
-            'password'      => ['required', 'confirmed', Rules\Password::defaults()],
-            'admin_code'    => ['nullable', 'string'],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'nip'      => ['nullable', 'string', 'regex:/^\d{18}$/', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'nip.regex' => 'NIP harus tepat 18 digit angka.',
         ]);
 
-        // Cek secret code admin menggunakan hash_equals (constant-time, cegah timing attack)
-        $role = 'user';
-        if ($request->filled('admin_code')) {
-            $secret = config('app.admin_secret_code', '');
-            if (!hash_equals($secret, $request->admin_code)) {
-                return back()->withErrors(['admin_code' => 'Kode admin tidak valid.']);
-            }
-            $role = 'admin';
-        }
-
-        // Verifikasi Google reCAPTCHA (paling akhir, setelah semua validasi lolos)
+        // Verifikasi Google reCAPTCHA v2
         $recaptchaToken = $request->input('g-recaptcha-response');
         if (empty($recaptchaToken)) {
             return back()->withErrors(['recaptcha' => 'Harap selesaikan verifikasi reCAPTCHA terlebih dahulu.'])->withInput();
@@ -86,27 +77,20 @@ class RegisteredUserController extends Controller
             return back()->withErrors(['recaptcha' => 'Verifikasi reCAPTCHA gagal atau kadaluarsa. Silakan coba lagi.'])->withInput();
         }
 
+        // Registrasi publik selalu menghasilkan role 'user'
+        // Pembuatan akun admin dilakukan lewat panel Admin > Settings > Users
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
-            'nip'      => $request->nip,
+            'nip'      => $request->filled('nip') ? $request->nip : null,
             'nip_hash' => $request->filled('nip') ? User::hashNip($request->nip) : null,
             'password' => Hash::make($request->password),
-            'role'     => $role,
+            'role'     => 'user',
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
-
-        // Redirect berdasarkan role
-        if ($user->isAdmin()) {
-            // Jika admin tapi belum pilih role → redirect ke halaman pilih role
-            if (!$user->hasSelectedRole()) {
-                return redirect()->intended(route('admin.role.select'));
-            }
-            return redirect()->intended(route('admin.dashboard'));
-        }
 
         return redirect()->intended(route('dashboard'));
     }

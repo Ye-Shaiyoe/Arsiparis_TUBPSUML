@@ -658,27 +658,6 @@
                         @enderror
                     </div>
 
-                    <!-- Kode Admin -->
-                    <div class="field-group field-full">
-                        <label class="field-label" for="admin_code">
-                            Code pengurus <!-- ini menuju ke Admin  -->
-                            <span style="opacity:.5; font-weight:400; text-transform:none; letter-spacing:0; font-size:10px;">&nbsp;(opsional)</span>
-                        </label>
-                        <div class="input-wrap">
-                            <input class="field-input admin-input" id="admin_code" type="password"
-                                name="admin_code" placeholder="Kosongkan jika bukan admin"
-                                autocomplete="off">
-                            <i class="bi bi-shield-lock input-icon admin-icon" style="color: rgba(251,191,36,0.4);"></i>
-                        </div>
-                        <p class="field-hint">
-                            <i class="bi bi-info-circle" style="font-size:10px;"></i>
-                            Isi hanya jika mendaftar sebagai administrator sistem
-                        </p>
-                        @error('admin_code')
-                            <p class="error-text"><i class="bi bi-x-circle-fill" style="font-size:10px;"></i> {{ $message }}</p>
-                        @enderror
-                    </div>
-
                 </div>
 
                 {{-- Error reCAPTCHA --}}
