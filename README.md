@@ -96,6 +96,8 @@ Menggantikan alur kerja manual dengan sistem tracking 10 tahap terintegrasi, SLA
 │ admin_kepala_balai   │ Verifikasi Kepala Balai (tahap 4)          │
 │ it_support           │ Broadcast notif, balas aspirasi, lihat data│
 └──────────────────────┴────────────────────────────────────────────┘
+
+note: kenapa saya menulisnya admin aspirasi dan bukannya admin_arsiparis? karena saat itu saya lupa dan harusnya dari awal admin_arsiparis. jika di ubah dari admin_aspirasi ke admin_arsiparis bisa merubah menyeluruh, komplex.
 ```
 
 ---
