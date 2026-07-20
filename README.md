@@ -562,8 +562,8 @@ Karena `APP_ENV=local`, validasi reCAPTCHA v3 otomatis di-skip di `LoginRequest.
 
 1. Di [console reCAPTCHA](https://www.google.com/recaptcha/admin), tambahkan `localhost` dan `127.0.0.1` ke daftar domain
 2. Atau sementara gunakan key "test" dari Google (selalu lolos):
-   - v2 test site key: `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`
-   - v2 test secret: `6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe`
+   - v2 test site key: `tet4IYBA8778aha88ASgs87a7aS87ADADWADADWA`
+   - v2 test secret: `AOI218jiajjadalahPokoknya`
 
 ---
 
