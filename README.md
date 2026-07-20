@@ -97,7 +97,7 @@ Menggantikan alur kerja manual dengan sistem tracking 10 tahap terintegrasi, SLA
 │ it_support           │ Broadcast notif, balas aspirasi, lihat data│
 └──────────────────────┴────────────────────────────────────────────┘
 
-note: kenapa saya menulisnya admin aspirasi dan bukannya admin_arsiparis? karena saat itu saya lupa dan harusnya dari awal admin_arsiparis. jika di ubah dari admin_aspirasi ke admin_arsiparis bisa merubah menyeluruh, komplex.
+note: kenapa saya menulisnya admin_aspirasi dan bukannya admin_arsiparis? karena saat itu saya lupa dan harusnya dari awal admin_arsiparis. jika di ubah dari admin_aspirasi ke admin_arsiparis bisa merubah menyeluruh, komplex.
 ```
 
 ---
@@ -195,6 +195,7 @@ Pastikan semua software berikut sudah terpasang sebelum instalasi:
 pdo_pgsql    pgsql       gd          zip
 fileinfo     mbstring    openssl     tokenizer
 xml          ctype       bcmath
+#sisanya gk diperlukan
 ```
 
 Cek ekstensi aktif:
@@ -219,9 +220,9 @@ Cocok untuk development di Windows menggunakan XAMPP.
 ### 2. Clone Repository
 
 ```bash
-cd C:\xampp\htdocs
+cd C:\xampp\htdocs atau bisa laragon/Docker,dll.
 git clone https://github.com/Ye-Shaiyoe/Arsiparis_TUBPSUML.git TUBPSUML
-cd persuratan.bpsuml.com
+cd TUBPSUML
 ```
 
 ### 3. Install Dependencies
@@ -310,31 +311,6 @@ php artisan db:seed --class=AdminSeeder
 php artisan storage:link
 npm run build
 ```
-
-### 9. Konfigurasi Virtual Host XAMPP (opsional)
-
-Agar bisa akses via `http://persuratan.local` tanpa `/public`:
-
-Edit `C:\xampp\apache\conf\extra\httpd-vhosts.conf`:
-
-```apache
-<VirtualHost *:80>
-    DocumentRoot "C:/xampp/htdocs/persuratan.bpsuml.com/public"
-    ServerName persuratan.local
-    <Directory "C:/xampp/htdocs/persuratan.bpsuml.com/public">
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-```
-
-Tambahkan di `C:\Windows\System32\drivers\etc\hosts`:
-```
-127.0.0.1   persuratan.local
-```
-
-Restart Apache, akses di `http://persuratan.local`
-
 ---
 
 ## 🚀 Instalasi Lokal (Artisan Serve)
@@ -357,7 +333,7 @@ Atau gunakan script setup yang sudah tersedia:
 composer run setup
 ```
 
-> Script ini otomatis: `composer install` → copy `.env` → `key:generate` → `migrate` → `npm install` → `npm run build`
+> Script ini otomatis: `composer install --optimize-autoloader --no-dev` → copy `.env` → `key:generate` → `migrate` → `npm install` → `npm run build`
 
 ### 2. Buat Database PostgreSQL
 
@@ -390,7 +366,34 @@ RECAPTCHA_V2_SECRET_KEY=your_v2_secret_key
 RECAPTCHA_V3_SITE_KEY=your_v3_site_key
 RECAPTCHA_V3_SECRET_KEY=your_v3_secret_key
 
-ADMIN_SECRET_CODE=kode_rahasia_admin
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_USERNAME=example@gmail.com
+MAIL_PASSWORD=adalah pokoknya
+MAIL_ENCRYPTION=ssl
+MAIL_FROM_ADDRESS="hei@gmail.com"
+MAIL_FROM_NAME="Sistem Adminstrasi BPSUML" 
+
+
+ADMIN_SECRET_CODE="kode_rahasia"      # UBAH BAGIAN INI LEBIH RUMIT JANGAN admin123
+IT_SUPPORT_CODE="secret123"  # UBAH ini sebelum deploy ke production
+RECAPTCHA_SITE_KEY=
+RECAPTCHA_SECRET_KEY=
+
+# reCAPTCHA v2 — untuk halaman register (checkbox widget)
+RECAPTCHA_V2_SITE_KEY=
+RECAPTCHA_V2_SECRET_KEY=
+
+# reCAPTCHA v3 — untuk halaman login (invisible, auto-detect)
+RECAPTCHA_V3_SITE_KEY=
+RECAPTCHA_V3_SECRET_KEY=
+
+BROADCAST_CONNECTION=log
+
+ADMIN_SEED_NAME="Nama Admin"
+ADMIN_SEED_EMAIL=admin@gmail.com
+ADMIN_SEED_PASSWORD=PasswordKuat123!
 ```
 
 ### 4. Migrate, Storage Link, Build
@@ -434,6 +437,7 @@ Akses Admin: **`http://127.0.0.1:8000/Admin/Dashboard`**
 
 cara ke it_support
 **`http://127.0.0.1:8000/become-it-support?code=secret123`** # seuaikan secret123 di .env IT_SUPPORT_CODE=
+
 ---
 
 ## 🌐 Instalasi di Server Production
