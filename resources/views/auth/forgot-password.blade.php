@@ -6,6 +6,9 @@
     <title>Lupa Kata Sandi — Sistem Surat Metrologi</title>
     <link rel="icon" href="{{ asset('images/metrologi.png') }}">
 
+    {{-- reCAPTCHA v3 — invisible, auto-execute on page load --}}
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
@@ -32,6 +35,7 @@
             --error:       #fda4af;
             --shadow-card: 0 24px 64px rgba(0,0,0,0.45), 0 4px 16px rgba(0,0,0,0.28);
         }
+        .grecaptcha-badge { visibility: hidden !important; }
 
         body {
             min-height: 100vh;
@@ -296,8 +300,9 @@
             </div>
             @endif
 
-            <form method="POST" action="{{ route('password.email') }}">
+            <form method="POST" action="{{ route('password.email') }}" id="forgotPasswordForm">
                 @csrf
+                <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
 
                 <div class="field-group">
                     <label class="field-label" for="email">Alamat Email</label>
@@ -335,5 +340,78 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ── reCAPTCHA v3 — invisible auto-execute ──
+        const RECAPTCHA_SITE_KEY = '{{ config('services.recaptcha.site_key') }}';
+        let recaptchaToken = null;
+        let recaptchaRefreshTimer = null;
+
+        function refreshRecaptchaToken() {
+            if (typeof grecaptcha === 'undefined') return;
+            grecaptcha.ready(function () {
+                grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'forgot_password' })
+                    .then(function (token) {
+                        recaptchaToken = token;
+                        const input = document.getElementById('g-recaptcha-response');
+                        if (input) input.value = token;
+                    })
+                    .catch(function (err) {
+                        console.warn('reCAPTCHA execute failed:', err);
+                    });
+            });
+        }
+
+        window.addEventListener('load', function () {
+            if (typeof grecaptcha !== 'undefined') {
+                refreshRecaptchaToken();
+            } else {
+                let retries = 0;
+                const interval = setInterval(function () {
+                    if (typeof grecaptcha !== 'undefined') {
+                        clearInterval(interval);
+                        refreshRecaptchaToken();
+                        recaptchaRefreshTimer = setInterval(refreshRecaptchaToken, 90000);
+                    } else if (++retries > 10) {
+                        clearInterval(interval);
+                    }
+                }, 500);
+            }
+            recaptchaRefreshTimer = setInterval(refreshRecaptchaToken, 90000);
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('forgotPasswordForm');
+            const submitBtn = document.querySelector('.btn-submit');
+            if (form && submitBtn) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.75';
+                    submitBtn.style.cursor = 'not-allowed';
+                    submitBtn.innerHTML = `
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" 
+                              style="width: 14px; height: 14px; border-width: 2px; vertical-align: middle; margin-top: -2px;"></span>
+                        Mengirim Tautan...
+                    `;
+
+                    if (typeof grecaptcha !== 'undefined') {
+                        grecaptcha.ready(function () {
+                            grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'forgot_password' })
+                                .then(function (token) {
+                                    document.getElementById('g-recaptcha-response').value = token;
+                                    form.submit();
+                                })
+                                .catch(function () {
+                                    form.submit();
+                                });
+                        });
+                    } else {
+                        form.submit();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
