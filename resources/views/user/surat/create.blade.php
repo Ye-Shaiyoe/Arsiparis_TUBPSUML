@@ -145,20 +145,21 @@
                                 </div>
                             @endif
 
-                            {{-- Upload file word --}}
+                            {{-- Upload file word/pdf --}}
                             <div class="mb-3">
                                 <label class="form-label" style="font-size:13px;font-weight:500;color:#111827;">
-                                    File Surat (.docx) <span class="text-danger">*</span>
+                                    File Surat (.docx / .pdf) <span class="text-danger">*</span>
                                 </label>
                                 <label class="upload-area d-block" for="file_word">
                                     <input type="file" id="file_word" name="file_word"
-                                        accept=".docx,.doc"
-                                        class="@error('file_word') is-invalid @enderror"
-                                        onchange="showFileName(this, 'nama_word')">
-                                    <i class="bi bi-file-earmark-word" style="font-size:28px; color:#2563eb; display:block; margin-bottom:6px;"></i>
-                                    <span id="nama_word" style="font-size:12px;color:#6b7280;">
-                                        Klik atau drag file .docx ke sini<br>
-                                        <span style="font-size:11px; color:#6b7280;">Maks. 5MB</span>
+                                         accept=".docx,.doc,.pdf"
+                                         class="@error('file_word') is-invalid @enderror"
+                                         onchange="showFileName(this, 'nama_word')">
+                                    <i class="bi bi-file-earmark-pdf text-danger" style="font-size:28px; display:inline-block; margin-bottom:6px; margin-right:8px;"></i>
+                                    <i class="bi bi-file-earmark-word" style="font-size:28px; color:#2563eb; display:inline-block; margin-bottom:6px;"></i>
+                                    <span id="nama_word" style="font-size:12px;color:#6b7280; display:block;">
+                                         Klik atau drag file .docx atau .pdf ke sini<br>
+                                         <span style="font-size:11px; color:#6b7280;">Maks. 5MB</span>
                                     </span>
                                 </label>
                                 @error('file_word')

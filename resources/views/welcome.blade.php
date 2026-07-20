@@ -1116,23 +1116,27 @@
             });
         }
 
-        // Scroll progress + nav — throttled with rAF
+        // ─── UNIFIED SCROLL HANDLER (satu listener, rAF throttled) ───
         const scrollBar = document.getElementById('scroll-bar');
-        const navbar = document.getElementById('navbar');
-        let scrollTicking = false;
+        const navbar    = document.getElementById('navbar');
+        let _scrollTick = false;
+        const _scrollCbs = []; // daftar callback yang ingin dieksekusi tiap scroll
         window.addEventListener('scroll', () => {
-            if (scrollTicking) return;
-            scrollTicking = true;
+            if (_scrollTick) return;
+            _scrollTick = true;
             requestAnimationFrame(() => {
-                const sy = window.scrollY;
-                const p = sy / (document.body.scrollHeight - window.innerHeight) * 100;
+                const sy   = window.scrollY;
+                const docH = document.documentElement.scrollHeight - window.innerHeight;
+                const p    = docH > 0 ? (sy / docH) * 100 : 0;
                 if (scrollBar) scrollBar.style.width = p + '%';
-                navbar.classList.toggle('scrolled', sy > 40);
-                scrollTicking = false;
+                if (navbar)    navbar.classList.toggle('scrolled', sy > 40);
+                // run other scroll cbs
+                for (let i = 0; i < _scrollCbs.length; i++) _scrollCbs[i](sy, p, docH);
+                _scrollTick = false;
             });
         }, { passive: true });
 
-        // Particles — skip on low-end/mobile, pause when tab hidden
+        // Particles — skip on low-end/mobile, pause when hero not visible
         (function () {
             const cvs = document.getElementById('particles-canvas');
             if (!cvs) return;
@@ -1142,6 +1146,7 @@
 
             const ctx = cvs.getContext('2d');
             let running = true;
+            let heroVisible = true; // pause ketika hero di luar viewport
             let rafId = null;
             function resize() { cvs.width = window.innerWidth; cvs.height = window.innerHeight; }
             resize();
@@ -1150,12 +1155,21 @@
             window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 250); }, { passive: true });
             document.addEventListener('visibilitychange', () => {
                 running = !document.hidden;
-                if (running && !rafId) loop();
+                if (running && heroVisible && !rafId) loop();
             });
 
-            // Reduced to 15 particles — adequate density, lower CPU cost
-            const N = 15;
-            const DIST_SQ = 7000;
+            // Pause saat hero tidak visible (sudah scroll jauh ke bawah)
+            const heroSection = document.getElementById('hero');
+            if (heroSection && 'IntersectionObserver' in window) {
+                new IntersectionObserver((entries) => {
+                    heroVisible = entries[0].isIntersecting;
+                    if (heroVisible && running && !rafId) loop();
+                }, { threshold: 0.05 }).observe(heroSection);
+            }
+
+            // Reduced to 12 particles
+            const N = 12;
+            const DIST_SQ = 6000;
             const particles = Array.from({ length: N }, () => ({
                 x: Math.random() * window.innerWidth,
                 y: Math.random() * window.innerHeight,
@@ -1166,9 +1180,8 @@
             }));
             const fillStyles = particles.map(p => `rgba(26,115,232,${p.a})`);
 
-            // Batch all paths before stroke to reduce ctx state changes
             function loop() {
-                if (!running) { rafId = null; return; }
+                if (!running || !heroVisible) { rafId = null; return; }
                 rafId = requestAnimationFrame(loop);
                 ctx.clearRect(0, 0, cvs.width, cvs.height);
 
@@ -1300,31 +1313,21 @@
         }
         initMagnetic();
 
-        // Hero Parallax — gunakan scrub value (bukan true) agar ada smoothing, kurangi jarak
+        // Hero Parallax — hanya pada elemen konten, bukan background
+        // bg-orb & bg-mesh sudah punya CSS animation — tidak perlu GSAP parallax ganda
         gsap.to('.hero-title', {
-            y: -60,
+            y: -50,
             scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5 }
         });
         gsap.to('.hero-float-card', {
-            y: (i) => -80 - (i * 40),
+            y: (i) => -60 - (i * 30),
             scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2 }
         });
         gsap.to('.hero-badge', {
-            y: -120,
-            rotation: 120,
+            y: -100,
+            rotation: 90,
             scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2.5 }
         });
-        // Background parallax — digabung scrub agar tidak overwhelm compositor
-        gsap.to('.bg-mesh', {
-            y: 100,
-            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 2 }
-        });
-        gsap.to('.bg-orb', {
-            y: (i) => 80 * (i + 1),
-            x: (i) => (i % 2 === 0 ? 40 : -40),
-            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 3 }
-        });
-        // bg-grid & orbs individual dihapus — cukup .bg-orb batch di atas
 
         // ─── HERO ENTRANCE ANIMATION ───
         const splitIntoWords = (elementId) => {
@@ -1688,10 +1691,10 @@
             });
         });
 
-        // ========== HORIZONTAL FEATURE SCROLLER ==========
+        // ========== HORIZONTAL FEATURE SHOWCASE ==========
         const scrollerSection = document.getElementById('features-scroller');
         const trackHorizontal = document.getElementById('features-track');
-        if (scrollerSection && trackHorizontal && window.innerWidth > 768) {
+        if (scrollerSection && trackHorizontal && window.innerWidth > 768 && !('ontouchstart' in window)) {
             const slides = trackHorizontal.querySelectorAll('.feature-slide');
             let totalWidth = 0;
             slides.forEach(s => { totalWidth += s.offsetWidth; });
@@ -1717,7 +1720,6 @@
             });
 
             // Per-slide entrance — pakai containerAnimation tapi hanya opacity+x sederhana
-            // Tidak menggunakan rotationY/scale untuk menghindari new composite layers
             slides.forEach(slide => {
                 const textSide   = slide.querySelector('.feature-text-side');
                 const visualSide = slide.querySelector('.feature-visual-side');
@@ -1751,7 +1753,7 @@
                     });
                 }
 
-                // Archive stack fan — hanya slide yang punya .archive-item
+                // Archive stack fan
                 const archiveCards = slide.querySelectorAll('.archive-item');
                 if (archiveCards.length >= 3) {
                     gsap.fromTo(archiveCards[0], { rotation: 0 }, { rotation: -10,
@@ -1796,13 +1798,13 @@
                 }
             });
 
-            // Trigger kelas visible untuk masing-masing step
+            // Trigger kelas visible untuk masing-masing step (once: true agar tidak hilang saat di-scroll ke atas)
             document.querySelectorAll('#alur-kerja .alur-step').forEach(step => {
                 ScrollTrigger.create({
                     trigger: step,
                     start: 'top 85%',
-                    onEnter: () => step.classList.add('visible'),
-                    onLeaveBack: () => step.classList.remove('visible')
+                    once: true,
+                    onEnter: () => step.classList.add('visible')
                 });
             });
 
@@ -1820,29 +1822,22 @@
                 sentinel.style.cssText = 'height:1px;width:100%;pointer-events:none;position:absolute;top:0;left:0;';
                 alurHeader.style.position && document.querySelector('#alur-kerja .alur-kerja-container').prepend(sentinel);
 
-                // Use scroll event to detect sticky state — passive + rAF throttled
-                let stickyTicking = false;
+                // Use unified scroll handler for sticky state detection
                 const updateStickyState = () => {
-                    if (stickyTicking) return;
-                    stickyTicking = true;
-                    requestAnimationFrame(() => {
-                        const headerRect = alurHeader.getBoundingClientRect();
-                        const isStuck = headerRect.top <= 32;
-                        alurHeader.classList.toggle('is-stuck', isStuck);
+                    const headerRect = alurHeader.getBoundingClientRect();
+                    const isStuck = headerRect.top <= 32;
+                    alurHeader.classList.toggle('is-stuck', isStuck);
 
-                        const steps = document.querySelectorAll('#alur-kerja .alur-step');
-                        let lastVisible = 0;
-                        steps.forEach((step, i) => {
-                            if (step.classList.contains('visible')) lastVisible = i + 1;
-                        });
-                        const counterEl = stepCounter.querySelector('.counter-current');
-                        if (counterEl) counterEl.textContent = lastVisible;
-                        stickyTicking = false;
+                    const steps = document.querySelectorAll('#alur-kerja .alur-step');
+                    let lastVisible = 0;
+                    steps.forEach((step, i) => {
+                        if (step.classList.contains('visible')) lastVisible = i + 1;
                     });
+                    const counterEl = stepCounter.querySelector('.counter-current');
+                    if (counterEl) counterEl.textContent = lastVisible;
                 };
 
-                // Use passive scroll + rAF for sticky detection (already throttled above via scrollTicking)
-                window.addEventListener('scroll', updateStickyState, { passive: true });
+                _scrollCbs.push(updateStickyState);
                 updateStickyState();
             }
 
@@ -2020,17 +2015,14 @@
 
             // Reuse the same scroll RAF as the navbar scroll listener
             // (tidak perlu tambah scroll listener baru)
-            const updateBTT = () => {
-                const sy = window.scrollY;
-                const docH = document.documentElement.scrollHeight - window.innerHeight;
+            const updateBTT = (sy, p, docH) => {
                 btn.classList.toggle('visible', sy > 400);
                 if (circle) {
                     circle.style.strokeDashoffset = CIRCUMFERENCE - ((sy / docH) * CIRCUMFERENCE);
                 }
             };
-            window.addEventListener('scroll', () => {
-                requestAnimationFrame(updateBTT);
-            }, { passive: true });
+            _scrollCbs.push(updateBTT);
+            updateBTT(window.scrollY, 0, document.documentElement.scrollHeight - window.innerHeight);
 
             btn.addEventListener('click', () => {
                 if (typeof lenis !== 'undefined' && lenis && lenis.scrollTo) {

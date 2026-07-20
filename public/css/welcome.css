@@ -81,7 +81,7 @@
                 radial-gradient(ellipse 60% 55% at 82% 78%, rgba(99, 102, 241, 0.04) 0%, transparent 60%),
                 radial-gradient(ellipse 38% 38% at 58% 32%, rgba(26, 115, 232, 0.03) 0%, transparent 58%);
             pointer-events: none;
-            will-change: transform;
+            /* will-change removed: GSAP parallax handles promotion */
         }
 
         .bg-grid {
@@ -96,7 +96,7 @@
                 linear-gradient(90deg, rgba(26, 115, 232, 0.04) 1px, transparent 1px);
             background-size: 64px 64px;
             pointer-events: none;
-            will-change: transform;
+            /* will-change removed: static element, no JS transform */
         }
 
         #bg-video {
@@ -127,9 +127,9 @@
             position: fixed;
             border-radius: 50%;
             pointer-events: none;
-            filter: blur(120px);
+            filter: blur(80px); /* Reduced blur for better GPU perf */
             z-index: 0;
-            will-change: transform, opacity;
+            will-change: transform; /* GSAP parallax needs this */
         }
 
         .bg-orb-1 {
@@ -137,7 +137,7 @@
             height: 520px;
             top: -130px;
             left: -170px;
-            background: rgba(26, 115, 232, 0.10);
+            background: rgba(26, 115, 232, 0.08);
             animation: orbFloat1 12s ease-in-out infinite;
         }
 
@@ -146,7 +146,7 @@
             height: 380px;
             bottom: 8%;
             right: -100px;
-            background: rgba(99, 102, 241, 0.08);
+            background: rgba(99, 102, 241, 0.06);
             animation: orbFloat2 10s ease-in-out infinite;
         }
 
@@ -155,7 +155,7 @@
             height: 280px;
             top: 40%;
             left: 40%;
-            background: rgba(26, 115, 232, 0.06);
+            background: rgba(26, 115, 232, 0.04);
             animation: orbFloat 8s ease-in-out infinite;
         }
 
@@ -350,6 +350,11 @@
         section {
             position: relative;
             z-index: 1;
+        }
+
+        /* CSS Containment — isolasi layout antar section, mencegah reflow global saat scroll */
+        #about, #stats, #charts, #alur-kerja, #security, #testimonials, #developer, #portals {
+            contain: layout style;
         }
 
         /* ── HERO ── */
@@ -1512,17 +1517,16 @@
             background: var(--accent);
         }
 
-        /* ── HORIZONTAL FEATURE SHOWCASE (diperbaiki) ── */
+        /* ── HORIZONTAL FEATURE SHOWCASE ── */
         #features-scroller {
             position: relative;
-            overflow: clip;
+            overflow: hidden;
         }
 
+        /* Desktop: GSAP yang akan handle sticky/pin — jangan double-pin dengan CSS sticky */
         .features-sticky-wrap {
-            position: sticky;
-            top: 0;
-            height: 100vh;
             width: 100%;
+            height: 100vh;
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -1532,8 +1536,7 @@
             display: flex;
             flex-wrap: nowrap;
             height: 100%;
-            width: max-content;
-            will-change: transform;
+            will-change: transform; /* GSAP translateX — perlu hint ini */
         }
 
         .feature-slide {

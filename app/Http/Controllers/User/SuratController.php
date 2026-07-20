@@ -420,7 +420,7 @@ class SuratController extends Controller
         }
 
         $request->validate([
-            'file_word' => 'required|file|mimes:docx,doc|max:5120',
+            'file_word' => 'required|file|mimes:docx,doc,pdf|max:5120',
             'file_lampiran' => 'nullable|file|mimes:pdf,jpg,jpeg,png,docx,doc,xlsx,xls|max:10240',
         ]);
 

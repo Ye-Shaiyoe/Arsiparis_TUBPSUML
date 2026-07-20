@@ -146,24 +146,29 @@
                                 </div>
                             @endif
 
-                            {{-- Upload file word --}}
+                            {{-- Upload file word/pdf --}}
                             <div class="mb-3">
                                 <label class="form-label" style="font-size:13px;font-weight:500;color:#111827;">
-                                    File Surat (.docx) <span class="text-danger">*</span>
+                                    File Surat (.docx / .pdf) <span class="text-danger">*</span>
                                 </label>
                                 <label class="upload-area d-block {{ $surat->file_word ? 'has-file' : '' }}" for="file_word" 
                                        style="{{ $surat->file_word ? 'border-color:#22c55e; background:#f0fdf4;' : '' }}">
                                     <input type="file" id="file_word" name="file_word"
-                                        accept=".docx,.doc"
+                                        accept=".docx,.doc,.pdf"
                                         class="@error('file_word') is-invalid @enderror"
                                         onchange="showFileName(this, 'nama_word')">
-                                    <i class="bi bi-file-earmark-word" style="font-size:28px; color:#2563eb; display:block; margin-bottom:6px;"></i>
+                                    @php $extWord = strtolower(pathinfo($surat->file_word ?? '', PATHINFO_EXTENSION)); @endphp
+                                    @if($extWord === 'pdf')
+                                        <i class="bi bi-file-earmark-pdf text-danger" style="font-size:28px; display:block; margin-bottom:6px;"></i>
+                                    @else
+                                        <i class="bi bi-file-earmark-word" style="font-size:28px; color:#2563eb; display:block; margin-bottom:6px;"></i>
+                                    @endif
                                     <span id="nama_word" style="font-size:12px;color:#6b7280;">
                                         @if($surat->file_word)
                                             <strong style="color:#111827;">{{ basename($surat->file_word) }}</strong><br>
-                                            <span style="font-size:11px;">Klik untuk ganti file</span>
+                                            <span style="font-size:11px;">Klik untuk ganti file (.docx / .pdf)</span>
                                         @else
-                                            Klik atau drag file .docx ke sini
+                                            Klik atau drag file .docx atau .pdf ke sini
                                         @endif
                                     </span>
                                 </label>

@@ -141,7 +141,11 @@
                         <div class="btn-group">
                             <a href="{{ route('admin.surat.preview', [$surat, 'word']) }}" target="_blank"
                                     class="btn btn-sm btn-primary px-3">
-                                <i class="bi bi-file-earmark-word me-1"></i>Preview Word
+                                @if($extWord === 'pdf')
+                                    <i class="bi bi-file-earmark-pdf me-1"></i>Preview PDF
+                                @else
+                                    <i class="bi bi-file-earmark-word me-1"></i>Preview Word
+                                @endif
                             </a>
                             <a href="{{ route('admin.surat.download', [$surat, 'word']) }}" class="btn btn-sm btn-dark px-3" title="Download"><i class="bi bi-download"></i></a>
                         </div>
@@ -204,9 +208,9 @@
                 @csrf
                 <div class="mb-2">
                     <label class="form-label small fw-bold" style="color:var(--text-secondary); font-size: 11px;">
-                        <i class="bi bi-file-earmark-word me-1"></i> File Word
+                        <i class="bi bi-file-earmark-pdf text-danger"></i> / <i class="bi bi-file-earmark-word me-1"></i> File Word / PDF
                     </label>
-                    <input type="file" name="file_word" class="form-control form-control-sm" accept=".docx,.doc"
+                    <input type="file" name="file_word" class="form-control form-control-sm" accept=".docx,.doc,.pdf"
                            style="background: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-color); font-size: 12px;">
                     <small class="text-muted" style="font-size: 10px;">Max 5MB</small>
                     @error('file_word')

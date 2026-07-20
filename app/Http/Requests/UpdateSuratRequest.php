@@ -49,8 +49,8 @@ class UpdateSuratRequest extends FormRequest
             'file_word' => [
                 $fileWordReq,
                 'file',
-                'mimetypes:application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword',
-                'mimes:docx,doc',
+                'mimetypes:application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,application/pdf',
+                'mimes:docx,doc,pdf',
                 'max:5120',
             ],
             'file_lampiran' => [
@@ -77,9 +77,9 @@ class UpdateSuratRequest extends FormRequest
             'tujuan.required'           => 'Tujuan surat wajib diisi.',
             'tujuan.max'                => 'Tujuan surat maksimal 500 karakter.',
             'catatan_pengusul.max'      => 'Catatan maksimal 100 karakter.',
-            'file_word.required'        => 'File surat Word (.docx) wajib diupload.',
-            'file_word.mimes'           => 'File surat harus berformat Word (.docx / .doc).',
-            'file_word.mimetypes'       => 'File surat harus berformat Word (.docx / .doc). File mencurigakan ditolak.',
+            'file_word.required'        => 'File surat Word (.docx) atau PDF (.pdf) wajib diupload.',
+            'file_word.mimes'           => 'File surat harus berformat Word (.docx / .doc) atau PDF (.pdf).',
+            'file_word.mimetypes'       => 'File surat harus berformat Word (.docx / .doc) atau PDF (.pdf). File mencurigakan ditolak.',
             'file_word.max'             => 'Ukuran file surat maksimal 5 MB.',
             'file_lampiran.mimes'       => 'Lampiran harus berupa PDF, Gambar (JPG/PNG), Word (DOCX/DOC), atau Excel (XLSX/XLS).',
             'file_lampiran.mimetypes'   => 'Tipe konten lampiran tidak diizinkan. File mencurigakan ditolak.',

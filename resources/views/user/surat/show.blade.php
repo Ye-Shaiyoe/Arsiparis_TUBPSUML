@@ -146,11 +146,16 @@
                     @else
                         <div class="d-flex gap-2 flex-wrap">
                             @if($surat->file_word)
+                                @php $extWord = strtolower(pathinfo($surat->file_word, PATHINFO_EXTENSION)); @endphp
                                 <a href="{{ route('user.surat.preview', [$surat, 'word']) }}"
                                    class="btn btn-sm d-flex align-items-center gap-2"
                                    style="font-size:12px;border:1px solid var(--border-color);border-radius:8px;color:#1e3a5f;background:var(--bg-secondary);">
-                                    <i class="bi bi-file-earmark-word" style="color:#2563eb;"></i> Preview / Unduh Surat
-                                </a>
+                                     @if($extWord === 'pdf')
+                                         <i class="bi bi-file-earmark-pdf text-danger"></i> Preview / Unduh PDF Surat
+                                     @else
+                                         <i class="bi bi-file-earmark-word" style="color:#2563eb;"></i> Preview / Unduh Surat
+                                     @endif
+                                 </a>
                             @endif
                             @if($surat->file_lampiran)
                                 @php $extLamp = strtolower(pathinfo($surat->file_lampiran, PATHINFO_EXTENSION)); @endphp
@@ -202,11 +207,11 @@
                         <div class="row g-3">
                             <div class="col-12">
                                 <label class="form-label" style="font-size:13px;font-weight:600;color:var(--text-primary);">
-                                    <i class="bi bi-file-earmark-word text-primary"></i> File Surat (.docx/.doc) <span class="text-danger">*</span>
+                                    <i class="bi bi-file-earmark-pdf text-danger"></i> / <i class="bi bi-file-earmark-word text-primary"></i> File Surat (.docx/.doc/.pdf) <span class="text-danger">*</span>
                                 </label>
-                                <input type="file" name="file_word" class="form-control" accept=".docx,.doc" required
+                                <input type="file" name="file_word" class="form-control" accept=".docx,.doc,.pdf" required
                                        style="font-size:13px;background:var(--bg-secondary);color:var(--text-primary);border-color:var(--border-color);">
-                                <small class="text-muted">Upload file Word yang sudah diperbaiki (max 10MB)</small>
+                                <small class="text-muted">Upload file Word atau PDF yang sudah diperbaiki (max 5MB)</small>
                             </div>
 
                             <div class="col-12">
