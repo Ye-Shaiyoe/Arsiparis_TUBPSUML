@@ -523,6 +523,9 @@ sudo systemctl status postgresql
 # Atau di Windows/XAMPP — cek service PostgreSQL di task manager
 # Verifikasi koneksi
 psql -h 127.0.0.1 -U postgres -d db_persuratan_bpsuml
+
+#install composer. 
+composer install --optimize-autoloader --no-dev
 ```
 
 Cek juga `.env` — pastikan `DB_PORT=5432` dan `DB_CONNECTION=pgsql`.
