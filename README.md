@@ -1,6 +1,6 @@
 ﻿<div align="center">
 
-# 📬 Sistem Informasi Digital
+# 📬 Sistem Informasi Digital TUBPSUML
 ### BALAI PENGELOLAAN SUML
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
