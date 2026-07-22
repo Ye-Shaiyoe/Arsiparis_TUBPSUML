@@ -289,6 +289,7 @@ ADMIN_SECRET_CODE="kode_rahasia_admin"
 
 MAIL_MAILER=log                   # log = tidak kirim email sungguhan saat dev
 
+# Untuk Bikin Role Admin. (Kepala Balai)
 ADMIN_SEED_NAME="Nama Admin"
 ADMIN_SEED_EMAIL=admin@bpsuml.go.id
 ADMIN_SEED_PASSWORD=PasswordKuat123!
@@ -376,7 +377,6 @@ MAIL_FROM_ADDRESS="hei@gmail.com"
 MAIL_FROM_NAME="Sistem Adminstrasi BPSUML" 
 
 
-ADMIN_SECRET_CODE="kode_rahasia"      # UBAH BAGIAN INI LEBIH RUMIT JANGAN admin123
 IT_SUPPORT_CODE="secret123"  # UBAH ini sebelum deploy ke production
 RECAPTCHA_SITE_KEY=
 RECAPTCHA_SECRET_KEY=
@@ -391,6 +391,7 @@ RECAPTCHA_V3_SECRET_KEY=
 
 BROADCAST_CONNECTION=log
 
+# untuk bikin admin kepala balai
 ADMIN_SEED_NAME="Nama Admin"
 ADMIN_SEED_EMAIL=admin@gmail.com
 ADMIN_SEED_PASSWORD=PasswordKuat123!
