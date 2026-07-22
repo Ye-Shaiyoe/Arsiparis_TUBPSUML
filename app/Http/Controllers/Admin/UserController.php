@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 
 class UserController extends Controller
@@ -105,30 +104,30 @@ class UserController extends Controller
 
     /**
      * Buat akun pengguna baru dari panel admin.
-     * Password di-generate otomatis dan dikirim ke email target.
+     * Password diisi manual oleh admin.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'name'  => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'nip'   => ['nullable', 'string', 'regex:/^\d{18}$/', 'unique:' . User::class],
-            'role'  => ['required', 'string', 'in:user,admin_aspirasi,admin_kasubbag_tu,admin_kepala_balai'],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'nip'      => ['nullable', 'string', 'regex:/^\d{18}$/', 'unique:' . User::class],
+            'role'     => ['required', 'string', 'in:user,admin_aspirasi,admin_kasubbag_tu,admin_kepala_balai'],
         ], [
-            'nip.regex'  => 'NIP harus tepat 18 digit angka.',
-            'nip.unique' => 'NIP sudah digunakan oleh pengguna lain.',
-            'role.in'    => 'Role tidak valid.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'password.min'       => 'Password minimal 8 karakter.',
+            'nip.regex'          => 'NIP harus tepat 18 digit angka.',
+            'nip.unique'         => 'NIP sudah digunakan oleh pengguna lain.',
+            'role.in'            => 'Role tidak valid.',
         ]);
-
-        // Generate password acak 12 karakter (huruf + angka + simbol)
-        $plainPassword = Str::password(12, letters: true, numbers: true, symbols: true, spaces: false);
 
         $user = User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'nip'      => $request->filled('nip') ? $request->nip : null,
             'nip_hash' => $request->filled('nip') ? User::hashNip($request->nip) : null,
-            'password' => Hash::make($plainPassword),
+            'password' => Hash::make($request->password),
             'role'     => $request->role,
         ]);
 
@@ -136,7 +135,7 @@ class UserController extends Controller
         try {
             Mail::to($user->email)->queue(new NewAccountMail(
                 user:          $user,
-                plainPassword: $plainPassword,
+                plainPassword: $request->password,
                 createdByName: auth()->user()->name,
             ));
             $mailStatus = 'berhasil dimasukkan ke antrean kirim untuk ' . $user->email;

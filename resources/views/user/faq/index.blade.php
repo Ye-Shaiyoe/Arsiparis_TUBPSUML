@@ -684,7 +684,7 @@
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Klik tombol <strong>"Ajukan Surat Baru"</strong> di dashboard atau menu Surat. Unggah file dokumen dalam format <strong>.docx</strong> (Word) dan lampiran pendukung jika ada (PDF/Gambar). Isi judul, jenis (Nota Dinas, Surat Dinas, dll), dan sifat surat (Biasa, Segera, Rahasia), lalu klik submit. Pastikan pengajuan dilakukan di jam operasional: <strong>Senin–Kamis pukul 07.30–16.00 WIB</strong> atau <strong>Jumat pukul 07.30–16.30 WIB</strong>.
+                        Klik tombol <strong>"Ajukan Surat Baru"</strong> di dashboard atau menu Surat. Unggah file dokumen dalam format <strong>.docx</strong> (Word) atau <strong>.pdf</strong>, dan lampiran pendukung jika ada. Isi judul, jenis (Nota Dinas, Surat Dinas, dll), dan sifat surat (Biasa, Segera, Rahasia), lalu klik submit. Pastikan pengajuan dilakukan di jam operasional: <strong>Senin–Kamis pukul 07.30–16.00 WIB</strong> atau <strong>Jumat pukul 07.30–16.30 WIB</strong>.
                     </div>
                 </div>
             </div>
@@ -692,7 +692,7 @@
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
                     <div class="faq-q-icon">⏮️</div>
-                    <span class="faq-q-text">Kenapa Preview Word berbeda dengan file asli?</span>
+                    <span class="faq-q-text">Kenapa struktur preview word berbeda dengan file asli?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
                 <div class="faq-answer-wrap">
@@ -711,7 +711,7 @@
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Untuk <strong>file surat utama</strong>, sistem hanya menerima format <strong>.docx</strong> (Microsoft Word). Untuk <strong>lampiran pendukung</strong>, Anda dapat mengunggah file berformat <strong>PDF, JPG, .docx, .xlsx atau PNG</strong>. Ukuran maksimal per file adalah <strong>10 MB</strong>. Pastikan file tidak terpassword/terenkripsi agar dapat diproses sistem.
+                        Untuk <strong>file surat utama</strong>, sistem menerima format <strong>.docx</strong> (Microsoft Word) atau <strong>.pdf</strong>. Untuk <strong>lampiran pendukung</strong>, Anda dapat mengunggah file berformat <strong>PDF, JPG, .docx, .xlsx atau PNG</strong>. Ukuran maksimal per file adalah <strong>10 MB</strong>. Pastikan file tidak terpassword/terenkripsi agar dapat diproses sistem.
                     </div>
                 </div>
             </div>

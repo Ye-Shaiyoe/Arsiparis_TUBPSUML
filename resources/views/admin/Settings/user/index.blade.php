@@ -348,7 +348,33 @@
                     <label class="mf-label" for="m_email">Email <span style="color:#dc2626">*</span></label>
                     <input class="mf-input" id="m_email" type="email" name="email"
                         value="{{ old('email') }}" placeholder="email@domain.com" required maxlength="255">
-                    <span class="mf-hint">Password acak akan dikirim ke email ini secara otomatis.</span>
+                </div>
+
+                {{-- Password --}}
+                <div class="mf-group">
+                    <label class="mf-label" for="m_password">Password <span style="color:#dc2626">*</span></label>
+                    <div style="position: relative;">
+                        <input class="mf-input" id="m_password" type="password" name="password"
+                            placeholder="Minimal 8 karakter" required minlength="8"
+                            style="padding-right: 40px;">
+                        <button type="button" onclick="togglePassword('m_password', this)" 
+                            style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#6b7280; font-size:16px; padding:2px 4px;"
+                            title="Tampilkan/sembunyikan password">👁️</button>
+                    </div>
+                    <span class="mf-hint">Minimal 8 karakter.</span>
+                </div>
+
+                {{-- Konfirmasi Password --}}
+                <div class="mf-group">
+                    <label class="mf-label" for="m_password_confirmation">Konfirmasi Password <span style="color:#dc2626">*</span></label>
+                    <div style="position: relative;">
+                        <input class="mf-input" id="m_password_confirmation" type="password" name="password_confirmation"
+                            placeholder="Ulangi password" required minlength="8"
+                            style="padding-right: 40px;">
+                        <button type="button" onclick="togglePassword('m_password_confirmation', this)" 
+                            style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#6b7280; font-size:16px; padding:2px 4px;"
+                            title="Tampilkan/sembunyikan password">👁️</button>
+                    </div>
                 </div>
 
                 {{-- NIP --}}
@@ -378,7 +404,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn" onclick="tutupModal()">Batal</button>
                 <button type="submit" class="btn btn-primary" id="btnSubmitBuat">
-                    📧 Buat & Kirim Email
+                    ✅ Buat Akun
                 </button>
             </div>
         </form>
@@ -393,6 +419,17 @@
 
     function tutupModal() {
         document.getElementById('modalBuatAkun').style.display = 'none';
+    }
+
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            btn.textContent = '👁️';
+        }
     }
 
     // ── Modal Ubah Role ──

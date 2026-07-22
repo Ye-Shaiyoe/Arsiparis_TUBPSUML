@@ -317,7 +317,7 @@
                 <ul class="step-list">
                     <li><span class="step-num">1</span><div>Klik <strong>"Ajukan Surat"</strong> di sidebar kiri</div></li>
                     <li><span class="step-num">2</span><div>Isi <strong>Judul Surat</strong>, <strong>Jenis</strong>, <strong>Sifat</strong>, dan <strong>Tujuan Surat</strong></div></li>
-                    <li><span class="step-num">3</span><div>Unggah <strong>file surat utama</strong> (format <code>.docx</code>, maks. 10MB)</div></li>
+                    <li><span class="step-num">3</span><div>Unggah <strong>file surat utama</strong> (format <code>.docx</code> atau <code>.pdf</code>, maks. 10MB)</div></li>
                     <li><span class="step-num">4</span><div>Unggah <strong>lampiran</strong> jika ada (PDF, JPG, PNG, .docx, .xlsx — maks. 10MB)</div></li>
                     <li><span class="step-num">5</span><div>Isi <strong>catatan pengusul</strong> (opsional, maks. 100 karakter)</div></li>
                     <li><span class="step-num">6</span><div>Klik <strong>"Ajukan Sekarang"</strong> — surat masuk ke tahap 1</div></li>
@@ -335,7 +335,7 @@
                 <table class="stage-table">
                     <thead><tr><th>Jenis Upload</th><th>Format Diterima</th><th>Ukuran Maks.</th></tr></thead>
                     <tbody>
-                        <tr><td><strong>File Surat Utama</strong></td><td><code>.docx</code> (Microsoft Word)</td><td>10 MB</td></tr>
+                        <tr><td><strong>File Surat Utama</strong></td><td><code>.docx</code> (Microsoft Word) atau <code>.pdf</code></td><td>10 MB</td></tr>
                         <tr><td><strong>Lampiran Pendukung</strong></td><td><code>.pdf</code>, <code>.jpg</code>, <code>.png</code>, <code>.docx</code>, <code>.xlsx</code></td><td>10 MB</td></tr>
                     </tbody>
                 </table>

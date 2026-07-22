@@ -22,7 +22,7 @@ class NewAccountMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Akun Anda Telah Dibuat — Sistem Surat BPSUML',
+            subject: 'Akun Anda Telah Dibuat — Sistem Adminstarasi BPSUML',
         );
     }
 
@@ -31,10 +31,10 @@ class NewAccountMail extends Mailable
         return new Content(
             markdown: 'emails.new-account',
             with: [
-                'user'           => $this->user,
-                'plainPassword'  => $this->plainPassword,
-                'createdByName'  => $this->createdByName,
-                'loginUrl'       => route('login'),
+                'user'          => $this->user,
+                'plainPassword' => $this->plainPassword,
+                'createdByName' => $this->createdByName,
+                'loginUrl'      => route('login'),
             ],
         );
     }
