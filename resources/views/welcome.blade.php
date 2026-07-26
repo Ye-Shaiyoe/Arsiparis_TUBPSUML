@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BPSUML Sistem Administrasi Digital</title>
-    <meta name="description" content="Sistem Monitoring dan Pengelolaan Administrasi  Balai Pengelolaan Standar Ukuran Metrologi Legal transparan, akuntabel, dan efisien.">
+    <meta name="description" content="Sistem Monitoring dan Pengelolaan Administrasi Balai Pengelolaan Standar Ukuran Metrologi Legal transparan, akuntabel, dan efisien.">
     <link rel="icon" href="{{ asset('images/metrologi.png') }}" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

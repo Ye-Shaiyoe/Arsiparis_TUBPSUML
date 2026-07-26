@@ -12,6 +12,7 @@
 .DS_Store
 *.log
 Thumbs.db
+/web-terpisah
 
 # Laravel standard ignores
 /storage/framework/cache/data/*

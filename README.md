@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 # 📬 Sistem Informasi Digital TUBPSUML
 ### BALAI PENGELOLAAN SUML
@@ -22,18 +22,18 @@ Menggantikan alur kerja manual dengan sistem tracking 10 tahap terintegrasi, SLA
 - [Fitur Utama](#-fitur-utama)
 - [Tech Stack](#-tech-stack)
 - [Arsitektur Multi-Role](#-arsitektur-multi-role)
-- [Alur Kerja Surat](#-alur-kerja-surat-10-tahap)
-- [Halaman & Modul](#-halaman--modul)
-- [Struktur Database](#-struktur-database)
+- [Alur Kerja Surat (10 Tahap)](#-alur-kerja-surat-10-tahap)
 - [Keamanan](#-keamanan)
-- [Sistem Otomasi](#-sistem-otomasi-cron-jobs)
+- [Sistem Otomasi (Cron Jobs)](#-sistem-otomasi-cron-jobs)
 - [Prasyarat Sistem](#-prasyarat-sistem)
 - [Instalasi Lokal (XAMPP)](#-instalasi-lokal-xampp)
 - [Instalasi Lokal (Artisan Serve)](#-instalasi-lokal-artisan-serve)
+- [Instalasi Server Production](#-instalasi-di-server-production)
 - [Konfigurasi Environment](#-konfigurasi-environment)
 - [Troubleshooting](#-troubleshooting)
+- [Halaman & Modul](#-halaman--modul)
 - [Kontribusi](#-kontribusi)
-- [📖 Deployment Server →](READMESERVER.md)
+- [Lisensi](#-lisensi)
 
 ---
 
@@ -96,9 +96,9 @@ Menggantikan alur kerja manual dengan sistem tracking 10 tahap terintegrasi, SLA
 │ admin_kepala_balai   │ Verifikasi Kepala Balai (tahap 4)          │
 │ it_support           │ Broadcast notif, balas aspirasi, lihat data│
 └──────────────────────┴────────────────────────────────────────────┘
-
-note: kenapa saya menulisnya admin_aspirasi dan bukannya admin_arsiparis? karena saat itu saya lupa dan harusnya dari awal admin_arsiparis. jika di ubah dari admin_aspirasi ke admin_arsiparis bisa merubah menyeluruh, komplex.
 ```
+
+> **Catatan Teknis Penamaan Role:** Role `admin_aspirasi` digunakan untuk kewenangan Arsiparis/Verifikator Tahap 2 & 5–9 dalam sistem demi menjaga kompatibilitas struktur data.
 
 ---
 
@@ -173,8 +173,6 @@ note: kenapa saya menulisnya admin_aspirasi dan bukannya admin_arsiparis? karena
 
 ---
 
----
-
 ## 💻 Prasyarat Sistem
 
 Pastikan semua software berikut sudah terpasang sebelum instalasi:
@@ -195,8 +193,8 @@ Pastikan semua software berikut sudah terpasang sebelum instalasi:
 pdo_pgsql    pgsql       gd          zip
 fileinfo     mbstring    openssl     tokenizer
 xml          ctype       bcmath
-#sisanya gk diperlukan
 ```
+*Ekstensi PHP standar lainnya tidak membutuhkan konfigurasi khusus.*
 
 Cek ekstensi aktif:
 ```bash
@@ -212,15 +210,18 @@ Cocok untuk development di Windows menggunakan XAMPP.
 ### 1. Persiapan XAMPP
 
 1. Download dan install [XAMPP](https://www.apachefriends.org) versi 8.2+
-2. Buka **XAMPP Control Panel**, start **Apache** dan **PostgreSQL** (atau gunakan PostgreSQL terpisah)
-3. Pastikan PHP 8.2 aktif — edit `C:\xampp\apache\conf\httpd.conf` jika perlu
+2. Buka **XAMPP Control Panel**, start **Apache**
+3. Pastikan PHP 8.2+ aktif — edit `C:\xampp\apache\conf\httpd.conf` jika perlu
 
-> **Catatan:** XAMPP default menggunakan MySQL/MariaDB. Aplikasi ini menggunakan **PostgreSQL** — install terpisah dari [postgresql.org](https://www.postgresql.org/download/windows/) jika belum ada.
+> **Catatan:** Aplikasi ini menggunakan **PostgreSQL** — install PostgreSQL dari [postgresql.org](https://www.postgresql.org/download/windows/) jika belum ada.
 
 ### 2. Clone Repository
 
 ```bash
-cd C:\xampp\htdocs atau bisa laragon/Docker,dll.
+# Masuk ke direktori web server (XAMPP/Laragon/dll)
+cd C:\xampp\htdocs
+
+# Clone repository
 git clone https://github.com/Ye-Shaiyoe/Arsiparis_TUBPSUML.git TUBPSUML
 cd TUBPSUML
 ```
@@ -263,8 +264,8 @@ Edit file `.env`:
 APP_NAME="Persuratan BP SUML"
 APP_ENV=local
 APP_KEY=                          # sudah terisi otomatis dari step 4
-APP_DEBUG=true   #Jadikan false
-APP_URL=
+APP_DEBUG=true
+APP_URL=http://localhost/TUBPSUML/public
 
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
@@ -286,6 +287,7 @@ RECAPTCHA_V3_SITE_KEY=your_v3_site_key
 RECAPTCHA_V3_SECRET_KEY=your_v3_secret_key
 
 ADMIN_SECRET_CODE="kode_rahasia_admin"
+IT_SUPPORT_CODE="secret123"
 
 MAIL_MAILER=log                   # log = tidak kirim email sungguhan saat dev
 
@@ -293,8 +295,6 @@ ADMIN_SEED_NAME="Nama Admin"
 ADMIN_SEED_EMAIL=admin@bpsuml.go.id
 ADMIN_SEED_PASSWORD=PasswordKuat123!
 ADMIN_SEED_NIP=
-
-
 ```
 
 ### 7. Migrasi Database & Seed
@@ -302,7 +302,6 @@ ADMIN_SEED_NIP=
 ```bash
 php artisan migrate --seed
 php artisan db:seed --class=AdminSeeder
-
 ```
 
 ### 8. Storage Link & Build Assets
@@ -311,29 +310,25 @@ php artisan db:seed --class=AdminSeeder
 php artisan storage:link
 npm run build
 ```
+
 ---
 
 ## 🚀 Instalasi Lokal (Artisan Serve)
 
-Cara tercepat tanpa perlu konfigurasi web server.
+Cara tercepat untuk development tanpa konfigurasi web server Apache/Nginx.
 
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/Ye-Shaiyoe/Surat-Laravel.git persuratan-bpsuml
+git clone https://github.com/Ye-Shaiyoe/Arsiparis_TUBPSUML.git persuratan-bpsuml
 cd persuratan-bpsuml
 
 composer install
 npm install
 ```
 
-Atau gunakan script setup yang sudah tersedia:
-
-```bash
-composer run setup
-```
-
-> Script ini otomatis: `composer install --optimize-autoloader --no-dev` → copy `.env` → `key:generate` → `migrate` → `npm install` → `npm run build`
+> **Catatan Script Setup Otomatis (`composer run setup`):**  
+> Jika Anda memilih menggunakan `composer run setup`, pastikan `.env` dan database PostgreSQL sudah siap terlebih dahulu, karena script tersebut akan langsung mengeksekusi `php artisan migrate`.
 
 ### 2. Buat Database PostgreSQL
 
@@ -344,14 +339,17 @@ psql -U postgres -c "CREATE DATABASE db_persuratan_bpsuml;"
 ### 3. Setup `.env`
 
 ```bash
-cp .env.example .env   # Linux/Mac
-copy .env.example .env  # Windows
+copy .env.example .env          # Windows
+# cp .env.example .env          # Linux/Mac
+
 php artisan key:generate
 ```
 
-Edit `.env` — minimal yang wajib diisi:
+Edit file `.env` (minimal konfigurasi wajib):
 
 ```dotenv
+APP_NAME="Persuratan BP SUML"
+APP_ENV=local
 APP_URL=http://127.0.0.1:8000
 
 DB_CONNECTION=pgsql
@@ -359,40 +357,22 @@ DB_HOST=127.0.0.1
 DB_PORT=5432
 DB_DATABASE=db_persuratan_bpsuml
 DB_USERNAME=postgres
-DB_PASSWORD=your_password
+DB_PASSWORD=your_postgres_password
 
 RECAPTCHA_V2_SITE_KEY=your_v2_site_key
 RECAPTCHA_V2_SECRET_KEY=your_v2_secret_key
 RECAPTCHA_V3_SITE_KEY=your_v3_site_key
 RECAPTCHA_V3_SECRET_KEY=your_v3_secret_key
 
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=465
-MAIL_USERNAME=example@gmail.com
-MAIL_PASSWORD=adalah pokoknya
-MAIL_ENCRYPTION=ssl
-MAIL_FROM_ADDRESS="hei@gmail.com"
-MAIL_FROM_NAME="Sistem Adminstrasi BPSUML" 
+MAIL_MAILER=log
 
-
-ADMIN_SECRET_CODE="kode_rahasia"      # UBAH BAGIAN INI LEBIH RUMIT JANGAN admin123
-IT_SUPPORT_CODE="secret123"  # UBAH ini sebelum deploy ke production
-RECAPTCHA_SITE_KEY=
-RECAPTCHA_SECRET_KEY=
-
-# reCAPTCHA v2 — untuk halaman register (checkbox widget)
-RECAPTCHA_V2_SITE_KEY=
-RECAPTCHA_V2_SECRET_KEY=
-
-# reCAPTCHA v3 — untuk halaman login (invisible, auto-detect)
-RECAPTCHA_V3_SITE_KEY=
-RECAPTCHA_V3_SECRET_KEY=
+ADMIN_SECRET_CODE="kode_rahasia_admin"
+IT_SUPPORT_CODE="secret123"
 
 BROADCAST_CONNECTION=log
 
 ADMIN_SEED_NAME="Nama Admin"
-ADMIN_SEED_EMAIL=admin@gmail.com
+ADMIN_SEED_EMAIL=admin@bpsuml.go.id
 ADMIN_SEED_PASSWORD=PasswordKuat123!
 ```
 
@@ -405,38 +385,38 @@ php artisan storage:link
 npm run build
 ```
 
-### 5. Jalankan Semua Service Sekaligus
+### 5. Jalankan Service
+
+Menjalankan semua service sekaligus secara paralel:
 
 ```bash
 composer run dev
 ```
 
-Perintah ini menjalankan secara paralel:
+Perintah ini akan menjalankan:
 - `php artisan serve` — web server di `http://127.0.0.1:8000`
 - `php artisan queue:listen` — memproses job queue (konversi DOCX, dll)
 - `php artisan pail` — live log viewer
 - `npm run dev` — Vite HMR untuk asset development
 
-Atau jalankan manual satu per satu di terminal terpisah:
+Atau jalankan manual di terminal terpisah:
 
 ```bash
 # Terminal 1 — Web server
 php artisan serve
 
-# Terminal 2 — Queue worker (untuk konversi DOCX)
+# Terminal 2 — Queue worker
 php artisan queue:listen --tries=1 --timeout=0
 
 # Terminal 3 — Vite dev server (HMR)
-npm run build
 npm run dev
 ```
 
-Akses di: **`http://127.0.0.1:8000`**
-Akses User: **`http://127.0.0.1:8000/dashboard`**
-Akses Admin: **`http://127.0.0.1:8000/Admin/Dashboard`**
-
-cara ke it_support
-**`http://127.0.0.1:8000/become-it-support?code=secret123`** # seuaikan secret123 di .env IT_SUPPORT_CODE=
+**Akses Aplikasi:**
+- Landing Page: **`http://127.0.0.1:8000`**
+- Akses User: **`http://127.0.0.1:8000/dashboard`**
+- Akses Admin: **`http://127.0.0.1:8000/Admin/Dashboard`**
+- Upgrade ke IT Support: **`http://127.0.0.1:8000/become-it-support?code=secret123`** *(sesuaikan dengan `IT_SUPPORT_CODE` di `.env`)*
 
 ---
 
@@ -480,7 +460,7 @@ Mencakup: install PHP 8.2, PostgreSQL, Redis & Nginx, SSL Certbot, Queue Worker 
 > **Cara mendapatkan key:** [https://www.google.com/recaptcha/admin](https://www.google.com/recaptcha/admin)
 > - v2: pilih **"I'm not a robot" Checkbox**
 > - v3: pilih **Score based (v3)**
-> - Daftarkan domain yang sesuai (lokal bisa pakai `localhost` atau `127.0.0.1`)
+> - Daftarkan domain yang sesuai (`localhost` atau `127.0.0.1` untuk lokal)
 
 ### Mail / SMTP
 
@@ -492,8 +472,6 @@ Mencakup: install PHP 8.2, PostgreSQL, Redis & Nginx, SSL Certbot, Queue Worker 
 | `MAIL_USERNAME` | Alamat email pengirim |
 | `MAIL_PASSWORD` | App password Gmail (bukan password login) |
 | `MAIL_ENCRYPTION` | `ssl` atau `tls` |
-
-> Gmail: aktifkan 2FA → buat App Password di [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
 
 ### Cache & Queue
 
@@ -510,9 +488,7 @@ Mencakup: install PHP 8.2, PostgreSQL, Redis & Nginx, SSL Certbot, Queue Worker 
 | `GEMINI_API_KEY` | Google Gemini API (fitur AI, opsional) |
 | `GOOGLE_CLIENT_ID` | OAuth Google login |
 | `GOOGLE_CLIENT_SECRET` | OAuth Google login |
-| `WA_NUMBER` | Nomor WhatsApp kontak |
-| `TELEGRAM_ADMIN_USERNAME` | Username Telegram admin |
-| `RECAPTCHA_MIN_SCORE` | Skor minimum reCAPTCHA v3 (default: `0.5`) |
+| `IT_SUPPORT_CODE` | Kode verifikasi role IT Support |
 
 ---
 
@@ -521,18 +497,15 @@ Mencakup: install PHP 8.2, PostgreSQL, Redis & Nginx, SSL Certbot, Queue Worker 
 ### `php artisan migrate` gagal — "could not connect to server"
 
 ```bash
-# Pastikan PostgreSQL berjalan
+# Pastikan PostgreSQL service berjalan (Windows Services / Task Manager)
+# Linux:
 sudo systemctl status postgresql
 
-# Atau di Windows/XAMPP — cek service PostgreSQL di task manager
-# Verifikasi koneksi
+# Verifikasi koneksi manual
 psql -h 127.0.0.1 -U postgres -d db_persuratan_bpsuml
-
-#install composer. 
-composer install --optimize-autoloader --no-dev
 ```
 
-Cek juga `.env` — pastikan `DB_PORT=5432` dan `DB_CONNECTION=pgsql`.
+Cek file `.env` — pastikan `DB_PORT=5432` dan `DB_CONNECTION=pgsql`.
 
 ---
 
@@ -543,7 +516,7 @@ Cek juga `.env` — pastikan `DB_PORT=5432` dan `DB_CONNECTION=pgsql`.
 sudo apt install php8.2-pgsql
 sudo systemctl restart php8.2-fpm
 
-# Windows XAMPP — edit php.ini, uncomment baris:
+# Windows XAMPP — edit php.ini, hapus titik koma (;) pada baris:
 # extension=pdo_pgsql
 # extension=pgsql
 # Lalu restart Apache
@@ -554,20 +527,20 @@ sudo systemctl restart php8.2-fpm
 ### `storage:link` gagal di Windows
 
 ```bash
-# Jalankan Command Prompt sebagai Administrator
+# Jalankan Command Prompt / Terminal sebagai Administrator
 php artisan storage:link
 ```
 
 ---
 
-### reCAPTCHA selalu gagal di lokal
+### reCAPTCHA gagal di lingkungan lokal
 
-Karena `APP_ENV=local`, validasi reCAPTCHA v3 otomatis di-skip di `LoginRequest.php`. Tapi untuk v2 di register, Google butuh domain terdaftar. Solusi:
+Jika Anda menguji reCAPTCHA di lokal:
 
-1. Di [console reCAPTCHA](https://www.google.com/recaptcha/admin), tambahkan `localhost` dan `127.0.0.1` ke daftar domain
-2. Atau sementara gunakan key "test" dari Google (selalu lolos):
-   - v2 test site key: `tet4IYBA8778aha88ASgs87a7aS87ADADWADADWA`
-   - v2 test secret: `AOI218jiajjadalahPokoknya`
+1. Tambahkan `localhost` dan `127.0.0.1` pada daftar domain di [Console reCAPTCHA](https://www.google.com/recaptcha/admin).
+2. Atau gunakan test key resmi dari Google (selalu lolos untuk pengujian):
+   - **v2 Test Site Key:** `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`
+   - **v2 Test Secret Key:** `6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe`
 
 ---
 
@@ -585,11 +558,8 @@ npm run build
 ### Queue job tidak berjalan (konversi DOCX lambat/tidak jalan)
 
 ```bash
-# Pastikan queue worker aktif
+# Pastikan queue worker aktif di terminal lokal
 php artisan queue:listen --tries=1
-
-# Atau di production, restart supervisor
-sudo supervisorctl restart persuratan-worker:*
 
 # Cek failed jobs
 php artisan queue:failed
