@@ -196,9 +196,18 @@ xml          ctype       bcmath
 ```
 *Ekstensi PHP standar lainnya tidak membutuhkan konfigurasi khusus.*
 
+**Cara mengaktifkan ekstensi:**
+- **Windows (XAMPP):** Edit `php.ini` (biasanya di `C:\xampp\php\php.ini`), hapus titik koma (`;`) di depan `extension=pdo_pgsql` dan `extension=pgsql`, lalu restart Apache.
+- **Debian/Ubuntu:** Jalankan `sudo apt install php-pgsql php-gd php-zip php-xml php-bcmath php-mbstring`
+- **Arch Linux:** Edit `/etc/php/php.ini`, uncomment ekstensi di atas, lalu jalankan `sudo systemctl restart php-fpm` (atau web server Anda).
+
 Cek ekstensi aktif:
 ```bash
+# Linux (Bash/Zsh)
 php -m | grep -E "pdo_pgsql|pgsql|gd|zip|fileinfo"
+
+# Windows (PowerShell)
+php -m | Select-String -Pattern "pdo_pgsql","pgsql","gd","zip","fileinfo"
 ```
 
 ---
@@ -253,7 +262,11 @@ CREATE DATABASE db_persuratan_bpsuml
 
 Atau via psql command line:
 ```bash
+# Windows
 psql -U postgres -c "CREATE DATABASE db_persuratan_bpsuml;"
+
+# Linux (Debian/Ubuntu/Arch) jika Peer Authentication aktif
+sudo -u postgres psql -c "CREATE DATABASE db_persuratan_bpsuml;"
 ```
 
 ### 6. Konfigurasi `.env` untuk XAMPP
@@ -333,7 +346,11 @@ npm install
 ### 2. Buat Database PostgreSQL
 
 ```bash
+# Windows
 psql -U postgres -c "CREATE DATABASE db_persuratan_bpsuml;"
+
+# Linux (Debian/Ubuntu/Arch) jika Peer Authentication aktif
+sudo -u postgres psql -c "CREATE DATABASE db_persuratan_bpsuml;"
 ```
 
 ### 3. Setup `.env`
