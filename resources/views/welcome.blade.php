@@ -119,8 +119,7 @@
 
                 <h1>
                     Sistem Adminstrasi Digital<br>
-                    <em>BPSUML</em> yang Transparan<br class="hide-sm">
-                    &amp; Akuntabel
+                    <em>BPSUML</em>
                 </h1>
 
                 <p class="hero-lead">
@@ -139,7 +138,7 @@
                             Masuk ke Sistem
                             <i class="bi bi-box-arrow-in-right"></i>
                         </a>
-                        <a href="{{ route('register') }}" class="btn btn-outline btn-lg">Daftar Akun Pegawai</a>
+                        <a href="{{ route('register') }}" class="btn btn-outline btn-lg">Daftar Sebagai Pegawai</a>
                     @endauth
                     <a href="#alur" class="btn btn-text btn-lg">
                         Lihat alur kerja
