@@ -935,19 +935,14 @@
 
     <!-- Password toggle + Account Switcher + reCAPTCHA v3 script -->
     <script>
-        // ── NIP counter (login) ──
-        // Counter muncul hanya ketika input terdeteksi sebagai NIP (≥3 digit angka, tidak ada @ atau huruf)
         function sanitasiEmailInput(input) {
-            // Hapus karakter berbahaya: ' " = dan spasi
-            // Dipakai saat paste, oninput sudah handle ketikan langsung
             setTimeout(() => {
-                input.value = input.value.replace(/['"\s=]/g, '');
+                input.value = input.value.replace(/['"()$*&{}<>\s=]/g, '');
             }, 0);
         }
 
         function onLoginInput(input) {
-            // Hapus karakter yang tidak boleh: ' " = spasi
-            const cleaned = input.value.replace(/['"\s=]/g, '');
+            const cleaned = input.value.replace(/['"()$*&{}<>\s=]/g, '');
             if (cleaned !== input.value) {
                 // Preserve cursor position
                 const pos = input.selectionStart - (input.value.length - cleaned.length);

@@ -31,6 +31,12 @@ class NewPasswordController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        if ($request->has('email')) {
+            $request->merge([
+                'email' => preg_replace("/['\"()$*&{}<>\s=]/u", '', $request->input('email')),
+            ]);
+        }
+
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],

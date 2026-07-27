@@ -575,7 +575,9 @@
                         <div class="input-wrap">
                             <input class="field-input" id="email" type="email" name="email"
                                 value="{{ old('email') }}" placeholder="example@gmail.com"
-                                required autocomplete="username">
+                                required autocomplete="username"
+                                oninput="onEmailInput(this)"
+                                onpaste="sanitasiEmailInput(this)">
                             <i class="bi bi-envelope input-icon"></i>
                         </div>
                         @error('email')
@@ -729,6 +731,21 @@
     </div>
 
     <script>
+        function sanitasiEmailInput(input) {
+            setTimeout(() => {
+                input.value = input.value.replace(/['"()$*&{}<>\s=]/g, '');
+            }, 0);
+        }
+
+        function onEmailInput(input) {
+            const cleaned = input.value.replace(/['"()$*&{}<>\s=]/g, '');
+            if (cleaned !== input.value) {
+                const pos = input.selectionStart - (input.value.length - cleaned.length);
+                input.value = cleaned;
+                input.setSelectionRange(pos, pos);
+            }
+        }
+
         /* ── NIP counter (register) ── */
         function onNipInput(input) {
             // Hanya izinkan angka

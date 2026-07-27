@@ -541,7 +541,9 @@
                             id="email" type="email" name="email"
                             value="{{ old('email', $request->email) }}"
                             placeholder="nama@instansi.go.id"
-                            required autofocus autocomplete="username">
+                            required autofocus autocomplete="username"
+                            oninput="onEmailInput(this)"
+                            onpaste="sanitasiEmailInput(this)">
                         <i class="bi bi-envelope input-icon"></i>
                     </div>
                     @error('email')
@@ -628,6 +630,21 @@
             const shown = input.type === 'text';
             input.type  = shown ? 'password' : 'text';
             icon.className = shown ? 'bi bi-eye' : 'bi bi-eye-slash';
+        }
+
+        function sanitasiEmailInput(input) {
+            setTimeout(() => {
+                input.value = input.value.replace(/['"()$*&{}<>\s=]/g, '');
+            }, 0);
+        }
+
+        function onEmailInput(input) {
+            const cleaned = input.value.replace(/['"()$*&{}<>\s=]/g, '');
+            if (cleaned !== input.value) {
+                const pos = input.selectionStart - (input.value.length - cleaned.length);
+                input.value = cleaned;
+                input.setSelectionRange(pos, pos);
+            }
         }
 
         /* ── Password strength ── */

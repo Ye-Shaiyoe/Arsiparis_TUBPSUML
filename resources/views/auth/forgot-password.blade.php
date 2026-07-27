@@ -312,7 +312,9 @@
                             id="email" type="email" name="email"
                             value="{{ old('email') }}"
                             placeholder="nama@instansi.go.id"
-                            required autofocus autocomplete="email">
+                            required autofocus autocomplete="email"
+                            oninput="onEmailInput(this)"
+                            onpaste="sanitasiEmailInput(this)">
                         <i class="bi bi-envelope input-icon"></i>
                     </div>
                     @error('email')
@@ -341,6 +343,21 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        function sanitasiEmailInput(input) {
+            setTimeout(() => {
+                input.value = input.value.replace(/['"()$*&{}<>\s=]/g, '');
+            }, 0);
+        }
+
+        function onEmailInput(input) {
+            const cleaned = input.value.replace(/['"()$*&{}<>\s=]/g, '');
+            if (cleaned !== input.value) {
+                const pos = input.selectionStart - (input.value.length - cleaned.length);
+                input.value = cleaned;
+                input.setSelectionRange(pos, pos);
+            }
+        }
+
         // ── reCAPTCHA v3 — invisible auto-execute ──
         const RECAPTCHA_SITE_KEY = '{{ config('services.recaptcha.site_key') }}';
         let recaptchaToken = null;

@@ -31,7 +31,7 @@ class LoginRequest extends FormRequest
     {
         if ($this->has('email')) {
             $this->merge([
-                'email' => preg_replace("/['\"=\s]/u", '', $this->input('email')),
+                'email' => preg_replace("/['\"()$*&{}<>\s=]/u", '', $this->input('email')),
             ]);
         }
     }

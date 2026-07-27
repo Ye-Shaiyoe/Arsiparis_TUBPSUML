@@ -28,6 +28,12 @@ class PasswordResetLinkController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        if ($request->has('email')) {
+            $request->merge([
+                'email' => preg_replace("/['\"()$*&{}<>\s=]/u", '', $request->input('email')),
+            ]);
+        }
+
         $request->validate([
             'email' => ['required', 'email'],
             'g-recaptcha-response' => ['required', 'string'],

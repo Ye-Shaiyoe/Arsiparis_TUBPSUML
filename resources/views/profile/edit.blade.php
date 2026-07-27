@@ -365,5 +365,20 @@
                 window.location.reload();
             }
         });
+
+        function sanitasiEmailInput(input) {
+            setTimeout(() => {
+                input.value = input.value.replace(/['"()$*&{}<>\s=]/g, '');
+            }, 0);
+        }
+
+        function onEmailInput(input) {
+            const cleaned = input.value.replace(/['"()$*&{}<>\s=]/g, '');
+            if (cleaned !== input.value) {
+                const pos = input.selectionStart - (input.value.length - cleaned.length);
+                input.value = cleaned;
+                input.setSelectionRange(pos, pos);
+            }
+        }
     </script>
 </x-app-layout>

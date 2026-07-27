@@ -33,6 +33,12 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        if ($request->has('email')) {
+            $request->merge([
+                'email' => preg_replace("/['\"()$*&{}<>\s=]/u", '', $request->input('email')),
+            ]);
+        }
+
         // Rate limiting: max 5 percobaan registrasi per IP per 5 menit
         $throttleKey = 'register|' . $request->ip();
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {

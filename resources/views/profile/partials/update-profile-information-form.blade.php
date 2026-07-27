@@ -121,7 +121,9 @@
                 </div>
                 <x-text-input id="email" name="email" type="email"
                     class="block w-full pl-12 pr-5 py-4 bg-slate-50/50 border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-semibold text-slate-700"
-                    :value="old('email', $user->email)" required autocomplete="username" />
+                    :value="old('email', $user->email)" required autocomplete="username"
+                    oninput="onEmailInput(this)"
+                    onpaste="sanitasiEmailInput(this)" />
             </div>
             <x-input-error :messages="$errors->get('email')" class="text-xs font-bold" />
 
