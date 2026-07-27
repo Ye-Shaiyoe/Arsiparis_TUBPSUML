@@ -455,12 +455,12 @@
                 default       => 'linear-gradient(135deg,#1e3a5f,#2563eb)',
             };
             $statusIcon = match($surat->status) {
-                'selesai'     => '✅',
-                'ditolak'     => '❌',
-                'revisi'      => '📝',
-                'revisi_admin' => '⚙️',
-                'draft'       => '📄',
-                default       => '⏳',
+                'selesai'     => '<i class="bi bi-check-circle-fill"></i>',
+                'ditolak'     => '<i class="bi bi-x-circle-fill"></i>',
+                'revisi'      => '<i class="bi bi-pencil-square"></i>',
+                'revisi_admin' => '<i class="bi bi-gear-fill"></i>',
+                'draft'       => '<i class="bi bi-file-earmark-text-fill"></i>',
+                default       => '<i class="bi bi-hourglass-split"></i>',
             };
             $statusTitle = match($surat->status) {
                 'selesai'     => 'Surat Selesai',
@@ -485,7 +485,7 @@
             color:#fff;">
             <div class="card-body p-4 text-center">
                 <div style="font-size:42px;margin-bottom:8px;">
-                    {{ $statusIcon }}
+                    {!! $statusIcon !!}
                 </div>
                 <div style="font-size:16px;font-weight:700;">
                     {{ $statusTitle }}

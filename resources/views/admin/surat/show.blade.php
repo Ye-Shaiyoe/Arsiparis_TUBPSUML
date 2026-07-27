@@ -346,14 +346,16 @@
             {{-- Modal Konfirmasi Tolak --}}
             <div id="modal-tolak" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
                 <div style="background:var(--bg-secondary); border-radius:16px; padding:28px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); border:1px solid var(--border-color);">
-                    <div style="font-size:32px; text-align:center; margin-bottom:12px;" id="modal-tolak-icon">❌</div>
+                    <div style="font-size:32px; text-align:center; margin-bottom:12px;" id="modal-tolak-icon">
+                        <i class="bi bi-x-circle-fill text-danger"></i>
+                    </div>
                     <h5 style="text-align:center; font-weight:700; color:var(--text-primary); margin-bottom:8px;" id="modal-tolak-title">Tolak & Kembalikan ke User?</h5>
                     <p style="text-align:center; font-size:13px; color:var(--text-secondary); margin-bottom:20px;" id="modal-tolak-desc">
-                        User akan mendapat notifikasi dan diminta untuk merevisi surat.
+                        User akan mendapat notifikasi and diminta untuk merevisi surat.
                     </p>
                     <div style="display:flex; gap:10px;">
                         <button type="button" onclick="tutupModal()" class="btn w-100" style="background:var(--bg-tertiary); border-color:var(--border-color); color:var(--text-primary);">
-                            Batal
+                             Batal
                         </button>
                         <button type="button" id="modal-btn-konfirmasi" onclick="submitTolak()"
                             class="btn w-100 fw-bold btn-danger">
@@ -366,7 +368,9 @@
 
         @elseif($surat->status === 'selesai')
             <div class="card text-center py-4" style="background: var(--bg-secondary); border-color: var(--border-color);">
-                <div class="h2 mb-2">✅</div>
+                <div class="h2 mb-2 text-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
                 <div class="fw-bold text-success">Surat Telah Selesai</div>
                 <div class="small text-muted">Semua validasi rampung</div>
                 @if(!is_null($surat->rating))
@@ -475,7 +479,7 @@ function konfirmasiTolak() {
     const btnKonfirm  = document.getElementById('modal-btn-konfirmasi');
 
     if (jenisTolakAktif === 'ke_admin_aspirasi') {
-        icon.textContent        = '🔄';
+        icon.innerHTML          = '<i class="bi bi-arrow-left-right text-warning"></i>';
         title.textContent       = 'Tolak & Kembalikan ke Admin Aspirasi?';
         desc.textContent        = 'Surat akan dikembalikan ke Tahap 2 (Admin Aspirasi) untuk direvisi. User akan mendapat notifikasi.';
         btnKonfirm.textContent  = 'Ya, Kembalikan ke Admin Aspirasi';
@@ -484,7 +488,7 @@ function konfirmasiTolak() {
         btnKonfirm.style.color        = '#fff';
         btnKonfirm.style.borderColor  = '#f59e0b';
     } else {
-        icon.textContent        = '❌';
+        icon.innerHTML          = '<i class="bi bi-x-circle-fill text-danger"></i>';
         title.textContent       = 'Tolak & Kembalikan ke User?';
         desc.textContent        = 'User akan mendapat notifikasi bahwa suratnya ditolak dan diminta untuk merevisi.';
         btnKonfirm.textContent  = 'Ya, Tolak Surat Ini';

@@ -908,7 +908,9 @@
 <div class="alert alert-danger border-0 shadow-sm mb-4 animate-in" id="banner-revisi" style="border-radius:20px; background:#fff; color:#b91c1c; border-left: 6px solid #ef4444 !important; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.1) !important;">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 p-2">
         <div class="d-flex align-items-center gap-3">
-            <div class="flex-shrink-0" style="font-size:36px; background: #fee2e2; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 14px;">⚠️</div>
+            <div class="flex-shrink-0 text-danger" style="font-size:30px; background: #fee2e2; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 14px;">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
             <div>
                 <h6 class="fw-bold mb-1" style="font-size: 16px;">Butuh Tindakan Segera!</h6>
                 <p class="mb-0" style="font-size:13px; color: #475569;">
