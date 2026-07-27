@@ -8,11 +8,22 @@
         </p>
     </header>
 
-    <button type="button" id="btnOpenDeleteModal"
-        class="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-red-500/20 active:scale-95">
-        <i class="bi bi-person-x-fill text-lg"></i>
-        <span>{{ __('Hapus Akun Saya') }}</span>
-    </button>
+    <div class="flex flex-wrap items-center gap-4">
+        <button type="button" id="btnOpenDeleteModal"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-red-500/20 active:scale-95">
+            <i class="bi bi-person-x-fill text-lg"></i>
+            <span>{{ __('Hapus Akun Saya') }}</span>
+        </button>
+
+        <form method="POST" action="{{ route('logout') }}" class="inline">
+            @csrf
+            <button type="submit"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-xl font-bold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-slate-500/20 active:scale-95">
+                <i class="bi bi-box-arrow-right text-lg"></i>
+                <span>{{ __('Logout') }}</span>
+            </button>
+        </form>
+    </div>
 
     {{-- Modal Konfirmasi (Vanilla JS) --}}
     <div id="deleteModal" class="fixed inset-0 z-[200] hidden">

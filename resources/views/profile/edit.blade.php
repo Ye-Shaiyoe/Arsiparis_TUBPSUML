@@ -221,6 +221,20 @@
                                     <span class="text-[10px] opacity-60">Tindakan Irreversibel</span>
                                 </div>
                             </a>
+                            <form method="POST" action="{{ route('logout') }}" id="logout-form-sidebar" class="hidden">
+                                @csrf
+                            </form>
+                            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();"
+                                class="nav-item-profile flex items-center gap-4 p-4 rounded-2xl text-slate-700 hover:text-slate-900 text-sm transition-all group hover:bg-slate-100">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="bi bi-box-arrow-right text-lg text-slate-700"></i>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="font-bold">Logout</span>
+                                    <span class="text-[10px] opacity-60">Keluar Sesi</span>
+                                </div>
+                            </a>
                         </div>
 
                         <div class="mt-10 pt-10 border-t border-slate-100/50">
