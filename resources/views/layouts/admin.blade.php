@@ -105,8 +105,8 @@
         }
 
         .sidebar-item {
-            margin: 2px 12px;
-            padding: 10px 16px;
+            margin: 2px 10px;
+            padding: 9px 14px;
             border-radius: 12px;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -779,7 +779,7 @@
     </div>
 
     {{-- Navigation --}}
-    <nav id="sidebar-nav" class="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
+    <nav id="sidebar-nav" class="flex-1 overflow-y-auto py-2 px-1 space-y-0.5">
 
         {{-- UTAMA --}}
         <p class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-white/30">Utama</p>

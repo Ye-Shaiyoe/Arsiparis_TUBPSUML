@@ -153,7 +153,7 @@
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 0.65rem 0.5rem 1rem;
+            padding: 0.5rem 0.5rem 1.5rem;
             scrollbar-width: none;
         }
 
@@ -167,7 +167,8 @@
             text-transform: uppercase;
             letter-spacing: 0.12em;
             color: rgba(255, 255, 255, 0.32);
-            padding: 1rem 0.85rem 0.35rem;
+            padding: 1.1rem 0.85rem 0.4rem;
+            margin-top: 0.25rem;
             border: none;
             outline: none;
             box-shadow: none;
@@ -179,7 +180,7 @@
             align-items: center;
             gap: 0.65rem;
             margin: 2px 0.5rem;
-            padding: 0.62rem 0.9rem;
+            padding: 0.65rem 0.9rem;
             border-radius: 12px;
             font-size: 0.8125rem;
             font-weight: 600;
@@ -295,7 +296,13 @@
         }
 
         .user-nav-group {
-            margin-bottom: 2px;
+            margin-bottom: 4px;
+            margin-top: 0;
+        }
+
+        .user-nav-group + .user-nav-label,
+        .user-sidebar-item + .user-nav-label {
+            margin-top: 0.5rem;
         }
 
         .user-nav-group-toggle {
@@ -1618,6 +1625,7 @@
                 <span>Cari Pegawai</span>
             </a>
 
+            <div class="user-nav-label">Profil & Sesi</div>
             <div class="user-nav-group {{ $userProfilOpen ? 'is-open' : '' }}">
                 <button type="button" class="user-nav-group-toggle" onclick="this.closest('.user-nav-group').classList.toggle('is-open')" data-tooltip="Profil & Sesi">
                     <i class="bi bi-person-gear"></i>
@@ -1656,21 +1664,16 @@
                     <i class="bi bi-chevron-down chev"></i>
                 </button>
                 <div class="user-nav-group-body">
-
-
-                        <div class="user-nav-group-body">
-                            <a href="{{ route('user.aspirasi.index', ['to' => 'admin']) }}"
-                               class="user-sidebar-item {{ request()->routeIs('user.aspirasi.index') && request('to') === 'admin' ? 'is-active' : '' }}" data-tooltip="Ke Admin">
-                                <i class="bi bi-person-badge"></i>
-                                <span>Ke Admin</span>
-                            </a>
-                            <a href="{{ route('user.aspirasi.index', ['to' => 'it_support']) }}"
-                               class="user-sidebar-item {{ request()->routeIs('user.aspirasi.index') && request('to') === 'it_support' ? 'is-active' : '' }}" data-tooltip="IT Support">
-                                <i class="bi bi-cpu"></i>
-                                <span>IT Support</span>
-                            </a>
-
-
+                    <a href="{{ route('user.aspirasi.index', ['to' => 'admin']) }}"
+                       class="user-sidebar-item {{ request()->routeIs('user.aspirasi.index') && request('to') === 'admin' ? 'is-active' : '' }}" data-tooltip="Ke Admin">
+                        <i class="bi bi-person-badge"></i>
+                        <span>Ke Admin</span>
+                    </a>
+                    <a href="{{ route('user.aspirasi.index', ['to' => 'it_support']) }}"
+                       class="user-sidebar-item {{ request()->routeIs('user.aspirasi.index') && request('to') === 'it_support' ? 'is-active' : '' }}" data-tooltip="IT Support">
+                        <i class="bi bi-cpu"></i>
+                        <span>IT Support</span>
+                    </a>
                     <a href="{{ route('user.faq.index') }}"
                        class="user-sidebar-item {{ request()->routeIs('user.faq.*') ? 'is-active' : '' }}" data-tooltip="FAQ">
                         <i class="bi bi-question-circle"></i>
