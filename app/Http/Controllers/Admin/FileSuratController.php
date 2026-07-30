@@ -31,7 +31,7 @@ class FileSuratController extends Controller
 
         $surats = $query->paginate(15)->withQueryString();
 
-        return view('admin.settings.file.index', compact('surats'));
+        return view('admin.Settings.file.index', compact('surats'));
 
     }
 
