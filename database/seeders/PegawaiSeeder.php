@@ -45,13 +45,15 @@ class PegawaiSeeder extends Seeder
             $emailNum = str_pad($count, 2, '0', STR_PAD_LEFT);
             $email    = "users{$emailNum}@gmail.com";
 
-            $existing = User::where('nip', $nip)->first();
+            $existing = User::findByNip($nip);
 
             if ($existing) {
                 $existing->update([
-                    'name'  => $nama,
-                    'email' => $email,
-                    'role'  => 'user',
+                    'name'     => $nama,
+                    'email'    => $email,
+                    'role'     => 'user',
+                    'nip'      => $nip,
+                    'nip_hash' => User::hashNip($nip),
                 ]);
                 if (empty($existing->uuid)) {
                     $existing->uuid = Str::uuid();
@@ -63,7 +65,8 @@ class PegawaiSeeder extends Seeder
                     'name'     => $nama,
                     'email'    => $email,
                     'nip'      => $nip,
-                    'password' => Hash::make('12345678910'),
+                    'nip_hash' => User::hashNip($nip),
+                    'password' => Hash::make('bps12345'),
                     'role'     => 'user',
                 ]);
             }

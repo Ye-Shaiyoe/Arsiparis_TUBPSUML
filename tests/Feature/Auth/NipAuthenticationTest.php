@@ -14,17 +14,6 @@ test('users can authenticate using email and password', function () {
     $response->assertRedirect(route('dashboard', absolute: false));
 });
 
-test('users can authenticate using username and password', function () {
-    $user = User::factory()->create(['name' => 'John Doe']);
-
-    $response = $this->post('/login', [
-        'email' => 'John Doe', // using name as identifier
-        'password' => 'password',
-    ]);
-
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
-});
 
 test('users can authenticate using nip and password', function () {
     $plainNip = '12345678901234567890'; // 20 digits

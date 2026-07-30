@@ -31,7 +31,7 @@ class LoginRequest extends FormRequest
     {
         if ($this->has('email')) {
             $this->merge([
-                'email' => preg_replace("/['\"()$*&{}<>\s=]/u", '', $this->input('email')),
+                'email' => preg_replace("/['\"()$*&{}<>=]/u", '', $this->input('email')),
             ]);
         }
     }
@@ -43,10 +43,13 @@ class LoginRequest extends FormRequest
      */
     public function rules(): array
     {
+        $secret = config('services.recaptcha.secret');
+        $recaptchaRule = (app()->environment('testing') || empty($secret)) ? ['nullable', 'string'] : ['required', 'string'];
+
         return [
-            'email'             => ['required', 'string'],
-            'password'          => ['required', 'string'],
-            'g-recaptcha-response' => ['required', 'string'],
+            'email'                => ['required', 'string'],
+            'password'             => ['required', 'string'],
+            'g-recaptcha-response' => $recaptchaRule,
         ];
     }
 

@@ -937,12 +937,12 @@
     <script>
         function sanitasiEmailInput(input) {
             setTimeout(() => {
-                input.value = input.value.replace(/['"()$*&{}<>\s=]/g, '');
+                input.value = input.value.replace(/['"()$*&{}<>=]/g, '');
             }, 0);
         }
 
         function onLoginInput(input) {
-            const cleaned = input.value.replace(/['"()$*&{}<>\s=]/g, '');
+            const cleaned = input.value.replace(/['"()$*&{}<>=]/g, '');
             if (cleaned !== input.value) {
                 // Preserve cursor position
                 const pos = input.selectionStart - (input.value.length - cleaned.length);

@@ -1804,7 +1804,7 @@
                             <i class="bi bi-lightbulb-fill text-primary" style="font-size: 40px;"></i>
                         </div>
                         <p style="font-size: 15px; color: #4b5563; line-height: 1.6;">
-                            Selamat datang di Dashboard! Jika ini pertama kali Anda menggunakan aplikasi, kami menyarankan untuk membaca <strong>Panduan & FAQ</strong> terlebih dahulu.
+                            Selamat datang di Dashboard! Jika ini pertama kali Anda menggunakan aplikasi, kami menyarankan untuk membaca <strong>Panduan & FAQ</strong> terlebih dahulu dan <strong><a href="/profile">ke Halaman Profile</a></strong> Lalu Ubah Username anda (tanpa gelar) dan Ubah Email anda ke yang asli/aktif.
                         </p>
                         <div class="form-check d-inline-block mt-3">
                             <input class="form-check-input" type="checkbox" id="dontShowAgain" style="cursor: pointer;">

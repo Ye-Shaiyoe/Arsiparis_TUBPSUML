@@ -48,6 +48,11 @@ class User extends Authenticatable
                 $model->uuid = Str::uuid();
             }
         });
+        static::saving(function ($model) {
+            if ($model->isDirty('nip')) {
+                $model->nip_hash = $model->nip ? self::hashNip($model->nip) : null;
+            }
+        });
     }
 
     /**
