@@ -24,7 +24,6 @@
         <!-- x-cloak: hide Alpine elements before init -->
         <style> [x-cloak] { display: none !important; } </style>
 
-        <link href="https://jsdelivr.net" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
