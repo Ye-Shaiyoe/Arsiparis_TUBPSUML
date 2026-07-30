@@ -226,3 +226,45 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+
+
+
+Route::prefix('test-errors')->group(function () {
+    
+    // 1. Akses lewat browser: localhost:8000/test-errors/403
+    Route::get('/403', function () {
+        return view('errors.403');
+    });
+
+    // 2. Akses lewat browser: localhost:8000/test-errors/404
+    Route::get('/404', function () {
+        return view('errors.404');
+    });
+
+    // 3. Akses lewat browser: localhost:8000/test-errors/419
+    Route::get('/419', function () {
+        return view('errors.419');
+    });
+
+    // 4. Akses lewat browser: localhost:8000/test-errors/429
+    Route::get('/429', function () {
+        return view('errors.429');
+    });
+
+    // 5. Akses lewat browser: localhost:8000/test-errors/500
+    Route::get('/500', function () {
+        return view('errors.500');
+    });
+
+    // 6. Akses lewat browser: localhost:8000/test-errors/503
+    Route::get('/503', function () {
+        return view('errors.503');
+    });
+
+    // 7. Akses lewat browser: localhost:8000/test-errors/layout
+    Route::get('/layout', function () {
+        return view('errors.layout');
+    });
+
+});

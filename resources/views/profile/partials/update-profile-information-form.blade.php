@@ -83,8 +83,17 @@
                         <i class="bi bi-person text-lg"></i>
                     </div>
                     <x-text-input id="name" name="name" type="text"
-                        class="block w-full pl-12 pr-5 py-4 bg-slate-50/50 border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-semibold text-slate-700"
-                        :value="old('name', $user->name)" required autofocus autocomplete="name" />
+                        class="block w-full pl-12 pr-16 py-4 bg-slate-50/50 border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-semibold text-slate-700"
+                        :value="old('name', $user->name)" required autofocus autocomplete="name"
+                        maxlength="45" oninput="onNameInputProfile(this)" />
+                    <span id="name-counter-profile" style="
+                        display:none;
+                        position:absolute; right:14px; top:50%;
+                        transform:translateY(-50%);
+                        font-size:10.5px; font-weight:600;
+                        color:#94a3b8;
+                        pointer-events:none; letter-spacing:0.03em;
+                    ">0/35</span>
                 </div>
                 <x-input-error :messages="$errors->get('name')" class="text-xs font-bold" />
             </div>
@@ -224,6 +233,20 @@
 {{-- Cropper.js Script --}}
 <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
 <script>
+function onNameInputProfile(input) {
+    var counter = document.getElementById('name-counter-profile');
+    var len = input.value.length;
+
+    if (len > 0) {
+        counter.style.display = 'block';
+        counter.textContent = len + '/45';
+        counter.style.color = len >= 40 ? '#f59e0b' : '#94a3b8';
+        if (len === 45) counter.style.color = '#ef4444';
+    } else {
+        counter.style.display = 'none';
+    }
+}
+
 function onNipInputProfile(input) {
     // Hanya izinkan angka
     input.value = input.value.replace(/\D/g, '');
@@ -240,11 +263,16 @@ function onNipInputProfile(input) {
     }
 }
 
-// Inisialisasi counter saat halaman dimuat (jika NIP sudah terisi)
+// Inisialisasi counter saat halaman dimuat
 document.addEventListener('DOMContentLoaded', function () {
     var nipInput = document.getElementById('nip');
     if (nipInput && nipInput.value.length > 0) {
         onNipInputProfile(nipInput);
+    }
+
+    var nameInput = document.getElementById('name');
+    if (nameInput && nameInput.value.length > 0) {
+        onNameInputProfile(nameInput);
     }
 });
 </script>

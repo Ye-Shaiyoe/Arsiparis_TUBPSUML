@@ -556,14 +556,22 @@
 
                 <div class="fields-grid">
 
-                    <!-- Nama Lengkap -->
                     <div class="field-group field-full">
                         <label class="field-label" for="name">Nama Lengkap</label>
                         <div class="input-wrap">
                             <input class="field-input" id="name" type="text" name="name"
                                 value="{{ old('name') }}" placeholder="Nama lengkap Anda"
-                                required autofocus autocomplete="name">
+                                required autofocus autocomplete="name"
+                                maxlength="45" oninput="onNameInput(this)">
                             <i class="bi bi-person input-icon"></i>
+                            <span id="name-counter" style="
+                                display:none;
+                                position:absolute; right:12px; top:50%;
+                                transform:translateY(-50%);
+                                font-size:10.5px; font-weight:600;
+                                color:rgba(255,255,255,0.38);
+                                pointer-events:none; letter-spacing:0.03em;
+                            ">0/35</span>
                         </div>
                         @error('name')
                             <p class="error-text"><i class="bi bi-x-circle-fill" style="font-size:10px;"></i> {{ $message }}</p>
@@ -746,6 +754,26 @@
             }
         }
 
+        /* ── Name counter (register) ── */
+        function onNameInput(input) {
+            const len     = input.value.length;
+            const counter = document.getElementById('name-counter');
+
+            counter.style.display = len > 0 ? 'block' : 'none';
+            counter.textContent   = len + '/45';
+
+            if (len === 45) {
+                counter.style.color = 'rgba(248,113,113,0.85)'; // merah
+                input.style.borderColor = 'rgba(248,113,113,0.55)';
+            } else if (len >= 40) {
+                counter.style.color = 'rgba(251,191,36,0.75)';  // kuning
+                input.style.borderColor = '';
+            } else {
+                counter.style.color = 'rgba(255,255,255,0.38)'; // netral
+                input.style.borderColor = '';
+            }
+        }
+
         /* ── NIP counter (register) ── */
         function onNipInput(input) {
             // Hanya izinkan angka
@@ -771,6 +799,9 @@
         document.addEventListener('DOMContentLoaded', function () {
             const nipInput = document.getElementById('nip');
             if (nipInput && nipInput.value.length > 0) onNipInput(nipInput);
+
+            const nameInput = document.getElementById('name');
+            if (nameInput && nameInput.value.length > 0) onNameInput(nameInput);
         });
 
         /* ── Password toggle ── */

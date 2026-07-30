@@ -50,7 +50,7 @@ class RegisteredUserController extends Controller
         RateLimiter::hit($throttleKey, 300); // decay 5 menit
 
         $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
+            'name'     => ['required', 'string', 'max:45'],
             'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'nip'      => ['nullable', 'string', 'regex:/^\d{18}$/', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
