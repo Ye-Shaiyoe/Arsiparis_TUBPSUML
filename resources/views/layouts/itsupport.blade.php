@@ -80,6 +80,29 @@
             flex: 1;
             padding: 10px 15px;
             overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .sidebar-menu::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+            display: block;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 99px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 99px;
+            transition: background 0.2s ease;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.5);
         }
 
         .menu-label {

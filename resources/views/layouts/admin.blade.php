@@ -74,9 +74,28 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
         .dark ::-webkit-scrollbar-thumb { background: #334155; }
 
-        /* Sidebar scrollbar hidden */
-        #sidebar-nav { scrollbar-width: none; }
-        #sidebar-nav::-webkit-scrollbar { display: none; }
+        /* Sidebar scrollbar elegant thin */
+        #sidebar-nav {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+        #sidebar-nav::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+            display: block;
+        }
+        #sidebar-nav::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 99px;
+        }
+        #sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 99px;
+            transition: background 0.2s ease;
+        }
+        #sidebar-nav::-webkit-scrollbar-thumb:hover {
+            background: rgba(96, 165, 250, 0.5);
+        }
 
         /* ===== GLASS EFFECT ===== */
         .glass {
@@ -845,11 +864,11 @@
         </div>
 
         {{-- Dropdown: Laporan --}}
-        <div class="dropdown-group {{ request()->routeIs('admin.laporan.*') || request()->routeIs('admin.riwayat.*') ? 'open' : '' }}">
-            <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')" data-tooltip="Laporan & Riwayat"
+        <div class="dropdown-group {{ request()->routeIs('admin.laporan.*') || request()->routeIs('admin.riwayat.*') || request()->routeIs('admin.sla.*') || request()->routeIs('admin.analytics.sla') ? 'open' : '' }}">
+            <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')" data-tooltip="Laporan & SLA"
                 class="sidebar-item w-[calc(100%-24px)] flex items-center gap-3 text-[13px] font-semibold text-slate-400 text-left">
                 <i class="bi bi-bar-chart-line text-lg w-5 text-center shrink-0"></i>
-                <span class="flex-1">Laporan</span>
+                <span class="flex-1">Laporan & SLA</span>
                 <i class="bi bi-chevron-down text-[11px] text-white/40 chevron-icon shrink-0"></i>
             </button>
             <div class="dropdown-list pl-3 mt-1 space-y-1">
@@ -862,6 +881,11 @@
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.riwayat.*') ? 'nav-active' : '' }}">
                     <i class="bi bi-clock-history text-base w-5 text-center shrink-0"></i> Riwayat Pemrosesan
+                </a>
+                <a href="{{ route('admin.sla.index') }}" data-tooltip="SLA Persurat"
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
+                          {{ request()->routeIs('admin.sla.*') ? 'nav-active' : '' }}">
+                    <i class="bi bi-speedometer2 text-base w-5 text-center shrink-0"></i> SLA Persurat
                 </a>
                 <a href="{{ route('admin.analytics.sla') }}" data-tooltip="Monitoring SLA"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400

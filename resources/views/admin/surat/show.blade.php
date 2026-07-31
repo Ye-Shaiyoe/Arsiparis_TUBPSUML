@@ -5,48 +5,95 @@
 
 {{-- 1. TRACKING TAHAPAN HORIZONTAL (SCROLLABLE) --}}
 <div class="card mb-3" style="border-radius: 12px; overflow: hidden; background: var(--bg-secondary); border-color: var(--border-color);">
-    <div class="card-body p-3 stepper-wrapper" style="overflow-x: auto; white-space: nowrap; scrollbar-width: none; -ms-overflow-style: none;">
-        <style>
-            .stepper-wrapper::-webkit-scrollbar { display: none; }
-            .step-item-h { display: inline-flex; flex-direction: column; align-items: center; min-width: 140px; position: relative; vertical-align: top; }
-            .step-line { position: absolute; top: 15px; left: 50%; width: 100%; height: 2px; background: var(--border-color); z-index: 1; opacity: 0.5; }
-            .step-dot-h { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-secondary); border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--text-secondary); position: relative; z-index: 2; margin-bottom: 8px; transition: all 0.3s; }
-            .step-item-h.active .step-dot-h { border-color: #3b82f6; color: #3b82f6; background: rgba(59, 130, 246, 0.1); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-            .step-item-h.completed .step-dot-h { border-color: #10b981; background: #10b981; color: #fff; }
-            .step-item-h.completed .step-line { background: #10b981; opacity: 1; }
-            .step-label-h { font-size: 10px; font-weight: 600; color: var(--text-secondary); text-align: center; white-space: normal; line-height: 1.35; width: 120px; }
-            .step-item-h.active .step-label-h { color: #60a5fa; font-weight: 700; }
-            .step-item-h.completed .step-label-h { color: var(--text-primary); }
-            .text-orange { color: #ff8c00 !important; }
-            /* Dark mode label helper */
-            .dark .step-label-h { color: #94a3b8; }
-            .dark .step-item-h.active .step-label-h { color: #60a5fa; }
-            .dark .step-item-h.completed .step-label-h { color: #e2e8f0; }
-            
-            /* Placeholder fix for dark mode */
-            ::placeholder {
-                color: var(--text-secondary) !important;
-                opacity: 0.7;
-            }
-            .dark ::placeholder {
-                color: #94a3b8 !important;
-                opacity: 0.8;
-            }
-        </style>
-        <div class="d-flex">
-            @for($i = 1; $i <= 10; $i++)
-                @php
-                    $isCurrent = $surat->tahap_sekarang == $i;
-                    $isPast = $surat->tahap_sekarang > $i;
-                @endphp
-                <div class="step-item-h {{ $isPast ? 'completed' : ($isCurrent ? 'active' : '') }}">
-                    @if($i < 10) <div class="step-line"></div> @endif
-                    <div class="step-dot-h">
-                        @if($isPast) <i class="bi bi-check-lg"></i> @else {{ $i }} @endif
+    <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+            <h6 class="fw-bold mb-0" style="color:var(--text-primary); font-size: 14px;">
+                <i class="bi bi-map me-2 text-primary"></i>Tracking Progress Surat
+            </h6>
+            <span class="badge" style="font-size: 11px; background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); padding: 5px 12px; border-radius: 8px;">
+                Status: <strong>{{ $surat->nama_tahap }}</strong>
+            </span>
+        </div>
+
+        <div class="stepper-wrapper" style="overflow-x: auto; white-space: nowrap; scrollbar-width: thin; padding-bottom: 6px;">
+            <style>
+                .stepper-wrapper::-webkit-scrollbar { height: 5px; }
+                .stepper-wrapper::-webkit-scrollbar-track { background: transparent; }
+                .stepper-wrapper::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 99px; }
+                .stepper-wrapper::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.5); }
+                .step-item-h { display: inline-flex; flex-direction: column; align-items: center; min-width: 140px; position: relative; vertical-align: top; }
+                .step-line { position: absolute; top: 16px; left: 50%; width: 100%; height: 2px; background: var(--border-color); z-index: 1; opacity: 0.5; }
+                .step-dot-h { width: 34px; height: 34px; border-radius: 50%; background: var(--bg-secondary); border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--text-secondary); position: relative; z-index: 2; margin-bottom: 8px; transition: all 0.3s; }
+                .step-item-h.active .step-dot-h { border-color: #3b82f6; color: #3b82f6; background: rgba(59, 130, 246, 0.15); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); }
+                .step-item-h.completed .step-dot-h { border-color: #10b981; background: #10b981; color: #fff; }
+                .step-item-h.completed .step-line { background: #10b981; opacity: 1; }
+                .step-item-h.rejected .step-dot-h { border-color: #ef4444; background: #ef4444; color: #fff; }
+                .step-label-h { font-size: 11px; font-weight: 700; color: var(--text-secondary); text-align: center; white-space: normal; line-height: 1.25; width: 120px; min-height: 28px; display: flex; align-items: center; justify-content: center; }
+                .step-item-h.active .step-label-h { color: #60a5fa; font-weight: 700; }
+                .step-item-h.completed .step-label-h { color: var(--text-primary); }
+                .step-subtext-h { font-size: 9px; font-weight: 500; color: var(--text-secondary); text-align: center; margin-top: 4px; line-height: 1.35; }
+                .text-orange { color: #ff8c00 !important; }
+                /* Dark mode label helper */
+                .dark .step-label-h { color: #94a3b8; }
+                .dark .step-item-h.active .step-label-h { color: #60a5fa; }
+                .dark .step-item-h.completed .step-label-h { color: #e2e8f0; }
+                .dark .step-subtext-h { color: #94a3b8; }
+                
+                /* Placeholder fix for dark mode */
+                ::placeholder {
+                    color: var(--text-secondary) !important;
+                    opacity: 0.7;
+                }
+                .dark ::placeholder {
+                    color: #94a3b8 !important;
+                    opacity: 0.8;
+                }
+            </style>
+            @php
+                $tahapansMap = $surat->tahapans->keyBy('tahap');
+            @endphp
+            <div class="d-flex pt-1 pb-2">
+                @for($i = 1; $i <= 10; $i++)
+                    @php
+                        $tahapan = $tahapansMap->get($i);
+                        $status = $tahapan?->status;
+                        if (!$status) {
+                            $status = ($surat->tahap_sekarang > $i) ? 'selesai' : (($surat->tahap_sekarang == $i) ? 'proses' : 'menunggu');
+                        }
+                        $isCompleted = $status === 'selesai';
+                        $isCurrent   = $status === 'proses' || ($surat->tahap_sekarang == $i && $surat->status !== 'selesai' && $surat->status !== 'ditolak');
+                        $isRejected  = $status === 'ditolak';
+
+                        $completedAt = $tahapan?->selesai_pada ?? ($isCompleted ? ($i == 1 ? $surat->created_at : $tahapan?->updated_at) : null);
+                    @endphp
+                    <div class="step-item-h {{ $isCompleted ? 'completed' : ($isCurrent ? 'active' : ($isRejected ? 'rejected' : '')) }}">
+                        @if($i < 10) <div class="step-line"></div> @endif
+                        <div class="step-dot-h">
+                            @if($isCompleted)
+                                <i class="bi bi-check-lg"></i>
+                            @elseif($isCurrent)
+                                <i class="bi bi-hourglass-split"></i>
+                            @elseif($isRejected)
+                                <i class="bi bi-x-lg"></i>
+                            @else
+                                {{ $i }}
+                            @endif
+                        </div>
+                        <div class="step-label-h">{{ \App\Models\Surat::NAMA_TAHAP[$i] }}</div>
+                        <div class="step-subtext-h">
+                            @if($completedAt)
+                                {{ $completedAt->format('d/m/y') }}<br>{{ $completedAt->format('H:i') }}
+                            @elseif($isCurrent)
+                                <span class="text-primary fw-bold" style="color: #60a5fa !important;">Sedang diproses</span>
+                            @elseif($isRejected)
+                                <span class="text-danger fw-bold" style="color: #f87171 !important;">Ditolak</span>
+                            @else
+                                <span class="opacity-50">Menunggu</span>
+                            @endif
+                        </div>
                     </div>
-                    <div class="step-label-h">{{ \App\Models\Surat::NAMA_TAHAP[$i] }}</div>
-                </div>
-            @endfor
+                @endfor
+            </div>
         </div>
     </div>
 </div>
@@ -302,8 +349,8 @@
                         style="flex:1; cursor:pointer; border:2px solid var(--border-color); border-radius:10px; padding:10px 12px; display:flex; align-items:flex-start; gap:8px; transition:all 0.2s; background:var(--bg-tertiary);">
                         <input type="radio" name="_jenis_tolak_ui" value="ke_admin_aspirasi" style="margin-top:3px; accent-color:#f59e0b;">
                         <div>
-                            <div style="font-size:12px; font-weight:700; color:var(--text-primary); opacity:0.7;">🔄 Revisi Admin Aspirasi</div>
-                            <div style="font-size:10px; color:var(--text-secondary); margin-top:2px; line-height:1.3;">Dikembalikan ke Admin Aspirasi (Tahap 2)</div>
+                            <div style="font-size:12px; font-weight:700; color:var(--text-primary); opacity:0.7;">🔄 Revisi Admin Arsiparis</div>
+                            <div style="font-size:10px; color:var(--text-secondary); margin-top:2px; line-height:1.3;">Dikembalikan ke Admin Arsiparis (Tahap 2)</div>
                         </div>
                     </label>
                     @endif

@@ -183,7 +183,7 @@
                     <div class="hero-trust-item">
                         <i class="bi bi-hourglass-split"></i>
                         <div>
-                            <strong>SLA 30 Jam Kerja</strong>
+                            <strong>SLA 1 Hari Kerja</strong>
                             <span>Monitoring real-time</span>
                         </div>
                     </div>
@@ -697,7 +697,7 @@
                     $faqs = [
                         ['q' => 'Siapa yang dapat menggunakan sistem ini?', 'a' => 'Sistem ditujukan untuk pegawai dan pejabat di lingkungan BPSUML yang memiliki akun terdaftar. Pendaftaran dapat dilakukan melalui halaman Daftar, lalu diverifikasi sesuai kebijakan internal.'],
                         ['q' => 'Bagaimana cara mengajukan surat?', 'a' => 'Setelah login, buka menu pengajuan surat, pilih jenis/template, lengkapi data dan unggah draf. Surat akan masuk ke alur verifikasi sesuai hierarki.'],
-                        ['q' => 'Apa yang dimaksud SLA 30 jam kerja?', 'a' => 'Setiap surat memiliki target waktu penyelesaian. Sistem menampilkan countdown SLA agar pejabat dan pengaju dapat memantau ketepatan waktu proses.'],
+                        ['q' => 'Apa yang dimaksud SLA 1 Hari Kerja?', 'a' => 'Setiap surat memiliki target waktu penyelesaian. Sistem menampilkan countdown SLA agar pejabat dan pengaju dapat memantau ketepatan waktu proses.'],
                         ['q' => 'Bagaimana verifikasi keaslian dokumen?', 'a' => 'Dokumen final dilengkapi QR Code. Pindai atau buka tautan verifikasi untuk memastikan status dan keaslian surat di sistem.'],
                         ['q' => 'Apakah saya bisa melacak status surat?', 'a' => 'Ya. Setiap surat menampilkan tahap approval saat ini, riwayat aksi, dan notifikasi ketika status berubah atau memerlukan tindakan.'],
                     ];
@@ -725,7 +725,7 @@
                 <p>Masuk dengan akun pegawai untuk mengelola, memantau, dan mengarsipkan Administrasi secara terpusat.</p>
                 <div class="cta-trust-badges">
                     <span class="cta-badge-item"><i class="bi bi-shield-check"></i> Encrypted &amp; Aman</span>
-                    <span class="cta-badge-item"><i class="bi bi-stopwatch"></i> SLA 30 Jam Kerja</span>
+                    <span class="cta-badge-item"><i class="bi bi-stopwatch"></i> SLA 1 Hari Kerja</span>
                     <span class="cta-badge-item"><i class="bi bi-qr-code"></i> Autentikasi QR</span>
                 </div>
             </div>

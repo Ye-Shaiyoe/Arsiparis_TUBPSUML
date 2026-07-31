@@ -129,10 +129,14 @@ Route::prefix('Admin')->middleware(['auth', 'verified', 'admin'])->name('admin.'
         Route::get('/Chart', [\App\Http\Controllers\Admin\ChartController::class, 'index'])->name('chart.index');
         Route::get('/Chart/data', [\App\Http\Controllers\Admin\ChartController::class, 'data'])->name('chart.data');
 
-        // Analytics
+        // Analytics & SLA
         Route::prefix('Analytics')->group(function () {
             Route::get('/SLA', [\App\Http\Controllers\Admin\AnalyticsController::class, 'sla'])->name('analytics.sla');
         });
+
+        // SLA Persurat (Monitoring Durasi & Pemroses Tiap Tahap)
+        Route::get('/SLA-Persurat', [\App\Http\Controllers\Admin\SlaController::class, 'index'])->name('sla.index');
+        Route::get('/SLA-Persurat/export', [\App\Http\Controllers\Admin\SlaController::class, 'export'])->name('sla.export');
 
         Route::get('/FAQ', function () {
             return view('admin.faq.index', ['title' => 'FAQ & Bantuan']);

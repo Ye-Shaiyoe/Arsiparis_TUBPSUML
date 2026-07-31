@@ -279,7 +279,7 @@ table.ringkasan .num-cell { text-align: right; font-family: 'DM Mono', monospace
         <div class="ch-sub">revisi oleh user vs revisi oleh admin aspirasi</div>
         <div class="legend-row" style="margin-top:10px;margin-left:0;">
           <span class="legend-item"><span class="legend-dot" style="background:#d97706"></span>Revisi User</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#7c3aed"></span>Revisi Admin Aspirasi</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#7c3aed"></span>Revisi Admin Arsiparis</span>
         </div>
       </div>
       <div class="chart-wrap" style="height:220px;"><canvas id="chart-revisi-bulan"></canvas></div>
@@ -732,7 +732,7 @@ function buildRevisiChart(data) {
           borderRadius: 4, borderSkipped: false,
         },
         {
-          label: 'Revisi Admin Aspirasi',
+          label: 'Revisi Admin Arsiparis',
           data: data.revisiAdmin,
           backgroundColor: C.purple + 'cc',
           borderRadius: 4, borderSkipped: false,

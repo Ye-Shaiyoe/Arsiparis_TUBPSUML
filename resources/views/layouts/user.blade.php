@@ -154,11 +154,29 @@
             overflow-y: auto;
             overflow-x: hidden;
             padding: 0.5rem 0.5rem 1.5rem;
-            scrollbar-width: none;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
         }
 
         .user-sidebar-nav::-webkit-scrollbar {
-            display: none;
+            width: 5px;
+            height: 5px;
+            display: block;
+        }
+
+        .user-sidebar-nav::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 99px;
+        }
+
+        .user-sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 99px;
+            transition: background 0.2s ease;
+        }
+
+        .user-sidebar-nav::-webkit-scrollbar-thumb:hover {
+            background: rgba(6, 182, 212, 0.5);
         }
 
         .user-nav-label {
