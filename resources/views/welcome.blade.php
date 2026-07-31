@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>BPSUML Sistem Administrasi Digital</title>
     <meta name="description" content="Sistem Monitoring dan Pengelolaan Administrasi Balai Pengelolaan Standar Ukuran Metrologi Legal transparan, akuntabel, dan efisien.">
     <link rel="icon" href="{{ asset('images/metrologi.png') }}" type="image/png">
@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}?v=15">
+    <link rel="stylesheet" href="{{ asset('css/welcome.css') }}?v=20">
 </head>
 <body>
 
@@ -25,20 +25,23 @@
                     <span class="pulse"></span>
                     Sistem Aktif
                 </span>
-                <span class="topbar-divider"></span>
-                <span class="topbar-inst">
+                <span class="topbar-divider hide-xs"></span>
+                <span class="topbar-inst hide-xs">
                     <i class="bi bi-building"></i>
                     <span class="hide-sm">Kementerian Perdagangan RI · </span>Direktorat Metrologi
                 </span>
             </div>
             <div class="topbar-right">
-                <a href="https://metrologi.kemendag.go.id/" target="_blank" rel="noopener">
-                    <i class="bi bi-globe2"></i><span>Portal Metrologi</span>
+                <a href="https://metrologi.kemendag.go.id/" target="_blank" rel="noopener" aria-label="Portal Metrologi">
+                    <i class="bi bi-globe2"></i><span class="hide-xs">Portal Metrologi</span>
                 </a>
-                <a href="{{ route('panduan') }}" target="_blank">
-                    <i class="bi bi-book"></i><span>Panduan</span>
+                <a href="{{ route('panduan') }}" target="_blank" aria-label="Panduan">
+                    <i class="bi bi-book"></i><span class="hide-xs">Panduan</span>
                 </a>
-                <a href="mailto:tubpsuml@gmail.com" class="hide-md">
+                <a href="https://ye-shaiyoe.github.io/Docs-adminstrasi-bpsuml/" target="_blank" rel="noopener" aria-label="Dokumentasi">
+                    <i class="bi bi-file-earmark-code"></i><span class="hide-xs">Dokumentasi</span>
+                </a>
+                <a href="mailto:tubpsuml@gmail.com" class="hide-md" aria-label="Email">
                     <i class="bi bi-envelope"></i><span>tubpsuml@gmail.com</span>
                 </a>
             </div>
@@ -52,13 +55,13 @@
                 <img src="{{ asset('images/BP_SUML2.png') }}" alt="BPSUML" class="brand-logo">
                 <div class="brand-text">
                     <strong>BPSUML</strong>
-                    <span>Sistem Adminstrasi Digital</span>
+                    <span>Sistem Administrasi Digital</span>
                 </div>
             </a>
 
             <nav class="nav-links" id="nav-links" aria-label="Navigasi utama">
                 <div class="nav-links-head">
-                    <span>Menu</span>
+                    <span>Menu Navigasi</span>
                     <button type="button" class="nav-close" id="nav-close" aria-label="Tutup menu">
                         <i class="bi bi-x-lg"></i>
                     </button>
@@ -71,9 +74,32 @@
                 <a href="#keamanan" class="nav-item">Keamanan</a>
                 <a href="#faq" class="nav-item">FAQ</a>
                 <a href="#kontak" class="nav-item">Kontak</a>
+
+                {{-- Portal & Guide Quick Links inside Mobile Hamburger Drawer --}}
+                <div class="nav-links-extra">
+                    <span class="nav-extra-title">Layanan & Portal</span>
+                    <a href="https://metrologi.kemendag.go.id/" target="_blank" rel="noopener" class="nav-extra-item">
+                        <i class="bi bi-globe2"></i>
+                        <span>Portal Metrologi</span>
+                        <i class="bi bi-box-arrow-up-right ms-auto"></i>
+                    </a>
+                    <a href="{{ route('panduan') }}" target="_blank" class="nav-extra-item">
+                        <i class="bi bi-book"></i>
+                        <span>Panduan Sistem</span>
+                        <i class="bi bi-box-arrow-up-right ms-auto"></i>
+                    </a>
+                    <a href="https://ye-shaiyoe.github.io/Docs-adminstrasi-bpsuml/" target="_blank" rel="noopener" class="nav-extra-item">
+                        <i class="bi bi-file-earmark-code"></i>
+                        <span>Dokumentasi Docs</span>
+                        <i class="bi bi-box-arrow-up-right ms-auto"></i>
+                    </a>
+                </div>
+
                 <div class="nav-links-cta">
                     @auth
-                        <a href="{{ route('dashboard') }}" class="btn btn-primary btn-block">Dashboard</a>
+                        <a href="{{ route('dashboard') }}" class="btn btn-primary btn-block">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-ghost btn-block">Masuk</a>
                         <a href="{{ route('register') }}" class="btn btn-primary btn-block">Daftar Akun</a>
@@ -118,7 +144,7 @@
                 </div>
 
                 <h1>
-                    Sistem Adminstrasi Digital<br>
+                    Sistem Administrasi Digital<br>
                     <em>BPSUML</em>
                 </h1>
 
@@ -426,7 +452,7 @@
         <div class="container">
             <div class="section-head reveal">
                 <span class="section-label">Prosedur</span>
-                <h2>Alur Kerja Adminstrasi Digital</h2>
+                <h2>Alur Kerja Administrasi Digital</h2>
                 <p>Dari pengajuan hingga arsip setiap tahap tercatat dan dapat dilacak.</p>
             </div>
 
@@ -660,6 +686,10 @@
                     Buka Panduan Lengkap
                     <i class="bi bi-box-arrow-up-right"></i>
                 </a>
+                <a href="https://ye-shaiyoe.github.io/Docs-adminstrasi-bpsuml/" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+                    Dokumentasi Docs
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
             </div>
 
             <div class="faq-list reveal reveal-delay-1">
@@ -725,6 +755,9 @@
                         <a href="{{ route('panduan') }}" target="_blank" class="btn btn-outline-light btn-lg">
                             <i class="bi bi-book"></i> Panduan Sistem
                         </a>
+                        <a href="https://ye-shaiyoe.github.io/Docs-adminstrasi-bpsuml/" target="_blank" rel="noopener" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-file-earmark-code"></i> Dokumentasi Docs
+                        </a>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-gold btn-lg">
                             <i class="bi bi-box-arrow-in-right"></i> Masuk Sistem
@@ -776,6 +809,7 @@
                     <li><a href="{{ route('login') }}">Masuk</a></li>
                     <li><a href="{{ route('register') }}">Daftar</a></li>
                     <li><a href="{{ route('panduan') }}" target="_blank">Panduan Penggunaan</a></li>
+                    <li><a href="https://ye-shaiyoe.github.io/Docs-adminstrasi-bpsuml/" target="_blank" rel="noopener">Dokumentasi System</a></li>
                     @auth
                         <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
                     @endauth
@@ -796,11 +830,11 @@
                         </a>
                     </li>
                     <li>
-                        <span style="font-size:0.82rem;color:rgba(255,255,255,0.6);display:flex;flex-direction:column;gap:0.3rem;margin-top:0.2rem;">
-                            <span style="display:inline-flex;align-items:center;gap:0.4rem;"><i class="bi bi-clock-history" style="color:var(--gold-light);"></i> Senin - Kamis: 07.30 - 16.00 WIB</span>
-                            <span style="display:inline-flex;align-items:center;gap:0.4rem;"><i class="bi bi-clock-history" style="color:var(--gold-light);"></i> Jumat: 07.30 - 11.30 WIB</span>
-                            <span style="display:inline-flex;align-items:center;gap:0.4rem;"><i class="bi bi-clock-history" style="color:var(--gold-light);"></i> Libur: Sabtu & Minggu</span>
-                        </span>
+                        <div class="footer-hours">
+                            <span><i class="bi bi-clock-history"></i> Senin–Kamis: 07.30–16.00 WIB</span>
+                            <span><i class="bi bi-clock-history"></i> Jumat: 07.30–11.30 WIB</span>
+                            <span><i class="bi bi-clock-history"></i> Libur: Sabtu &amp; Minggu</span>
+                        </div>
                     </li>
                 </ul>
                 <div class="footer-socials">
@@ -928,44 +962,46 @@
                 document.querySelectorAll('.kinerja-card').forEach(c => ioBars.observe(c));
             }
 
-            // 60FPS Hardware-Accelerated Scroll Parallax
-            let parallaxTicking = false;
-            const orb1 = document.querySelector('.hero-orb-1');
-            const orb2 = document.querySelector('.hero-orb-2');
-            const aboutMedia = document.querySelector('.about-media');
+            // Parallax + tilt only on non-touch / desktop (saves battery on HP)
+            const canMotion = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+                && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-            const applyParallax = () => {
-                const scrolled = window.scrollY;
-                if (scrolled < 1400) {
-                    if (orb1) orb1.style.transform = `translate3d(0, ${scrolled * 0.18}px, 0)`;
-                    if (orb2) orb2.style.transform = `translate3d(0, ${scrolled * -0.12}px, 0)`;
+            if (canMotion) {
+                let parallaxTicking = false;
+                const orb1 = document.querySelector('.hero-orb-1');
+                const orb2 = document.querySelector('.hero-orb-2');
+
+                const applyParallax = () => {
+                    const scrolled = window.scrollY;
+                    if (scrolled < 1400) {
+                        if (orb1) orb1.style.transform = `translate3d(0, ${scrolled * 0.18}px, 0)`;
+                        if (orb2) orb2.style.transform = `translate3d(0, ${scrolled * -0.12}px, 0)`;
+                    }
+                    parallaxTicking = false;
+                };
+
+                window.addEventListener('scroll', () => {
+                    if (!parallaxTicking) {
+                        requestAnimationFrame(applyParallax);
+                        parallaxTicking = true;
+                    }
+                }, { passive: true });
+
+                const heroPanel = document.querySelector('.hero-panel');
+                const heroCard = document.querySelector('.hero-panel-card');
+                if (heroPanel && heroCard) {
+                    heroPanel.addEventListener('mousemove', (e) => {
+                        const rect = heroPanel.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        const tiltX = (y / (rect.height / 2)) * -5;
+                        const tiltY = (x / (rect.width / 2)) * 5;
+                        heroCard.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateZ(6px)`;
+                    });
+                    heroPanel.addEventListener('mouseleave', () => {
+                        heroCard.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+                    });
                 }
-                parallaxTicking = false;
-            };
-
-            window.addEventListener('scroll', () => {
-                if (!parallaxTicking) {
-                    requestAnimationFrame(applyParallax);
-                    parallaxTicking = true;
-                }
-            }, { passive: true });
-
-            // 3D Tilt Effect on Hero Panel Card
-            const heroPanel = document.querySelector('.hero-panel');
-            const heroCard = document.querySelector('.hero-panel-card');
-            if (heroPanel && heroCard && window.matchMedia('(hover: hover)').matches) {
-                heroPanel.addEventListener('mousemove', (e) => {
-                    const rect = heroPanel.getBoundingClientRect();
-                    const x = e.clientX - rect.left - rect.width / 2;
-                    const y = e.clientY - rect.top - rect.height / 2;
-                    const tiltX = (y / (rect.height / 2)) * -5;
-                    const tiltY = (x / (rect.width / 2)) * 5;
-                    heroCard.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateZ(6px)`;
-                });
-
-                heroPanel.addEventListener('mouseleave', () => {
-                    heroCard.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
-                });
             }
 
             // Active nav highlight
