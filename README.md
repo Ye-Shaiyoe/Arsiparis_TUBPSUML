@@ -660,7 +660,6 @@ Didistribusikan di bawah [MIT License](LICENSE).
 ---
 
 <p align="center">
-  Made with ❤️ by <strong>Muhammad Yusuf Akram</strong><br>
   Made by <strong>Muhammad Yusuf Akram</strong> Dan Terima kasih Untuk Tim BPSUML Dari Direktorat Metrologi Bandung Atas Kepercayaan Yang Di Berikan Kepada Saya Untuk Membuat Apps/Web ini. Final Commit.<br>
   PKL — SMK Al-Falah &nbsp;|&nbsp; BP Suml &nbsp;|&nbsp; 2025–2026
 </p>
