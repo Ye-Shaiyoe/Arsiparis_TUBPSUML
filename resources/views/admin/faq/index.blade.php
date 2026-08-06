@@ -742,46 +742,61 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Accordion toggle
-        document.querySelectorAll('.faq-item').forEach(item => {
-            item.querySelector('.faq-question').addEventListener('click', () => {
-                item.classList.toggle('active');
-            });
-        });
-
-        // Search/filter
+    function initFaqAccordion() {
+        console.debug('initFaqAccordion');
+        const container = document.getElementById('faqList');
         const input = document.getElementById('faqSearch');
         const noResult = document.getElementById('noResult');
         const keyword = document.getElementById('searchKeyword');
 
-        input.addEventListener('input', function () {
-            const val = this.value.trim().toLowerCase();
-            let found = 0;
+        // Event delegation for accordion: single listener on container
+        if (container) {
+            if (container._faqClick) container.removeEventListener('click', container._faqClick);
+            container._faqClick = function (e) {
+                const q = e.target.closest('.faq-question');
+                if (!q) return;
+                const item = q.closest('.faq-item');
+                if (item) item.classList.toggle('active');
+            };
+            container.addEventListener('click', container._faqClick);
+        }
 
-            document.querySelectorAll('.faq-item').forEach(item => {
-                const text = item.innerText.toLowerCase();
-                const show = !val || text.includes(val);
-                item.style.display = show ? '' : 'none';
-                if (show) found++;
-            });
+        // Search/filter (attach single listener, avoid duplicates)
+        if (input) {
+            if (input._faqListener) input.removeEventListener('input', input._faqListener);
+            input._faqListener = function () {
+                const val = this.value.trim().toLowerCase();
+                let found = 0;
 
-            // Hide/show category titles based on visible items
-            document.querySelectorAll('.faq-category-title').forEach(cat => {
-                let next = cat.nextElementSibling;
-                let hasVisible = false;
-                while (next && !next.classList.contains('faq-category-title')) {
-                    if (next.classList.contains('faq-item') && next.style.display !== 'none') {
-                        hasVisible = true;
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    const text = item.innerText.toLowerCase();
+                    const show = !val || text.includes(val);
+                    item.style.display = show ? '' : 'none';
+                    if (show) found++;
+                });
+
+                // Hide/show category titles based on visible items
+                document.querySelectorAll('.faq-category-title').forEach(cat => {
+                    let next = cat.nextElementSibling;
+                    let hasVisible = false;
+                    while (next && !next.classList.contains('faq-category-title')) {
+                        if (next.classList.contains('faq-item') && next.style.display !== 'none') {
+                            hasVisible = true;
+                        }
+                        next = next.nextElementSibling;
                     }
-                    next = next.nextElementSibling;
-                }
-                cat.style.display = hasVisible ? '' : 'none';
-            });
+                    cat.style.display = hasVisible ? '' : 'none';
+                });
 
-            noResult.style.display = found === 0 && val ? 'block' : 'none';
-            keyword.textContent = val;
-        });
-    });
+                if (noResult) noResult.style.display = found === 0 && val ? 'block' : 'none';
+                if (keyword) keyword.textContent = val;
+            };
+            input.addEventListener('input', input._faqListener);
+        }
+    }
+
+    if (document.readyState !== 'loading') initFaqAccordion();
+    document.addEventListener('DOMContentLoaded', initFaqAccordion);
+    document.addEventListener('turbo:load', initFaqAccordion);
 </script>
 @endsection

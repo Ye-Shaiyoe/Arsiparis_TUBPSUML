@@ -1,2 +1,3 @@
 *.sqlite*
 ER Diagram by Mermaid.jpg
+/seeders/SuratDummyAkromSeeder.php
