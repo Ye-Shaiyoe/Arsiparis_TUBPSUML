@@ -168,8 +168,8 @@
                                             </a>
                                         @endif
                                         @if($user && $user->id !== auth()->id())
-                                            {{-- Tombol Ubah Role (hanya untuk user biasa) --}}
-                                            @if($user->role === 'user')
+                                            {{-- Tombol Ubah Role (untuk user biasa & IT Support) --}}
+                                            @if($user->role === 'user' || $user->role === 'it_support')
                                                 <button type="button" class="btn btn-sm" title="Ubah Role"
                                                     style="color: #1d4ed8;"
                                                     onclick="bukaModalUbahRole('{{ $user->uuid }}', '{{ addslashes($user->name) }}', '{{ $user->role }}')">
@@ -296,6 +296,7 @@
                     <label class="mf-label" for="r_role">Role Baru <span style="color:#dc2626">*</span></label>
                     <select class="mf-input" id="r_role" name="role" required>
                         <option value="user">User</option>
+                        <option value="it_support">IT Support</option>
                         <option value="admin_aspirasi">Arsiparis</option>
                         <option value="admin_kasubbag_tu">Kasubbag TU</option>
                         <option value="admin_kepala_balai">Kepala Balai</option>
@@ -393,6 +394,7 @@
                     <select class="mf-input" id="m_role" name="role" required>
                         <option value="" disabled {{ old('role') ? '' : 'selected' }}>-- Pilih role --</option>
                         <option value="user"               {{ old('role') === 'user'               ? 'selected' : '' }}>User</option>
+                        <option value="it_support"         {{ old('role') === 'it_support'         ? 'selected' : '' }}>IT Support</option>
                         <option value="admin_aspirasi"     {{ old('role') === 'admin_aspirasi'     ? 'selected' : '' }}>Arsiparis</option>
                         <option value="admin_kasubbag_tu"  {{ old('role') === 'admin_kasubbag_tu'  ? 'selected' : '' }}>Kasubbag TU</option>
                         <option value="admin_kepala_balai" {{ old('role') === 'admin_kepala_balai' ? 'selected' : '' }}>Kepala Balai</option>

@@ -89,6 +89,7 @@ class User extends Authenticatable
             'admin_kasubbag_tu' => 'Kasubbag TU',
             'admin_kepala_balai' => 'Kepala Balai',
             'admin' => 'Admin (belum update role)',
+            'it_support' => 'IT Support',
             default => 'User',
         };
     }

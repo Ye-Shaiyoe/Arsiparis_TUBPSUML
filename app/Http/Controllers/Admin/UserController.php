@@ -113,7 +113,7 @@ class UserController extends Controller
             'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'nip'      => ['nullable', 'string', 'regex:/^\d{18}$/', 'unique:' . User::class],
-            'role'     => ['required', 'string', 'in:user,admin_aspirasi,admin_kasubbag_tu,admin_kepala_balai'],
+            'role'     => ['required', 'string', 'in:user,admin_aspirasi,admin_kasubbag_tu,admin_kepala_balai,it_support'],
         ], [
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'password.min'       => 'Password minimal 8 karakter.',
@@ -166,13 +166,13 @@ class UserController extends Controller
         }
 
         // Hanya boleh ubah role user biasa, bukan sesama admin
-        if ($user->role !== 'user') {
+        if ($user->role !== 'user' && $user->role !== 'it_support') {
             return redirect()->route('admin.users.index')
-                ->with('error', 'Hanya role pengguna biasa (User) yang dapat diubah dari halaman ini.');
+                ->with('error', 'Hanya role pengguna biasa (User/IT Support) yang dapat diubah dari halaman ini.');
         }
 
         $request->validate([
-            'role' => ['required', 'string', 'in:user,admin_aspirasi,admin_kasubbag_tu,admin_kepala_balai'],
+            'role' => ['required', 'string', 'in:user,admin_aspirasi,admin_kasubbag_tu,admin_kepala_balai,it_support'],
         ]);
 
         $oldRole  = $user->role;
@@ -184,6 +184,7 @@ class UserController extends Controller
             'admin_aspirasi',
             'admin_kasubbag_tu',
             'admin_kepala_balai',
+            'it_support',
         ]) ? true : $user->role_selected;
 
         $user->update([
@@ -202,6 +203,7 @@ class UserController extends Controller
             'admin_aspirasi'     => 'Arsiparis',
             'admin_kasubbag_tu'  => 'Kasubbag TU',
             'admin_kepala_balai' => 'Kepala Balai',
+            'it_support'         => 'IT Support',
             default              => 'User',
         };
 

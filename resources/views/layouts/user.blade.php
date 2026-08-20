@@ -1797,6 +1797,12 @@
                                 </div>
                             </div>
                         </li>
+                        @if(Auth::user()->isITSupport())
+                            <li><a class="dropdown-item py-2" href="{{ route('itsupport.dashboard') }}" style="color: #6366f1; font-weight: 600;">
+                                <i class="bi bi-shield-lock me-2"></i> Panel IT Support
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                        @endif
                         <li><a class="dropdown-item py-2" href="{{ route('profile.edit') }}">
                             <i class="bi bi-person me-2"></i> Profil Saya
                         </a></li>

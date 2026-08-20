@@ -237,16 +237,16 @@
         <nav class="sidebar-menu">
             <div class="menu-label">Console</div>
             <a href="{{ route('itsupport.dashboard') }}" class="menu-item {{ request()->routeIs('itsupport.dashboard') ? 'active' : '' }}">
-                <i class="bi bi-grid-1x2-fill"></i> Dashboard
+                <i class="bi bi-grid-1x2-fill"></i> Dashboard IT
             </a>
             <a href="{{ route('itsupport.notification.create') }}" class="menu-item {{ request()->routeIs('itsupport.notification.create') ? 'active' : '' }}">
                 <i class="bi bi-megaphone-fill"></i> Add Notification
             </a>
-            <a href="#" class="menu-item">
-                <i class="bi bi-code-square"></i> System Config
+            <a href="{{ route('dashboard') }}" class="menu-item">
+                <i class="bi bi-person-workspace"></i> Dashboard Pegawai
             </a>
-            <a href="#" class="menu-item">
-                <i class="bi bi-database-fill-gear"></i> Database Tools
+            <a href="{{ route('user.surat.index') }}" class="menu-item">
+                <i class="bi bi-envelope-paper"></i> Layanan Surat
             </a>
             
             <div class="menu-label">Monitoring</div>
