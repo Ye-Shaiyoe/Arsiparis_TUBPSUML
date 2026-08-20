@@ -696,6 +696,9 @@ class SuratController extends Controller
         abort_if($surat->user_id !== Auth::id(), 403);
         
         if ($surat->status !== 'selesai') {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Rating hanya bisa diberikan untuk surat yang sudah selesai.'], 422);
+            }
             return back()->with('error', 'Rating hanya bisa diberikan untuk surat yang sudah selesai.');
         }
 
@@ -706,6 +709,10 @@ class SuratController extends Controller
         $surat->update([
             'rating' => $request->rating,
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Terima kasih atas penilaian Anda!']);
+        }
 
         return back()->with('success', 'Terima kasih atas penilaian Anda!');
     }

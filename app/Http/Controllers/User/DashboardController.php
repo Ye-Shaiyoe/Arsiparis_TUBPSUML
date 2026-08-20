@@ -107,6 +107,13 @@ class DashboardController extends Controller
 
         $weeklyActivity = $user->getWeeklyActivityData();
 
+        // Surat selesai yang belum diberi rating (untuk popup selamat)
+        $suratSelesaiBelumRating = Surat::where('user_id', $userId)
+            ->where('status', 'selesai')
+            ->whereNull('rating')
+            ->latest('updated_at')
+            ->get(['id', 'uuid', 'judul', 'jenis', 'updated_at']);
+
         return view('dashboard', compact(
             'totalSurat',
             'suratSelesai',
@@ -121,7 +128,8 @@ class DashboardController extends Controller
             'bulanSelected',
             'tahunSelected',
             'weeklyActivity',
-            'suratActionUrgent'
+            'suratActionUrgent',
+            'suratSelesaiBelumRating'
         ));
     }
 

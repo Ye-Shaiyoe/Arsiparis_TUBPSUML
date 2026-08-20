@@ -1848,6 +1848,184 @@
         }, 1000); // Muncul setelah 1 detik dashboard terbuka
     }
 
+    // Popup Selamat Surat Selesai + Inline Rating (Hanya muncul 1 kali per surat)
+    const completedSurats = @json($suratSelesaiBelumRating ?? []);
+    if (completedSurats && completedSurats.length > 0) {
+        const userId = {{ Auth::id() }};
+        const showCompletionPopup = (suratList, idx = 0) => {
+            if (idx >= suratList.length) return;
+            const surat = suratList[idx];
+            const storageKey = `surat_selesai_dismissed_${userId}_${surat.uuid}`;
+            if (localStorage.getItem(storageKey)) {
+                showCompletionPopup(suratList, idx + 1);
+                return;
+            }
+
+            let selectedRating = 0;
+
+            setTimeout(() => {
+                Swal.fire({
+                    title: '',
+                    html: `
+                        <div class="text-center p-2">
+                            <div style="width: 72px; height: 72px; margin: 0 auto 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);">
+                                <i class="bi bi-check-circle-fill text-white" style="font-size: 38px;"></i>
+                            </div>
+                            
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 mb-2" style="font-size: 12px; font-weight: 600;">
+                                🎉 Surat Telah Selesai
+                            </span>
+                            
+                            <h4 style="font-weight: 800; color: #1e293b; margin-bottom: 8px; font-size: 20px;">
+                                Selamat, Surat Anda Telah Selesai!
+                            </h4>
+                            
+                            <p style="color: #64748b; font-size: 13px; line-height: 1.5; margin-bottom: 16px;">
+                                Surat pengajuan Anda telah selesai diproses oleh tim persuratan.
+                            </p>
+
+                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px 16px; margin-bottom: 18px; text-align: left;">
+                                <div style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px;">Judul Surat</div>
+                                <div style="font-size: 13.5px; font-weight: 700; color: #0f172a; line-height: 1.4; word-break: break-word;">${surat.judul}</div>
+                            </div>
+
+                            <div style="margin-bottom: 10px;">
+                                <div style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                                    Berikan Penilaian Layanan:
+                                </div>
+                                <div id="star-rating-container" style="display: flex; justify-content: center; gap: 8px; font-size: 32px; cursor: pointer;">
+                                    <i class="bi bi-star star-item" data-rating="1" style="color: #cbd5e1; transition: transform 0.15s, color 0.15s;"></i>
+                                    <i class="bi bi-star star-item" data-rating="2" style="color: #cbd5e1; transition: transform 0.15s, color 0.15s;"></i>
+                                    <i class="bi bi-star star-item" data-rating="3" style="color: #cbd5e1; transition: transform 0.15s, color 0.15s;"></i>
+                                    <i class="bi bi-star star-item" data-rating="4" style="color: #cbd5e1; transition: transform 0.15s, color 0.15s;"></i>
+                                    <i class="bi bi-star star-item" data-rating="5" style="color: #cbd5e1; transition: transform 0.15s, color 0.15s;"></i>
+                                </div>
+                                <div id="star-rating-text" style="font-size: 12px; color: #64748b; font-weight: 600; min-height: 18px; margin-top: 6px;">Pilih 1 - 5 bintang</div>
+                            </div>
+
+                            <div class="mt-3 pt-2 border-top d-flex flex-column gap-2">
+                                <a href="/surat/${surat.uuid}" class="btn btn-sm btn-light border py-2 text-decoration-none fw-semibold" style="border-radius: 10px; font-size: 13px; color: #3b82f6;">
+                                    <i class="bi bi-file-earmark-text me-1"></i> Lihat Detail Surat
+                                </a>
+                            </div>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="bi bi-send-fill me-1"></i> Kirim Penilaian',
+                    cancelButtonText: 'Nanti Saja',
+                    confirmButtonColor: '#10b981',
+                    cancelButtonColor: '#94a3b8',
+                    padding: '1.75rem',
+                    background: '#ffffff',
+                    borderRadius: '24px',
+                    allowOutsideClick: false,
+                    showClass: {
+                        popup: 'animate__animated animate__zoomIn'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOut'
+                    },
+                    didOpen: () => {
+                        const popup = Swal.getPopup();
+                        const stars = popup.querySelectorAll('.star-item');
+                        const ratingText = popup.querySelector('#star-rating-text');
+                        const labels = {
+                            1: '⭐ Sangat Tidak Memuaskan',
+                            2: '⭐⭐ Kurang Memuaskan',
+                            3: '⭐⭐⭐ Cukup Memuaskan',
+                            4: '⭐⭐⭐⭐ Memuaskan',
+                            5: '⭐⭐⭐⭐⭐ Sangat Memuaskan!'
+                        };
+
+                        const updateStars = (val) => {
+                            stars.forEach(star => {
+                                const r = parseInt(star.getAttribute('data-rating'));
+                                if (r <= val) {
+                                    star.classList.remove('bi-star');
+                                    star.classList.add('bi-star-fill');
+                                    star.style.color = '#f59e0b';
+                                } else {
+                                    star.classList.remove('bi-star-fill');
+                                    star.classList.add('bi-star');
+                                    star.style.color = '#cbd5e1';
+                                }
+                            });
+                            if (ratingText) {
+                                ratingText.textContent = labels[val] || 'Pilih 1 - 5 bintang';
+                                ratingText.style.color = val > 0 ? '#d97706' : '#64748b';
+                            }
+                        };
+
+                        stars.forEach(star => {
+                            star.addEventListener('mouseenter', () => {
+                                const r = parseInt(star.getAttribute('data-rating'));
+                                updateStars(r);
+                            });
+                            star.addEventListener('mouseleave', () => {
+                                updateStars(selectedRating);
+                            });
+                            star.addEventListener('click', () => {
+                                selectedRating = parseInt(star.getAttribute('data-rating'));
+                                updateStars(selectedRating);
+                            });
+                        });
+                    },
+                    preConfirm: () => {
+                        if (selectedRating < 1 || selectedRating > 5) {
+                            Swal.showValidationMessage('Silakan pilih salah satu bintang (1-5) untuk memberi penilaian.');
+                            return false;
+                        }
+                        return selectedRating;
+                    }
+                }).then((result) => {
+                    localStorage.setItem(storageKey, 'true');
+
+                    if (result.isConfirmed) {
+                        const ratingValue = result.value;
+                        fetch(`/surat/${surat.uuid}/rate`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ rating: ratingValue })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Terima Kasih!',
+                                text: data.message || 'Penilaian Anda telah tersimpan.',
+                                timer: 2000,
+                                showConfirmButton: false,
+                                borderRadius: '18px'
+                            }).then(() => {
+                                showCompletionPopup(suratList, idx + 1);
+                            });
+                        })
+                        .catch(err => {
+                            console.error('Error rating surat:', err);
+                            showCompletionPopup(suratList, idx + 1);
+                        });
+                    } else {
+                        showCompletionPopup(suratList, idx + 1);
+                    }
+                });
+            }, 600);
+        };
+
+        // Jika tidak ada FAQ popup yang sedang aktif, jalankan popup selesai
+        if (hasSeenFaqPopup) {
+            showCompletionPopup(completedSurats);
+        } else {
+            // Beri jeda setelah popup FAQ ditutup atau 3 detik
+            setTimeout(() => {
+                showCompletionPopup(completedSurats);
+            }, 3000);
+        }
+    }
+
     scheduleRefresh();
 
     // 1. Live Header Dynamic Greeting & Real-time Clock
