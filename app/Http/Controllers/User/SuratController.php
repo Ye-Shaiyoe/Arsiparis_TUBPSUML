@@ -490,11 +490,21 @@ class SuratController extends Controller
             abort(404, 'Template tidak ditemukan');
         }
 
+        $extension = strtolower(pathinfo($safeName, PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'pdf'  => 'application/pdf',
+            'doc'  => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ];
+        $mimeType = $mimeTypes[$extension] ?? 'application/octet-stream';
+
         while (ob_get_level()) {
             ob_end_clean();
         }
 
-        return Storage::disk('private')->download($path);
+        return Storage::disk('private')->download($path, $safeName, [
+            'Content-Type' => $mimeType,
+        ]);
     }
 
     /**

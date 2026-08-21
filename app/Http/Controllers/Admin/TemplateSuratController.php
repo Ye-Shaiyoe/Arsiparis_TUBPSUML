@@ -26,6 +26,7 @@ class TemplateSuratController extends Controller
                     'path'     => $path,
                     'nama'     => basename($path),
                     'ukuran'   => $this->formatBytes($disk->size($path)),
+                    'ext'      => strtolower(pathinfo($path, PATHINFO_EXTENSION)),
                     'diupload' => \Carbon\Carbon::createFromTimestamp(
                                     $disk->lastModified($path)
                                   )->format('d M Y'),
@@ -41,11 +42,12 @@ class TemplateSuratController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'file_template' => 'required|file|mimes:docx,doc|max:10240',
+            'file_template' => 'required|file|mimes:docx,doc,pdf|max:10240',
             'nama_file'     => 'required|string|max:100',
         ]);
 
-        $namaFile = \Str::slug($request->nama_file) . '.docx';
+        $ext = strtolower($request->file('file_template')->getClientOriginalExtension());
+        $namaFile = \Str::slug($request->nama_file) . '.' . $ext;
         $request->file('file_template')->storeAs(self::FOLDER, $namaFile, 'private');
 
         return redirect()->route('admin.template.index')
@@ -63,11 +65,27 @@ class TemplateSuratController extends Controller
 
     public function download($nama)
     {
-        $path = self::FOLDER . '/' . $nama;
-        if (Storage::disk('private')->exists($path)) {
-            return Storage::disk('private')->download($path);
+        $safeName = basename($nama);
+        $path = self::FOLDER . '/' . $safeName;
+        if (!Storage::disk('private')->exists($path)) {
+            return redirect()->back()->with('error', 'File template tidak ditemukan.');
         }
-        return redirect()->back()->with('error', 'File template tidak ditemukan.');
+
+        $extension = strtolower(pathinfo($safeName, PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'pdf'  => 'application/pdf',
+            'doc'  => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ];
+        $mimeType = $mimeTypes[$extension] ?? 'application/octet-stream';
+
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        return Storage::disk('private')->download($path, $safeName, [
+            'Content-Type' => $mimeType,
+        ]);
     }
 
     private function formatBytes($bytes): string

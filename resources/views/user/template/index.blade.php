@@ -75,7 +75,8 @@
         box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
     }
 
-    .doc-icon-box.docx {
+    .doc-icon-box.docx,
+    .doc-icon-box.doc {
         background: #2563eb;
         box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
     }

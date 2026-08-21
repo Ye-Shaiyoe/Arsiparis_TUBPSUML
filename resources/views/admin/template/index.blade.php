@@ -228,13 +228,17 @@
                                     <img src="{{ asset('images/template_previewss.png') }}" alt="Preview">
                                     <div style="position:absolute; top:10px; left:10px;">
                                         <span class="badge bg-white text-dark shadow-sm" style="font-size:9px; border-radius:6px; opacity:0.9;">
-                                            DOCX
+                                            {{ strtoupper($file['ext'] ?? 'DOCX') }}
                                         </span>
                                     </div>
                                 </div>
                                 <div class="doc-info-section">
-                                    <div class="doc-icon-box">
-                                        <i class="bi bi-file-earmark-word-fill text-white" style="font-size:20px;"></i>
+                                    <div class="doc-icon-box {{ $file['ext'] ?? 'docx' }}" style="{{ ($file['ext'] ?? '') === 'pdf' ? 'background: #ef4444; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);' : '' }}">
+                                        @if(($file['ext'] ?? '') === 'pdf')
+                                            <i class="bi bi-file-pdf-fill text-white" style="font-size:20px;"></i>
+                                        @else
+                                            <i class="bi bi-file-earmark-word-fill text-white" style="font-size:20px;"></i>
+                                        @endif
                                     </div>
                                     <div class="doc-name">{{ $file['nama'] }}</div>
                                 </div>
@@ -269,19 +273,19 @@
                     <div class="mb-3">
                         <label class="form-label small fw-semibold text-muted">Nama Template <span class="text-danger">*</span></label>
                         <input type="text" name="nama_file" required
-                               placeholder="Contoh: Surat Tugas"
-                               value="{{ old('nama_file') }}"
-                               class="form-control-custom">
+                                placeholder="Contoh: Format Surat Tugas"
+                                value="{{ old('nama_file') }}"
+                                class="form-control-custom">
                         @error('nama_file')
                             <div class="text-danger small mt-1" style="font-size:11px;">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label small fw-semibold text-muted">File Word (.docx) <span class="text-danger">*</span></label>
+                        <label class="form-label small fw-semibold text-muted">File Template (.docx, .doc, .pdf) <span class="text-danger">*</span></label>
                         <div class="p-3 border-dashed rounded-3 text-center" style="border: 2px dashed var(--border-color); background: var(--bg-tertiary);">
-                            <input type="file" name="file_template" required accept=".docx,.doc" class="form-control form-control-sm border-0 bg-transparent" style="color: var(--text-primary);">
-                            <div class="mt-2 text-muted" style="font-size:11px;">Maks. 10MB</div>
+                            <input type="file" name="file_template" required accept=".docx,.doc,.pdf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="form-control form-control-sm border-0 bg-transparent" style="color: var(--text-primary);">
+                            <div class="mt-2 text-muted" style="font-size:11px;">Format: Word (.docx, .doc) atau PDF (.pdf) &bull; Maks. 10MB</div>
                         </div>
                         @error('file_template')
                             <div class="text-danger small mt-1" style="font-size:11px;">{{ $message }}</div>
@@ -296,7 +300,7 @@
                 <div class="mt-4 p-3 rounded-3" style="background: var(--bg-primary); border: 1px solid var(--border-color);">
                     <h6 class="fw-bold text-primary mb-2" style="font-size:12px;">Info Penting:</h6>
                     <ul class="mb-0 text-muted ps-3" style="font-size:11px; line-height:1.6;">
-                        <li>Gunakan format <strong>.docx</strong> jika <strong>.doc</strong> saja gak akan kebaca, variabel surat dapat terbaca sistem.</li>
+                        <li>Mendukung format <strong>.docx</strong>, <strong>.doc</strong>, dan <strong>.pdf</strong>.</li>
                         <li>Pastikan ukuran file tidak melebihi 10MB.</li>
                         <li>Template yang diunggah akan langsung tersedia bagi seluruh pegawai.</li>
                     </ul>
