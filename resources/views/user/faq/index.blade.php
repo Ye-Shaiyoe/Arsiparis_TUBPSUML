@@ -349,12 +349,14 @@
         align-items: center;
         justify-content: center;
         font-size: 15px;
+        color: var(--navy-mid);
         flex-shrink: 0;
-        transition: background 0.25s;
+        transition: all 0.25s ease;
     }
 
     .faq-item.open .faq-q-icon {
         background: rgba(30,58,95,0.08);
+        color: var(--navy);
     }
 
     .faq-q-text {
@@ -663,7 +665,7 @@
     <div class="faq-body">
 
         <div id="faq-no-results">
-            <div class="nr-icon">🔍</div>
+            <div class="nr-icon"><i class="bi bi-search"></i></div>
             <p>Tidak ditemukan hasil untuk pencarian Anda.<br>Coba kata kunci lain atau hubungi helpdesk kami.</p>
         </div>
 
@@ -678,7 +680,7 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">📝</div>
+                    <div class="faq-q-icon"><i class="bi bi-file-earmark-plus"></i></div>
                     <span class="faq-q-text">Bagaimana cara mengajukan surat baru?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -691,13 +693,13 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">⏮️</div>
+                    <div class="faq-q-icon"><i class="bi bi-file-earmark-word"></i></div>
                     <span class="faq-q-text">Kenapa struktur preview word berbeda dengan file asli?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Tenang saja Itu gak akan memengaruhi file asli anda, Karena itu cuma preview doang. admin/pengurus akan mendownload ulang file anda. tapi tenang aja, preview itu cuma untuk melihat apakah <strong>file anda benar atau tidak</strong>.
+                        Tampilan pratinjau (preview) di peramban hanya bersifat visual untuk memastikan kesesuaian dokumen yang diunggah. Hal ini tidak memengaruhi format maupun struktur file asli yang diunggah. Petugas dan admin tetap akan memproses surat menggunakan file asli yang diunduh langsung dari sistem.
                     </div>
                 </div>
             </div>
@@ -705,7 +707,7 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">📂</div>
+                    <div class="faq-q-icon"><i class="bi bi-folder2-open"></i></div>
                     <span class="faq-q-text">Format dan ukuran file apa saja yang diterima sistem?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -718,7 +720,7 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">📄</div>
+                    <div class="faq-q-icon"><i class="bi bi-file-earmark-text"></i></div>
                     <span class="faq-q-text">Di mana saya bisa mendapatkan template surat?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -731,7 +733,7 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">📑</div>
+                    <div class="faq-q-icon"><i class="bi bi-tags"></i></div>
                     <span class="faq-q-text">Apa saja jenis dan sifat surat yang tersedia?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -755,7 +757,7 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">❌</div>
+                    <div class="faq-q-icon"><i class="bi bi-x-circle"></i></div>
                     <span class="faq-q-text">Bisakah saya membatalkan atau menghapus surat yang sudah diajukan?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -768,7 +770,7 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🔄</div>
+                    <div class="faq-q-icon"><i class="bi bi-arrow-repeat"></i></div>
                     <span class="faq-q-text">Bagaimana jika surat saya ditolak / perlu revisi?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -781,7 +783,7 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">💡</div>
+                    <div class="faq-q-icon"><i class="bi bi-lightbulb"></i></div>
                     <span class="faq-q-text">Apa perbedaan "Draft" dan "Terkirim" pada Menu Aspirasi?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -796,7 +798,7 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">💬</div>
+                    <div class="faq-q-icon"><i class="bi bi-chat-dots"></i></div>
                     <span class="faq-q-text">Bagaimana cara menggunakan menu Aspirasi?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -818,7 +820,7 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">💻</div>
+                    <div class="faq-q-icon"><i class="bi bi-headset"></i></div>
                     <span class="faq-q-text">Bagaimana cara menyampaikan kendala teknis ke IT Support?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -831,7 +833,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🧹</div>
+                    <div class="faq-q-icon"><i class="bi bi-trash3"></i></div>
                     <span class="faq-q-text">Bagaimana cara menghapus file fisik surat saya sendiri?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -844,7 +846,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">📊</div>
+                    <div class="faq-q-icon"><i class="bi bi-file-earmark-spreadsheet"></i></div>
                     <span class="faq-q-text">Apa fungsi fitur "Export Excel" pada tabel surat?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -858,7 +860,7 @@
 
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">⏳</div>
+                    <div class="faq-q-icon"><i class="bi bi-clock-history"></i></div>
                     <span class="faq-q-text">Berapa lama batas waktu saya bisa mengedit surat?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -870,7 +872,7 @@
             </div>
             <div class="faq-item" data-cat="pengajuan">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🔢</div>
+                    <div class="faq-q-icon"><i class="bi bi-card-text"></i></div>
                     <span class="faq-q-text">Mengapa catatan pengusul dibatasi hanya 100 karakter?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -894,7 +896,7 @@
 
             <div class="faq-item" data-cat="status">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">⏱️</div>
+                    <div class="faq-q-icon"><i class="bi bi-stopwatch"></i></div>
                     <span class="faq-q-text">Berapa lama waktu proses surat (SLA)?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -907,7 +909,7 @@
 
             <div class="faq-item" data-cat="status">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🗺️</div>
+                    <div class="faq-q-icon"><i class="bi bi-diagram-3"></i></div>
                     <span class="faq-q-text">Apa arti masing-masing tahapan status surat (Tahap 1–10)?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -932,7 +934,7 @@
 
             <div class="faq-item" data-cat="status">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">✅</div>
+                    <div class="faq-q-icon"><i class="bi bi-shield-check"></i></div>
                     <span class="faq-q-text">Kapan sistem melakukan pembersihan otomatis pada surat saya?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -950,7 +952,7 @@
 
             <div class="faq-item" data-cat="status">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">📅</div>
+                    <div class="faq-q-icon"><i class="bi bi-calendar-x"></i></div>
                     <span class="faq-q-text">Bagaimana jika saya mengajukan surat di hari Jumat sore atau Weekend?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -963,7 +965,7 @@
 
             <div class="faq-item" data-cat="status">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🖼️</div>
+                    <div class="faq-q-icon"><i class="bi bi-card-image"></i></div>
                     <span class="faq-q-text">Tampilan tracking saat surat ditolak & direvisi?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -977,7 +979,7 @@
 
             <div class="faq-item" data-cat="status">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🗑️</div>
+                    <div class="faq-q-icon"><i class="bi bi-trash"></i></div>
                     <span class="faq-q-text">Apakah saya bisa menghapus file fisik secara manual?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1001,7 +1003,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🔔</div>
+                    <div class="faq-q-icon"><i class="bi bi-bell"></i></div>
                     <span class="faq-q-text">Bagaimana cara mengelola notifikasi?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1012,7 +1014,7 @@
                             <li><strong>Melihat Notifikasi:</strong> Klik icon lonceng di navbar. Notifikasi yang belum dibaca ditandai dengan titik merah.</li>
                             <li><strong>Tandai Sudah Dibaca:</strong> Klik satu notifikasi untuk otomatis menandai sebagai sudah dibaca, atau gunakan tombol <strong>"Tandai Semua Dibaca"</strong> untuk sekaligus.</li>
                             <li><strong>Hapus Notifikasi:</strong> Klik icon sampah pada masing-masing notifikasi untuk menghapusnya satu per satu.</li>
-                            <li><strong>Hapus Semua:</strong> Gunakan tombol <strong"Hapus Semua Notifikasi"</strong> untuk membersihkan semua notifikasi sekaligus.</li>
+                            <li><strong>Hapus Semua:</strong> Gunakan tombol <strong>"Hapus Semua Notifikasi"</strong> untuk membersihkan semua notifikasi sekaligus.</li>
                         </ul>
                         <em>Catatan: Notifikasi yang berumur lebih dari 1 minggu akan dihapus otomatis setiap Senin pukul 01.00 untuk menjaga kebersihan sistem.</em>
                     </div>
@@ -1021,7 +1023,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">📅</div>
+                    <div class="faq-q-icon"><i class="bi bi-calendar-week"></i></div>
                     <span class="faq-q-text">Kenapa tidak bisa mengajukan surat di hari Sabtu/Minggu?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1034,7 +1036,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🔄</div>
+                    <div class="faq-q-icon"><i class="bi bi-arrow-clockwise"></i></div>
                     <span class="faq-q-text">Kenapa website tiba-tiba memuat ulang (refresh) sendiri?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1047,7 +1049,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">📊</div>
+                    <div class="faq-q-icon"><i class="bi bi-speedometer2"></i></div>
                     <span class="faq-q-text">Berapa lama dashboard diperbarui secara otomatis?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1062,7 +1064,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">📊</div>
+                    <div class="faq-q-icon"><i class="bi bi-bar-chart-line"></i></div>
                     <span class="faq-q-text">Dapatkah saya melihat statistik pengajuan surat saya?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1075,7 +1077,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">📈</div>
+                    <div class="faq-q-icon"><i class="bi bi-graph-up"></i></div>
                     <span class="faq-q-text">Apa saja yang bisa saya lihat di menu Statistik?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1095,7 +1097,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🌓</div>
+                    <div class="faq-q-icon"><i class="bi bi-moon-stars"></i></div>
                     <span class="faq-q-text">Bagaimana cara mengubah ke Dark Mode atau Light Mode?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1108,7 +1110,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">📱</div>
+                    <div class="faq-q-icon"><i class="bi bi-qr-code-scan"></i></div>
                     <span class="faq-q-text">Apa fungsi QR code yang ada di detail surat saya?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1121,7 +1123,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">❄️</div>
+                    <div class="faq-q-icon"><i class="bi bi-pause-circle"></i></div>
                     <span class="faq-q-text">Bagaimana perhitungan SLA jika saya mengajukan surat di hari Jumat sore?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1134,7 +1136,7 @@
 
             <div class="faq-item" data-cat="teknis">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🔗</div>
+                    <div class="faq-q-icon"><i class="bi bi-fingerprint"></i></div>
                     <span class="faq-q-text">Apa itu UUID-Based Verification?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1158,18 +1160,18 @@
 
             <div class="faq-item" data-cat="akun">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">👥</div>
+                    <div class="faq-q-icon"><i class="bi bi-person-plus"></i></div>
                     <span class="faq-q-text">Cara beralih akun yang dimulai dari register!</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Minimal anda sudah memili satu akun yang terdaftar pada sistem kami dan ini stepnya: <br>
+                        Minimal Anda sudah memiliki satu akun yang terdaftar pada sistem kami, dengan langkah-langkah sebagai berikut: <br>
                         <ol>
-                            <li>1. Silahkan masuk ke halaman login dengan menggunakan akun yang sudah terdaftar pada sistem kami.</li>
-                            <li>2. Silah kan pencet beralih akun dan masuk ke sign up/register.</li>
-                            <li>3. Silahkan isi biodata yang sesuai, dengan informasi yang valid.</li>
-                            <li>4. Setelah berhasil mendaftar, anda harus logout kembali dan ke bagian form sign in/login dan masukan kembali akun yang sudah anda bikin sebelumnya. dan selesai, easy!</li>
+                            <li>1. Silakan masuk ke halaman login menggunakan akun yang sudah terdaftar.</li>
+                            <li>2. Pilih opsi <strong>Beralih Akun</strong> lalu pilih <strong>Daftar / Register</strong>.</li>
+                            <li>3. Lengkapi formulir pendaftaran dengan data diri yang valid.</li>
+                            <li>4. Setelah pendaftaran berhasil, lakukan login kembali menggunakan akun yang baru didaftarkan. Akun Anda telah siap digunakan.</li>
                         </ol>
                     </div>
                 </div>
@@ -1177,7 +1179,7 @@
 
             <div class="faq-item" data-cat="akun">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🔑</div>
+                    <div class="faq-q-icon"><i class="bi bi-key"></i></div>
                     <span class="faq-q-text">Sudah dapat login dengan NIP dan password? Segera lakukan ini!</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1190,20 +1192,20 @@
 
             <div class="faq-item" data-cat="akun">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🔒</div>
+                    <div class="faq-q-icon"><i class="bi bi-shield-lock"></i></div>
                     <span class="faq-q-text">Lupa password atau akun tidak bisa login?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Anda bisa menggunakan fitur <strong>Lupa Password</strong> di halaman login. Ikuti langkah-langkah yang tertera untuk reset password Anda. nanti reset password akan dikirim via email sudah terdaftar.
+                        Anda bisa menggunakan fitur <strong>Lupa Password</strong> di halaman login. Ikuti langkah-langkah yang tertera untuk reset password Anda. Tautan reset password akan dikirimkan ke alamat email yang telah terdaftar.
                     </div>
                 </div>
             </div>
 
             <div class="faq-item" data-cat="akun">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🛡️</div>
+                    <div class="faq-q-icon"><i class="bi bi-shield-shaded"></i></div>
                     <span class="faq-q-text">Apakah data dan dokumen surat saya aman di sistem ini?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1216,7 +1218,7 @@
 
             <div class="faq-item" data-cat="akun">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">👥</div>
+                    <div class="faq-q-icon"><i class="bi bi-arrow-left-right"></i></div>
                     <span class="faq-q-text">Bagaimana cara beralih akun tanpa harus login ulang?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1229,13 +1231,13 @@
 
             <div class="faq-item" data-cat="akun">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">💻</div>
+                    <div class="faq-q-icon"><i class="bi bi-laptop"></i></div>
                     <span class="faq-q-text">Apa itu fitur Sesi Aktif & Riwayat Perangkat (Device History)?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Fitur <strong>Sesi Aktif & Riwayat Perangkat</strong> adalah sistem keamanan canggih di halaman Profil Saya untuk memantau semua perangkat yang sedang masuk (login) ke akun Anda secara real-time.
+                        Fitur <strong>Sesi Aktif & Riwayat Perangkat</strong> adalah sistem keamanan di halaman Profil Saya untuk memantau semua perangkat yang sedang masuk (login) ke akun Anda secara real-time.
                         <br><br>
                         <strong>Fungsi Utama:</strong>
                         <ul>
@@ -1260,7 +1262,7 @@
 
             <div class="faq-item" data-cat="tentang">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🏢</div>
+                    <div class="faq-q-icon"><i class="bi bi-building"></i></div>
                     <span class="faq-q-text">Apa itu Website Persuratan BP Suml?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
@@ -1273,18 +1275,18 @@
 
             <div class="faq-item" data-cat="tentang">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">🚀</div>
+                    <div class="faq-q-icon"><i class="bi bi-cpu"></i></div>
                     <span class="faq-q-text">Teknologi apa yang digunakan dalam website ini?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Sistem ini dibangun menggunakan teknologi mutakhir:
+                        Sistem ini dibangun menggunakan arsitektur teknologi modern:
                         <ul>
                             <li><strong>Backend</strong>: Laravel 12 (PHP Framework) & MySQL Database.</li>
                             <li><strong>Frontend</strong>: Bootstrap & Tailwind CSS untuk tata letak yang responsif.</li>
-                            <li><strong>Animasi</strong>: GSAP, Anime.js, dan Three.js untuk pengalaman visual premium.</li>
-                            <li><strong>Keamanan</strong>: Cloudflare WAF, Google reCAPTCHA V2, dan Enkripsi Password tingkat tinggi.</li>
+                            <li><strong>Animasi</strong>: GSAP, Anime.js, dan Three.js untuk pengalaman visual interaktif.</li>
+                            <li><strong>Keamanan</strong>: Cloudflare WAF, Google reCAPTCHA V2, dan enkripsi data tingkat tinggi.</li>
                         </ul>
                     </div>
                 </div>
@@ -1292,20 +1294,20 @@
 
             <div class="faq-item" data-cat="tentang">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">👨‍💻</div>
+                    <div class="faq-q-icon"><i class="bi bi-code-slash"></i></div>
                     <span class="faq-q-text">Siapa yang mengembangkan sistem ini?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
                 <div class="faq-answer-wrap">
                     <div class="faq-answer">
-                        Website ini dirancang dan dikembangkan sebagai bagian dari <strong>Proyek PKL (Praktik Kerja Lapangan)</strong> oleh siswa <strong>SMK Alfalah</strong> dengan peran Fullstack Developer. Pengembangan dibantu oleh AI untuk memastikan kode yang bersih, efisien, dan mengikuti standar industri modern.
+                        Website ini dirancang dan dikembangkan sebagai bagian dari <strong>Proyek PKL (Praktik Kerja Lapangan)</strong> oleh siswa <strong>SMK Alfalah</strong> dengan peran Fullstack Developer, mengimplementasikan standar rekayasa perangkat lunak modern.
                     </div>
                 </div>
             </div>
 
             <div class="faq-item" data-cat="tentang">
                 <button class="faq-question" onclick="toggleFaq(this)">
-                    <div class="faq-q-icon">ℹ️</div>
+                    <div class="faq-q-icon"><i class="bi bi-info-circle"></i></div>
                     <span class="faq-q-text">Apa itu halaman About dan fungsinya?</span>
                     <div class="faq-q-arrow"><i class="bi bi-chevron-down"></i></div>
                 </button>
