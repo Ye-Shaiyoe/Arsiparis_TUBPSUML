@@ -841,6 +841,180 @@
             min-width: 0;
         }
     }
+
+    /* ============================================================
+       MOBILE-ONLY REDESIGN (Apple / iOS Vibe)
+       Berlaku hanya di layar <= 991px — desktop tidak terpengaruh
+       ============================================================ */
+    @media (max-width: 991.98px) {
+
+        /* SF-style typography */
+        body,
+        .dashboard-header-glass,
+        .card-modern,
+        .stat-card-new {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+            letter-spacing: -0.015em;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── HEADER ── */
+        .dashboard-header-glass {
+            padding: 22px 18px;
+            border-radius: 26px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 8px 32px -8px rgba(15, 23, 42, 0.12);
+        }
+        .dashboard-header-glass h2 {
+            font-size: 21px !important;
+            font-weight: 800 !important;
+        }
+        .dashboard-header-glass p {
+            font-size: 13px !important;
+            color: #6e6e73 !important;
+        }
+        .btn-primary-modern {
+            width: 100%;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 14px 22px;
+            font-size: 15px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #0a84ff 0%, #007aff 100%) !important;
+            box-shadow: 0 8px 24px rgba(0, 122, 255, 0.35);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+        }
+        .btn-primary-modern:active {
+            transform: scale(0.97);
+            box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3);
+        }
+
+        /* ── FILTER BAR → scroll horizontal ala iOS ── */
+        #stat-filter-bar {
+            flex-direction: row !important;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            overflow-x: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        #stat-filter-bar::-webkit-scrollbar { display: none; }
+        .stat-filter-label { white-space: nowrap; }
+        .stat-filter-selects { flex-wrap: nowrap; }
+        .stat-filter-select { min-width: 120px; border-radius: 999px; }
+
+        /* ── STAT CARDS → grid 2 kolom, kartu putih minimalis ── */
+        .stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 12px !important;
+            margin-bottom: 20px;
+        }
+        .stat-card-new.blue,
+        .stat-card-new.green,
+        .stat-card-new.amber,
+        .stat-card-new.red {
+            background: rgba(255, 255, 255, 0.85);
+            color: #1d1d1f !important;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 22px;
+            padding: 18px 14px;
+            gap: 12px;
+            flex-direction: column;
+            align-items: flex-start;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.08);
+        }
+        .stat-icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 13px;
+            font-size: 18px;
+            background: transparent;
+            border: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            margin-bottom: 2px;
+        }
+        .stat-card-new.blue .stat-icon-box   { background: linear-gradient(135deg, #0a84ff, #5ac8fa); color:#fff; box-shadow: 0 6px 14px -3px rgba(10,132,255,0.45); }
+        .stat-card-new.green .stat-icon-box  { background: linear-gradient(135deg, #30d158, #34d399); color:#fff; box-shadow: 0 6px 14px -3px rgba(48,209,88,0.45); }
+        .stat-card-new.amber .stat-icon-box  { background: linear-gradient(135deg, #ff9f0a, #fbbf24); color:#fff; box-shadow: 0 6px 14px -3px rgba(255,159,10,0.45); }
+        .stat-card-new.red .stat-icon-box    { background: linear-gradient(135deg, #ff453a, #fb7185); color:#fff; box-shadow: 0 6px 14px -3px rgba(255,69,58,0.45); }
+        .stat-value-new {
+            font-size: 27px;
+            font-weight: 800;
+            color: #1d1d1f;
+        }
+        .stat-value-updated { animation: countUp 0.35s ease forwards; }
+        .stat-label-new {
+            font-size: 11px;
+            color: #8e8e93;
+            letter-spacing: 0.02em;
+        }
+        .stat-sub-new {
+            display: none;
+        }
+        .stat-card-glow { display: none; }
+
+        /* ── CARDS umum ── */
+        .card-modern {
+            border-radius: 22px;
+            border: 1px solid rgba(15, 23, 42, 0.05);
+            box-shadow: 0 6px 28px -8px rgba(15, 23, 42, 0.08);
+        }
+        .card-header-modern {
+            padding: 16px 18px;
+        }
+        .card-body-modern {
+            padding: 16px 18px;
+        }
+        .card-header-modern h6 { font-size: 15px; letter-spacing: -0.01em; }
+
+        /* ── List surat ala iOS (separator tipis, tap feedback) ── */
+        .surat-item {
+            padding: 14px 18px;
+            transition: background-color 0.2s ease;
+        }
+        .surat-item:active {
+            background-color: rgba(0, 122, 255, 0.06);
+        }
+        .notification-item {
+            padding: 12px 18px;
+        }
+        .notification-item:active {
+            background-color: rgba(0, 122, 255, 0.06);
+        }
+
+        /* ── Template surat grid ── */
+        .template-grid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        /* ── Chart containers lebih pendek ── */
+        .chart-container { height: 230px; }
+
+        /* ── Banner & alert ── */
+        .alert {
+            border-radius: 20px !important;
+        }
+
+        /* ── Help center glass ── */
+        .help-center-glass {
+            border-radius: 22px;
+        }
+    }
+
 </style>
 
 {{-- HEADER --}}

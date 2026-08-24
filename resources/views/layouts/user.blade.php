@@ -2449,19 +2449,23 @@
     <i class="bi bi-plus-lg"></i>
 </a>
 
-{{-- ── Mobile Bottom Navigation Bar ── --}}
+{{-- ── Mobile Floating Bottom Navigation (iOS Style) ── --}}
 <nav id="user-mobile-nav"
      class="d-lg-none"
      style="
          position: fixed;
-         bottom: 0; left: 0; right: 0;
+         bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+         left: 50%;
+         transform: translateX(-50%);
          z-index: 1050;
-         height: 64px;
-         background: rgba(255,255,255,0.88);
-         backdrop-filter: blur(20px);
-         -webkit-backdrop-filter: blur(20px);
-         border-top: 1px solid rgba(0,0,0,0.06);
-         box-shadow: 0 -4px 24px rgba(15,23,42,0.08);
+         width: min(520px, calc(100% - 24px));
+         height: 66px;
+         background: rgba(255,255,255,0.72);
+         backdrop-filter: blur(28px) saturate(180%);
+         -webkit-backdrop-filter: blur(28px) saturate(180%);
+         border: 1px solid rgba(255,255,255,0.65);
+         border-radius: 26px;
+         box-shadow: 0 14px 40px -6px rgba(15,23,42,0.22), 0 2px 10px rgba(15,23,42,0.08), inset 0 1px 0 rgba(255,255,255,0.7);
          display: flex;
          align-items: center;
          justify-content: space-around;
@@ -2519,11 +2523,11 @@
 
 </nav>
 
-{{-- Spacer agar konten tidak tertutup bottom nav di HP --}}
-<div class="d-lg-none" style="height: 64px;" aria-hidden="true"></div>
+{{-- Spacer agar konten tidak tertutup floating bottom nav di HP --}}
+<div class="d-lg-none" style="height: 120px;" aria-hidden="true"></div>
 
 <style>
-    /* ── Mobile Bottom Nav Items ── */
+    /* ── Mobile Floating Bottom Nav Items ── */
     .mob-nav-item {
         display: flex;
         flex-direction: column;
@@ -2531,62 +2535,68 @@
         justify-content: center;
         gap: 3px;
         text-decoration: none;
-        color: #94a3b8;
+        color: #8e8e93; /* iOS gray */
         font-size: 10px;
         font-weight: 600;
-        min-width: 48px;
-        padding: 4px 0;
-        border-radius: 12px;
-        transition: color 0.2s ease, transform 0.15s ease;
+        letter-spacing: -0.01em;
+        min-width: 52px;
+        padding: 7px 4px;
+        border-radius: 16px;
+        transition: color 0.25s ease, background-color 0.25s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         -webkit-tap-highlight-color: transparent;
     }
     .mob-nav-item i {
-        font-size: 1.25rem;
+        font-size: 1.3rem;
         line-height: 1;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .mob-nav-item:hover,
     .mob-nav-item:active {
-        color: #0284c7;
-        transform: translateY(-2px);
+        color: #007aff; /* Apple blue */
+    }
+    .mob-nav-item:active {
+        transform: scale(0.9);
     }
     .mob-nav-item.mob-nav-active {
-        color: #0284c7;
+        color: #007aff;
+        background: rgba(0, 122, 255, 0.12);
+        transform: translateY(-2px);
     }
     .mob-nav-item.mob-nav-active i {
-        filter: drop-shadow(0 0 4px rgba(6,182,212,0.5));
+        transform: scale(1.12) translateY(-1px);
+        filter: drop-shadow(0 4px 10px rgba(0,122,255,0.35));
     }
 
-    /* ── Hexagon Plus Button ── */
+    /* ── Floating Hexagon Plus Button ── */
     .mob-nav-plus {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 56px;
-        height: 56px;
-        margin-bottom: 16px; /* lift above nav bar */
-        background: linear-gradient(135deg, #2563eb 0%, #0284c7 50%, #06b6d4 100%);
+        width: 58px;
+        height: 58px;
+        margin-bottom: 34px; /* lift above the floating pill */
+        background: linear-gradient(135deg, #0a84ff 0%, #007aff 55%, #5ac8fa 100%);
         color: #fff !important;
         text-decoration: none;
         font-size: 1.7rem;
-        border-radius: 16px; /* slightly rounded square, swap to polygon below if you want hex */
-        box-shadow: 0 6px 22px rgba(6,182,212,0.45), 0 2px 6px rgba(0,0,0,0.15);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 18px;
+        box-shadow: 0 12px 28px rgba(0,122,255,0.45), 0 2px 6px rgba(0,0,0,0.15);
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
         flex-shrink: 0;
-        /* Hexagon clip-path */
         clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
         -webkit-tap-highlight-color: transparent;
         position: relative;
     }
     .mob-nav-plus:active {
-        transform: scale(0.92);
-        box-shadow: 0 3px 14px rgba(6,182,212,0.35);
+        transform: scale(0.9);
+        box-shadow: 0 6px 16px rgba(0,122,255,0.35);
     }
     .mob-nav-plus:hover {
-        transform: translateY(-3px) scale(1.06);
-        box-shadow: 0 10px 28px rgba(6,182,212,0.55);
+        transform: translateY(-4px) scale(1.07);
+        box-shadow: 0 16px 32px rgba(0,122,255,0.55);
     }
     .mob-nav-plus.mob-nav-plus-active {
-        box-shadow: 0 0 0 3px rgba(6,182,212,0.3), 0 6px 22px rgba(6,182,212,0.45);
+        box-shadow: 0 0 0 3px rgba(0,122,255,0.3), 0 12px 28px rgba(0,122,255,0.45);
     }
 
     /* ── Desktop FAB pulse ring keyframe ── */
