@@ -3,221 +3,526 @@
 
 @section('content')
 
-{{-- FILTER BAR --}}
-<div class="card" style="margin-bottom:16px;">
-    <form method="GET" action="{{ url()->current() }}" data-turbo="false"
-          style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+<style>
+    /* Filter Card */
+    .filter-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
 
-        <div style="flex:2; min-width:180px;">
-            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:4px;">Cari Judul</label>
-            <input type="text" name="search" value="{{ request('search') }}"
-                   placeholder="Cari judul surat..."
-                   style="width:100%; padding:7px 10px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); border-radius:7px; font-size:13px;">
+    .filter-input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .filter-input-group .search-icon {
+        position: absolute;
+        left: 12px;
+        color: var(--text-secondary);
+        font-size: 14px;
+        pointer-events: none;
+    }
+
+    .filter-input-group input {
+        width: 100%;
+        padding: 9px 36px 9px 36px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        border-radius: 8px;
+        font-size: 13px;
+        transition: all 0.2s ease;
+    }
+
+    .filter-input-group input:focus {
+        border-color: #3b82f6;
+        background: var(--bg-primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+        outline: none;
+    }
+
+    .clear-search-btn {
+        position: absolute;
+        right: 12px;
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 14px;
+        padding: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .clear-search-btn:hover {
+        color: #ef4444;
+    }
+
+    .filter-select {
+        width: 100%;
+        padding: 7px 10px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        border-radius: 8px;
+        font-size: 12.5px;
+        transition: all 0.2s;
+    }
+
+    .filter-select:focus {
+        border-color: #3b82f6;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .filter-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        display: block;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Quick Filter Chips */
+    .quick-chips-wrapper {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        margin-top: 12px;
+    }
+
+    .chip-btn {
+        border: 1px solid var(--border-color);
+        background: var(--bg-tertiary);
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .chip-btn:hover {
+        border-color: #3b82f6;
+        color: #3b82f6;
+        background: var(--bg-primary);
+    }
+
+    .chip-btn.active {
+        background: #2563eb;
+        color: white;
+        border-color: #2563eb;
+    }
+
+    /* Table Container loading effect */
+    #tableContainer {
+        position: relative;
+        transition: opacity 0.2s ease;
+    }
+
+    #tableContainer.loading {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .live-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11.5px;
+        color: #10b981;
+        font-weight: 600;
+    }
+
+    .live-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        animation: pulse-green 1.8s infinite;
+    }
+
+    @keyframes pulse-green {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .loading-spinner {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        background: rgba(15, 23, 42, 0.8);
+        color: white;
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-size: 12.5px;
+        font-weight: 600;
+        backdrop-filter: blur(4px);
+    }
+</style>
+
+{{-- FILTER SECTION --}}
+<div class="filter-card">
+    <form id="filterSuratForm" method="GET" action="{{ url()->current() }}" onsubmit="return false;">
+
+        {{-- Top Row: Search & Reset --}}
+        <div class="row g-3 align-items-center mb-3">
+            <div class="col-lg-8 col-md-8">
+                <label class="filter-label">
+                    <i class="bi bi-search me-1"></i> Pencarian
+                </label>
+                <div class="filter-input-group">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" id="liveSearchInput" name="search" value="{{ request('search') }}"
+                           placeholder="Cari judul surat, nomor surat, nama pengusul, atau tujuan..."
+                           autocomplete="off">
+                    <button type="button" id="clearSearchBtn" class="clear-search-btn" title="Hapus kata kunci">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 d-flex justify-content-md-end align-items-end gap-2 pt-md-4">
+                <div class="live-indicator me-2 d-none d-sm-inline-flex">
+                    <span class="live-dot"></span> Live Filter
+                </div>
+                <button type="button" onclick="resetAllFilters()" class="btn btn-sm btn-light border px-3 py-2" style="border-radius:8px; font-size:12px; font-weight:600;">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter
+                </button>
+            </div>
         </div>
 
-        <div style="flex:1; min-width:140px;">
-            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:4px;">Jenis Surat</label>
-            <select name="jenis" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); border-radius:7px; font-size:13px;">
-                <option value="">Semua Jenis</option>
-                @foreach(\App\Models\Surat::JENIS_LABEL as $val => $label)
-                    <option value="{{ $val }}" {{ request('jenis') === $val ? 'selected' : '' }}>{{ $label }}</option>
-                @endforeach
-            </select>
+        {{-- Filter Controls Grid --}}
+        <div class="row g-2">
+            {{-- Status Surat --}}
+            @if(!isset($title) || in_array($title, ['Antrian Surat', 'Semua Surat']))
+            <div class="col-lg-2 col-md-4 col-6">
+                <label class="filter-label">Status</label>
+                <select name="status" class="filter-select">
+                    <option value="">Semua Status</option>
+                    <option value="proses"       {{ request('status') === 'proses'       ? 'selected' : '' }}>Proses</option>
+                    <option value="revisi"       {{ request('status') === 'revisi'       ? 'selected' : '' }}>Revisi (User)</option>
+                    <option value="revisi_admin" {{ request('status') === 'revisi_admin' ? 'selected' : '' }}>Admin Revisi</option>
+                    <option value="selesai"      {{ request('status') === 'selesai'      ? 'selected' : '' }}>Selesai</option>
+                    <option value="ditolak"      {{ request('status') === 'ditolak'      ? 'selected' : '' }}>Ditolak</option>
+                    <option value="draft"        {{ request('status') === 'draft'        ? 'selected' : '' }}>Draf</option>
+                </select>
+            </div>
+            @endif
+
+            {{-- Jenis Surat --}}
+            <div class="col-lg-2 col-md-4 col-6">
+                <label class="filter-label">Jenis Surat</label>
+                <select name="jenis" class="filter-select">
+                    <option value="">Semua Jenis</option>
+                    @foreach(\App\Models\Surat::JENIS_LABEL as $val => $label)
+                        <option value="{{ $val }}" {{ request('jenis') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Sifat Surat --}}
+            <div class="col-lg-2 col-md-4 col-6">
+                <label class="filter-label">Sifat Surat</label>
+                <select name="sifat" class="filter-select">
+                    <option value="">Semua Sifat</option>
+                    <option value="biasa"   {{ request('sifat') === 'biasa'   ? 'selected' : '' }}>Biasa</option>
+                    <option value="segera"  {{ request('sifat') === 'segera'  ? 'selected' : '' }}>Segera</option>
+                    <option value="rahasia" {{ request('sifat') === 'rahasia' ? 'selected' : '' }}>Rahasia</option>
+                </select>
+            </div>
+
+            {{-- Tahap Surat --}}
+            <div class="col-lg-2 col-md-4 col-6">
+                <label class="filter-label">Tahap Proses</label>
+                <select name="tahap" class="filter-select">
+                    <option value="">Semua Tahap</option>
+                    @foreach(\App\Models\Surat::NAMA_TAHAP as $no => $nama)
+                        <option value="{{ $no }}" {{ request('tahap') == $no ? 'selected' : '' }}>{{ $no }}. {{ $nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Pengusul (Pegawai) --}}
+            @if(isset($users) && $users->isNotEmpty())
+            <div class="col-lg-2 col-md-4 col-6">
+                <label class="filter-label">Pengusul</label>
+                <select name="user_id" class="filter-select">
+                    <option value="">Semua Pengusul</option>
+                    @foreach($users as $u)
+                        <option value="{{ $u->id }}" {{ request('user_id') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            @endif
+
+            {{-- Tahun --}}
+            <div class="col-lg-1 col-md-2 col-6">
+                <label class="filter-label">Tahun</label>
+                <select name="tahun" class="filter-select">
+                    <option value="">Semua</option>
+                    @php $startYear = 2024; $currentYear = date('Y'); @endphp
+                    @for($y = $currentYear; $y >= $startYear; $y--)
+                        <option value="{{ $y }}" {{ request('tahun') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endfor
+                </select>
+            </div>
+
+            {{-- Bulan --}}
+            <div class="col-lg-1 col-md-2 col-6">
+                <label class="filter-label">Bulan</label>
+                <select name="bulan" class="filter-select">
+                    <option value="">Semua</option>
+                    @foreach(range(1, 12) as $m)
+                        <option value="{{ $m }}" {{ request('bulan') == $m ? 'selected' : '' }}>
+                            {{ \Carbon\Carbon::create()->month($m)->translatedFormat('M') }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
         </div>
 
-        <div style="flex:1; min-width:100px;">
-            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:4px;">Tahun</label>
-            <select name="tahun" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); border-radius:7px; font-size:13px;">
-                <option value="">Semua</option>
-                @php $startYear = 2024; $currentYear = date('Y'); @endphp
-                @for($y = $currentYear; $y >= $startYear; $y--)
-                    <option value="{{ $y }}" {{ request('tahun') == $y ? 'selected' : '' }}>{{ $y }}</option>
-                @endfor
-            </select>
+        {{-- Quick Filter Chips --}}
+        <div class="quick-chips-wrapper">
+            <button type="button" class="chip-btn {{ !request()->anyFilled(['status', 'sifat', 'sla_status']) ? 'active' : '' }}" onclick="applyQuickFilter('', '')">
+                <i class="bi bi-grid-fill"></i> Semua
+            </button>
+            <button type="button" class="chip-btn {{ request('status') === 'proses' ? 'active' : '' }}" onclick="applyQuickFilter('status', 'proses')">
+                <i class="bi bi-hourglass-split"></i> Diproses
+            </button>
+            <button type="button" class="chip-btn {{ request('status') === 'revisi' ? 'active' : '' }}" onclick="applyQuickFilter('status', 'revisi')">
+                <i class="bi bi-pencil-square"></i> Perlu Revisi
+            </button>
+            <button type="button" class="chip-btn {{ request('status') === 'selesai' ? 'active' : '' }}" onclick="applyQuickFilter('status', 'selesai')">
+                <i class="bi bi-check-circle-fill"></i> Selesai
+            </button>
+            <button type="button" class="chip-btn {{ request('sifat') === 'segera' ? 'active' : '' }}" onclick="applyQuickFilter('sifat', 'segera')">
+                <i class="bi bi-lightning-charge-fill"></i> Segera
+            </button>
+            <button type="button" class="chip-btn {{ request('sla_status') === 'terlambat' ? 'active' : '' }}" onclick="applyQuickFilter('sla_status', 'terlambat')">
+                <i class="bi bi-exclamation-triangle-fill"></i> SLA Terlambat
+            </button>
         </div>
 
-        <div style="flex:1; min-width:120px;">
-            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:4px;">Bulan</label>
-            <select name="bulan" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); border-radius:7px; font-size:13px;">
-                <option value="">Semua Bulan</option>
-                @foreach(range(1, 12) as $m)
-                    <option value="{{ $m }}" {{ request('bulan') == $m ? 'selected' : '' }}>
-                        {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        @if(!isset($title) || $title === 'Antrian Surat')
-        <div style="flex:1; min-width:120px;">
-            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:4px;">Status</label>
-            <select name="status" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); border-radius:7px; font-size:13px;">
-                <option value="">Semua</option>
-                <option value="proses"       {{ request('status') === 'proses'       ? 'selected' : '' }}>Proses</option>
-                <option value="revisi"       {{ request('status') === 'revisi'       ? 'selected' : '' }}>Revisi (User)</option>
-                <option value="revisi_admin" {{ request('status') === 'revisi_admin' ? 'selected' : '' }}>Admin Revisi</option>
-                <option value="selesai"      {{ request('status') === 'selesai'      ? 'selected' : '' }}>Selesai</option>
-                <option value="ditolak"      {{ request('status') === 'ditolak'      ? 'selected' : '' }}>Ditolak</option>
-                <option value="draft"        {{ request('status') === 'draft'        ? 'selected' : '' }}>Draf</option>
-            </select>
-        </div>
-
-        <div style="flex:1; min-width:120px;">
-            <label style="font-size:11px; color:var(--text-secondary); display:block; margin-bottom:4px;">Tahap</label>
-            <select name="tahap" style="width:100%; padding:7px 10px; border:1px solid var(--border-color); background:var(--bg-tertiary); color:var(--text-primary); border-radius:7px; font-size:13px;">
-                <option value="">Semua Tahap</option>
-                @foreach(\App\Models\Surat::NAMA_TAHAP as $no => $nama)
-                    <option value="{{ $no }}" {{ request('tahap') == $no ? 'selected' : '' }}>{{ $no }}. {{ $nama }}</option>
-                @endforeach
-            </select>
-        </div>
-        @endif
-
-        <div style="display:flex; gap:6px;">
-            <button type="submit" class="btn btn-primary">🔍 Filter</button>
-            <a href="{{ url()->current() }}" class="btn">Reset</a>
-        </div>
+        {{-- Hidden fields for quick filters or sorting if needed --}}
+        <input type="hidden" name="sla_status" id="slaStatusInput" value="{{ request('sla_status') }}">
+        <input type="hidden" name="sort" id="sortInput" value="{{ request('sort', 'priority') }}">
     </form>
 </div>
 
-{{-- TABEL --}}
-<div class="card">
-    <div class="section-header">
-        <div>
-            <h2>📬 {{ $title ?? 'Semua Antrian Surat' }}</h2>
-            <small>Total {{ $surats->total() }} surat ditemukan</small>
-        </div>
+{{-- TABEL CONTAINER --}}
+<div class="card" id="tableContainer">
+    <div id="tableSpinner" class="loading-spinner">
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        Memuat data...
     </div>
 
-    @if($surats->isEmpty())
-        <div style="text-align:center; padding:40px; color:var(--text-secondary); font-size:13px;">
-            📭 Tidak ada surat yang ditemukan
-        </div>
-    @else
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 40px;">#</th>
-                        <th style="width: 250px;">Informasi Surat</th>
-                        <th style="width: 150px;">Pengusul</th>
-                        <th style="width: 140px;">Detail Klasifikasi</th>
-                        <th style="width: 150px;">Tujuan</th>
-                        <th style="width: 160px;">Proses Tracking</th>
-                        <th style="width: 100px;">Status</th>
-                        <th style="width: 140px;">SLA</th>
-                        <th style="width: 90px;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @foreach($surats as $surat)
-                    <tr>
-                        <td style="color:var(--text-secondary); font-size:12px;">{{ $loop->iteration }}</td>
-                        <td>
-                            <div style="font-weight:700; color:var(--text-primary); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 6px;" title="{{ $surat->judul }}">
-                                {{ $surat->judul }}
-                                @if($surat->pendingDeleteRequest)
-                                    <span class="badge" style="background:#fee2e2; color:#ef4444; border:1px solid #fca5a5; font-size:9px; padding: 2px 6px;">
-                                        <i class="bi bi-trash-fill"></i> HAPUS?
-                                    </span>
-                                @endif
-                            </div>
-                            <div style="font-size:11px; color:#1e3a5f; margin-top:4px; font-weight: 600;">
-                                <i class="bi bi-hash"></i> {{ $surat->nomor_surat ?? 'Belum ada nomor' }}
-                            </div>
-                            <div style="font-size:11px; color:var(--text-secondary); margin-top:2px; display: flex; align-items: center; gap: 4px;">
-                                <i class="bi bi-calendar-event"></i> {{ $surat->created_at?->format('d/m/Y') ?? '—' }} 
-                                <span style="opacity: 0.5;">|</span>
-                                <i class="bi bi-clock"></i> {{ $surat->created_at?->format('H:i') ?? '—' }}
-                            </div>
-                        </td>
-                        <td>
-                            <div style="font-size:13px; font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $surat->user?->name }}">
-                                {{ $surat->user?->name ?? '—' }}
-                            </div>
-                        </td>
-                        <td>
-                            <div class="mb-1">
-                                <span class="badge badge-purple" style="font-size: 10px;">{{ $surat->jenis_label }}</span>
-                            </div>
-                            @if($surat->sifat === 'segera')
-                                <span class="badge badge-red" style="font-size: 10px;">Segera</span>
-                            @elseif($surat->sifat === 'rahasia')
-                                <span class="badge badge-amber" style="font-size: 10px;">Rahasia</span>
-                            @else
-                                <span class="badge badge-gray" style="font-size: 10px;">Biasa</span>
-                            @endif
-                        </td>
-                        <td>
-                            <div style="font-size: 12px; color: var(--text-primary); line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $surat->tujuan }}">
-                                {{ $surat->tujuan ?? '—' }}
-                            </div>
-                        </td>
-                        <td>
-                            <div style="font-size:12px; font-weight:700; color:#3b82f6; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-                                <span>Tahap {{ $surat->tahap_sekarang }}/10</span>
-                                <span style="font-size: 10px;">{{ $surat->proses_persen }}%</span>
-                            </div>
-                            <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 10px; overflow: hidden;">
-                                <div style="width: {{ $surat->proses_persen }}%; height: 100%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 10px;"></div>
-                            </div>
-                            <div style="font-size:10px; color:var(--text-secondary); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $surat->nama_tahap }}">
-                                {{ $surat->nama_tahap }}
-                            </div>
-                        </td>
-                        <td>
-                            @if($surat->status === 'selesai')
-                                <span class="badge badge-green">Selesai</span>
-                                @if(!is_null($surat->rating))
-                                    <div style="font-size:10px; color:#d97706; margin-top:4px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:2px; background:rgba(251,191,36,0.1); padding:2px 4px; border-radius:4px; border:1px solid rgba(251,191,36,0.2);">
-                                        <i class="bi bi-star-fill text-warning" style="color:#f59e0b !important;"></i> {{ $surat->rating }}/5
-                                    </div>
-                                @endif
-                            @elseif($surat->status === 'ditolak')
-                                <span class="badge badge-red">Ditolak</span>
-                            @elseif($surat->status === 'revisi')
-                                <div class="badge badge-amber" style="text-align: left; padding: 4px 8px;">
-                                    <div>📝 Revisi</div>
-                                    <div style="font-size: 8px; opacity: 0.8; margin-top: 1px;">{{ $surat->revisi_uploaded_at?->format('d/m H:i') ?? '-' }}</div>
-                                </div>
-                            @elseif($surat->status === 'revisi_admin')
-                                <span class="badge" style="background:#fef3c7;color:#92400e;border:1.5px solid #fbbf24;font-size:10px;">Admin Revisi</span>
-                            @elseif($surat->status === 'draft')
-                                <span class="badge badge-gray">📄 Draf</span>
-                            @else
-                                <span class="badge badge-blue">Proses</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($surat->status === 'selesai')
-                                <div class="text-success" style="font-size: 11px; font-weight: 600;">
-                                    <i class="bi bi-check-circle-fill"></i> Selesai
-                                </div>
-                            @elseif($surat->sla_status === 'terlambat')
-                                <div class="text-danger" style="font-size: 11px; font-weight: 700;">
-                                    <i class="bi bi-exclamation-triangle-fill"></i> {{ $surat->sisa_jam }}
-                                </div>
-                            @else
-                                <div class="text-primary" style="font-size: 11px; font-weight: 600;">
-                                    <i class="bi bi-clock-history"></i> {{ $surat->sisa_jam }}
-                                </div>
-                            @endif
-                        </td>
-                        <td>
-                            <a href="{{ route('admin.surat.show', $surat) }}"
-                               class="btn btn-sm btn-primary" style="padding: 5px 10px; border-radius: 7px; font-weight: 600; font-size: 11px;">Detail <i class="bi bi-arrow-right"></i></a>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        {{-- PAGINATION --}}
-        <div style="margin-top:16px;">
-            {{ $surats->links() }}
-        </div>
-    @endif
+    @include('admin.surat.partials.table', ['surats' => $surats, 'title' => $title])
 </div>
+
+{{-- SCRIPT: LIVE SEARCH & ASYNC FILTER --}}
+<script>
+    let searchDebounceTimer = null;
+    const searchInput = document.getElementById('liveSearchInput');
+    const clearBtn = document.getElementById('clearSearchBtn');
+    const filterForm = document.getElementById('filterSuratForm');
+    const tableContainer = document.getElementById('tableContainer');
+    const tableSpinner = document.getElementById('tableSpinner');
+
+    // Update clear button visibility
+    function updateClearBtn() {
+        if (searchInput && clearBtn) {
+            clearBtn.style.display = searchInput.value.length > 0 ? 'inline-flex' : 'none';
+        }
+    }
+
+    // Function to perform AJAX fetch and update table
+    function performLiveFilter(targetUrl = null) {
+        if (!filterForm || !tableContainer) return;
+
+        const url = targetUrl ? new URL(targetUrl, window.location.origin) : new URL(filterForm.action, window.location.origin);
+        
+        if (!targetUrl) {
+            const formData = new FormData(filterForm);
+            const params = new URLSearchParams();
+            
+            for (const [key, value] of formData.entries()) {
+                if (value !== '' && value !== null) {
+                    params.append(key, value);
+                }
+            }
+            url.search = params.toString();
+        }
+
+        // Show subtle loading
+        tableContainer.classList.add('loading');
+        if (tableSpinner) tableSpinner.style.display = 'inline-flex';
+
+        fetch(url.toString(), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'text/html'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response error');
+            return response.text();
+        })
+        .then(html => {
+            tableContainer.innerHTML = `
+                <div id="tableSpinner" class="loading-spinner">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Memuat data...
+                </div>
+                ${html}
+            `;
+
+            // Update browser URL
+            window.history.pushState(null, '', url.toString());
+
+            // Re-bind pagination links
+            bindPaginationLinks();
+        })
+        .catch(err => {
+            console.error('Filter request failed:', err);
+        })
+        .finally(() => {
+            tableContainer.classList.remove('loading');
+            const spinner = document.getElementById('tableSpinner');
+            if (spinner) spinner.style.display = 'none';
+        });
+    }
+
+    // Bind AJAX to pagination links
+    function bindPaginationLinks() {
+        document.querySelectorAll('#tableContainer .ajax-pagination a, #tableContainer .pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageUrl = this.getAttribute('href');
+                if (pageUrl) {
+                    performLiveFilter(pageUrl);
+                    tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    }
+
+    // Apply Quick Filter Chips
+    function applyQuickFilter(field, value) {
+        if (!field) {
+            const statusSel = filterForm.querySelector('select[name="status"]');
+            const sifatSel = filterForm.querySelector('select[name="sifat"]');
+            const slaInput = document.getElementById('slaStatusInput');
+            if (statusSel) statusSel.value = '';
+            if (sifatSel) sifatSel.value = '';
+            if (slaInput) slaInput.value = '';
+        } else if (field === 'status') {
+            const statusSel = filterForm.querySelector('select[name="status"]');
+            if (statusSel) statusSel.value = value;
+        } else if (field === 'sifat') {
+            const sifatSel = filterForm.querySelector('select[name="sifat"]');
+            if (sifatSel) sifatSel.value = value;
+        } else if (field === 'sla_status') {
+            const slaInput = document.getElementById('slaStatusInput');
+            if (slaInput) slaInput.value = value;
+        }
+
+        // Update active chip classes
+        document.querySelectorAll('.chip-btn').forEach(btn => btn.classList.remove('active'));
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
+
+        performLiveFilter();
+    }
+
+    // Reset All Filters
+    function resetAllFilters() {
+        if (!filterForm) return;
+        
+        filterForm.reset();
+        if (searchInput) searchInput.value = '';
+        
+        filterForm.querySelectorAll('select').forEach(sel => sel.value = '');
+        const slaInput = document.getElementById('slaStatusInput');
+        if (slaInput) slaInput.value = '';
+        
+        updateClearBtn();
+        
+        document.querySelectorAll('.chip-btn').forEach((btn, idx) => {
+            btn.classList.toggle('active', idx === 0);
+        });
+
+        performLiveFilter();
+    }
+
+    // Event Listeners on Load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateClearBtn();
+        bindPaginationLinks();
+
+        // Realtime Search on Input (Debounce 300ms)
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                updateClearBtn();
+                clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => {
+                    performLiveFilter();
+                }, 300);
+            });
+        }
+
+        // Clear Search Button
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function() {
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchInput.focus();
+                    updateClearBtn();
+                    performLiveFilter();
+                }
+            });
+        }
+
+        // Dropdowns onChange
+        if (filterForm) {
+            filterForm.querySelectorAll('.filter-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    performLiveFilter();
+                });
+            });
+        }
+
+        // Handle browser Back/Forward navigation
+        window.addEventListener('popstate', function() {
+            window.location.reload();
+        });
+    });
+
+    // Support Turbo if loaded
+    document.addEventListener('turbo:load', function() {
+        updateClearBtn();
+        bindPaginationLinks();
+    });
+</script>
 
 @endsection

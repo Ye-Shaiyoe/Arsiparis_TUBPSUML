@@ -189,8 +189,8 @@
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h5 class="fw-bold mb-1" style="color:var(--text-primary);">📄 Template Surat</h5>
-                        <p class="mb-0 text-muted small">Kelola berkas .docx contoh untuk pegawai</p>
+                        <h5 class="fw-bold mb-1" style="color:var(--text-primary);"><i class="bi bi-file-earmark-text text-primary me-1"></i> Template Surat</h5>
+                        <p class="mb-0 text-muted small">Kelola berkas contoh format surat untuk pegawai</p>
                     </div>
                     <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2" style="border-radius: 8px;">
                         Total: {{ $files->count() }} File
@@ -200,7 +200,9 @@
 
                 @if($files->isEmpty())
                     <div class="text-center py-5">
-                        <div class="mb-3" style="font-size: 40px;">📭</div>
+                        <div class="mb-3">
+                            <i class="bi bi-inbox text-muted" style="font-size: 36px; opacity: 0.6;"></i>
+                        </div>
                         <h6 class="text-muted">Belum ada template yang diunggah.</h6>
                         <p class="text-muted small">Silakan gunakan form di sebelah kanan untuk menambah template baru.</p>
                     </div>
@@ -293,7 +295,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" style="border-radius:10px;">
-                        ⬆ Unggah Template
+                        <i class="bi bi-cloud-arrow-up-fill me-1"></i> Unggah Template
                     </button>
                 </form>
                 

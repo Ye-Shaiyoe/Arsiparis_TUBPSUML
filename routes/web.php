@@ -111,6 +111,7 @@ Route::prefix('Admin')->middleware(['auth', 'verified', 'admin'])->name('admin.'
         Route::get('/Sidebar/counts', [\App\Http\Controllers\Admin\SidebarController::class, 'counts'])->name('sidebar.counts');
 
         Route::get('/Surat', [SuratController::class, 'index'])->name('surat.index');
+        Route::get('/Semua-Surat', [SuratController::class, 'semua'])->name('surat.semua');
         Route::get('/Surat-Masuk', [SuratController::class, 'masuk'])->name('surat.masuk');
         Route::get('/Surat-Proses', [SuratController::class, 'proses'])->name('surat.proses');
         Route::get('/Surat-Selesai', [SuratController::class, 'selesai'])->name('surat.selesai');

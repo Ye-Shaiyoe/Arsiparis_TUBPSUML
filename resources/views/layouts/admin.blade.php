@@ -832,7 +832,7 @@
         <p class="px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-widest text-white/30">Data Surat</p>
 
         {{-- Dropdown: Tabel Data Surat --}}
-        <div class="dropdown-group {{ request()->routeIs('admin.surat.masuk') || request()->routeIs('admin.surat.proses') || request()->routeIs('admin.surat.selesai') || request()->routeIs('admin.surat.revisi') ? 'open' : '' }}">
+        <div class="dropdown-group {{ request()->routeIs('admin.surat.semua') || request()->routeIs('admin.surat.masuk') || request()->routeIs('admin.surat.proses') || request()->routeIs('admin.surat.selesai') || request()->routeIs('admin.surat.revisi') ? 'open' : '' }}">
             <button type="button" onclick="this.closest('.dropdown-group').classList.toggle('open')" data-tooltip="Tabel Data Surat"
                 class="sidebar-item w-[calc(100%-24px)] flex items-center gap-3 text-[13px] font-semibold text-slate-400 text-left">
                 <i class="bi bi-folder2-open text-lg w-5 text-center shrink-0"></i>
@@ -840,6 +840,11 @@
                 <i class="bi bi-chevron-down text-[11px] text-white/40 chevron-icon shrink-0"></i>
             </button>
             <div class="dropdown-list pl-3 mt-1 space-y-1">
+                <a href="{{ route('admin.surat.semua') }}" data-tooltip="Semua Surat"
+                   class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
+                          {{ request()->routeIs('admin.surat.semua') ? 'nav-active' : '' }}">
+                    <i class="bi bi-collection text-base w-5 text-center shrink-0"></i> Semua Surat
+                </a>
                 <a href="{{ route('admin.surat.masuk') }}" data-tooltip="Surat Masuk"
                    class="sidebar-item flex items-center gap-3 text-[12.5px] font-semibold text-slate-400
                           {{ request()->routeIs('admin.surat.masuk') ? 'nav-active' : '' }}">

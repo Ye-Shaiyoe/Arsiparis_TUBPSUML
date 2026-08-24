@@ -17,30 +17,34 @@ use App\Services\HtmlSanitizer;
 
 class SuratController extends Controller
 {
-    public function index(Request $request, $title = 'Antrian Surat')
+    public function index(Request $request, $title = 'Antrian Surat', bool $isAntrian = true)
     {
         $query = Surat::with(['user', 'pendingDeleteRequest'])->latest();
 
         $admin = Auth::user();
 
-        // Filter berdasarkan role admin
-        // admin_aspirasi: tahap 2 + 5-10
-        // admin_kasubbag_tu: tahap 3
-        // admin_kepala_balai: tahap 4
-        if ($admin->role === 'admin_aspirasi') {
-            $query->where(function ($q) {
-                $q->where('tahap_sekarang', 2)
-                    ->orWhere('tahap_sekarang', '>=', 5);
-            });
-        } elseif ($admin->role === 'admin_kasubbag_tu') {
-            $query->where('tahap_sekarang', 3);
-        } elseif ($admin->role === 'admin_kepala_balai') {
-            $query->where('tahap_sekarang', 4);
+        // Filter berdasarkan role admin HANYA jika di halaman Antrian Surat (Inbox Tugas Aktif)
+        // Di halaman Semua Surat / Surat Selesai / Tabel Data Surat, seluruh admin (termasuk Kasubbag TU & Kepala Balai) dapat melihat seluruh surat
+        if ($isAntrian) {
+            if ($admin->role === 'admin_aspirasi') {
+                $query->where(function ($q) {
+                    $q->where('tahap_sekarang', 2)
+                        ->orWhere('tahap_sekarang', '>=', 5);
+                });
+            } elseif ($admin->role === 'admin_kasubbag_tu') {
+                $query->where('tahap_sekarang', 3);
+            } elseif ($admin->role === 'admin_kepala_balai') {
+                $query->where('tahap_sekarang', 4);
+            }
         }
         // admin lama (role='admin') tetap bisa lihat semua
 
-        if ($request->filled('jenis'))
+        // Filter: Jenis Surat
+        if ($request->filled('jenis')) {
             $query->where('jenis', $request->jenis);
+        }
+
+        // Filter: Status Surat
         if ($request->filled('status')) {
             if ($request->status === 'proses') {
                 $query->whereIn('status', ['proses', 'revisi', 'revisi_admin']);
@@ -48,44 +52,103 @@ class SuratController extends Controller
                 $query->where('status', $request->status);
             }
         }
-        if ($request->filled('tahap'))
-            $query->where('tahap_sekarang', $request->tahap);
-        if ($request->filled('search'))
-            $query->where('judul', 'like', '%' . $request->search . '%');
-        if ($request->filled('bulan'))
+
+        // Filter: Sifat Surat (biasa, segera, rahasia)
+        if ($request->filled('sifat')) {
+            $query->where('sifat', $request->sifat);
+        }
+
+        // Filter: Tahap Surat (1 - 10)
+        if ($request->filled('tahap')) {
+            $query->where('tahap_sekarang', (int) $request->tahap);
+        }
+
+        // Filter: Pengusul (Pegawai / User ID)
+        if ($request->filled('user_id')) {
+            $query->where('user_id', (int) $request->user_id);
+        }
+
+        // Filter: Status SLA
+        if ($request->filled('sla_status')) {
+            $query->where('sla_status', $request->sla_status);
+        }
+
+        // Filter: Pencarian Multi-Kolom (Judul, No. Surat, Pengusul, Tujuan)
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('judul', 'like', '%' . $search . '%')
+                  ->orWhere('nomor_surat', 'like', '%' . $search . '%')
+                  ->orWhere('tujuan', 'like', '%' . $search . '%')
+                  ->orWhere('catatan_pengusul', 'like', '%' . $search . '%')
+                  ->orWhereHas('user', function ($uq) use ($search) {
+                      $uq->where('name', 'like', '%' . $search . '%')
+                         ->orWhere('email', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Filter: Bulan & Tahun
+        if ($request->filled('bulan')) {
             $query->whereMonth('created_at', (int) $request->bulan);
-        if ($request->filled('tahun'))
+        }
+        if ($request->filled('tahun')) {
             $query->whereYear('created_at', (int) $request->tahun);
+        }
 
-        // Tampilkan surat dengan status 'revisi' atau 'revisi_admin' di paling atas (prioritas)
-        $surats = $query->orderByRaw("CASE WHEN status = 'revisi' OR status = 'revisi_admin' THEN 0 ELSE 1 END")
-            ->paginate(15)->withQueryString();
+        // Sorting
+        $sort = $request->get('sort', 'priority');
+        if ($sort === 'oldest') {
+            $query->oldest();
+        } elseif ($sort === 'sla') {
+            $query->orderByRaw("CASE WHEN sla_status = 'terlambat' THEN 0 ELSE 1 END")
+                  ->orderBy('deadline_sla', 'asc');
+        } else {
+            // Default: Prioritaskan status revisi, lalu tanggal terbaru
+            $query->orderByRaw("CASE WHEN status = 'revisi' OR status = 'revisi_admin' THEN 0 ELSE 1 END")
+                  ->latest();
+        }
 
-        return view('admin.surat.index', compact('surats', 'title'));
+        $perPage = (int) $request->get('per_page', 15);
+        $surats = $query->paginate($perPage)->withQueryString();
+
+        // AJAX Request support for live search / filter without full page reload
+        if ($request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return view('admin.surat.partials.table', compact('surats', 'title'))->render();
+        }
+
+        $users = User::orderBy('name')->get(['id', 'name']);
+
+        return view('admin.surat.index', compact('surats', 'title', 'users'));
+    }
+
+    public function semua(Request $request)
+    {
+        return $this->index($request, 'Semua Surat', false);
     }
 
     public function masuk(Request $request)
     {
         $request->merge(['status' => 'proses']);
-        return $this->index($request, 'Surat Masuk');
+        return $this->index($request, 'Surat Masuk', false);
     }
 
     public function proses(Request $request)
     {
         $request->merge(['status' => 'proses']);
-        return $this->index($request, 'Surat Sedang Diproses');
+        return $this->index($request, 'Surat Sedang Diproses', false);
     }
 
     public function selesai(Request $request)
     {
         $request->merge(['status' => 'selesai']);
-        return $this->index($request, 'Surat Selesai');
+        return $this->index($request, 'Surat Selesai', false);
     }
 
     public function revisi(Request $request)
     {
         $request->merge(['status' => 'revisi']);
-        return $this->index($request, 'Surat Perlu Revisi');
+        return $this->index($request, 'Surat Perlu Revisi', false);
     }
 
     public function show($surat)
