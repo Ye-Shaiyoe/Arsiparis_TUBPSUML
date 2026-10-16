@@ -58,31 +58,6 @@ class RegisteredUserController extends Controller
             'nip.regex' => 'NIP harus tepat 18 digit angka.',
         ]);
 
-        // Verifikasi Google reCAPTCHA v2
-        $recaptchaToken = $request->input('g-recaptcha-response');
-        if (empty($recaptchaToken)) {
-            return back()->withErrors(['recaptcha' => 'Harap selesaikan verifikasi reCAPTCHA terlebih dahulu.'])->withInput();
-        }
-
-        $recaptchaHttp = app()->isLocal()
-            ? Http::withoutVerifying()->asForm()
-            : Http::asForm();
-
-        $recaptchaVerify = $recaptchaHttp->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret'   => config('services.recaptcha.v2_secret'),
-            'response' => $recaptchaToken,
-            'remoteip' => $request->ip(),
-        ]);
-
-        if (! $recaptchaVerify->json('success')) {
-            $errCodes = implode(', ', $recaptchaVerify->json('error-codes', []));
-            \Illuminate\Support\Facades\Log::warning('reCAPTCHA gagal', [
-                'error-codes' => $errCodes,
-                'ip'          => $request->ip(),
-            ]);
-            return back()->withErrors(['recaptcha' => 'Verifikasi reCAPTCHA gagal atau kadaluarsa. Silakan coba lagi.'])->withInput();
-        }
-
         // Registrasi publik selalu menghasilkan role 'user'
         // Pembuatan akun admin dilakukan lewat panel Admin > Settings > Users
         $user = User::create([

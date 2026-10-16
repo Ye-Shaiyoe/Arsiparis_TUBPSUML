@@ -43,74 +43,10 @@ class LoginRequest extends FormRequest
      */
     public function rules(): array
     {
-        $secret = config('services.recaptcha.secret');
-        $recaptchaRule = (app()->environment('testing') || empty($secret)) ? ['nullable', 'string'] : ['required', 'string'];
-
         return [
-            'email'                => ['required', 'string'],
-            'password'             => ['required', 'string'],
-            'g-recaptcha-response' => $recaptchaRule,
+            'email'    => ['required', 'string'],
+            'password' => ['required', 'string'],
         ];
-    }
-
-    /**
-     * Custom validation messages.
-     */
-    public function messages(): array
-    {
-        return [
-            'g-recaptcha-response.required' => 'Verifikasi keamanan gagal. Silakan muat ulang halaman.',
-        ];
-    }
-
-    /**
-     * Validate reCAPTCHA v3 token against Google API.
-     * Returns false if score is too low or request fails.
-     *
-     * @throws ValidationException
-     */
-    protected function validateRecaptcha(): void
-    {
-        $token = $this->input('g-recaptcha-response');
-        $secret = config('services.recaptcha.secret');
-
-        // Skip in local/testing environment if no secret configured
-        if (app()->environment('testing') || empty($secret)) {
-            return;
-        }
-
-        try {
-            $response = Http::asForm()->timeout(5)->post('https://www.google.com/recaptcha/api/siteverify', [
-                'secret'   => $secret,
-                'response' => $token,
-                'remoteip' => $this->ip(),
-            ]);
-
-            $result = $response->json();
-
-            $success  = $result['success'] ?? false;
-            $score    = $result['score'] ?? 0;
-            $action   = $result['action'] ?? '';
-            $minScore = (float) config('services.recaptcha.min_score', 0.5);
-
-            Log::info('reCAPTCHA v3 result', [
-                'success' => $success,
-                'score'   => $score,
-                'action'  => $action,
-                'ip'      => $this->ip(),
-            ]);
-
-            if (!$success || $score < $minScore) {
-                throw ValidationException::withMessages([
-                    'email' => 'Verifikasi keamanan gagal (skor terlalu rendah). Coba lagi.',
-                ]);
-            }
-        } catch (ValidationException $e) {
-            throw $e;
-        } catch (\Throwable $e) {
-            // Network/timeout — log tapi jangan blokir user
-            Log::warning('reCAPTCHA request failed, skipping validation: ' . $e->getMessage());
-        }
     }
 
     /**
@@ -120,7 +56,6 @@ class LoginRequest extends FormRequest
      */
     public function authenticate(): void
     {
-        $this->validateRecaptcha();
         $this->ensureIsNotRateLimited();
 
         $input      = $this->input('email');
