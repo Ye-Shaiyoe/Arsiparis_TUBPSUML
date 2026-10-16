@@ -22,6 +22,7 @@
                         <img id="avatar-preview-stats"
                             src="{{ Auth::user()->profile_photo ? Storage::url(Auth::user()->profile_photo) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=4361ee&color=fff&size=128' }}"
                             alt="{{ Auth::user()->name }}"
+                            onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=4361ee&color=fff&size=128';"
                             class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1">
                     </div>
                     <div class="absolute -bottom-2 -right-2 bg-emerald-500 text-white w-10 h-10 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center shadow-lg" title="Akun Aktif">

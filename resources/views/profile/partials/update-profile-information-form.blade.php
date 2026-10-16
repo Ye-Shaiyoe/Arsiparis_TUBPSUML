@@ -37,6 +37,7 @@
                     @if($user->profile_photo)
                         <img id="avatar-preview"
                              src="{{ Storage::url($user->profile_photo) }}"
+                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=4361ee&color=fff&size=128';"
                              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                              alt="Avatar">
                     @else
